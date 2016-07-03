@@ -1,0 +1,66 @@
+
+
+
+MINCORE(2)                     1991                    MINCORE(2)
+
+
+NNAAMMEE
+       mincore - get advise about use of memory
+
+SSYYNNOOPPSSIISS
+       mincore(addr, len, vec)
+       ccaaddddrr__tt aaddddrr;;
+       iinntt lleenn;;
+       cchhaarr **vveecc;;
+
+DDEESSCCRRIIPPTTIIOONN
+       The  _m_i_n_c_o_r_e system call allows a process to obtain infor-
+       mation about whether pages are core  resident.   Here  the
+       current  core  residency  of  the pages is returned in the
+       character array _v_e_c, with a value of 1  meaning  that  the
+       page is in-core.
+
+SSEEEE AALLSSOO
+       msync.2, munmap.2, mprotect.2, madvise.2, mincore.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+27,                            May                              1
+
+

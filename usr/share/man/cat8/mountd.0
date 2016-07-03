@@ -1,0 +1,66 @@
+MOUNTD(8)               386BSD System Manager's Manual               MOUNTD(8)
+
+NNAAMMEE
+     mmoouunnttdd - service remote NFS mount requests
+
+SSYYNNOOPPSSIISS
+     //ssbbiinn//mmoouunnttdd [--nn] [_e_x_p_o_r_t_s_f_i_l_e]
+
+DDEESSCCRRIIPPTTIIOONN
+     Mountd is the server for NFS mount requests from other client machines.
+     Mountd listens for service requests at the port indicated in the NFS
+     server specification; see _N_e_t_w_o_r_k _F_i_l_e _S_y_s_t_e_m _P_r_o_t_o_c_o_l _S_p_e_c_i_f_i_c_a_t_i_o_n,
+     RFC1094.
+
+     Options and operands available for mmoouunnttdd:
+
+     --nn      The --nn option allows non-root mount requests to be served.  This
+             should only be specified if there are clients such as PC's, that
+             require it.
+
+     _e_x_s_p_o_r_t_f_i_l_e
+             The _e_x_p_o_r_t_s_f_i_l_e argument specifies an alternate location for the
+             exports file.
+
+     Sending a SIGHUP signal to mountd will cause it to reread its exports
+     file.
+
+FFIILLEESS
+     /etc/exports
+
+SSEEEE AALLSSOO
+     nfsstat(1),  exports(5),  nfsd(8),  portmap(8),  showmount(8)
+
+HHIISSTTOORRYY
+     The mmoouunnttdd command currently under development.
+
+BSD Experimental                March 16, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

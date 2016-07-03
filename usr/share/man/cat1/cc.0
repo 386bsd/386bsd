@@ -1,0 +1,1320 @@
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+NNAAMMEE
+       cc - GNU project C Compiler
+
+SSYYNNOOPPSSIISS
+       cccc [ options ] files
+
+DDEESSCCRRIIPPTTIIOONN
+       _C_c  is  a  version  of  the  GNU C compiler.  It accepts a
+       dialect of ANSI C with extensions; this dialect is differ-
+       ent from the dialect used in 4.3 BSD and earlier distribu-
+       tions.  The  --ttrraaddiittiioonnaall  flag  causes  the  compiler  to
+       accept a dialect of extended Classic C, much like the C of
+       these earlier  distributions.   If  you  are  not  already
+       familiar  with  ANSI C and its new features, you will want
+       to build your software with --ttrraaddiittiioonnaall.
+
+DDIIFFFFEERREENNCCEESS
+       Most older C compiler flags are supported  by  _c_c.   Three
+       that  are  not are: --ggoo, to generate symbol tables for the
+       unsupported _s_d_b debugger; --ff, for single precision  float-
+       ing  point  in  expressions, which is now the default; and
+       --tt, for alternate compiler passes.
+
+       The differences between ANSI C and Classic C dialects  are
+       too  numerous  to  describe here in detail.  The following
+       quick summary is meant to make users  aware  of  potential
+       subtle  problems when converting Classic C code to ANSI C.
+
+       The most obvious change is the pervasive use  of  _f_u_n_c_t_i_o_n
+       _p_r_o_t_o_t_y_p_e_s.  Under the ANSI C dialect, the number and type
+       of arguments to C library functions  are  checked  by  the
+       compiler  when  standard  header files are included; calls
+       that fail to match will yield  errors.   A  subtle  conse-
+       quence  of adding prototype declarations is that user code
+       that inadvertently redefines  a  C  library  function  may
+       break;  for  example  it is no longer possible to write an
+       _a_b_o_r_t function that takes different parameters or  returns
+       a  different value from the standard _a_b_o_r_t, when including
+       standard header files.  Another issue with  prototypes  is
+       that  functions  that  take  different  parameter types no
+       longer have the same type; function pointers now differ by
+       parameter  types  as well as return types.  Variable argu-
+       ment lists are handled  differently;  the  old  _v_a_r_a_r_g_s(3)
+       package is obsolete, replaced by _s_t_d_a_r_g(3), which unfortu-
+       nately is not completely compatible.  A subtle  change  in
+       type  promotion can be confusing: small unsigned types are
+       now widened into signed types rather than unsigned  types.
+       A  similar  problem  can  occur  with the ssiizzeeooff operator,
+       which now yields an unsigned type  rather  than  a  signed
+       type.   One  common problem is due to a change in scoping:
+       external declarations are now scoped  to  the  block  they
+       occur  in,  so  a  declaration  for (say) eerrrrnnoo inside one
+       block will no longer declare it in all subsequent  blocks.
+       The  syntax for braces in structure initializations is now
+
+
+
+9,                             May                              1
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       a bit stricter, and  it  is  sometimes  necessary  to  add
+       braces  to please the compiler.  Two very subtle and some-
+       times very annoying features apply to constant strings and
+       to  the _l_o_n_g_j_m_p(3) function.  Constant strings in the ANSI
+       dialect are read-only; attempts to alter them  cause  pro-
+       tection  violations.   This  ANSI feature permits the com-
+       piler to coalesce identical strings  in  the  same  source
+       file, and saves space when multiple copies of a binary are
+       running at the same time, since the read-only  part  of  a
+       binary is sharable.  The most common difficulty with read-
+       only strings lies with the use  of  the  mmkktteemmpp  function,
+       which  in  the  past often altered a constant string argu-
+       ment.  It is now necessary to copy a constant string  (for
+       example,  with  _s_t_r_d_u_p(3))  before it may be altered.  The
+       lloonnggjjmmpp function may now destroy  any  register  _o_r  stack
+       variable  in the function that made the corresponding call
+       to the sseettjjmmpp function; to protect a local  variable,  the
+       new ANSI vvoollaattiillee modifier must be used.  This often leads
+       to confusing situations upon `return'  from  sseettjjmmpp.   The
+       compiler has extended warning flags for dealing with read-
+       only strings and sseettjjmmpp, but these are not very effective.
+       If your code has problems with any of these ANSI features,
+       you will probably want to use --ttrraaddiittiioonnaall.
+
+       Even with --ttrraaddiittiioonnaall, there are some differences between
+       this  dialect  of  Classic  C and the dialect supported on
+       older distributions.
+
+       There are at least two differences that are a  consequence
+       of  the fact that _c_c uses an ANSI C style grammar for both
+       traditional and ANSI modes.  The old C dialect permitted a
+       typedef  to  replace a simple type in the idiom ``unsigned
+       _t_y_p_e''; this _c_c treats such forms as syntax  errors.   The
+       old C dialect also permitted formal parameters to have the
+       same names as typedef types; the current dialect does not.
+
+       Some questionable or illegal practices that were supported
+       in the old C dialect are not  supported  by  --ttrraaddiittiioonnaall:
+       non-comment text at the end of a ``#include'' preprocessor
+       control line is an error, not ignored; compound assignment
+       operators  must  not contain white space, _e._g.  ``* ='' is
+       not the same as ``*=''; the last member declaration  in  a
+       structure  or  union must be terminated by a semicolon; it
+       is not possible to ``switch'' on function  pointers;  more
+       than  one  occurrence  of ``#else'' at the same level in a
+       preprocessor ``#if'' clause is an error, not ignored.
+
+       Some truly ancient C practices are  no  longer  supported.
+       The  idiom  of  declaring an anonymous structure and using
+       its members to extract fields  from  other  structures  or
+       even non-structures is illegal.  Integers are not automat-
+       ically converted to pointers when they  are  dereferenced.
+       The  --ttrraaddiittiioonnaall  dialect  does  not retain the so-called
+       ``old-fashioned'' assignment  operators  (with  the  ``=''
+
+
+
+9,                             May                              2
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       preceding  rather than following the operator) or initial-
+       izations (with no ``='' between initializer  and  initial-
+       izee).
+
+WWAARRNNIINNGG
+       This  rest  of man page is an extract of the documentation
+       of the _G_N_U _C _c_o_m_p_i_l_e_r and is limited to the meaning of the
+       options.   IItt  iiss  nnoott kkeepptt uupp ttoo ddaattee.  If you want to be
+       certain of the information below, check it in  the  manual
+       "Using  and Porting GCC".  Refer to the Info file ggcccc..iinnffoo
+       or the DVI file ggcccc..ddvvii which are made  from  the  Texinfo
+       source file ggcccc..tteexxiinnffoo.
+
+       The  _G_N_U  _C  _c_o_m_p_i_l_e_r  uses a command syntax much like the
+       Unix C compiler.  The _c_c program accepts options and  file
+       names as operands.  Multiple single-letter options may _n_o_t
+       be grouped: --ddrr is very different from --dd --rr.
+
+       When you invoke GNU CC, it  normally  does  preprocessing,
+       compilation,  assembly  and linking.  File names which end
+       in ..cc are taken as C source to be  preprocessed  and  com-
+       piled;  file  names ending in ..ii are taken as preprocessor
+       output to be compiled;  compiler  output  files  plus  any
+       input  files  with  names ending in ..ss are assembled; then
+       the resulting object files, plus any  other  input  files,
+       are linked together to produce an executable.
+
+       Command  options  allow  you  to  stop  this process at an
+       intermediate stage.  For example, the --cc option  says  not
+       to  run  the  linker.   Then the output consists of object
+       files output by the assembler.
+
+       Other command options are passed on to one stage  of  pro-
+       cessing.  Some options control the preprocessor and others
+       the compiler itself.  Yet other options control the assem-
+       bler  and  linker;  these are not documented here, but you
+       rarely need to use any of them.
+
+OOPPTTIIOONNSS
+       Here are the options to control  the  overall  compilation
+       process, including those that say whether to link, whether
+       to assemble, and so on.
+
+       --oo _f_i_l_e
+              Place output in file _f_i_l_e.  This applies regardless
+              to  whatever  sort  of  output  is  being produced,
+              whether it be an executable file, an  object  file,
+              an assembler file or preprocessed C code.
+
+              If  --oo  is  not specified, the default is to put an
+              executable file in aa..oouutt, the object file  _s_o_u_r_c_e..cc
+              in  _s_o_u_r_c_e..oo,  an  assembler  file in _s_o_u_r_c_e..ss, and
+              preprocessed C on standard output.
+
+
+
+
+9,                             May                              3
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       --cc     Compile or assemble the source files,  but  do  not
+              link.   Produce  object  files  with  names made by
+              replacing ..cc or ..ss with ..oo at the end of the  input
+              file  names.   Do  nothing  at all for object files
+              specified as input.
+
+       --SS     Compile into assembler code but  do  not  assemble.
+              The assembler output file name is made by replacing
+              ..cc with ..ss at the end of the input file  name.   Do
+              nothing at all for assembler source files or object
+              files specified as input.
+
+       --EE     Run only the C preprocessor.  Preprocess all the  C
+              source  files  specified  and output the results to
+              standard output.
+
+       --vv     Compiler driver program prints the commands it exe-
+              cutes as it runs the preprocessor, compiler proper,
+              assembler and linker.  Some of these  are  directed
+              to print their own version numbers.
+
+       --ppiippee  Use  pipes rather than temporary files for communi-
+              cation between the various stages  of  compilation.
+              This fails to work on some systems where the assem-
+              bler is unable to read from a  pipe;  but  the  GNU
+              assembler has no trouble.
+
+       --BB_p_r_e_f_i_x
+              Compiler  driver  program  tries _p_r_e_f_i_x as a prefix
+              for each program it tries to run.   These  programs
+              are _c_p_p, _c_c_1, _a_s and _l_d.
+
+              For  each subprogram to be run, the compiler driver
+              first tries the --BB prefix, if any.  If that name is
+              not  found,  or if --BB was not specified, the driver
+              tries  a  standard  prefix,  which   currently   is
+              //uussrr//lliibbeexxeecc//.   If  this does not result in a file
+              name that is found, the unmodified program name  is
+              searched  for  using  the  directories specified in
+              your PPAATTHH environment variable.
+
+              You can get a similar result from  the  environment
+              variable  GGCCCC__EEXXEECC__PPRREEFFIIXX;  if  it  is defined, its
+              value is used as a prefix in the same way.  If both
+              the  --BB option and the GGCCCC__EEXXEECC__PPRREEFFIIXX variable are
+              present, the --BB option is used first and the  envi-
+              ronment variable value second.
+
+       --bb_p_r_e_f_i_x
+              The  argument _p_r_e_f_i_x is used as a second prefix for
+              the compiler executables and libraries.  This  pre-
+              fix is optional: the compiler tries each file first
+              with it, then without it.  This prefix follows  the
+              prefix specified with --BB or the default prefixes.
+
+
+
+9,                             May                              4
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              Thus,  --bbvvaaxx--  --BBcccc// in the presence of environment
+              variable GGCCCC__EEXXEECC__PPRREEFFIIXX  with  definition  //uu//ffoooo//
+              causes  GNU  CC to try the following file names for
+              the preprocessor executable:
+
+                   cccc//vvaaxx--ccpppp
+                   cccc//ccpppp
+                   //uu//ffoooo//vvaaxx--ccpppp
+                   //uu//ffoooo//ccpppp
+                   //uussrr//lliibbeexxeecc//vvaaxx--ccpppp
+                   //uussrr//lliibbeexxeecc//ccpppp
+
+       These options control the details of C compilation itself.
+
+       --aannssii  Support all ANSI standard C programs.
+
+              This  turns  off certain features of GNU C that are
+              incompatible with ANSI C, such as the  aassmm,  iinnlliinnee
+              and  ttyyppeeooff keywords, and predefined macros such as
+              uunniixx and vvaaxx that identify the type of  system  you
+              are  using.   It  also  enables the undesirable and
+              rarely used ANSI trigraph feature.
+
+              The  alternate  keywords  ____aassmm____,  ____iinnlliinnee____  and
+              ____ttyyppeeooff____  continue  to  work  despite --aannssii.  You
+              would not want to use them in an ANSI C program, of
+              course,  but  it useful to put them in header files
+              that might be included in  compilations  done  with
+              --aannssii.    Alternate   predefined   macros  such  as
+              ____uunniixx____ and ____vvaaxx____ are also  available,  with  or
+              without --aannssii.
+
+              The  --aannssii  option does not cause non-ANSI programs
+              to be rejected gratuitously.  For  that,  --ppeeddaannttiicc
+              is required in addition to --aannssii.
+
+              The  macro  ____SSTTRRIICCTT__AANNSSII____  is predefined when the
+              --aannssii option is used.  Some header files may notice
+              this macro and refrain from declaring certain func-
+              tions or defining  certain  macros  that  the  ANSI
+              standard  doesn't call for; this is to avoid inter-
+              fering with any programs that might use these names
+              for other things.
+
+       --ttrraaddiittiioonnaall
+              Attempt  to  support  some aspects of traditional C
+              compilers.  Specifically:
+
+            * All eexxtteerrnn declarations take effect  globally  even
+              if  they  are  written inside of a function defini-
+              tion.  This includes implicit declarations of func-
+              tions.
+
+            *  The  keywords  ttyyppeeooff,  iinnlliinnee,  ssiiggnneedd, ccoonnsstt and
+
+
+
+9,                             May                              5
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              vvoollaattiillee are not recognized.
+
+            *  Comparisons  between  pointers  and  integers  are
+              always allowed.
+
+            * Integer types uunnssiiggnneedd sshhoorrtt and uunnssiiggnneedd cchhaarr pro-
+              mote to uunnssiiggnneedd iinntt.
+
+            * Out-of-range floating point  literals  are  not  an
+              error.
+
+            *  All  automatic variables not declared rreeggiisstteerr are
+              preserved by _l_o_n_g_j_m_p(3C).  Ordinarily, GNU  C  fol-
+              lows  ANSI  C:  automatic  variables  not  declared
+              vvoollaattiillee may be clobbered.
+
+            * In the preprocessor, comments convert to nothing at
+              all,  rather  than  to a space.  This allows tradi-
+              tional token concatenation.
+
+            * In the preprocessor, macro arguments are recognized
+              within  string constants in a macro definition (and
+              their values are stringified, though without  addi-
+              tional quote marks, when they appear in such a con-
+              text).  The preprocessor always considers a  string
+              constant to end at a newline.
+
+            *  The  predefined macro ____SSTTDDCC____ is not defined when
+              you use --ttrraaddiittiioonnaall, but ____GGNNUUCC____  is  (since  the
+              GNU  extensions  which  ____GGNNUUCC____  indicates are not
+              affected by --ttrraaddiittiioonnaall).  If you  need  to  write
+              header  files  that  work  differently depending on
+              whether --ttrraaddiittiioonnaall is in use, by testing both  of
+              these  predefined  macros  you can distinguish four
+              situations: GNU C, traditional GNU C, other ANSI  C
+              compilers, and other old C compilers.
+
+       --OO     Optimize.   Optimizing  compilation  takes somewhat
+              more time, and a lot more memory for a large  func-
+              tion.
+
+              Without  --OO,  the  compiler's goal is to reduce the
+              cost of compilation and to make  debugging  produce
+              the  expected results.  Statements are independent:
+              if you stop the program with a  breakpoint  between
+              statements,  you can then assign a new value to any
+              variable or change the program counter to any other
+              statement  in  the  function  and  get  exactly the
+              results you would expect from the source code.
+
+              Without --OO, only variables  declared  rreeggiisstteerr  are
+              allocated  in  registers.   The  resulting compiled
+              code is a little worse than produced by PCC without
+              --OO.
+
+
+
+9,                             May                              6
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              With --OO, the compiler tries to reduce code size and
+              execution time.
+
+              Some of the --ff options described  below  turn  spe-
+              cific kinds of optimization on or off.
+
+       --gg     Produce debugging information in the operating sys-
+              tem's native format (for DBX or SDB).  GDB also can
+              work with this debugging information.
+
+              Unlike most other C compilers, GNU CC allows you to
+              use --gg with --OO.  The shortcuts taken  by  optimized
+              code  may  occasionally produce surprising results:
+              some variables you declared may not exist  at  all;
+              flow  of control may briefly move where you did not
+              expect it; some  statements  may  not  be  executed
+              because they compute constant results or their val-
+              ues were already at hand; some statements may  exe-
+              cute  in  different  places because they were moved
+              out of loops.  Nevertheless it proves  possible  to
+              debug  optimized  output.  This makes it reasonable
+              to use the optimizer for programs that  might  have
+              bugs.
+
+       --ww     Inhibit all warning messages.
+
+       --WW     Print extra warning messages for these events:
+
+            *  An  automatic variable is used without first being
+              initialized.
+
+              These warnings are possible only in optimizing com-
+              pilation,  because  they require data flow informa-
+              tion that is computed only when optimizing.  If you
+              don't  specify --OO, you simply won't get these warn-
+              ings.
+
+              These warnings occur only for  variables  that  are
+              candidates  for  register  allocation.   Therefore,
+              they do not occur for a variable that  is  declared
+              vvoollaattiillee,  or whose address is taken, or whose size
+              is other than 1, 2, 4 or 8 bytes.   Also,  they  do
+              not  occur  for  structures, unions or arrays, even
+              when they are in registers.
+
+              Note that there may be no warning about a  variable
+              that is used only to compute a value that itself is
+              never  used,  because  such  computations  may   be
+              deleted  by  data flow analysis before the warnings
+              are printed.
+
+              These warnings are made optional because GNU CC  is
+              not  smart  enough  to  see all the reasons why the
+              code might be correct despite appearing to have  an
+
+
+
+9,                             May                              7
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              error.  Here is one example of how this can happen:
+
+                   {
+                     int x;
+                     switch (y)
+                       {
+                       case 1: x = 1;
+                         break;
+                       case 2: x = 4;
+                         break;
+                       case 3: x = 5;
+                       }
+                     foo (x);
+                   }
+
+              If the value of _y is always 1, 2 or 3,  then  _x  is
+              always  initialized,  but GNU CC doesn't know this.
+              Here is another common case:
+
+                   {
+                     int save_y;
+                     if (change_y) save_y = y, y = new_y;
+                     ...
+                     if (change_y) y = save_y;
+                   }
+
+              This has no bug because _s_a_v_e__y is used only  if  it
+              is set.
+
+              Some  spurious  warnings  can  be  avoided  if  you
+              declare as vvoollaattiillee all the functions you use  that
+              never return.
+
+            *  A  nonvolatile automatic variable might be changed
+              by a call to _l_o_n_g_j_m_p(3C).  These warnings  as  well
+              are possible only in optimizing compilation.
+
+              The compiler sees only the calls to _s_e_t_j_m_p(3C).  It
+              cannot know where _l_o_n_g_j_m_p(3C) will  be  called;  in
+              fact,  a  signal handler could call it at any point
+              in the code.  As a result, you may  get  a  warning
+              even  when  there  is  in  fact  no problem because
+              _l_o_n_g_j_m_p(3C) cannot in fact be called at  the  place
+              which would cause a problem.
+
+            *  A  function  can  return  either with or without a
+              value.  (Falling off the end of the  function  body
+              is  considered  returning  without  a  value.)  For
+              example, this function would evoke such a warning:
+
+                   foo (a)
+                   {
+                     if (a > 0)
+                       return a;
+
+
+
+9,                             May                              8
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+                   }
+
+              Spurious warnings can occur because GNU CC does not
+              realize that certain functions (including _a_b_o_r_t(3C)
+              and _l_o_n_g_j_m_p(3C)) will never return.
+
+            * An expression-statement contains no side effects.
+
+              In the future, other useful warnings  may  also  be
+              enabled by this option.
+
+       --WWiimmpplliicciitt
+              Warn whenever a function is implicitly declared.
+
+       --WWrreettuurrnn--ttyyppee
+              Warn  whenever a function is defined with a return-
+              type that defaults to iinntt.   Also  warn  about  any
+              rreettuurrnn statement with no return-value in a function
+              whose return-type is not vvooiidd.
+
+       --WWuunnuusseedd
+              Warn whenever a local variable is unused aside from
+              its   declaration,   and  whenever  a  function  is
+              declared static but never defined.
+
+       --WWsswwiittcchh
+              Warn whenever a sswwiittcchh statement has  an  index  of
+              enumeral  type  and lacks a ccaassee for one or more of
+              the named codes of that enumeration.  (The presence
+              of  a  ddeeffaauulltt  label prevents this warning.)  ccaassee
+              labels outside the enumeration range  also  provoke
+              warnings when this option is used.
+
+       --WWccoommmmeenntt
+              Warn  whenever  a comment-start sequence //** appears
+              in a comment.
+
+       --WWttrriiggrraapphhss
+              Warn if any  trigraphs  are  encountered  (assuming
+              they are enabled).
+
+       --WWaallll  All  of  the  above --WW options combined.  These are
+              all the options which pertain to usage that  we  do
+              not recommend and that we believe is always easy to
+              avoid, even in conjunction with macros.
+
+              The other --WW...  options below are not  implied  by
+              --WWaallll  because  certain  kinds of useful macros are
+              almost impossible to write  without  causing  those
+              warnings.
+
+       --WWsshhaaddooww
+              Warn  whenever  a  local  variable  shadows another
+              local variable.
+
+
+
+9,                             May                              9
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       --WWiidd--ccllaasshh--_l_e_n
+              Warn whenever two distinct identifiers match in the
+              first  _l_e_n characters.  This may help you prepare a
+              program that will compile  with  certain  obsolete,
+              brain-damaged compilers.
+
+       --WWppooiinntteerr--aarriitthh
+              Warn  about  anything that depends on the size of a
+              function type or of  vvooiidd.   GNU  C  assigns  these
+              types  a size of 1, for convenience in calculations
+              with vvooiidd ** pointers and pointers to functions.
+
+       --WWccaasstt--qquuaall
+              Warn whenever a pointer is cast so as to  remove  a
+              type  qualifier from the target type.  For example,
+              warn if a ccoonnsstt cchhaarr ** is cast to an ordinary  cchhaarr
+              **.
+
+       --WWwwrriittee--ssttrriinnggss
+              Give  string  constants the type ccoonnsstt cchhaarr[[_l_e_n_g_t_h]]
+              so that copying the address of one into a non-ccoonnsstt
+              cchhaarr  ** pointer will get a warning.  These warnings
+              will help you find at compile time  code  that  can
+              try  to  write  into a string constant, but only if
+              you have been very careful  about  using  ccoonnsstt  in
+              declarations  and  prototypes.   Otherwise, it will
+              just be a nuisance; this is why  we  did  not  make
+              --WWaallll request these warnings.
+
+       --pp     Generate  extra  code  to write profile information
+              suitable for the analysis program _p_r_o_f(1).
+
+       --ppgg    Generate extra code to  write  profile  information
+              suitable for the analysis program _g_p_r_o_f(1).
+
+       --aa     Generate  extra  code  to write profile information
+              for basic blocks, suitable for the analysis program
+              _t_c_o_v(1).    Eventually   GNU   _g_p_r_o_f(1)  should  be
+              extended to process this data.
+
+       --ll_l_i_b_r_a_r_y
+              Search a standard list of directories for a library
+              named  _l_i_b_r_a_r_y, which is actually a file named lliibb--
+              _l_i_b_r_a_r_y..aa.  The linker uses this file as if it  had
+              been specified precisely by name.
+
+              The  directories  searched include several standard
+              system directories plus any that you  specify  with
+              --LL.
+
+              Normally  the  files  found  this  way  are library
+              files--archive  files  whose  members  are   object
+              files.  The linker handles an archive file by scan-
+              ning through it for members  which  define  symbols
+
+
+
+9,                             May                             10
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              that  have  so far been referenced but not defined.
+              But if the file that is found is an ordinary object
+              file,  it is linked in the usual fashion.  The only
+              difference between using an --ll option and  specify-
+              ing  a file name is that --ll searches several direc-
+              tories.
+
+       --LL_d_i_r  Add directory _d_i_r to the list of directories to  be
+              searched for --ll.
+
+       --nnoossttddlliibb
+              Don't use the standard system libraries and startup
+              files when linking.  Only  the  files  you  specify
+              (plus ggnnuulliibb) will be passed to the linker.
+
+       --mm_m_a_c_h_i_n_e_s_p_e_c
+              Machine-dependent option specifying something about
+              the type of  target  machine.   These  options  are
+              defined by the macro TTAARRGGEETT__SSWWIITTCCHHEESS in the machine
+              description.  The default for the options  is  also
+              defined  by that macro, which enables you to change
+              the defaults.
+
+              These are the  --mm  options  defined  in  the  68000
+              machine description:
+
+              --mm6688002200
+              --mmcc6688002200
+                   Generate  output  for  a  68020 (rather than a
+                   68000).  This is the default if  you  use  the
+                   unmodified sources.
+
+              --mm6688000000
+              --mmcc6688000000
+                   Generate  output  for  a  68000 (rather than a
+                   68020).
+
+              --mm6688888811
+                   Generate output containing 68881  instructions
+                   for  floating  point.   This is the default if
+                   you use the unmodified sources.
+
+              --mmffppaa
+                   Generate output containing  Sun  FPA  instruc-
+                   tions for floating point.
+
+              --mmssoofftt--ffllooaatt
+                   Generate  output  containing library calls for
+                   floating point.
+
+              --mmsshhoorrtt
+                   Consider type iinntt to be  16  bits  wide,  like
+                   sshhoorrtt iinntt.
+
+
+
+
+9,                             May                             11
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              --mmnnoobbiittffiieelldd
+                   Do   not   use   the  bit-field  instructions.
+                   --mm6688000000 implies --mmnnoobbiittffiieelldd.
+
+              --mmbbiittffiieelldd
+                   Do use the  bit-field  instructions.   --mm6688002200
+                   implies  --mmbbiittffiieelldd.   This  is the default if
+                   you use the unmodified sources.
+
+              --mmrrttdd
+                   Use a different  function-calling  convention,
+                   in which functions that take a fixed number of
+                   arguments return  with  the  rrttdd  instruction,
+                   which  pops  their  arguments while returning.
+                   This saves one instruction in the caller since
+                   there is no need to pop the arguments there.
+
+                   This  calling  convention is incompatible with
+                   the one normally used on Unix, so  you  cannot
+                   use  it if you need to call libraries compiled
+                   with the Unix compiler.
+
+                   Also, you must provide function prototypes for
+                   all  functions  that  take variable numbers of
+                   arguments  (including  pprriinnttff(3S));  otherwise
+                   incorrect  code will be generated for calls to
+                   those functions.
+
+                   In addition,  seriously  incorrect  code  will
+                   result  if  you  call a function with too many
+                   arguments.   (Normally,  extra  arguments  are
+                   harmlessly ignored.)
+
+                   The  rrttdd instruction is supported by the 68010
+                   and 68020 processors, but not by the 68000.
+
+              These --mm options are defined  in  the  Vax  machine
+              description:
+
+              --mmuunniixx
+                   Do   not   output  certain  jump  instructions
+                   (aaoobblleeqq and so on) that the Unix assembler for
+                   the Vax cannot handle across long ranges.
+
+              --mmggnnuu
+                   Do  output  those  jump  instructions,  on the
+                   assumption that you will assemble with the GNU
+                   assembler.
+
+              --mmgg
+                   Output  code  for g-format floating point num-
+                   bers instead of d-format.
+
+              These --mm switches are supported on the Sparc:
+
+
+
+9,                             May                             12
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              --mmffppuu
+                   Generate  output  containing  floating   point
+                   instructions.   This is the default if you use
+                   the unmodified sources.
+
+              --mmssoofftt--ffllooaatt
+                   Generate output containing library  calls  for
+                   floating point.
+
+              --mmnnoo--eeppiilloogguuee
+                   Generate   separate  return  instructions  for
+                   rreettuurrnn statements.  This has  both  advantages
+                   and  disadvantages;  I  don't recall what they
+                   are.
+
+              These --mm options are defined in the Convex  machine
+              description:
+
+              --mmcc11
+                   Generate output for a C1.  This is the default
+                   when the compiler is configured for a C1.
+
+              --mmcc22
+                   Generate output for a C2.  This is the default
+                   when the compiler is configured for a C2.
+
+              --mmaarrggccoouunntt
+                   Generate  code which puts an argument count in
+                   the word preceding each argument  list.   Some
+                   nonportable  Convex and Vax programs need this
+                   word.  (Debuggers don't; this info is  in  the
+                   symbol table.)
+
+              --mmnnooaarrggccoouunntt
+                   Omit  the  argument  count  word.  This is the
+                   default if you use the unmodified sources.
+
+       --ff_f_l_a_g Specify machine-independent flags.  Most flags have
+              both positive and negative forms; the negative form
+              of --ffffoooo would be --ffnnoo--ffoooo.  In  the  table  below,
+              only  one  of the forms is listed--the one which is
+              not the default.  You can figure out the other form
+              by either removing nnoo-- or adding it.
+
+       --ffppcccc--ssttrruucctt--rreettuurrnn
+              Use  the  same  convention for returning ssttrruucctt and
+              uunniioonn values that is used by the usual  C  compiler
+              on  your system.  This convention is less efficient
+              for small structures, and on many machines it fails
+              to be reentrant; but it has the advantage of allow-
+              ing intercallability between GCC-compiled code  and
+              PCC-compiled code.
+
+
+
+
+
+9,                             May                             13
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       --ffffllooaatt--ssttoorree
+              Do not store floating-point variables in registers.
+              This  prevents  undesirable  excess  precision   on
+              machines  such as the 68000 where the floating reg-
+              isters (of the 68881) keep more  precision  than  a
+              ddoouubbllee is supposed to have.
+
+              For  most  programs, the excess precision does only
+              good, but a few programs rely on the precise  defi-
+              nition  of  IEEE floating point.  Use --ffffllooaatt--ssttoorree
+              for such programs.
+
+       --ffnnoo--aassmm
+              Do not recognize aassmm, iinnlliinnee or ttyyppeeooff  as  a  key-
+              word.  These words may then be used as identifiers.
+              You can  use  ____aassmm____,  ____iinnlliinnee____  and  ____ttyyppeeooff____
+              instead.
+
+       --ffnnoo--ddeeffeerr--ppoopp
+              Always  pop  the arguments to each function call as
+              soon as that function returns.  Normally  the  com-
+              piler  (when  optimizing) lets arguments accumulate
+              on the stack for several function  calls  and  pops
+              them all at once.
+
+       --ffssttrreennggtthh--rreedduuccee
+              Perform  the  optimizations of loop strength reduc-
+              tion and elimination of iteration variables.
+
+       --ffccoommbbiinnee--rreeggss
+              Allow the combine pass to  combine  an  instruction
+              that  copies one register into another.  This might
+              or might not produce better code when used in addi-
+              tion  to  --OO.  I am interested in hearing about the
+              difference this makes.
+
+       --ffffoorrccee--mmeemm
+              Force memory operands to be copied  into  registers
+              before  doing arithmetic on them.  This may produce
+              better code by making all memory references  poten-
+              tial common subexpressions.  When they are not com-
+              mon subexpressions, instruction combination  should
+              eliminate  the separate register-load.  I am inter-
+              ested in hearing about the difference this makes.
+
+       --ffffoorrccee--aaddddrr
+              Force memory address constants to  be  copied  into
+              registers  before  doing  arithmetic on them.  This
+              may produce better code just as --ffffoorrccee--mmeemm may.  I
+              am  interested in hearing about the difference this
+              makes.
+
+       --ffoommiitt--ffrraammee--ppooiinntteerr
+              Don't keep the frame  pointer  in  a  register  for
+
+
+
+9,                             May                             14
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              functions  that  don't  need  one.  This avoids the
+              instructions to save,  set  up  and  restore  frame
+              pointers; it also makes an extra register available
+              in many functions.  IItt aallssoo mmaakkeess ddeebbuuggggiinngg  iimmppooss--
+              ssiibbllee..
+
+              On some machines, such as the Vax, this flag has no
+              effect, because the standard calling sequence auto-
+              matically  handles the frame pointer and nothing is
+              saved by pretending it doesn't exist.  The machine-
+              description  macro  FFRRAAMMEE__PPOOIINNTTEERR__RREEQQUUIIRREEDD controls
+              whether a target machine supports this flag.
+
+       --ffiinnlliinnee--ffuunnccttiioonnss
+              Integrate all simple functions into their  callers.
+              The  compiler heuristically decides which functions
+              are simple enough to be worth integrating  in  this
+              way.
+
+              If  all  calls  to a given function are integrated,
+              and the function is declared ssttaattiicc, then the func-
+              tion  is  normally  not output as assembler code in
+              its own right.
+
+       --ffccaalllleerr--ssaavveess
+              Enable values to be  allocated  in  registers  that
+              will  be  clobbered  by function calls, by emitting
+              extra instructions to save and restore  the  regis-
+              ters  around  such  calls.  Such allocation is done
+              only when it seems to result in  better  code  than
+              would otherwise be produced.
+
+              This  option  is  enabled  by  default  on  certain
+              machines,  usually  those  which  have   no   call-
+              preserved registers to use instead.
+
+       --ffkkeeeepp--iinnlliinnee--ffuunnccttiioonnss
+              Even  if  all  calls  to a given function are inte-
+              grated, and the function is declared ssttaattiicc, never-
+              theless output a separate run-time callable version
+              of the function.
+
+       --ffwwrriittaabbllee--ssttrriinnggss
+              Store string constants in the writable data segment
+              and don't uniquize them.  This is for compatibility
+              with old programs which assume they can write  into
+              string constants.  Writing into string constants is
+              a very bad idea; constants should be constant.
+
+       --ffccoonndd--mmiissmmaattcchh
+              Allow conditional expressions with mismatched types
+              in  the  second  and third arguments.  The value of
+              such an expression is void.
+
+
+
+
+9,                             May                             15
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       --ffnnoo--ffuunnccttiioonn--ccssee
+              Do not put function addresses  in  registers;  make
+              each  instruction  that  calls  a constant function
+              contain the function's address explicitly.
+
+              This option results in  less  efficient  code,  but
+              some  strange hacks that alter the assembler output
+              may be confused by the optimizations performed when
+              this option is not used.
+
+       --ffvvoollaattiillee
+              Consider  all memory references through pointers to
+              be volatile.
+
+       --ffsshhaarreedd--ddaattaa
+              Requests that the data and non-ccoonnsstt  variables  of
+              this compilation be shared data rather than private
+              data.  The distinction makes sense only on  certain
+              operating  systems,  where  shared  data  is shared
+              between processes running the same  program,  while
+              private data exists in one copy per process.
+
+       --ffuunnssiiggnneedd--cchhaarr
+              Let  the  type  cchhaarr be the unsigned, like uunnssiiggnneedd
+              cchhaarr.
+
+              Each kind of machine has a default  for  what  cchhaarr
+              should  be.   It  is  either  like uunnssiiggnneedd cchhaarr by
+              default or like ssiiggnneedd cchhaarr by default.  (Actually,
+              at present, the default is always signed.)
+
+              The type cchhaarr is always a distinct type from either
+              ssiiggnneedd cchhaarr  or  uunnssiiggnneedd  cchhaarr,  even  though  its
+              behavior is always just like one of those two.
+
+              Note  that  this is equivalent to --ffnnoo--ssiiggnneedd--cchhaarr,
+              which is the negative form of --ffssiiggnneedd--cchhaarr.
+
+       --ffssiiggnneedd--cchhaarr
+              Let the type cchhaarr be signed, like ssiiggnneedd cchhaarr.
+
+              Note that this is equivalent to --ffnnoo--uunnssiiggnneedd--cchhaarr,
+              which is the negative form of --ffuunnssiiggnneedd--cchhaarr.
+
+       --ffddeellaayyeedd--bbrraanncchh
+              If  supported  for  the  target machine, attempt to
+              reorder instructions to exploit  instruction  slots
+              available after delayed branch instructions.
+
+       --ffffiixxeedd--_r_e_g
+              Treat  the  register named _r_e_g as a fixed register;
+              generated code should never  refer  to  it  (except
+              perhaps  as  a  stack  pointer, frame pointer or in
+              some other fixed role).
+
+
+
+9,                             May                             16
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              _r_e_g must be the name of a register.   The  register
+              names accepted are machine-specific and are defined
+              in the RREEGGIISSTTEERR__NNAAMMEESS macro in the machine descrip-
+              tion macro file.
+
+              This flag does not have a negative form, because it
+              specifies a three-way choice.
+
+       --ffccaallll--uusseedd--_r_e_g
+              Treat the register named _r_e_g as an allocatable reg-
+              ister  that is clobbered by function calls.  It may
+              be allocated for temporaries or variables  that  do
+              not  live  across  a call.  Functions compiled this
+              way will not save and restore the register REG.
+
+              Use of this flag for a register that  has  a  fixed
+              pervasive  role  in  the machine's execution model,
+              such as the stack pointer or  frame  pointer,  will
+              produce disastrous results.
+
+              This flag does not have a negative form, because it
+              specifies a three-way choice.
+
+       --ffccaallll--ssaavveedd--_r_e_g
+              Treat the register named _r_e_g as an allocatable reg-
+              ister saved by functions.  It may be allocated even
+              for temporaries or variables  that  live  across  a
+              call.   Functions  compiled  this way will save and
+              restore the register _r_e_g if they use it.
+
+              Use of this flag for a register that  has  a  fixed
+              pervasive  role  in  the machine's execution model,
+              such as the stack pointer or  frame  pointer,  will
+              produce disastrous results.
+
+              A  different  sort of disaster will result from the
+              use of this flag for a register in  which  function
+              values may be returned.
+
+              This flag does not have a negative form, because it
+              specifies a three-way choice.
+
+       --dd_l_e_t_t_e_r_s
+              Says to make debugging dumps at times specified  by
+              _l_e_t_t_e_r_s.  Here are the possible letters:
+
+              rr
+                   Dump after RTL generation.
+              jj
+                   Dump after first jump optimization.
+              JJ
+                   Dump after last jump optimization.
+              ss
+                   Dump    after    CSE   (including   the   jump
+
+
+
+9,                             May                             17
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+                   optimization that sometimes follows CSE).
+              LL
+                   Dump after loop optimization.
+              ff
+                   Dump after flow analysis.
+              cc
+                   Dump after instruction combination.
+              ll
+                   Dump after local register allocation.
+              gg
+                   Dump after global register allocation.
+              dd
+                   Dump after delayed branch scheduling.
+              mm
+                   Print statistics on memory usage, at  the  end
+                   of the run.
+
+       --ppeeddaannttiicc
+              Issue  all  the  warnings  demanded  by strict ANSI
+              standard C; reject all programs that use  forbidden
+              extensions.
+
+              Valid ANSI standard C programs should compile prop-
+              erly with or without this option (though a rare few
+              will require --aannssii).  However, without this option,
+              certain GNU extensions and traditional  C  features
+              are  supported as well.  With this option, they are
+              rejected.  There is no reason to use  this  option;
+              it exists only to satisfy pedants.
+
+              --ppeeddaannttiicc  does  not cause warning messages for use
+              of the alternate keywords whose names begin and end
+              with ____.
+
+       --ssttaattiicc
+              On  Suns  running  version 4, this prevents linking
+              with  the  shared  libraries.   (--gg  has  the  same
+              effect.)
+
+       These  options control the C preprocessor, which is run on
+       each C source file before actual compilation.  If you  use
+       the  `-E'  option, nothing is done except C preprocessing.
+       Some of these options make sense only together  with  `-E'
+       because they request preprocessor output that is not suit-
+       able for actual compilation.
+
+       --CC     Tell the  preprocessor  not  to  discard  comments.
+              Used with the --EE option.
+
+       --II_d_i_r  Search directory _d_i_r for include files.
+
+       --II--    Any  directories  specified  with --II options before
+              the --II-- option are searched only for  the  case  of
+              ##iinncclluuddee ""_f_i_l_e""; they are not searched for ##iinncclluuddee
+
+
+
+9,                             May                             18
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+              <<_f_i_l_e>>.
+
+              If additional directories  are  specified  with  --II
+              options   after  the  --II--,  these  directories  are
+              searched for all ##iinncclluuddee directives.   (Ordinarily
+              _a_l_l --II directories are used this way.)
+
+              In addition, the --II-- option inhibits the use of the
+              current directory as the first search directory for
+              ##iinncclluuddee  ""_f_i_l_e"".  Therefore, the current directory
+              is searched only if it is requested explicitly with
+              --II...   Specifying  both  --II-- and --II..  allows you to
+              control precisely which  directories  are  searched
+              before  the  current  one  and  which  are searched
+              after.
+
+       --nnoossttddiinncc
+              Do not search the standard system  directories  for
+              header files.  Only the directories you have speci-
+              fied with --II options (and the current directory, if
+              appropriate) are searched.
+
+              Between  --nnoossttddiinncc  and  --II--, you can eliminate all
+              directories from the search path except  those  you
+              specify.
+
+       --MM     Tell the preprocessor to output a rule suitable for
+              mmaakkee(_1) describing the dependencies of each  source
+              file.   For each source file, the preprocessor out-
+              puts one mmaakkee-rule whose target is the object  file
+              name  for  that  source file and whose dependencies
+              are all the files ##iinncclluuddeed in it.  This  rule  may
+              be a single line or may be continued with \\--nneewwlliinnee
+              if it is long.
+
+              --MM implies --EE.
+
+       --MMMM    Like --MM but the  output  mentions  only  the  user-
+              header files included with ##iinncclluuddee ""_f_i_l_e"".  System
+              header files  included  with  ##iinncclluuddee  <<_f_i_l_e>>  are
+              omitted.
+
+              --MMMM implies --EE.
+
+       --DD_m_a_c_r_o
+              Define  macro  _m_a_c_r_o  with  the empty string as its
+              definition.
+
+       --DD_m_a_c_r_o=_d_e_f_n
+              Define macro _m_a_c_r_o as _d_e_f_n.
+
+       --UU_m_a_c_r_o
+              Undefine macro _m_a_c_r_o.
+
+
+
+
+9,                             May                             19
+
+
+
+
+
+CC(1)                          1991                         CC(1)
+
+
+       --ttrriiggrraapphhss
+              Support ANSI C trigraphs.  You don't want  to  know
+              about this brain-damage.  The --aannssii option also has
+              this effect.
+
+FFIILLEESS
+       file.c               C source file
+       file.s               assembly language file
+       file.o               object file
+       a.out                link edited output
+       /tmp/cc*             temporary files
+       /usr/libexec/cpp     preprocessor
+       /usr/libexec/cc1     compiler
+       /usr/lib/libgnulib.a library  needed  by   GCC   on   some
+       machines
+       /usr/lib/crt0.o      start-up routine
+       /usr/lib/libc.a      standard C library, see _i_n_t_r_o(3)
+       /usr/include         standard directory for ##iinncclluuddee files
+
+SSEEEE AALLSSOO
+       as(1), ld(1), adb(1), dbx(1), gdb(1).
+
+BBUUGGSS
+       Bugs should be reported to bbuugg--ggcccc@@pprreepp..aaii..mmiitt..eedduu.   Bugs
+       tend  actually  to be fixed if they can be isolated, so it
+       is in your interest to report them in such a way that they
+       can be easily reproduced.
+
+CCOOPPYYIINNGG
+       Copyright (c) 1988 Free Software Foundation, Inc.
+
+       Permission  is  granted  to  make  and distribute verbatim
+       copies of this manual provided the  copyright  notice  and
+       this permission notice are preserved on all copies.
+
+       Permission is granted to copy and distribute modified ver-
+       sions of this manual under  the  conditions  for  verbatim
+       copying,  provided  that the entire resulting derived work
+       is distributed under the  terms  of  a  permission  notice
+       identical to this one.
+
+       Permission  is granted to copy and distribute translations
+       of this manual into another language, under the above con-
+       ditions for modified versions, except that this permission
+       notice may be included in  translations  approved  by  the
+       Free  Software  Foundation  instead  of  in  the  original
+       English.
+
+AAUUTTHHOORRSS
+       See the GNU CC Manual for the contributors to GNU CC.
+
+
+
+
+
+
+
+9,                             May                             20
+
+

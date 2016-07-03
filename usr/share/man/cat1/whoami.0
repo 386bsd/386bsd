@@ -1,0 +1,66 @@
+WHOAMI(1)                   386BSD Reference Manual                  WHOAMI(1)
+
+NNAAMMEE
+     wwhhooaammii - print effective current user id
+
+SSYYNNOOPPSSIISS
+     wwhhooaammii
+
+DDEESSCCRRIIPPTTIIOONN
+     WWhhooaammii prints your effective user id.  It works even if you are su'd,
+     while ``who am i'' does not since it uses /_v_a_r/_r_u_n/_u_t_m_p.
+
+FFIILLEESS
+     /etc/passwd  Name data base
+
+SSEEEE AALLSSOO
+     who(1)
+
+HHIISSTTOORRYY
+     The wwhhooaammii command appeared in 3.0BSD.
+
+3rd Berkeley Distribution       April 23, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,66 @@
+FNMATCH(3)                386BSD Programmer's Manual                FNMATCH(3)
+
+NNAAMMEE
+     ffnnmmaattcchh - match filename or pathname
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<uunniissttdd..hh>>
+
+     _i_n_t
+     ffnnmmaattcchh(_c_o_n_s_t _c_h_a_r *_p_a_t_t_e_r_n, _c_o_n_s_t _c_h_a_r *_s_t_r_i_n_g, _i_n_t _f_l_a_g_s)
+
+DDEESSCCRRIIPPTTIIOONN
+     The ffnnmmaattcchh() function matches patterns according to the rules used by
+     the shell.  It checks the string specified by the _s_t_r_i_n_g argument to see
+     if it matches the pattern specified by the _p_a_t_t_e_r_n argument.
+
+     The _f_l_a_g_s argument modifies the interpretation of _p_a_t_t_e_r_n and _s_t_r_i_n_g. The
+     value of _f_l_a_g_s is the bitwise inclusive OR of any of the following con-
+     stants, which are defined in the include file _u_n_i_s_t_d._h.
+
+     FNM_PATHNAME  Slash characters in _s_t_r_i_n_g must be explicitly matched by
+                   slashes in _p_a_t_t_e_r_n. If this flag is not set, then slashes
+                   are treated as regular characters.
+
+     FNM_QUOTE     Every occurrence of a backslash (`\') followed by a charac-
+                   ter in _p_a_t_t_e_r_n is replaced by that character.  This is done
+                   to negate any special meaning for the character.
+
+RREETTUURRNN VVAALLUUEESS
+     If _s_t_r_i_n_g matches the pattern specified by _p_a_t_t_e_r_n, then ffnnmmaattcchh() re-
+     turns zero.  Otherwise, ffnnmmaattcchh() returns nonzero.
+
+SSEEEE AALLSSOO
+     sh(1),  glob(3),  wordexp(3),  regexp(3)
+
+HHIISSTTOORRYY
+     The ffnnmmaattcchh() function is currently under development.
+
+BBUUGGSS
+     Quotes and slashes in range patterns are not handled correctly.
+
+     The pattern `*' matches the empty string, even if FNM_PATHNAME is speci-
+     fied.
+
+BSD Experimental                April 19, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

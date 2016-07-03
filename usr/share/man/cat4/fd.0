@@ -1,0 +1,66 @@
+FD(4)                     386BSD Programmer's Manual                     FD(4)
+
+NNAAMMEE
+     ffdd, ssttddiinn, ssttddoouutt, ssttddeerrrr - file descriptor files
+
+DDEESSCCRRIIPPTTIIOONN
+     The files /_d_e_v/_f_d/_0 through /_d_e_v/_f_d/# refer to file descriptors which can
+     be accessed through the file system.  If the file descriptor is open and
+     the mode the file is being opened with is a subset of the mode of the ex-
+     isting descriptor, the call:
+
+           fd = open("/dev/fd/0", mode);
+
+     and the call:
+
+           fd = fcntl(0, F_DUPFD, 0);
+
+     are equivalent.
+
+     Opening the files /_d_e_v/_s_t_d_i_n, /_d_e_v/_s_t_d_o_u_t and /_d_e_v/_s_t_d_e_r_r is equivalent
+     to the following calls:
+
+           fd = fcntl(STDIN_FILENO,  F_DUPFD, 0);
+           fd = fcntl(STDOUT_FILENO, F_DUPFD, 0);
+           fd = fcntl(STDERR_FILENO, F_DUPFD, 0);
+
+     Flags to the open(2) call other than O_RDONLY, O_WRONLY and O_RDWR are
+     ignored.
+
+FFIILLEESS
+     /dev/fd/#
+     /dev/stdin
+     /dev/stdout
+     /dev/stderr
+
+SSEEEE AALLSSOO
+     tty(4)
+
+HHIISSTTOORRYY
+     The ffdd descriptor implementation currently under development.
+
+BSD Experimental                March 28, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+MSYNC(2)                       1991                      MSYNC(2)
+
+
+NNAAMMEE
+       msync - synchronize a mapped region
+
+SSYYNNOOPPSSIISS
+       msync(addr, len)
+       ccaaddddrr__tt aaddddrr;;
+       iinntt lleenn;;
+
+DDEESSCCRRIIPPTTIIOONN
+       The  _m_s_y_n_c  system  call writes any modified pages back to
+       the filesystem and updates the file modification time.  If
+       _l_e_n  is 0, all modified pages within the region containing
+       _a_d_d_r will be flushed; if _l_e_n is non-zero, only  the  pages
+       containing _a_d_d_r and _l_e_n succeeding locations will be exam-
+       ined.  Any required synchronization of memory caches  will
+       also  take place at this time.  Filesystem operations on a
+       file that is mapped for shared  modifications  are  unpre-
+       dictable except after an _m_s_y_n_c.
+
+SSEEEE AALLSSOO
+       msync.2, munmap.2, mprotect.2, madvise.2, mincore.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+27,                            May                              1
+
+

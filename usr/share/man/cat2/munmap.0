@@ -1,0 +1,66 @@
+
+
+
+MUNMAP(2)                      1991                     MUNMAP(2)
+
+
+NNAAMMEE
+       munmap - remove a mapping
+
+SSYYNNOOPPSSIISS
+       munmap(addr, len)
+       ccaaddddrr__tt aaddddrr;;
+       iinntt lleenn;;
+
+DDEESSCCRRIIPPTTIIOONN
+       The _m_u_n_m_a_p system call deletes the mappings for the speci-
+       fied address  range,  and  causes  further  references  to
+       addresses within the range to generate invalid memory ref-
+       erences.
+
+SSEEEE AALLSSOO
+       msync.2, munmap.2, mprotect.2, madvise.2, mincore.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+27,                            May                              1
+
+

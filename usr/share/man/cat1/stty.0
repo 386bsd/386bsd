@@ -1,0 +1,264 @@
+STTY(1)                     386BSD Reference Manual                    STTY(1)
+
+NNAAMMEE
+     ssttttyy - Set the options for a terminal device interface.
+
+SSYYNNOOPPSSIISS
+     ssttttyy [--aa | --ee | --gg] [--ff _f_i_l_e] [operands]
+
+DDEESSCCRRIIPPTTIIOONN
+     The ssttttyy utility sets or reports on terminal characteristics for the de-
+     vice that is its standard input.  If no options or operands are speci-
+     fied, it reports the settings of a set of characteristics as well as ad-
+     ditional ones if they differ from their default values.  Otherwise it
+     modifies the terminal state according to the specified arguments.  Some
+     combinations of arguments are mutually exclusive on some terminal types.
+
+     The following options are available:
+
+     --aa      Display all the current settings for the terminal to standard
+             output in the IEEE Std1003.2 (``POSIX'').
+
+     --ee      Display all the current settings for the terminal to standard
+             output in the traditional BSD ``all'' and ``everything'' formats.
+
+     --ff      Display the current settings for the terminal named by _f_i_l_e.
+
+     --gg      Display all the current settings for the terminal to standard
+             output in a form that may be used as an argument to a subsequent
+             invocation of ssttttyy to restore the current terminal state.
+
+     The following arguments are available to set the terminal characteris-
+     tics:
+
+     ppaarreennbb (--ppaarreennbb)
+                 Enable (disable) parity generation and detection.
+
+     ppaarroodddd (--ppaarroodddd)
+                 Select odd (even) parity.
+
+     ccss55 ccss66 ccss77 ccss88
+                 Select character size, if possible.
+
+     _n_u_m_b_e_r      Set terminal baud rate to the number given, if possible.  If
+                 the baud rate is set to zero, modem control is no longer
+                 asserted.
+
+     iissppeeeedd _n_u_m_b_e_r
+                 Set terminal input baud rate to the number given, if possi-
+                 ble.  If the input baud rate is set to zero, the input baud
+                 rate is set to the value of the output baud rate.
+
+     oossppeeeedd _n_u_m_b_e_r
+                 Set terminal output baud rate to the number given, if possi-
+                 ble.  If the output baud rate is set to zero, modem control
+                 is no longer asserted.
+
+     hhuuppccll (--hhuuppccll)
+                 Stop asserting modem control (do not stop asserting modem
+                 control) on last close.
+
+     hhuupp (--hhuupp)  Same as hupcl (--hhuuppccll).
+
+     ccssttooppbb (--ccssttooppbb)
+
+
+                 Use two (one) stop bits per character.
+
+     ccrreeaadd (--ccrreeaadd)
+                 Enable (disable) the receiver.
+
+     ccllooccaall (--ccllooccaall)
+                 Assume a line without (with) modem control.
+
+     iiggnnbbrrkk (--iiggnnbbrrkk)
+                 Ignore (do not ignore) break on input.
+
+     bbrrkkiinntt (--bbrrkkiinntt)
+                 Signal (do not signal) INTR on break.
+
+     iiggnnppaarr (--iiggnnppaarr)
+                 Ignore (do not ignore) parity errors.
+
+     ppaarrmmrrkk (--ppaarrmmrrkk)
+                 Mark (do not mark) parity errors.
+
+     iinnppcckk (--iinnppcckk)
+                 Enable (disable) input parity checking.
+
+     iissttrriipp (--iissttrriipp)
+                 Strip (do not strip) input characters to seven bits.
+
+     iinnllccrr (--iinnllccrr)
+                 Map (do not map) NL to CR on input.
+
+     iiggnnccrr (--iiggnnccrr)
+                 Ignore (do not ignore) CR on input.
+
+     iiccrrnnll (--iiccrrnnll)
+                 Map (do not map) CR to NL on input.
+
+     iixxoonn (--iixxoonn)
+                 Enable (disable) START/STOP output control.  Output from the
+                 system is stopped when the system receives STOP and started
+                 when the system receives START.
+
+     iixxooffff (--iixxooffff)
+                 Request that the system send (not send) START/STOP characters
+                 when the input queue is nearly empty/full.
+
+     ooppoosstt (--ooppoosstt)
+                 Post-process output (do not post-process output; ignore all
+                 other output modes).
+
+     iissiigg (--iissiigg)
+                 Enable (disable) the checking of characters against the spe-
+                 cial control characters INTR, QUIT, and SUSP.
+
+     iiccaannoonn (--iiccaannoonn)
+                 Enable (disable) canonical input (ERASE and KILL processing).
+
+     iieexxtteenn (--iieexxtteenn)
+                 Enable (disable) any implementation defined special control
+                 characters not currently controlled by icanon, isig, or ixon.
+
+     eecchhoo (--eecchhoo)
+                 Echo back (do not echo back) every character typed.
+
+     eecchhooee (--eecchhooee)
+                 The ERASE character shall (shall not) visually erase the last
+                 character in the current line from the display, if possible.
+
+
+     eecchhookk (--eecchhookk)
+                 Echo (do not echo) NL after KILL character.
+
+     eecchhoonnll (--eecchhoonnll)
+                 Echo (do not echo) NL, even if echo is disabled.
+
+     nnooffllsshh (--nnooffllsshh)
+                 Disable (enable) flush after INTR, QUIT, SUSP.
+
+     ccoonnttrrooll--cchhaarraacctteerr _s_t_r_i_n_g
+                 Set control-character to string.  If string is a single char-
+                 acter, the control character is set to that character.  If
+                 string is the two character sequence "^-" or the string "un-
+                 def" the control character is set to {_POSIX_VDISABLE} if it
+                 is in effect for the device; if {_POSIX_VDISABLE} is not in
+                 effect for the device, it is an error.
+
+                 Recognized control-characters:
+
+
+                       control-     POSIX.1
+                       character    Subscript    Description
+                       _________    _________    _______________
+                       eof          VEOF         EOF character
+                       eol          VEOL         EOL character
+                       erase        VERASE       ERASE character
+                       intr         VINTR        INTR character
+                       kill         VKILL        KILL character
+                       quit         VQUIT        QUIT character
+                       susp         VSUSP        SUSP character
+                       start        VSTART       START character
+                       stop         VSTOP        STOP character
+
+     ssaavveedd sseettttiinnggss
+                 Set the current terminal characteristics to the saved set-
+                 tings produced by the --gg option.
+
+     mmiinn _n_u_m_b_e_r
+
+     ttiimmee _n_u_m_b_e_r
+                 Set the value of min or time to number.  MIN and TIME are
+                 used in Non-Canonical mode input processing (-icanon).
+
+     eevveennpp or ppaarriittyy
+                 Enable parenb and cs7; disable parodd.
+
+     ooddddpp        Enable parenb, cs7, and parodd.
+
+     --ppaarriittyy, --eevveennpp, --ooddddpp
+                 Disable parenb, and set cs8.
+
+                 Enable (disable) icrnl.  In addition -nl unsets inlcr and
+                 igncr.
+
+     eekk          Reset ERASE and KILL characters back to system defaults.
+
+     ssaannee        Resets all modes to reasonable values for interactive termi-
+                 nal use.
+
+     ttttyy         Set the line discipline to the standard terminal line disci-
+                 pline TTYDISC.
+
+     The ssttttyy utility exits with a value of 0 if successful, and >0 if an er-
+     ror occurs.
+
+SSEEEE AALLSSOO
+     stty(4)
+
+SSTTAANNDDAARRDDSS
+     The ssttttyy function is expected to be IEEE Std1003.2 (``POSIX'') compati-
+     ble.
+
+BSD Experimental                 June 27, 1991                               5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

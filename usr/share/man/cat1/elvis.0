@@ -1,0 +1,198 @@
+
+
+
+ELVIS(1)                                                 ELVIS(1)
+
+
+NNAAMMEE
+       elvis, ex, vi, view, input - The editor
+
+SSYYNNOOPPSSIISS
+       eellvviiss [_f_l_a_g_s] [++_c_m_d] [_f_i_l_e_s...]
+
+DDEESSCCRRIIPPTTIIOONN
+       _E_l_v_i_s is a text editor which emulates _v_i/_e_x.
+
+       On  systems  which  pass  the program name as an argument,
+       such as Unix and Minix, you may also install  _e_l_v_i_s  under
+       the  names  "ex",  "vi", "view", and "input".  These extra
+       names would normally be links to elvis; see the "ln" shell
+       command.
+
+       When  _e_l_v_i_s  is  invoked  as  "vi",  it behaves exactly as
+       though it was invoked as "elvis".  However, if you  invoke
+       _e_l_v_i_s as "view", then the readonly option is set as though
+       you had given it the "-R" flag.  If you  invoke  _e_l_v_i_s  as
+       "ex",  then  _e_l_v_i_s will start up in the colon command mode
+       instead of the visual command  mode,  as  though  you  had
+       given it the "-e" flag.  If you invoke _e_l_v_i_s as "input" or
+       "edit", then _e_l_v_i_s will start up in input mode, as  though
+       the "-i" flag was given.
+
+OOPPTTIIOONNSS
+       --rr     To  the  real  vi,  this flag means that a previous
+              edit should be recovered.   _E_l_v_i_s,  though,  has  a
+              separate  program, called _e_l_v_r_e_c(_1), for recovering
+              files.  When you invoke _e_l_v_i_s with -r,  _e_l_v_i_s  will
+              tell you to run _e_l_v_r_e_c.
+
+       --RR     This sets the "readonly" option, so you won't acci-
+              dentally overwrite a file.
+
+       --tt _t_a_g This causes _e_l_v_i_s to start  editing  at  the  given
+              tag.
+
+       --mm [_f_i_l_e]
+              _E_l_v_i_s  will  search through _f_i_l_e for something that
+              looks like an error message from  a  compiler.   It
+              will then begin editing the source file that caused
+              the error, with the  cursor  sitting  on  the  line
+              where the error was detected.  If you don't explic-
+              itly name a _f_i_l_e, then "errlist" is assumed.
+
+       --ee     _E_l_v_i_s will start up in colon command mode.
+
+       --vv     _E_l_v_i_s will start up in visual command mode.
+
+       --ii     _E_l_v_i_s will start up in input mode.
+
+       --ww _w_i_n_s_i_z_e
+              Sets the "window" option's value to _w_i_n_s_i_z_e.
+
+
+
+                                                                1
+
+
+
+
+
+ELVIS(1)                                                 ELVIS(1)
+
+
+       ++_c_o_m_m_a_n_d or --cc _c_o_m_m_a_n_d
+              If you use the +_c_o_m_m_a_n_d parameter, then  after  the
+              first  file  is loaded _c_o_m_m_a_n_d is executed as an EX
+              command.  A typical example would  be  "elvis  +237
+              foo",  which would cause _e_l_v_i_s to start editing foo
+              and then move directly to line 237.  The  "-c  _c_o_m-
+              _m_a_n_d"  variant  was added for UNIX SysV compatibil-
+              ity.
+
+FFIILLEESS
+       /tmp/elv*
+              During editing, _e_l_v_i_s stores text  in  a  temporary
+              file.   For  UNIX, this file will usually be stored
+              in the /tmp directory, and the first three  charac-
+              ters  will be "elv".  For other systems, the tempo-
+              rary files may be stored someplace  else;  see  the
+              version-specific section of the documentation.
+
+       tags   This  is the database used by the :_t_a_g_s command and
+              the --tt  option.   It  is  usually  created  by  the
+              _c_t_a_g_s(_1) program.
+
+       .exrc or elvis.rc
+              On UNIX-like systems, a file called ".exrc" in your
+              home directory is executed as a series of  _e_x  com-
+              mands.   A file by the same name may be executed in
+              the current directory, too.  On  non-UNIX  systems,
+              ".exrc" is usually an invalid file name; there, the
+              initialization file is called "elvis.rc" instead.
+
+SSEEEE AALLSSOO
+       ctags(1), ref(1), virec(1)
+
+       _E_l_v_i_s - _A _C_l_o_n_e _o_f _V_i/_E_x, the  complete  _e_l_v_i_s  documenta-
+       tion.
+
+BBUUGGSS
+       There  is  no  LISP  support.   Certain other features are
+       missing, too.
+
+       Auto-indent mode is not quite compatible with the real vi.
+       Among  other  things,  0^D and ^^D don't do what you might
+       expect.
+
+       Long lines are displayed differently.  The real  vi  wraps
+       long  lines  onto  multiple  rows of the screen, but _e_l_v_i_s
+       scrolls sideways.
+
+AAUUTTHHOORR
+       Steve Kirkendall
+       kirkenda@cs.pdx.edu
+
+       Many other people have worked to  port  _e_l_v_i_s  to  various
+       operating  systems.   To  see who deserves credit, run the
+
+
+
+                                                                2
+
+
+
+
+
+ELVIS(1)                                                 ELVIS(1)
+
+
+       :_v_e_r_s_i_o_n command from within _e_l_v_i_s, or look in the system-
+       specific section of the complete documentation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                3
+
+

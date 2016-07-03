@@ -1,0 +1,66 @@
+
+
+
+SCCSTORCS(8)                   1983                  SCCSTORCS(8)
+
+
+NNAAMMEE
+       sccstorcs - build RCS file from SCCS file
+
+SSYYNNOOPPSSIISS
+       ssccccssttoorrccss [--tt] [--vv] _s._f_i_l_e ...
+
+DDEESSCCRRIIPPTTIIOONN
+       _S_c_c_s_t_o_r_c_s builds an RCS file from each SCCS file argument.
+       The deltas and comments for each delta are  preserved  and
+       installed  into the new RCS file in order.  Also preserved
+       are the user access list and  descriptive  text,  if  any,
+       from the SCCS file.
+
+       The following flags are meaningful:
+
+       --tt     Trace  only.  Prints detailed information about the
+              SCCS file and lists the commands that would be exe-
+              cuted  to  produce  the  RCS file.  No commands are
+              actually executed and no RCS file is made.
+
+       --vv     Verbose.  Prints each command that is run while  it
+              is building the RCS file.
+
+FFIILLEESS
+       For  each  s._s_o_m_e_f_i_l_e, _S_c_c_s_t_o_r_c_s writes the files _s_o_m_e_f_i_l_e
+       and _s_o_m_e_f_i_l_e,v which should not already exist.   _S_c_c_s_t_o_r_c_s
+       will  abort,  rather than overwrite those files if they do
+       exist.
+
+SSEEEE AALLSSOO
+       ci (1), co (1), rcs (1).
+       Walter F. Tichy, "Design, Implementation,  and  Evaluation
+       of  a  Revision Control System," in _P_r_o_c_e_e_d_i_n_g_s _o_f _t_h_e _6_t_h
+       _I_n_t_e_r_n_a_t_i_o_n_a_l _C_o_n_f_e_r_e_n_c_e _o_n  _S_o_f_t_w_a_r_e  _E_n_g_i_n_e_e_r_i_n_g,  IEEE,
+       Tokyo, Sept. 1982.
+
+DDIIAAGGNNOOSSTTIICCSS
+       All diagnostics are written to stderr.  Non-zero exit sta-
+       tus on error.
+
+BBUUGGSS
+       _S_c_c_s_t_o_r_c_s does not preserve all SCCS options specified  in
+       the SCCS file.  Most notably, it does not preserve removed
+       deltas, MR numbers, and cutoff points.
+
+AAUUTTHHOORR
+       Ken Greer
+
+       Copyright (C) 1983 by Kenneth L. Greer
+
+
+
+
+
+
+
+
+June                            29                              1
+
+

@@ -1,0 +1,132 @@
+
+
+
+RCSMERGE(1L)                                         RCSMERGE(1L)
+
+
+NNAAMMEE
+       rcsmerge - merge RCS revisions
+
+SSYYNNOOPPSSIISS
+       rrccssmmeerrggee --rr_r_e_v_1 [ --rr_r_e_v_2 ] [ --pp ] file
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_c_s_m_e_r_g_e incorporates the changes between _r_e_v_1 and _r_e_v_2 of
+       an RCS file into the corresponding working file. If --pp  is
+       given,  the  result  is  printed  on  the standard output,
+       otherwise the result overwrites the working file.
+
+       A file name ending in ',v' is an RCS file name,  otherwise
+       a  working  file name. _M_e_r_g_e derives the working file name
+       from the RCS file name and vice  versa,  as  explained  in
+       _c_o(1L).   A  pair  consisting of both an RCS and a working
+       file name may also be specified.
+
+       _R_e_v_1 may not be omitted. If _r_e_v_2 is  omitted,  the  latest
+       revision  on  the  default  branch  (normally  the highest
+       branch on the trunk) is assumed.  Both _r_e_v_1 and  _r_e_v_2  may
+       be given numerically or symbolically.
+
+       _R_c_s_m_e_r_g_e  prints  a  warning  if  there  are overlaps, and
+       delimits the overlapping regions as explained  in  _c_o  -_j.
+       The  command  is  useful  for incorporating changes into a
+       checked-out revision.
+
+EEXXAAMMPPLLEESS
+       Suppose you have released revision 2.8 of f.c. Assume fur-
+       thermore  that  you  just completed revision 3.4, when you
+       receive updates to release 2.8 from someone else.  To com-
+       bine  the  updates to 2.8 and your changes between 2.8 and
+       3.4, put the updates to 2.8 into file f.c and execute
+
+               rrccssmmeerrggee  --pp  --rr22..88  --rr33..44  ff..cc  >>ff..mmeerrggeedd..cc
+
+       Then examine f.merged.c.  Alternatively, if  you  want  to
+       save  the updates to 2.8 in the RCS file, check them in as
+       revision 2.8.1.1 and execute _c_o -_j:
+
+               ccii  --rr22..88..11..11  ff..cc
+               ccoo  --rr33..44  --jj22..88::22..88..11..11  ff..cc
+
+       As another  example,  the  following  command  undoes  the
+       changes  between  revision  2.4  and 2.8 in your currently
+       checked out revision in f.c.
+
+               rrccssmmeerrggee  --rr22..88  --rr22..44  ff..cc
+
+       Note the order of the arguments,  and  that  f.c  will  be
+       overwritten.
+
+
+
+
+
+University                    Purdue                            1
+
+
+
+
+
+RCSMERGE(1L)                                         RCSMERGE(1L)
+
+
+IIDDEENNTTIIFFIICCAATTIIOONN
+       Author:   Walter   F.   Tichy,   Purdue  University,  West
+       Lafayette, IN, 47907.
+       Revision Number: 1.2 ; Release Date: 89/05/02 .
+       Copyright (C) 1982, 1988, 1989 by Walter F. Tichy.
+
+SSEEEE AALLSSOO
+       ci(1L),  co(1L),  merge(1L),  ident(1L),  rcs(1L),   rcsd-
+       iff(1L), rlog(1L), rcsfile(5L),
+       Walter  F.  Tichy, "Design, Implementation, and Evaluation
+       of a Revision Control System," in _P_r_o_c_e_e_d_i_n_g_s _o_f  _t_h_e  _6_t_h
+       _I_n_t_e_r_n_a_t_i_o_n_a_l  _C_o_n_f_e_r_e_n_c_e  _o_n  _S_o_f_t_w_a_r_e _E_n_g_i_n_e_e_r_i_n_g, IEEE,
+       Tokyo, Sept. 1982.
+
+BBUUGGSS
+       _R_c_s_m_e_r_g_e does not work on files that contain lines with  a
+       single `.'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+University                    Purdue                            2
+
+

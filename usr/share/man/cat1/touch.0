@@ -1,0 +1,66 @@
+TOUCH(1)                    386BSD Reference Manual                   TOUCH(1)
+
+NNAAMMEE
+     ttoouucchh - update date last modified of a file
+
+SSYYNNOOPPSSIISS
+     ttoouucchh [--cc] [--ff] _f_i_l_e ...
+
+DDEESSCCRRIIPPTTIIOONN
+     The ttoouucchh utility changes the modification and or access times of the
+     given _f_i_l_e.
+
+     Available options:
+
+     --cc      Do not create a specified file if it does not exist.  Do not
+             write any diagnostic messages concerning this condition.
+
+     --ff      Attempt to force the ttoouucchh in spite of read and write permissions
+             on a _f_i_l_e.
+
+SSEEEE AALLSSOO
+     utimes(2)
+
+HHIISSTTOORRYY
+     A ttoouucchh command appeared in Version 7 AT&T UNIX.  This command is cur-
+     rently under development.
+
+BSD Experimental                 June 27, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

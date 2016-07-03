@@ -1,0 +1,66 @@
+UTIME(3)                  386BSD Programmer's Manual                  UTIME(3)
+
+NNAAMMEE
+     uuttiimmee - set file times
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssyyss//ttyyppeess..hh>>
+
+     _i_n_t
+     uuttiimmee(_c_o_n_s_t _c_h_a_r *_f_i_l_e, _c_o_n_s_t _s_t_r_u_c_t _u_t_i_m_b_u_f *_t_i_m_e_p)
+
+DDEESSCCRRIIPPTTIIOONN
+     TThhiiss iinntteerrffaaccee iiss oobbssoolleetteedd bbyy uuttiimmeess((22)) ..  IItt iiss aavvaaiillaabbllee ffrroomm tthhee ccoomm--
+     ppaattiibbiilliittyy lliibbrraarryy,, lliibbccoommppaatt..
+
+DDEESSCCRRIIPPTTIIOONN
+     The uuttiimmee() function sets the access and modification times of the named
+     file from the structures in the argument array _t_i_m_e_p.
+
+     The calling process's effective user ID must match the owner of the file
+     or must be the super-user.
+
+SSEEEE AALLSSOO
+     utimes(2),  stat(2)
+
+HHIISSTTOORRYY
+     A uuttiimmee() function appeared in Version 7 AT&T UNIX.
+
+4th Berkeley Distribution       April 19, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

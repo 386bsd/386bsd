@@ -1,0 +1,321 @@
+
+ansi.c,2834
+AKAfin(3093,62368
+static void ASetMode(2566,52612
+AbortInp(3035,61394
+Activate(732,18726
+static void AddCap(518,14692
+static void AddChar(1563,33179
+void AddLineToHist(3314,65774
+static void BackSpace(1951,40218
+static void BackwardTab(2391,49533
+static void CPutStr(1537,32723
+static int CalcCost(1711,35865
+ChangeScrollRegion(3293,65366
+CheckLP(2847,57655
+ClearDisplay(3221,64291
+static void ClearFromBOL(2473,50932
+static void ClearFromBOS(2423,50101
+static void ClearInLine(2482,51067
+static void ClearLine(2455,50653
+static void ClearScreen(2403,49713
+static void ClearToEOL(2464,50792
+static void ClearToEOS(2434,50301
+Colonfin(3112,62587
+static void CountChars(1705,35814
+static void CursorDown(2544,52183
+static void CursorLeft(2558,52493
+static void CursorRight(2515,51666
+static void CursorUp(2530,51887
+static void DeleteChar(2106,43595
+static void DeleteLine(2150,44559
+static void DesignateCharset(1639,34518
+DisplayLine(2746,55649
+static void DoCSI(1234,27724
+static void DoESC(1141,26069
+ExitOverlayPage(3257,64848
+static void FillWithEs(2692,54646
+static void FindAKA(2880,58254
+FinitTerm(489,14159
+FixLP(2834,57444
+static void ForwardTab(2374,49279
+GotoPos(1725,36038
+INSERTCHAR(1466,31709
+InitOverlayPage(3238,64502
+InitTerm(462,13578
+InitTermcap(212,6835
+Input(2944,59650
+InputAKA(3104,62483
+InputColon(3121,62664
+static void InsertAChar(2014,41302
+static void InsertChar(2044,42005
+static void InsertLine(2168,44918
+InsertMode(1596,33827
+static void KeypadMode(1611,34040
+static void LineFeed(1976,40564
+MakeBlankLine(3129,62745
+MakeStatus(3138,62839
+static void MakeString(682,18026
+char *MakeTermcap(539,15086
+static void MapCharset(1653,34737
+NewAutoFlow(1625,34208
+NewCharset(1665,34906
+NewRendition(2633,53434
+PUTCHAR(1486,31996
+static void PrintChar(1572,33322
+static void PrintFlush(1580,33453
+PutChar(1522,32567
+PutStr(1530,32653
+RAW_PUTCHAR(1500,32222
+void Redisplay(2715,55062
+static void RedisplayLine(2823,57170
+RefreshLine(2805,56815
+RemoveStatus(3196,63871
+ResetScreen(753,19258
+RestoreAttr(2686,54544
+static void RestoreCursor(1688,35351
+static void Return(1966,40434
+static void ReverseLineFeed(2000,41054
+Rewrite(1914,39576
+static void SaveCursor(1677,35076
+SaveSetAttr(2678,54425
+static void Scroll(2354,48923
+static void ScrollDownMap(2333,48386
+ScrollRegion(2187,45283
+static void ScrollUpMap(2307,47718
+static void SelectRendition(2583,52814
+static void SetChar(1545,32829
+static void SetCurr(3228,64368
+SetLastPos(3277,65131
+SetOvlCurr(3268,65034
+static int Special(1099,25426
+static void StartString(1555,33043
+WSresize(3285,65196
+WriteString(780,19727
+e_tgetflag(3467,68164
+e_tgetnum(3479,68353
+e_tgetstr(3456,67987
+findcap(3343,66382
+inpRedisplayLine(3043,61534
+process_inp_input(2983,60452
+
+ansi.h,0
+
+config.h,17
+#define 51,1130
+
+extern.h,0
+
+fileio.c,1132
+static char *CatExtra(305,7777
+int CompileKeys(508,12418
+CountUsers(1693,36360
+CreateUtmp(2176,46690
+DoScreen(1403,30994
+DoSet(603,14176
+FinishRc(561,13270
+GetAvenrun(2348,50321
+GetAvenrun(2392,51281
+InitKmem(2368,50761
+InitNeXTLoadAvg(2338,50119
+InitUtmp(1732,37019
+static int IsNum(1310,28936
+static int IsNumColon(1320,29092
+KillBuffers(1674,36069
+Parse(1178,26807
+ParseChar(474,11625
+ParseEscape(1219,27513
+ParseNum(1229,27672
+ParseOnOff(1286,28565
+ParseSaveStr(1267,28274
+RcLine(698,16000
+ReInitUtmp(1762,37499
+ReadFile(1622,35004
+RemoveLoginSlot(1847,39755
+RemoveUtmp(2205,47297
+RestoreLoginSlot(1785,37968
+static char **SaveArgs(539,12882
+char *SaveStr(293,7609
+SetUtmp(2013,43173
+SlotToggle(1337,29359
+StartRc(381,9390
+static slot_t TtyNameSlot(1957,42174
+WriteFile(1515,32908
+static char *expand_env_vars(636,14872
+static char *findrcfile(337,8435
+getlogin(2546,54181
+static struct ttyent *getttyent(2160,46459
+static struct ttyent *getttyent(2322,49879
+secfopen(2419,51769
+secopen(2464,52617
+static void setttyent(2153,46363
+static void setttyent(2297,49389
+stripdev(1938,41913
+
+help.c,280
+AbortCopyright(433,11339
+AbortHelp(138,4450
+HelpRedisplayLine(345,9455
+add_key_to_buf(311,8887
+centerline(334,9273
+copypage(456,11783
+display_copyright(440,11402
+display_help(149,4609
+exit_with_usage(67,2211
+process_copyright_input(397,10887
+process_help_input(99,3949
+
+mark.c,572
+static void AbortMarkRoutine(971,21850
+#define D2W(125,4261
+static void MarkRedisplayLine(996,22363
+MarkRewrite(1052,23583
+int MarkRoutine(323,7800
+static int MarkScrollDownDisplay(1127,25034
+static int MarkScrollUpDisplay(1109,24626
+#define W2D(124,4228
+#define aWIN(115,3871
+static int eq(307,7544
+#define fWIN(117,4004
+#define iWIN(113,3737
+static int is_letter(91,3193
+lineend(143,4534
+linestart(128,4306
+nextword(171,5060
+static void process_mark_input(415,9901
+static int rem(226,6008
+static void revto(853,19532
+static void revto_line(860,19638
+
+patchlevel.h,0
+
+putenv.c,129
+static int  findenv(138,4460
+static int moreenv(186,5390
+static int newenv(159,4915
+int putenv(99,3643
+int unsetenv(83,3407
+
+screen.c,2158
+static int Attach(3139,67788
+static void Attacher(3430,74375
+static sig_t AttacherFinit(3339,72705
+static sig_t AttacherFinitBye(3373,73439
+AttacherSigInt(1473,32139
+static sig_t CoreDump(1508,32737
+Detach(3743,81580
+static sig_t DoLock(3404,73983
+static void DoWait(1533,33187
+# define FD_ISSET(296,7323
+# define FD_SET(295,7269
+# define FD_ZERO(294,7225
+sig_t FEChld(1438,31673
+char *Filename(3958,85850
+static sig_t Finit(1619,34874
+static void FreeWindow(2184,47433
+GetTTY(2969,63906
+static void InitKeytab(1667,35659
+static int IsSymbol(3840,83645
+Kill(3832,83559
+void KillWindow(1581,34150
+static void LockTerminal(3519,76221
+static void LogToggle(2485,54035
+static void MakeNewEnv(3858,83891
+static char *MakeWinMsg(3974,86089
+MakeWindow(2202,47719
+static int MoreWindows(2171,47214
+Msg(3897,84822
+Msg(3899,84858
+static int NextWindow(2143,46775
+static int OpenPTY(2751,59652
+static int OpenPTY(2796,60597
+static int OpenPTY(2833,61271
+static int OpenPTY(2857,61658
+static int OpenPTY(2883,62097
+static int PreviousWindow(2157,46991
+char *ProcessInput(1734,37964
+Report(2063,45328
+SetFlow(3085,66605
+static void SetForeWindow(2110,46056
+SetMode(2995,64379
+SetTTY(2942,63380
+static void ShowInfo(2721,58765
+static void ShowTime(2678,57655
+static void ShowWindows(2595,56031
+static sig_t SigAttWinch(3420,74231
+static sig_t SigChld(1447,31766
+static void SigHandler(1409,31127
+sig_t SigHup(1456,31888
+static sig_t SigInt(1488,32411
+static sig_t SigStop(3392,73825
+SwitchWindow(2091,45764
+int UserContext(2511,54600
+UserReturn(2550,55332
+int UserStatus(2565,55545
+#  define WEXITSTATUS(319,7841
+#  define WEXITSTATUS(321,7901
+#  define WIFCORESIG(311,7655
+#  define WIFCORESIG(313,7707
+#  define WTERMSIG(303,7474
+#  define WTERMSIG(305,7524
+void bclear(449,10288
+void bcopy(432,10027
+brktty(343,8287
+closeallfiles(457,10361
+eexit(1656,35515
+static void execvpe(2439,53216
+fgtty(381,8933
+freetty(364,8695
+void main(478,10738
+screen_builtin_lck(3618,78479
+void (*signal(416,9741
+static void trysend(3297,71748
+static sig_t trysendfail(3287,71593
+static sig_t trysendok(3282,71535
+
+screen.h,419
+#define Ctrl(217,4698
+#define Free(215,4625
+#  define __P(539,11571
+#  define __P(543,11617
+# define bzero(204,4388
+#	define debug(525,11185
+#	define debug(531,11429
+#	define debug1(526,11233
+#	define debug1(532,11450
+#	define debug2(527,11286
+#	define debug2(533,11474
+#	define debug3(528,11343
+#	define debug3(534,11500
+# define killpg(205,4430
+# define setregid(550,11736
+# define setreuid(549,11680
+
+socket.c,392
+static int CheckPasswd(711,17178
+CheckPid(759,18281
+static void ExecCreate(738,17826
+int FindSocket(151,3912
+MakeClientSocket(468,11753
+MakeClientSocket(572,14169
+MakeServerSocket(409,10328
+MakeServerSocket(504,12455
+ReceiveMsg(774,18490
+int RecoverSocket(122,3144
+SendCreateMsg(626,15253
+SendErrorMsg(672,16440
+SendErrorMsg(674,16476
+sconnect(1080,26763
+char *strdup(108,2947
+
+window.c,261
+ChangeScreenSize(147,3939
+ChangeScrollback(207,5384
+ChangeWindowSize(397,9002
+CheckScreenSize(94,2794
+FreeArray(380,8806
+static void FreeScrollback(238,6154
+ResizeHistArray(248,6353
+ResizeScreen(548,12929
+ResizeScreenArray(317,7529
+xrealloc(591,13920

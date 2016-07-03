@@ -1,0 +1,132 @@
+INETD(8)                386BSD System Manager's Manual                INETD(8)
+
+NNAAMMEE
+     iinneettdd - internet ``super-server''
+
+SSYYNNOOPPSSIISS
+     iinneettdd [--dd] [_c_o_n_f_i_g_u_r_a_t_i_o_n _f_i_l_e]
+
+DDEESSCCRRIIPPTTIIOONN
+     IInneettdd should be run at boot time by /_e_t_c/_r_c._l_o_c_a_l (see rc(8)).  It then
+     listens for connections on certain internet sockets.  When a connection
+     is found on one of its sockets, it decides what service the socket corre-
+     sponds to, and invokes a program to service the request.  After the pro-
+     gram is finished, it continues to listen on the socket (except in some
+     cases which will be described below).  Essentially, iinneettdd allows running
+     one daemon to invoke several others, reducing load on the system.
+
+     The option available for iinneettdd::
+
+     --dd      Turns on debugging.
+
+     Upon execution, iinneettdd reads its configuration information from a configu-
+     ration file which, by default, is /_e_t_c/_i_n_e_t_d._c_o_n_f. There must be an entry
+     for each field of the configuration file, with entries for each field
+     separated by a tab or a space.  Comments are denoted by a ``#'' at the
+     beginning of a line.  There must be an entry for each field.  The fields
+     of the configuration file are as follows:
+
+           service name
+           socket type
+           protocol
+           wait/nowait
+           user
+           server program
+           server program arguments
+
+     The _s_e_r_v_i_c_e-_n_a_m_e entry is the name of a valid service in the file
+     /_e_t_c/_s_e_r_v_i_c_e_s. For ``internal'' services (discussed below), the service
+     name _m_u_s_t be the official name of the service (that is, the first entry
+     in /_e_t_c/_s_e_r_v_i_c_e_s).
+
+     The _s_o_c_k_e_t-_t_y_p_e should be one of ``stream'', ``dgram'', ``raw'', ``rdm'',
+     or ``seqpacket'', depending on whether the socket is a stream, datagram,
+     raw, reliably delivered message, or sequenced packet socket.
+
+     The _p_r_o_t_o_c_o_l must be a valid protocol as given in /_e_t_c/_p_r_o_t_o_c_o_l_s. Exam-
+     ples might be ``tcp'' or ``udp''.
+
+     The _w_a_i_t/_n_o_w_a_i_t entry is applicable to datagram sockets only (other sock-
+     ets should have a ``nowait'' entry in this space).  If a datagram server
+     connects to its peer, freeing the socket so iinneettdd can received further
+     messages on the socket, it is said to be a ``multi-threaded'' server, and
+     should use the ``nowait'' entry.  For datagram servers which process all
+     incoming datagrams on a socket and eventually time out, the server is
+     said to be ``single-threaded'' and should use a ``wait'' entry.  Com-
+     sat(8) (biff(1))  and talkd(8) are both examples of the latter type of
+     datagram server.  Tftpd(8) is an exception; it is a datagram server that
+     establishes pseudo-connections.  It must be listed as ``wait'' in order
+     to avoid a race; the server reads the first packet, creates a new socket,
+     and then forks and exits to allow iinneettdd to check for new service requests
+     to spawn new servers.
+
+     The _u_s_e_r entry should contain the user name of the user as whom the serv-
+     er should run.  This allows for servers to be given less permission than
+     root.
+
+     The _s_e_r_v_e_r-_p_r_o_g_r_a_m entry should contain the pathname of the program which
+     is to be executed by iinneettdd when a request is found on its socket.  If
+     iinneettdd provides this service internally, this entry should be
+     ``internal''.
+
+     The _s_e_r_v_e_r _p_r_o_g_r_a_m _a_r_g_u_m_e_n_t_s should be just as arguments normally are,
+     starting with argv[0], which is the name of the program.  If the service
+     is provided internally, the word ``internal'' should take the place of
+     this entry.
+
+     IInneettdd provides several ``trivial'' services internally by use of routines
+     within itself.  These services are ``echo'', ``discard'', ``chargen''
+     (character generator), ``daytime'' (human readable time), and ``time''
+     (machine readable time, in the form of the number of seconds since mid-
+     night, January 1, 1900).  All of these services are tcp based.  For de-
+     tails of these services, consult the appropriate RFC from the Network In-
+     formation Center.
+
+     IInneettdd rereads its configuration file when it receives a hangup signal,
+     SIGHUP. Services may be added, deleted or modified when the configuration
+     file is reread.
+
+SSEEEE AALLSSOO
+     comsat(8),  fingerd(8),  ftpd(8),  rexecd(8),  rlogind(8),  rshd(8),
+     telnetd(8),  tftpd(8)
+
+HHIISSTTOORRYY
+     The iinneettdd command appeared in 4.3BSD.
+
+4.3 Berkeley Distribution       March 16, 1991                               3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

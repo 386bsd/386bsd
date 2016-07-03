@@ -1,0 +1,1 @@
+exec sz -c "sz $*"

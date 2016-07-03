@@ -1,0 +1,66 @@
+DF(1)                       386BSD Reference Manual                      DF(1)
+
+NNAAMMEE
+     ddff - display free disk space
+
+SSYYNNOOPPSSIISS
+     ddff [--iikknn] [_f_i_l_e | _f_i_l_e_s_y_s_t_e_m ...]
+
+DDEESSCCRRIIPPTTIIOONN
+     DDff displays statistics about the amount of free disk space on the speci-
+     fied _f_i_l_e_s_y_s_t_e_m or on the filesystem of which _f_i_l_e is a part.  If neither
+     a file or a filesystem operand is specified, statistics for all mounted
+     filesystems are displayed.
+
+     The following options are available:
+
+     --ii      Include statistics on the number of free inodes.
+
+     --kk      By default, all sizes are reported in 512-byte block counts.  The
+             --kk option causes the numbers to be reported in kilobyte counts.
+
+     --nn      Print out the previously obtained statistics from the filesys-
+             tems.  This option should be used if it is possible that one or
+             more filesystems are in a state such that they will not be able
+             to provide statistics without a long delay.  When this option is
+             specified, ddff will not request new statistics from the filesys-
+             tems, but will respond with the possibly stale statistics that
+             were previously obtained.
+
+BBUUGGSS
+     The --nn flag is ignored if a file or filesystem is specified.
+
+SSEEEE AALLSSOO
+     quota(1),  statfs(2),  fstatfs(2),  getfsstat(2),  getmntinfo(3),
+     fstab(5),  mount(8),  quot(8)
+
+HHIISSTTOORRYY
+     A ddff command appeared in Version 6 AT&T UNIX.
+
+4th Berkeley Distribution        June 17, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

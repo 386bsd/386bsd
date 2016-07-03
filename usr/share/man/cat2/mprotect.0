@@ -1,0 +1,66 @@
+
+
+
+MPROTECT(2)                    1991                   MPROTECT(2)
+
+
+NNAAMMEE
+       mprotect - control the protection of pages
+
+SSYYNNOOPPSSIISS
+       mprotect(addr, len, prot)
+       ccaaddddrr__tt aaddddrr;;
+       iinntt lleenn,, pprroott;;
+
+DDEESSCCRRIIPPTTIIOONN
+       The  _m_p_r_o_t_e_c_t  system  call changes the specified pages to
+       have protection _p_r_o_t.  Not all implementations will  guar-
+       antee  protection on a page basis; the granularity of pro-
+       tection changes may be as large as an entire region.
+
+SSEEEE AALLSSOO
+       msync.2, munmap.2, mprotect.2, madvise.2, mincore.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+27,                            May                              1
+
+

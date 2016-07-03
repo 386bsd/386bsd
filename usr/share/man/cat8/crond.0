@@ -1,0 +1,66 @@
+
+
+
+CROND(8)                       1988                      CROND(8)
+
+
+NNAAMMEE
+       crond - daemon to execute scheduled commands (Vixie Cron)
+
+SSYYNNOOPPSSIISS
+       crond
+
+DDEESSCCRRIIPPTTIIOONN
+       _C_r_o_n_d should be started from /etc/rc or /etc/rc.local.  It
+       will return immediately, so you don't  need  to  start  it
+       with '&'.
+
+       _C_r_o_n_d  searches /var/cron/tabs for crontab files which are
+       named after accounts in /etc/passwd;  crontabs  found  are
+       loaded  into  memory.   _C_r_o_n_d  then wakes up every minute,
+       examining all stored crontabs, checking  each  command  to
+       see  if it should be run in the current minute.  When exe-
+       cuting commands, any output is mailed to the owner of  the
+       crontab  (or  to  the user named in the MAILTO environment
+       variable in the crontab, if such exists).
+
+       Additionally, _c_r_o_n_d checks each minute to see if its spool
+       directory's modtime has changed, and if it has, _c_r_o_n_d will
+       then examine the modtime on all crontabs and reload  those
+       which  have  changed.   Thus  _c_r_o_n_d  need not be restarted
+       whenever a  crontab  file  is  modified.   Note  that  the
+       _C_r_o_n_t_a_b(1) command updates the modtime of the spool direc-
+       tory whenever it changes a crontab.
+
+SSEEEE AALLSSOO
+       crontab(1), crontab(5)
+
+AAUUTTHHOORR
+       Paul Vixie, paul@vixie.sf.ca.us
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Nov                             15                              1
+
+

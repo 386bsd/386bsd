@@ -1,0 +1,198 @@
+
+
+
+RCSFILE(5L)                                           RCSFILE(5L)
+
+
+NNAAMMEE
+       rcsfile - format of RCS file
+
+DDEESSCCRRIIPPTTIIOONN
+       An  RCS  file is an ASCII file. Its contents are described
+       by the grammar below.  The  text  is  free  format,  i.e.,
+       spaces,  tabs and new lines have no significance except in
+       strings. Strings are enclosed by `@'.  If  a  string  con-
+       tains a `@', it must be doubled.
+
+       The  meta syntax uses the following conventions: `|' (bar)
+       separates  alternatives;  `{'  and  `}'  enclose  optional
+       phrases; `{' and `}*' enclose phrases that may be repeated
+       zero or more times; `{' and '}+' enclose phrases that must
+       appear  at  least  once  and  may be repeated; `<' and `>'
+       enclose nonterminals.
+
+
+
+       <rcstext>  ::=<admin> {<delta>}* <desc> {<deltatext>}*
+
+       <admin>    ::=hheeaadd     {<num>};
+                     bbrraanncchh   {<num>};
+                     aacccceessss   {<id>}*;
+                     ssyymmbboollss  {<id> : <num>}*;
+                     lloocckkss    {<id> : <num>}*;
+                     ccoommmmeenntt  {<string>};
+
+       <delta>    ::=<num>
+                     ddaattee     <num>;
+                     aauutthhoorr   <id>;
+                     ssttaattee    {<id>};
+                     bbrraanncchheess {<num>}*;
+                     nneexxtt     {<num>};
+
+       <desc>     ::=ddeesscc     <string>
+
+       <deltatext>::=<num>
+                     lloogg      <string>
+                     tteexxtt     <string>
+
+
+       <num>      ::={<digit>{.}}+
+
+       <digit>    ::=0 | 1 | ... | 9
+
+       <id>       ::=<letter>{<idchar>}*
+
+       <letter>   ::=A | B | ... | Z | a | b | ... | z
+
+       <idchar>   ::=Any printing ASCII character except space,
+                     tab, carriage return, new line, and <special>.
+
+       <special>  ::=; | : | , | @
+
+
+
+University                    Purdue                            1
+
+
+
+
+
+RCSFILE(5L)                                           RCSFILE(5L)
+
+
+       <string>   ::=@{any ASCII character, with `@' doubled}*@
+
+
+       Identifiers are case sensitive. Keywords are in lower case
+       only.  The sets of keywords and identifiers may overlap.
+
+       The  <delta>  nodes  form  a tree. All nodes whose numbers
+       consist of a single pair (e.g., 2.3, 2.1, 1.3, etc.)   are
+       on  the  "trunk", and are linked through the nneexxtt field in
+       order of decreasing numbers. The hheeaadd field in the <admin>
+       node  points  to the head of that sequence (i.e., contains
+       the highest pair).  The bbrraanncchh  node  in  the  admin  node
+       indicates  the  default  branch (or revision) for most RCS
+       operations. If empty, the default branch  is  the  highest
+       branch on the trunk.
+
+       All  <delta>  nodes  whose  numbers  consist  of 2n fields
+       (n=>2) (e.g., 3.1.1.1, 2.1.2.2, etc.)  are linked as  fol-
+       lows. All nodes whose first (2n)-1 number fields are iden-
+       tical are linked  through  the  nneexxtt  field  in  order  of
+       increasing  numbers.   For each such sequence, the <delta>
+       node whose number is identical to the first 2(n-1)  number
+       fields  of  the  deltas  on  that  sequence  is called the
+       branchpoint.  The bbrraanncchheess field of a node contains a list
+       of  the  numbers  of  the first nodes of all sequences for
+       which it is  a  branchpoint.   This  list  is  ordered  in
+       increasing numbers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+University                    Purdue                            2
+
+
+
+
+
+RCSFILE(5L)                                           RCSFILE(5L)
+
+
+       Example:
+                                  Head
+                                    |
+                                    |
+                                    v
+                                ---------
+          / \          / \      |       |      / \           / \
+         /   \        /   \     |  2.1  |     /   \         /   \
+        /     \      /     \    |       |    /     \      /       \
+       /1.2.1.3\    /1.3.1.1\   |       |   /1.2.2.2\   /1.2.2.1.1.1\
+       ---------    ---------   ---------   ---------   -------------
+           ^            ^           |           ^             ^
+           |            |           |           |             |
+           |            |           v           |             |
+          / \           |       ---------      / \            |
+         /   \          |       \  1.3  /     /   \           |
+        /     \         ---------\     /     /     \-----------
+       /1.2.1.1\                  \   /     /1.2.2.1\
+       ---------                   \ /      ---------
+           ^                        |           ^
+           |                        |           |
+           |                        v           |
+           |                    ---------       |
+           |                    \  1.2  /       |
+           ----------------------\     /---------
+                                  \   /
+                                   \ /
+                                    |
+                                    |
+                                    v
+                                ---------
+                                \  1.1  /
+                                 \     /
+                                  \   /
+                                   \ /
+
+
+                        Fig. 1: A revision tree
+
+
+IIDDEENNTTIIFFIICCAATTIIOONN
+       Author:   Walter   F.   Tichy,   Purdue  University,  West
+       Lafayette, IN, 47907.
+       Revision Number: 1.2 ; Release Date: 89/05/02 .
+       Copyright (C) 1982, 1988, 1989 by Walter F. Tichy.
+
+SSEEEE AALLSSOO
+       ci(1L),   co(1L),   ident(1L),    rcs(1L),    rcsdiff(1L),
+       rcsmerge(1L), rlog(1L),
+       Walter  F.  Tichy, "Design, Implementation, and Evaluation
+       of a Revision Control System," in _P_r_o_c_e_e_d_i_n_g_s _o_f  _t_h_e  _6_t_h
+       _I_n_t_e_r_n_a_t_i_o_n_a_l  _C_o_n_f_e_r_e_n_c_e  _o_n  _S_o_f_t_w_a_r_e _E_n_g_i_n_e_e_r_i_n_g, IEEE,
+       Tokyo, Sept. 1982.
+
+
+
+
+University                    Purdue                            3
+
+

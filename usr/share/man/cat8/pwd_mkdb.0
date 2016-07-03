@@ -1,0 +1,132 @@
+
+
+
+PWD_MKDB(8)                    1991                   PWD_MKDB(8)
+
+
+NNAAMMEE
+       pwd_mkdb - generate the password databases
+
+SSYYNNOOPPSSIISS
+       ppwwdd__mmkkddbb [[ --pp ]] ffiillee
+
+DDEESSCCRRIIPPTTIIOONN
+       _P_w_d__m_k_d_b
+       creates
+       _d_b(3)
+       style secure and insecure databases for the specified file.
+       These databases are then installed into ``/etc/spwd.db'' and
+       ``/etc/pwd.db'' respectively.
+       The file is installed into ``/etc/master.passwd''.
+       The file must be in the correct format (see
+       _p_a_s_s_w_d(5)).
+       It is important to note that the format used in this system is
+       different from the historic Version 7 style format.
+
+       The options are as follows:
+
+       -p     Create a Version 7 style password file and install it into ``/etc/password''.
+
+       The two databases differ in that the secure version contains the user's
+       encrypted password and the insecure version has an asterisk (``*'')
+
+       The databases are used by the C library password routines (see
+       _g_e_t_p_w_e_n_t(3)).
+
+       _P_w_d__m_k_d_b
+       exits zero on success, non-zero on failure.
+
+FFIILLEESS
+       /var/db/pwd.db           The insecure password database file
+       /var/db/pwd.db.tmp       A temporary file
+       /var/db/spwd.db          The secure password database file
+       /var/db/spwd.db.tmp      A temporary file
+       /etc/master.passwd       The current password file
+       /etc/passwd              A Version 7 format password file
+
+BBUUGGSS
+       Because of the necessity for atomic update of the password files,
+       _p_w_d__m_k_d_b
+       uses
+       _r_e_n_a_m_e(2)
+       to install them.
+       This, however, requires that the file specified on the command line live
+       on the same file system as the ``/etc'' directory.
+
+       There are the obvious races with multiple people running
+       _p_w_d__m_k_d_b
+       on different password files at the same time.
+       The front-ends to
+       _p_w_d__m_k_d_b,
+
+
+
+29,                            June                             1
+
+
+
+
+
+PWD_MKDB(8)                    1991                   PWD_MKDB(8)
+
+
+       _c_h_p_a_s_s(1),
+       _p_a_s_s_w_d(1)
+       and
+       _v_i_p_w(8),
+       handle the locking necessary to avoid this problem.
+
+CCOOMMPPAATTIIBBIILLIITTYY
+       Previous versions of the system had a program similar to
+       _p_w_d__m_k_d_b,
+       _m_k_p_a_s_s_w_d(8),
+       which built
+       _d_b_m (_3)
+       style databases for the password file but depended on the calling programs
+       to install them.
+       The program was renamed in order that previous users of the program
+       not be surprised by the changes in functionality.
+
+SSEEEE AALLSSOO
+       chpass(1), passwd(1), db(3), getpwent(3), passwd(5), vipw(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+29,                            June                             2
+
+

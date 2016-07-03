@@ -1,0 +1,132 @@
+UNIQ()                               LOCAL                              UNIQ()
+
+NNAAMMEE
+     uunniiqq - Report or filter out repeated lines in a file.
+
+SSYYNNOOPPSSIISS
+     uunniiqq [--cc | --dd | --uu] [--ff _f_i_e_l_d_s] [--ss _c_h_a_r_s] [_i_n_p_u_t__f_i_l_e [_o_u_t_p_u_t__f_i_l_e]]
+
+          Deprecated Version:
+
+     uunniiqq [--ccdduu] [--_n] [++_n] [_i_n_p_u_t__f_i_l_e [_o_u_t_p_u_t__f_i_l_e]]
+
+DDEESSCCRRIIPPTTIIOONN
+     The uunniiqq utility reads an input file or the standard input comparing ad-
+     jacent lines, and writes one copy of each input line on the output.  The
+     second and succeeding copies of repeated adjacent input lines are not
+     written.  Repeated lines in the input are not detected if they are not
+     adjacent, so it is important to sort(1) the files first.
+
+     The following options are available:
+
+     --cc      Precede each output line with a count of the number of times the
+             line occurred in the input. For example:
+
+                   duplicate_count line_number
+
+             where the duplicate count is a blank padded field of up to four
+             digits followed by a space.
+
+     --dd      Suppress the writing of lines that are not repeated in the input.
+
+     --ff _f_i_e_l_d_s
+             Ignore the first fields on each input line when doing compar-
+             isons, where fields is a positive decimal integer.  A field is a
+             string of non-blank characters separated from adjacent fields by
+             blanks.
+
+     --ss _c_h_a_r_s
+             Ignore the first chars characters when doing comparisons, where
+             chars is a positive decimal integer.  If specified in conjunction
+             with the --ff option, the first chars characters after the first
+             fields fields will be ignored.
+
+     --uu      Suppress the writing of lines that are repeated in the input.
+
+     --_n      (Deprecated; replaced by --ff). Ignore the first n fields on each
+             input line when doing comparisons, where n is a number.  A field
+             is a string of non-blank characters separated from adjacent
+             fields by blanks.
+
+     ++_n      (Deprecated; replaced by --ss). Ignore the first _m characters when
+             doing comparisons, where _m is a number.
+
+     The following operands are available:
+
+     _i_n_p_u_t__f_i_l_e    A pathname of the input file.  If the _i_n_p_u_t__f_i_l_e operand is
+                   not specified, the standard input is used.
+
+     _o_u_t_p_u_t__f_i_l_e   A pathname of the output file.  This name shall always be
+                   different from _i_n_p_u_t__f_i_l_e. If the _o_u_t_p_u_t__f_i_l_e operand is
+                   not specified, the standard output is used.  If _o_u_t_p_u_t__f_i_l_e
+                   is created and an error occurs or a sugnal is caught the
+                   _o_u_t_p_u_t__f_i_l_e is not removed.
+
+
+     The uniq utility exits 0 on success, and >0 if an error occurs.
+
+SSTTAANNDDAARRDDSS
+     The uniq utility is expected to be IEEE Std1003.2 (``POSIX'') compatible.
+
+BSD Experimental                 June 27, 1991                               3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

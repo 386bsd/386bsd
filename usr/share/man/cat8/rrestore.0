@@ -1,0 +1,66 @@
+RRESTORE(8)             386BSD System Manager's Manual             RRESTORE(8)
+
+NNAAMMEE
+     rrrreessttoorree - restore a file system dump across the network
+
+SSYYNNOOPPSSIISS
+     rrrreessttoorree [_k_e_y [_n_a_m_e ...]]
+
+DDEESSCCRRIIPPTTIIOONN
+     RRrreessttoorree remotely restores files across a network in the same manner as
+     restore(8) locally restores files.  dump(8).  The command is identical in
+     operation to restore(8) except the ff key should be specified and the file
+     supplied should be of the form _m_a_c_h_i_n_e:_d_e_v_i_c_e.
+
+     RRrreessttoorree creates a remote server, rmt, on the client machine to access
+     the tape device.
+
+SSEEEE AALLSSOO
+     restore(8),  rmt(8)
+
+DDIIAAGGNNOOSSTTIICCSS
+     Same as restore(8) with a few extra related to the network.
+
+HHIISSTTOORRYY
+     The rrrreessttoorree command appeared in 4.2BSD.
+
+4.2 Berkeley Distribution       March 16, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

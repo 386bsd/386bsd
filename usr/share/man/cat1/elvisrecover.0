@@ -1,0 +1,66 @@
+
+
+
+ELVREC(1)                                               ELVREC(1)
+
+
+NNAAMMEE
+       elvrec  -  Recover  the modified version of a file after a
+       crash
+
+SSYYNNOOPPSSIISS
+       eellvvrreecc [_p_r_e_s_e_r_v_e_d_f_i_l_e [_n_e_w_f_i_l_e]]
+
+DDEESSCCRRIIPPTTIIOONN
+       If you're editing a  file  when  _e_l_v_i_s  dies,  the  system
+       crashes,  or  power fails, the most recent version of your
+       text will be preserved.  The preserved text is stored in a
+       special  directory;  it  does NOT overwrite your text file
+       automatically.
+
+       The _e_l_v_r_e_c program locates  the  preserved  version  of  a
+       given  file,  and writes it over the top of your text file
+       -- or to a new file, if you prefer.   The  recovered  file
+       will have nearly all of your changes.
+
+       To see a list of all recoverable files, run _e_l_v_r_e_c with no
+       arguments.
+
+FFIILLEESS
+       /usr/preserve/p*
+              The text that was preserved when _e_l_v_i_s died.
+
+       /usr/preserve/Index
+              A text file which lists the names of all  preserved
+              files,  and the names of the /usr/preserve/p* files
+              which contain their preserved text.
+
+BBUUGGSS
+       _e_l_v_r_e_c is very picky about filenames.  You must tell it to
+       recover  the  file using exactly the same pathname as when
+       you were editing it.  The simplest way to do this is to go
+       into  the same directory that you were editing, and invoke
+       _e_l_v_r_e_c with the same filename as _e_l_v_i_s.  If  that  doesn't
+       work,  then  try  running _e_l_v_r_e_c with no arguments, to see
+       exactly which pathname it is using for the desired file.
+
+       Due to the permissions on the /usr/preserve directory,  on
+       UNIX  systems  _e_l_v_r_e_c  must  be run as superuser.  This is
+       accomplished by making the _e_l_v_r_e_c executable be  owned  by
+       "root" and setting its "set user id" bit.
+
+       If  you're editing a nameless buffer when _e_l_v_i_s dies, then
+       _e_l_v_r_e_c will pretend that the file was named "foo".
+
+AAUUTTHHOORR
+       Steve Kirkendall
+       kirkenda@cs.pdx.edu
+
+
+
+
+
+
+                                                                1
+
+

@@ -1,0 +1,66 @@
+DU(1)                       386BSD Reference Manual                      DU(1)
+
+NNAAMMEE
+     dduu - Display disk usage statistics
+
+SSYYNNOOPPSSIISS
+     dduu [--aa | --ss] [--kkxx] [_f_i_l_e ...]
+
+DDEESSCCRRIIPPTTIIOONN
+     The dduu utility displays the file system block usage for each file argu-
+     ment and for each directory in the file hierarchy rooted in each directo-
+     ry argument.  If no file is specified, the block usage of the hierarchy
+     rooted in the current directory is displayed.
+
+     The options are as follows:
+
+     --aa      Display an entry for each file in the file hierarchy.
+
+     --kk      By default, dduu displays the number of blocks as returned by the
+             stat(2) system call, i.e. 512-byte blocks.  If the --kk flag is
+             specified, the number displayed is the number of 1024-byte
+             blocks.  Partial numbers of blocks are rounded up.
+
+     --ss      Display only the grand total for the specified files.
+
+     --xx      Filesystem mount points are not traversed.
+
+     If _f_i_l_e is a symbolic link referencing an existing file, the file refer-
+     enced by the link is reported on instead of the link itself.
+
+     Files having multiple hard links are counted (and displayed) a single
+     time per dduu execution.
+
+SSEEEE AALLSSOO
+     df(1),  quot(8)
+
+HHIISSTTOORRYY
+     A dduu command appeared in Version 6 AT&T UNIX.
+
+BSD Experimental                 June 20, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

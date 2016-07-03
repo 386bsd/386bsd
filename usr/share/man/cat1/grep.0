@@ -1,0 +1,264 @@
+
+
+
+GREP(1)                         13                        GREP(1)
+
+
+NNAAMMEE
+       grep, egrep - print lines matching a regular expression
+
+SSYYNNOOPPSSIISS
+       ggrreepp  [ --CCVVbbcchhiillnnssvvwwxx ] [ --_n_u_m ] [ --AABB _n_u_m ] [ [ --ee ] _e_x_p_r
+       | --ff _f_i_l_e ] [ _f_i_l_e_s ...  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _G_r_e_p searches the files listed in the arguments (or  stan-
+       dard  input if no files are given) for all lines that con-
+       tain a match for the given _e_x_p_r.  If any lines match, they
+       are printed.
+
+       Also,  if  any  matches  were found, _g_r_e_p will exit with a
+       status of 0, but if no matches were  found  it  will  exit
+       with  a  status  of  1.  This is useful for building shell
+       scripts that use _g_r_e_p as a condition for, for example, the
+       _i_f statement.
+
+       When  invoked  as _e_g_r_e_p the syntax of the _e_x_p_r is slightly
+       different; See below.
+
+RREEGGUULLAARR EEXXPPRREESSSSIIOONNSS
+            (grep)    (egrep)(explanation)
+
+            _c         _ca  single  (non-meta)  character   matches
+                                itself.
+
+            .         .matches  any  single character except new-
+                                line.
+
+            \?        ?postfix  operator;  preceeding   item   is
+                                optional.
+
+            *         *postfix  operator;  preceeding  item  0 or
+                                more times.
+
+            \+        +postfix operator;  preceeding  item  1  or
+                                more times.
+
+            \|        |infix operator; matches either argument.
+
+            ^         ^matches  the empty string at the beginning
+                                of a line.
+
+            $         $matches the empty string at the end  of  a
+                                line.
+
+            \<        \<matches the empty string at the beginning
+                                of a word.
+
+            \>        \>matches the empty string at the end of  a
+                                word.
+
+
+
+
+December                       1988                             1
+
+
+
+
+
+GREP(1)                         13                        GREP(1)
+
+
+            [_c_h_a_r_s]   [_c_h_a_r_s]match  any  character  in  the given
+                                class;  if  the  first  character
+                                after [ is ^, match any character
+                                not in the given class;  a  range
+                                of characters may be specified by
+                                _f_i_r_s_t-_l_a_s_t;   for   example,   \W
+                                (below)   is  equivalent  to  the
+                                class [^A-Za-z0-9]
+
+            \( \)     ( )parentheses are used to override  opera-
+                                tor precedence.
+
+            \_d_i_g_i_t    \_d_i_g_i_t\_n  matches  a  repeat  of  the  text
+                                matched earlier in the regexp  by
+                                the  subexpression inside the nth
+                                opening parenthesis.
+
+            \         \any special character may be preceded by a
+                                backslash  to match it literally.
+
+            (the following are for compatibility with GNU Emacs)
+
+            \b        \bmatches the empty string at the edge of a
+                                word.
+
+            \B        \Bmatches  the  empty  string if not at the
+                                edge of a word.
+
+            \w        \wmatches word-constituent characters (let-
+                                ters & digits).
+
+            \W        \Wmatches  characters  that  are  not word-
+                                constituent.
+
+       Operator precedence is (highest to lowest) ?,  *,  and  +,
+       concatenation,  and  finally  |.  All other constructs are
+       syntactically identical to  normal  characters.   For  the
+       truly  interested,  the  file  dfa.c describes (and imple-
+       ments) the exact grammar understood by the parser.
+
+OOPPTTIIOONNSS
+       --AA _n_u_m print <num> lines of context after  every  matching
+              line
+
+       --BB _n_u_m print  _n_u_m  lines  of context before every matching
+              line
+
+       --CC     print 2 lines of context  on  each  side  of  every
+              match
+
+       --_n_u_m   print  _n_u_m  lines  of context on each side of every
+              match
+
+       --VV     print the version number on the diagnostic output
+
+
+
+December                       1988                             2
+
+
+
+
+
+GREP(1)                         13                        GREP(1)
+
+
+       --bb     print every match preceded by its byte offset
+
+       --cc     print a total count of matching lines only
+
+       --ee _e_x_p_r
+              search for _e_x_p_r; useful if _e_x_p_r begins with -
+
+       --ff _f_i_l_e
+              search for the expression contained in _f_i_l_e
+
+       --hh     don't display filenames on matches
+
+       --ii     ignore case difference when comparing strings
+
+       --ll     list files containing matches only
+
+       --nn     print each match preceded by its line number
+
+       --ss     run silently producing no output except error  mes-
+              sages
+
+       --vv     print  only  lines  that contain no matches for the
+              <expr>
+
+       --ww     print only lines where the match is a complete word
+
+       --xx     print only lines where the match is a whole line
+
+SSEEEE AALLSSOO
+       emacs(1), ed(1), sh(1), _G_N_U _E_m_a_c_s _M_a_n_u_a_l
+
+IINNCCOOMMPPAATTIIBBIILLIITTIIEESS
+       The following incompatibilities with UNIX _g_r_e_p exist:
+
+            The  context-dependent  meaning of * is not quite the
+            same (grep only).
+
+            --bb prints a byte offset instead of a block offset.
+
+            The {_m,_n} construct of System V grep  is  not  imple-
+            mented.
+
+
+BBUUGGSS
+       GNU _e?_g_r_e_p has been thoroughly debugged and tested by sev-
+       eral people over a period of several months; we think it's
+       a reliable beast or we wouldn't distribute it.  If by some
+       fluke of the universe you discover a bug, send a  detailed
+       description (including options, regular expressions, and a
+       copy of an input  file  that  can  reproduce  it)  to  me,
+       mike@wheaties.ai.mit.edu.
+
+       There  is  also  a newsgroup, gnu.utils.bug, for reporting
+       FSF utility programs' bugs and fixes; but before reporting
+
+
+
+December                       1988                             3
+
+
+
+
+
+GREP(1)                         13                        GREP(1)
+
+
+       something  as  a bug, please try to be sure that it really
+       is a bug, not a misunderstanding or a deliberate  feature.
+       Also,  include  the  version number of the utility program
+       you are running in _e_v_e_r_y bug  report  that  you  send  in.
+       Please  do not send anything but bug reports to this news-
+       group.
+
+
+AAVVAAIILLAABBIILLIITTYY
+       GNU _g_r_e_p is free; anyone may redistribute copies  of  _g_r_e_p
+       to anyone under the terms stated in the GNU General Public
+       License, a copy of which may be found in each copy of  _G_N_U
+       _E_m_a_c_s.   See  also  the  comment  at  the beginning of the
+       source code file grep.c.
+
+       Copies of GNU _g_r_e_p may sometimes be received packaged with
+       distributions of Unix systems, but it is never included in
+       the scope of any license  covering  those  systems.   Such
+       inclusion violates the terms on which distribution is per-
+       mitted.  In fact, the primary purpose of the General  Pub-
+       lic License is to prohibit anyone from attaching any other
+       restrictions to redistribution of any of the Free Software
+       Foundation programs.
+
+AAUUTTHHOORRSS
+       Mike  Haertel  wrote the deterministic regexp code and the
+       bulk of the program.
+
+       James A. Woods is responsible for  the  hybridized  search
+       strategy  of  using Boyer-Moore-Gosper fixed-string search
+       as a filter before calling the general regexp matcher.
+
+       Arthur David  Olson  contributed  code  that  finds  fixed
+       strings  for  the  aforementioned  BMG  search for a large
+       class of regexps.
+
+       Richard Stallman wrote  the  backtracking  regexp  matcher
+       that  is  used  for  \_d_i_g_i_t backreferences, as well as the
+       getopt that is provided for 4.2BSD sites.  The  backtrack-
+       ing matcher was originally written for GNU Emacs.
+
+       D.  A.  Gwyn wrote the C alloca emulation that is provided
+       so System V machines can run  this  program.   (Alloca  is
+       used  only  by  RMS'  backtracking  matcher, and then only
+       rarely, so there is no loss if your machine doesn't have a
+       "real" alloca.)
+
+       Scott  Anderson  and Henry Spencer designed the regression
+       tests used in the "regress" script.
+
+       Paul Placeway wrote the original version  of  this  manual
+       page.
+
+
+
+
+
+December                       1988                             4
+
+

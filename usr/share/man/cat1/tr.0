@@ -1,0 +1,132 @@
+TR(1)                       386BSD Reference Manual                      TR(1)
+
+NNAAMMEE
+     ttrr - Translate Characters.
+
+SSYYNNOOPPSSIISS
+     ttrr [--cc] [--dd | --ss] _s_t_r_i_n_g_1 _s_t_r_i_n_g_2
+
+DDEESSCCRRIIPPTTIIOONN
+     The tr utility copies the standard input to the standard output with sub-
+     stitution or deletion of selected characters.  The options specified and
+     the _s_t_r_i_n_g_1 and _s_t_r_i_n_g_2 operands control translations that occur while
+     copying characters.
+
+     The following options are available:
+
+     --cc      Complements the set of characters in string1 with respect to the
+             universe of characters whose ISO 646 [4] codes are 00 through
+             0377 octal.
+
+     --dd      Deletes all input characters in _s_t_r_i_n_g_1.
+
+     --ss      Squeezes all output strings of one or more instances of a single
+             character in _s_t_r_i_n_g_2 to a single instance of that character.  In-
+             put characters found in _s_t_r_i_n_g_1 are mapped into the corresponding
+             characters of _s_t_r_i_n_g_2. When _s_t_r_i_n_g_2 is shorter than _s_t_r_i_n_g_1,
+             _s_t_r_i_n_g_2 is extended to the length of _s_t_r_i_n_g_1 by duplicating the
+             last character of _s_t_r_i_n_g_2. If _s_t_r_i_n_g_2 is explicitly a string of
+             zero length, _s_t_r_i_n_g_2 is padded with NUL characters.
+
+     The following operands are available:
+
+     _s_t_r_i_n_g_1
+
+     _s_t_r_i_n_g_2  Translation character strings.
+
+     If the --cc option is given in conjunction with the --dd option, then only
+     those characters found in _s_t_r_i_n_g_1 is copied to the standard output.
+
+     The following conventions can be used in _s_t_r_i_n_g_1 or _s_t_r_i_n_g_2 or both to
+     specify characters, character ranges, character classes, or collating
+     elements:
+
+     character    Represents that character.
+
+     \octal       A backslash followed by 1, 2, or 3 octal digits represents a
+                  character with that encoded value.  If a \octal sequence is
+                  followed by digits, the backslash and up to three digits are
+                  interpreted to prepare a character; subsequent digits are
+                  interpreted as individual characters.
+
+     \character   A backslash followed by any character except an octal digit
+                  represents that character.
+
+     [c-c]        Represents the range of ordered elements between the range
+                  endpoints, inclusive.
+
+     [[:class:]]  Represents all characters belonging to the defined character
+                  class.  Allowable names for class are:
+
+                        alpha  upper  lower  digit  xdigit  alnum
+                        space  punct  print  graph  cntrl
+
+
+
+                  The characters placed in ascending order.
+
+     [[=equiv=]]  Represents all characters or collating (sorting) elements
+                  belonging to the same equivalence class as equiv.  If there
+                  is a secondary ordering within the equivalence class, the
+                  characters are ordered in ascending sequence.  Otherwise,
+                  they are ordered after their encoded values.
+
+     [[.cs.]]     Represents a collating symbol.  Multicharacter collating
+                  symbols shall be represented as collating symbols to distin-
+                  guish them from a string of the same characters.
+
+     [x*n]        Represents n repeated occurrences of the character or col-
+                  lating symbol x.  This expression is only valid when it oc-
+                  curs in _s_t_r_i_n_g_2. If n is omitted or is zero, it is be inter-
+                  preted as large enough to extend the _s_t_r_i_n_g_2-based sequence
+                  to the length of the _s_t_r_i_n_g_1-based sequence.  If n has a
+                  leading zero, it shall be interpreted as an octal value.
+                  Otherwise, it shall be interpreted as a decimal value.
+
+     Characters belonging to an equivalence class occupy the same position in
+     the sequence, ordered after secondary ordering.
+
+     The ttrr utility exits with one of the following values:
+
+     0       All input was processed successfully.
+
+     1       An error occurred.
+
+SSTTAANNDDAARRDDSS
+     The ttrr utility is expected to be IEEE Std1003.2 (``POSIX'') compatible.
+
+BSD Experimental                 July 30, 1991                               3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

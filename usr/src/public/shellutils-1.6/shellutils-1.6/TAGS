@@ -1,0 +1,377 @@
+
+lib/alloca.c,47
+alloca 139,3925
+find_stack_direction 83,2482
+
+lib/basename.c,17
+basename 28,971
+
+lib/error.c,107
+#define VA_START(26,904
+#define VA_START(29,1006
+error 73,2116
+error 75,2211
+private_strerror 53,1541
+
+lib/getdate.c,246
+Convert(581,19728
+DSTcorrect(627,20891
+#define HOUR(81,1922
+LookupWord(680,22041
+RelativeDate(641,21194
+RelativeMonth(658,21572
+ToSeconds(554,19111
+get_date(840,25341
+main(916,27021
+yyerror(546,19055
+yylex(787,24331
+yyparse(943,27607
+
+lib/getopt.c,145
+_getopt_internal 280,9808
+exchange 204,6478
+getopt 594,17414
+main 611,17751
+#define	my_bcopy(152,5210
+my_bcopy 175,5566
+my_index 161,5393
+
+lib/getopt.h,0
+
+lib/getopt1.c,61
+getopt_long 40,1182
+getopt_long_only 56,1685
+main 71,1995
+
+lib/getugroups.c,20
+getugroups 48,1454
+
+lib/mktime.c,67
+#define	__isleap(42,1318
+#define	invalid(55,1662
+mktime(62,1938
+
+lib/posixtm.c,90
+posixtime 159,3985
+posixtm 174,4269
+zzerror 151,3874
+zzlex 135,3642
+zzparse(186,4470
+
+lib/putenv.c,39
+#define bcopy(37,1184
+putenv 54,1509
+
+lib/regex.c,2851
+#define AT_WORD_BOUNDARY(2860,88960
+#define CAN_MATCH_NOTHING(2780,86053
+#define DEBUG_COMPILED_PATTERN_PRINTER(673,18023
+#define DEBUG_DOUBLE_STRING_PRINTER(675,18132
+#define DEBUG_DOUBLE_STRING_PRINTER(688,18467
+#define DEBUG_POP(2217,69810
+#define DEBUG_PRINT1(670,17857
+#define DEBUG_PRINT1(684,18333
+#define DEBUG_PRINT2(671,17903
+#define DEBUG_PRINT3(672,17959
+#define DEBUG_PRINT3(686,18386
+#define DEBUG_PUSH(2219,69880
+#define DEBUG_STATEMENT(669,17817
+#define DOUBLE_FAILURE_STACK(2176,68313
+#define EVER_MATCHED_SOMETHING(2783,86208
+#define EXTEND_BUFFER(834,23207
+#define EXTRACT_NUMBER(371,11436
+#define EXTRACT_NUMBER_AND_INCR(390,11907
+#define FREE_VARIABLES(2866,89124
+#define FREE_VARIABLES(2882,89639
+#define GET_BUFFER_SPACE(791,21830
+#define GET_UNSIGNED_NUMBER(897,25205
+#define INIT_FAILURE_STACK(2158,67712
+#define IS_ACTIVE(2781,86106
+#define IS_CHAR_CLASS(937,26320
+#define IS_IN_FIRST_STRING(408,12344
+#define LETTER_P(2854,88735
+#define MATCHED_SOMETHING(2782,86149
+#define PATFETCH(761,20797
+#define PATFETCH_RAW(769,21048
+#define PAT_PUSH(798,22057
+#define PAT_PUSH_2(807,22266
+#define PAT_PUSH_3(817,22509
+#define POINTER_TO_OFFSET(2808,87216
+#define POP_FAILURE_ITEM(2211,69597
+#define PUSH_FAILURE_ITEM(2206,69383
+#define PUSH_FAILURE_POINT(2233,70250
+#define PUSH_PATTERN_OP(2196,68941
+#define REGEX_REALLOCATE(166,4589
+#define REGEX_REALLOCATE(195,5225
+#define REG_UNSET(2815,87530
+#define RETALLOC(204,5515
+#define SET_LIST_BIT(893,25068
+#define SET_REGS_MATCHED(2792,86705
+#define SIGN_EXTEND_CHAR(148,3813
+#define STORE_NUMBER(352,10886
+#define STORE_NUMBER_AND_INCR(362,11194
+#define STREQ(209,5633
+#define SYNTAX(119,3162
+#define TALLOC(203,5462
+#define TRANSLATE(782,21531
+alternative_unmatchable 4207,135633
+#define assert(681,18287
+at_endline_op_p 2061,65132
+#define bcmp(54,1915
+bcmp_translate 4335,138295
+#define bcopy(53,1871
+#define bzero(55,1962
+common_op_unmatchable 4244,136470
+compiled_pattern_printer 622,16815
+double_string_printer 631,17000
+extract_number 377,11630
+extract_number_and_incr 396,12069
+group_in_compile_stack 2105,66304
+group_unmatchable 4096,131803
+init_syntax_once 93,2737
+insert_jump 1961,61882
+insert_jump_n 2004,63157
+insert_op_2 2026,63737
+#define isblank(139,3648
+#define isgraph(135,3575
+main 4751,151167
+partial_compiled_pattern_printer 422,12644
+pop_failure_point(4015,128857
+print_buf 4805,152327
+printchar 4832,153028
+re_comp 4418,140879
+re_compile_fastmap 2346,74807
+re_compile_pattern 4364,138981
+re_exec 4456,141735
+re_match 2906,90477
+re_match_2 2933,91446
+re_search 2591,80480
+re_search_2 2618,81616
+re_set_syntax 712,19166
+regcomp 4525,144669
+regerror 4651,148401
+regex_compile 970,27626
+regexec 4586,146661
+regfree 4679,148989
+store_jump 1945,61454
+store_jump_n 1984,62566
+
+lib/regex.h,0
+
+lib/stime.c,14
+stime 26,938
+
+lib/strftime.c,160
+#define add_char(105,3359
+add_num2 111,3553
+add_num3 132,3987
+add_str 157,4549
+mon_week 191,5415
+strftime 225,6081
+sun_week 173,4811
+zone_name 206,5647
+
+lib/stripslash.c,31
+strip_trailing_slashes 27,938
+
+lib/strstr.c,16
+strstr 29,1102
+
+lib/xmalloc.c,34
+xmalloc 31,989
+xrealloc 49,1334
+
+lib/xstrdup.c,16
+xstrdup 28,965
+
+lib/xwrite.c,15
+xwrite 34,969
+
+src/basename.c,37
+main 37,1209
+remove_suffix 65,1655
+
+src/date.c,94
+#define isdigit(46,1844
+main 88,2680
+set_date 141,3575
+show_date 159,4033
+usage 189,4641
+
+src/dirname.c,13
+main 27,946
+
+src/env.c,31
+main 102,3119
+usage 161,4367
+
+src/expr.c,532
+#define NEW(88,2673
+#define OLD(89,2726
+#define arithf(335,6486
+arithf 343,6680
+arithf 345,6715
+arithf 347,6755
+#define cmpf(312,6005
+cmpf 325,6295
+cmpf 327,6337
+cmpf 329,6375
+docolon 372,7152
+eval 664,11134
+eval1 629,10743
+eval2 573,10049
+eval3 533,9585
+eval4 489,9063
+eval5 459,8727
+eval6 425,8201
+freev 185,4136
+int_value 159,3801
+isstring 227,4715
+main 134,3429
+nextarg 294,5743
+nomoreargs 306,5914
+null 213,4509
+printv 197,4261
+str_value 172,3956
+toarith 255,5186
+tostring 235,4830
+trace 354,6870
+
+src/id.c,127
+main 100,2673
+print_full_info 259,5542
+print_group 195,4399
+print_group_list 216,4714
+print_user 174,4093
+usage 337,7043
+
+src/logname.c,13
+main 23,849
+
+src/nice.c,50
+isinteger 126,2951
+main 43,1205
+usage 143,3135
+
+src/pathchk.c,179
+#define NAME_MAX_FOR(52,1847
+#define NAME_MAX_FOR(83,2540
+#define PATH_MAX_FOR(49,1755
+#define PATH_MAX_FOR(80,2479
+main 102,2842
+usage 299,8217
+validate_new_path 174,5035
+
+src/printenv.c,14
+main 37,1216
+
+src/printf.c,186
+#define hextobin(49,1492
+#define isodigit(48,1445
+main 63,1814
+#define octtobin(50,1590
+print_direc 272,6189
+print_esc 183,4209
+print_esc_char 218,5107
+print_esc_string 256,5816
+
+src/sleep.c,32
+argdecode 53,1288
+main 29,962
+
+src/stty.c,581
+#define	Control(58,1803
+#define VA_START(43,1482
+#define VA_START(46,1565
+baud_to_value 1061,24616
+display_all 912,21416
+display_changed 840,19797
+display_recoverable 977,22997
+display_settings 819,19468
+display_speed 961,22559
+display_window_size 765,18553
+integer_arg 1160,26415
+main 405,10020
+mode_type_flag 795,19121
+recover_mode 990,23260
+sane_mode 1073,24799
+screen_columns 779,18833
+set_control_char 707,17220
+set_mode 539,13312
+set_speed 733,17888
+set_window_size 749,18222
+string_to_baud 1049,24421
+visible 1107,25603
+wrapf 373,9456
+wrapf 375,9489
+
+src/system.h,298
+#define	S_ISBLK(28,1049
+#define	S_ISCHR(31,1145
+#define	S_ISDIR(34,1241
+#define	S_ISFIFO(40,1434
+#define	S_ISLNK(43,1531
+#define S_ISMPB(49,1736
+#define S_ISMPC(50,1783
+#define S_ISNWK(53,1891
+#define	S_ISREG(37,1337
+#define	S_ISSOCK(46,1629
+#define bcopy(71,2224
+#define bzero(72,2282
+
+src/tee.c,28
+main 48,1391
+tee 105,2542
+
+src/test.c,786
+#define SHELL_BOOLEAN(99,2993
+#  define STREQ(63,1956
+#define TRUTH_AND(101,3068
+#define TRUTH_OR(100,3033
+#define advance(243,6505
+advance 248,6608
+age_of 342,8319
+and 841,19870
+beyond 265,6858
+binary_operator 430,10185
+binop 890,20526
+#define digit(48,1647
+#define digit_value(49,1692
+eaccess 156,4416
+expr 880,20346
+group_member 202,5360
+integer_expected_error 273,7039
+isint 283,7340
+main 1000,22484
+#  define member(67,2062
+or 860,20116
+posixtest 951,21877
+term 376,8976
+test_command 1002,22510
+#  define test_exit(104,3130
+#  define test_exit(108,3242
+test_stat 140,4076
+test_syntax_error 129,3799
+three_arguments 927,21352
+two_arguments 908,20989
+#define unary_advance(258,6707
+unary_operator 665,15196
+unop 901,20900
+#define whitespace(47,1593
+
+src/tty.c,29
+main 45,1382
+usage 83,1853
+
+src/uname.c,54
+main 75,1940
+print_element 137,3197
+usage 149,3394
+
+src/version.c,0
+
+src/whoami.c,13
+main 27,930
+
+src/yes.c,13
+main 23,851
