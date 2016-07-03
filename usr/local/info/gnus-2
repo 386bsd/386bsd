@@ -1,0 +1,1055 @@
+This is Info file ../info/gnus, produced by Makeinfo-1.55 from the
+input file gnus.texi.
+
+   This file documents GNUS, the GNU Emacs newsreader.
+
+   Copyright (C) 1989, 1990, 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+
+File: gnus,  Node: Names of Kill Files,  Next: Background Kills,  Prev: Kill File Example,  Up: Kill File
+
+Names of Kill Files
+===================
+
+   Kill files are kept in the directory specified by the variable
+`gnus-article-save-directory'; its default value is `~/News'.  The
+variable `gnus-kill-file-name' specifies the global kill file's name
+within that directory; the default is `KILL'.
+
+   The name of a local kill file is based on the newsgroup's name.  If
+the variable `gnus-use-long-file-name' is non-`nil', then the file name
+is `NEWSGROUP.KILL'.  Otherwise, it is `NEWS/GROUP/KILL', where the
+subdirectory name is made from the newsgroup name by changing all
+periods to slashes.
+
+
+File: gnus,  Node: Background Kills,  Next: Advanced Kills,  Prev: Names of Kill Files,  Up: Kill File
+
+Background Kill Processing
+==========================
+
+   Kill processing can take a long time.  If you don't want to wait for
+it, try background kill processing using the following shell command:
+
+     emacs -batch -l gnus -f gnus-batch-kill NEWSGROUPS...
+
+where NEWSGROUPS are newsgroup names separated by whitespace.  `!'
+preceding a newsgroup name means negation, and `all' specifies all
+newsgroups not yet decided.  These interpretations are the same as the
+options line of the startup file (*note Startup File::.).
+
+
+File: gnus,  Node: Advanced Kills,  Prev: Background Kills,  Up: Kill File
+
+Advanced Kill Processing
+========================
+
+   Internally, applying kills means to run the hook
+`gnus-apply-kill-hook'.  It is called after the Summary buffer is
+prepared for a selected newsgroup.  The default hook is the function
+`gnus-apply-kill-file' which loads a global kill file and a local kill
+file in this order.  A different style of the kill processing can be
+implemented by customizing this hook.
+
+   For example, if you don't have a global kill file, you can use the
+following hook which applies only a local kill file.  This change can
+save the time for checking the existence of a global kill file.
+
+     ;; Get rid of the default hook.
+     (setq gnus-apply-kill-hook nil)
+     (add-hook 'gnus-apply-kill-hook
+       '(lambda ()
+          ;; Apply a local kill file.
+          (load (gnus-newsgroup-kill-file gnus-newsgroup-name) t nil t)))
+
+(As usual, you can put as many functions as you wish into this hook.
+What is not usual is the fact that the hook is not initially empty.
+Therefore, if you don't want the default hook value, you must set the
+hook variable to `nil'.)
+
+   In contrast, the following example enables only a global kill file.
+
+     ;; Get rid of the default hook.
+     (setq gnus-apply-kill-hook nil)
+     (add-hook 'gnus-apply-kill-hook
+       '(lambda ()
+          ;; Apply a global kill file.
+          (load (gnus-newsgroup-kill-file nil) t nil t)))
+
+   Here is an advanced example that drastically reduces the time for
+applying kill files.  This hook does the kill processing directly
+without loading the kill files.
+
+     ;; Get rid of the default hook.
+     (setq gnus-apply-kill-hook nil)
+     (add-hook 'gnus-apply-kill-hook
+       '(lambda ()
+          ;; Apply to the newsgroup `control'
+          ;; if the NNTP server is flab.
+          (and (string-equal gnus-nntp-server "flab")
+               (string-equal gnus-newsgroup-name "control")
+               (progn
+                 (gnus-kill "Subject" "ihave flab\\|sendme")
+                 (gnus-kill "Subject" "cancel\\|newgroup\\|rmgroup" "d")
+                 (gnus-expunge "X")))))
+
+
+File: gnus,  Node: Customization,  Next: Reporting Bugs,  Prev: Troubleshooting,  Up: Top
+
+Customizing GNUS
+****************
+
+   Appendix A describes the variables and hooks for simple customization
+and the variables for localization.
+
+* Menu:
+
+* Variables::           Variables for customizing GNUS.
+
+* NNTP Variables::      Variables for localizing NNTP environment.
+* Spool Variables::     Variables for localizing news spool environment.
+* Directory Variables:: Variables for localizing private directory environment.
+
+* Hooks::               Function hooks for customizing GNUS.
+
+
+File: gnus,  Node: Variables,  Next: NNTP Variables,  Up: Customization
+
+Common Variables
+================
+
+`gnus-nntp-server'
+     Specifies the name of the host running the NNTP server.  The
+     variable is initialized from the `NNTPSERVER' environment
+     variable.  If the server name is preceded by a colon such as
+     `:Mail', the user's private directory `~/Mail' is used as a news
+     spool.  *Note Finding the News::, for more information.
+
+`gnus-nntp-service'
+     Specifies a service name of NNTP, usually a string `"nntp"'.  In a
+     few instances, it must be the number `119'.  To use a local news
+     spool of your machine rather than NNTP, set the variable to `nil'.
+     *Note Finding the News::, for more information.
+
+`gnus-local-domain'
+     Specifies the domain which is the domain part of your mail address
+     excluding the local host name of your machine.  The environment
+     variable `DOMAINNAME' is used instead if defined.  If the function
+     `system-name' returns the full Internet name, there is no need to
+     define the domain.
+
+`gnus-local-organization'
+     Specifies the organization you belong to.  The environment variable
+     `ORGANIZATION' is used instead if defined.  If the value begins
+     with a slash, it is taken as the name of a file whose contents are
+     read for the value.
+
+`gnus-local-timezone'
+     Specifies the local time zone you belong to.  The value can be
+     either a time zone name such as `"JST"' or a difference in hour
+     from GMT such as `+0900'.  If the variable is non-`nil', a general
+     time zone handling package `timezone.el' is used to generate a
+     valid date for `Date:' field in terms of RFC822.  Otherwise, if it
+     is nil, GNUS generate a date ignoring the local time zone.  If you
+     are using Bnews, it is okay since `inews' will rewrite the invalid
+     date.  However, if you are using Cnews or INN, you must set the
+     variable to the correct time zone or remove `Date' from the
+     variable `gnus-required-headers' since their `inews' do not
+     rewrite the wrong `Date:' field.
+
+     If you want to display the time of articles in your local time
+     zone, call the function `gnus-gmt-to-local' from the hook
+     `gnus-article-prepare-hook'.
+
+`gnus-local-distributions'
+     Specifies a list of distributions.  The head of the list is used as
+     default.  Each element of the list must be a string.  If
+     distributions file is available, its content is also used as
+     distributions.
+
+`gnus-use-generic-from'
+     Non-`nil' means the local host name of your machine will not appear
+     in the `From:' field of article headers.  If the variable is a
+     string, it is used as your domain instead of the definition by the
+     variable `gnus-local-domain' or the environment variable
+     `DOMAINNAME'.
+
+`gnus-use-generic-path'
+     Non-`nil' means the NNTP server name will not appear in the
+     `Path:' field of article headers.  If the variable is a string, it
+     is used in the `Path:' field as the NNTP server name instead of the
+     definition by the variable `gnus-nntp-server'.
+
+`gnus-ignored-newsgroups'
+     Specify a regular expression used to ignore uninterested
+     newsgroups in the active file.  Any lines in the active file
+     matching this regular expression are removed from the newsgroup
+     list before anything else is done to it, thus making them
+     effectively invisible.  There is no way to know what newsgroups
+     there are if they are ignored.
+
+`gnus-ignored-headers'
+     Specifies header fields which should be ignored in an article.
+
+`gnus-required-headers'
+     Specifies header fields which should be included in an article you
+     will post.  RFC977 and RFC1036 require From, Date, Newsgroups,
+     Subject, Message-ID and Path fields.  Organization, Distribution
+     and Lines are optional.  If you want GNUS not to generate some
+     fields, remove them from the variable.  If news system is Cnews,
+     you may have to remove Date and to add Lines.
+
+`gnus-startup-file'
+     Specifies a startup file of the Bnews system, usually `.newsrc'.
+     If there is a file named `.newsrc-SERVER', it is used instead when
+     talking to SERVER.  *Note Startup File::, for more information.
+
+`gnus-signature-file'
+     Specifies a signature file of the Bnews system, usually
+     `.signature'.  The signature file is processed by the function
+     `gnus-inews-insert-signature' called from the hook
+     `gnus-prepare-article-hook' by default.  If there is a file named
+     `.signature-DISTRIBUTION', it is used instead when the
+     distribution of the article is DISTRIBUTION.  Set the variable to
+     `nil' to prevent appending the signature file automatically.
+
+`gnus-use-cross-reference'
+     Specifies what to do with cross references (`Xref:' field).  If it
+     is `nil', cross references are ignored.  If it is `t', articles in
+     subscribed newsgroups are only marked as read.  Otherwise, if it
+     is not `nil' nor `t', articles in all newsgroups are marked as
+     read.
+
+`gnus-use-followup-to'
+     Specifies what to do with `Followup-To:' field.  If it is `nil',
+     its value is ignored.  If it is non-`nil', its value is used as
+     followup newsgroups.  Especially, if it is `t' and you are going
+     to followup to an article in which `poster' is specified, your
+     confirmation is required.
+
+`gnus-use-full-window'
+     Non-`nil' means to take up the entire screen of Emacs.  If the
+     variable is `nil', the windows used by GNUS will be restricted to
+     the bounds of the original window.  This is very useful if you
+     want to read articles while you do other work in other windows.
+
+`gnus-window-configuration'
+     Specifies the configuration of the Group Mode window, the Summary
+     Mode window, and the Article Mode window.  The window
+     configuration can be specified for each action of GNUS (e.g.
+     selecting a newsgroup or selecting an article).  This is quite
+     useful if you are using a slow terminal since the update of Emacs
+     windows can be minimized by displaying these three windows same
+     time.
+
+     The variable must be a list of `(ACTION (G S A))', where ACTION is
+     an action being performed, and G, S, and A are the relative
+     heights of the Group Mode window, the Summary Mode window, and the
+     Article Mode window, respectively.  ACTION is `summary',
+     `newsgroups', or `article'.
+
+     The following example is the default window configuration:
+
+          (setq gnus-window-configuration
+                '((summary        (0 1 0))
+                  (newsgroups     (1 0 0))
+                  (article        (0 3 10))))
+
+     The following is an example of yet another two windows mode.
+     Article buffer is always displayed on a screen.  This is useful on
+     a slow terminal.
+
+          (setq gnus-window-configuration
+                '((summary        (0 1 0))
+                  (newsgroups     (1 0 3))
+                  (article        (0 1 3))))
+
+     The following is an example of three windows mode.  Three buffers
+     are always displayed on a screen.  This is also useful on a slow
+     terminal.
+
+          (setq gnus-window-configuration
+                '((summary        (1 4 0))
+                  (newsgroups     (1 1 3))
+                  (article        (1 1 3))))
+
+`gnus-large-newsgroup'
+     Specifies the number of the articles which indicates a large
+     newsgroup.  If the number of articles in a newsgroup is greater
+     than this value, the number of articles to be selected is asked
+     for.  If the given value N is positive, the last N articles are
+     selected.  If N is negative, the first N articles are selected.
+     An empty string means to select all articles.
+
+`gnus-author-copy'
+     Specifies a file name saving a copy of an article posted using
+     `FCC:' field.  The variable is initialized from the `AUTHORCOPY'
+     environment variable.  The specified file name is inserted in
+     `FCC:' field, so you have a chance to change the file name or
+     disable saving a copy by editing this field.
+
+     The `FCC:' field is processed by the function `gnus-inews-do-fcc'
+     called from the hook `gnus-inews-article-hook' by default.  Unless
+     the first character of the field is ``|'', the article is saved to
+     the specified file using the function specified by the variable
+     `gnus-author-copy-saver'.  The default function `rmail-output'
+     saves in Unix mailbox format.  Instead, if the first character is
+     ``|'', the contents of the article is send to a program specified
+     by the rest of the value.  For example, articles can be saved in
+     an MH folder by the following:
+
+          (setq gnus-author-copy
+                "|/usr/local/lib/mh/rcvstore +Article")
+
+`gnus-author-copy-saver'
+     Specifies a function to save an author copy to.  The function is
+     called with a file name to save a copy to.  The default function
+     `rmail-output' saves in Unix mailbox format.
+
+`gnus-use-long-file-name'
+     Non-`nil' means that a newsgroup name is used as a default file
+     name to save articles to.  If it is `nil', the directory form of a
+     newsgroup name is used instead.  It is set to nil by default if the
+     variable `system-type' is either `usg-unix-v' or `xenix'.
+
+`gnus-mail-save-name'
+`gnus-rmail-save-name'
+`gnus-folder-save-name'
+`gnus-file-save-name'
+     Specifies a function generating a file name to save articles to.
+     The function is called with NEWSGROUP, HEADERS, and optional
+     LAST-NAME.  NEWSGROUP is a string representing the current
+     newsgroup name.  HEADERS is a vector containing headers of the
+     current article.  Macros and functions accessing contents of the
+     HEADERS are defined as `nntp-header-FIELD' and
+     `gnus-header-FIELD', respectively.  The following functions are
+     provided as file name generators by default:
+
+    `gnus-numeric-save-name'
+          Return a file name like `NEWS.GROUP/NUMBER' or
+          `NEWS/GROUP/NUMBER' according to the variable
+          `gnus-use-long-file-name'.
+
+    `gnus-Numeric-save-name'
+          Return a file name like `NEWS.GROUP/NUMBER' or
+          `NEWS/GROUP/NUMBER' according to the variable
+          `gnus-use-long-file-name'.
+
+    `gnus-plain-save-name'
+          Return a file name like `NEWS.GROUP' or `NEWS/GROUP/news'
+          according to the variable `gnus-use-long-file-name'.
+
+    `gnus-Plain-save-name'
+          Return a file name like `NEWS.GROUP' or `NEWS/GROUP/news'
+          according to the variable `gnus-use-long-file-name'.
+
+    `gnus-folder-save-name'
+          Return a folder name like `+NEWS.GROUP' or `+NEWS/GROUP'
+          according to the variable `gnus-use-long-file-name'.
+
+    `gnus-Folder-save-name'
+          Return a folder name like `+NEWS.GROUP' or `+NEWS/GROUP'
+          according to the variable `gnus-use-long-file-name'.
+
+`gnus-default-article-saver'
+     Specifies a function to save articles in your favorite format
+     using the command `gnus-summary-save-article'.  The function must
+     be interactively funcallable.  In other words, it must be an Emacs
+     command.  The functions currently provided are as follows:
+
+    `gnus-summary-save-in-mail'
+          Save articles in Unix mailbox format.
+
+    `gnus-summary-save-in-rmail'
+          Save articles in Rmail format.
+
+    `gnus-summary-save-in-folder'
+          Save articles in an MH folder.
+
+    `gnus-summary-save-in-file'
+          Save articles in article format.
+
+`gnus-article-save-directory'
+     Specifies a directory name to save articles in using the commands
+     `gnus-summary-save-in-mail', `gnus-summary-save-in-rmail', and
+     `gnus-summary-save-in-file'.  The variable is initialized from the
+     `SAVEDIR' environment variable.  Its default value is `~/News'.
+
+`gnus-kill-file-name'
+     Specifies a file name of kill file (*note Kill File::.).  Its
+     default value is `KILL'.
+
+`gnus-novice-user'
+     Non-`nil' means you are a novice to USENET.  If it is non-`nil',
+     verbose messages may be displayed or your confirmations may be
+     required.
+
+`gnus-interactive-catchup'
+     Non-`nil' means that your confirmation is required when catching up
+     a newsgroup in Group mode.
+
+`gnus-interactive-post'
+     Non-`nil' means that newsgroup, subject, and distribution are asked
+     for interactively when composing a new article.
+
+`gnus-interactive-exit'
+     Non-`nil' means that your confirmation is required when exiting
+     GNUS.
+
+`gnus-user-login-name'
+     Specifies your login name.  The login name is got from the
+     `LOGNAME' and `USER' environment variables and the function
+     `user-login-name', if undefined.
+
+`gnus-user-full-name'
+     Specifies your full name.  The full name is got from the `NAME'
+     environment variable and the function `user-full-name', if
+     undefined.
+
+`gnus-show-all-headers'
+     Non-`nil' means all headers of an article are shown.
+
+`gnus-save-all-headers'
+     Non-`nil' means all headers of an article are saved in a file.
+
+`gnus-show-mime'
+     Non-`nil' means process a MIME message.  The message is processed
+     by the function specified by the variable `gnus-show-mime-method'.
+
+`gnus-show-threads'
+     Non-`nil' means conversation threads are displayed in a tree
+     structured form according to references in Summary Mode.
+
+`gnus-thread-hide-subject'
+     Non-`nil' means subjects of lower level threads are hidden if the
+     thread-based reading is turned on.
+
+`gnus-thread-hide-subtree'
+     Non-`nil' means thread subtrees are hidden initially.  If thread
+     subtrees are hidden, you have to run the command
+     `gnus-summary-show-thread' by hand or by using
+     `gnus-select-article-hook' to show them.
+
+`gnus-thread-hide-killed'
+     Non-`nil' means killed thread subtrees are hidden automatically.
+
+`gnus-thread-ignore-subject'
+     Non-`nil' means subject differences are ignored but only references
+     are taken into account in constructing threads trees.  If it is
+     non-`nil' and thread subtrees are hidden, some commands that work
+     with subjects may not work properly.
+
+`gnus-thread-indent-level'
+     Specifies indentation level of thread subtrees.
+
+`gnus-auto-extend-newsgroup'
+     Non-`nil' means visible articles are automatically extended to
+     forward and backward if possible when the commands `N' and `P'
+     (`gnus-summary-next-article' and `gnus-summary-prev-article') are
+     executed in Summary Mode.
+
+`gnus-auto-select-first'
+     Non-`nil' means the first unread article is selected automatically
+     when a newsgroup is selected.  If you'd like to prevent automatic
+     selection of the first unread article in some newsgroups, set the
+     variable to `nil' in the hook `gnus-select-group-hook' or
+     `gnus-apply-kill-hook' (*note Hooks::.).
+
+`gnus-auto-select-next'
+     Non-`nil' means the next newsgroup is selected automatically at the
+     end of the newsgroup.  If the value is `t' and the next newsgroup
+     is empty (no unread articles), GNUS will exit Summary Mode and go
+     back to Group Mode.  If the value is neither `nil' nor `t', GNUS
+     won't exit Summary Mode but will select the following unread
+     newsgroup.  If the value is `quietly', the next unread newsgroup
+     will be selected without any confirmations.
+
+`gnus-auto-select-same'
+     Non-`nil' means an article with the same subject as the current
+     article is selected automatically like `rn -S'.
+
+`gnus-auto-center-summary'
+     Non-`nil' means that the cursor is always kept centered in the
+     Summary Mode window.
+
+`gnus-auto-mail-to-author'
+     Non-`nil' means that inserts `To:' field which is filled with the
+     author of the article when followuping.  Mail is sent using the
+     function specified by the variable `gnus-mail-send-method'.
+
+`gnus-break-pages'
+     Non-`nil' means an article is broken into pages at page delimiters.
+     The page delimiter is specified by the variable
+     `gnus-page-delimiter'.  This may not work with some versions of GNU
+     Emacs earlier than version 18.50.
+
+`gnus-page-delimiter'
+     Specifies regexp describing line-beginnings that separate pages of
+     articles.  Its default value is `"^\^L"'.
+
+`gnus-digest-show-summary'
+     Non-`nil' means that a summary of digest messages is shown when
+     reading a digest article using the command
+     `gnus-summary-rmail-digest'.
+
+`gnus-digest-separator'
+     Specifies a regexp which separates messages in a digest article.
+     Changes to this variable only affect the commands
+     `gnus-summary-next-digest' and `gnus-summary-prev-digest', but not
+     the command `gnus-summary-rmail-digest'.
+
+`gnus-optional-headers'
+     Specifies a function which generates an optional string displayed
+     in the Summary buffer.  The function is called with an article
+     HEADERS, and must return a string excluding `[' and `]'.  HEADERS
+     is a vector containing headers of the current article.  Macros and
+     functions accessing contents of the HEADERS are defined as
+     `nntp-header-FIELD' and `gnus-header-FIELD', respectively.
+
+     GNUS provides two functions as follows:
+
+    `gnus-optional-lines-and-from'
+          Return a string like "NNN:AUTHOR", where NNN is the number of
+          lines in an article and AUTHOR is the name of the author.
+
+    `gnus-optional-lines'
+          Return a string like "NNN", where NNN is the number of lines
+          in an article.
+
+     *Note Hooks::, to change optional headers according to selected
+     newsgroups.
+
+`gnus-show-mime-method'
+     Specifies a function to process a MIME message in current buffer.
+     The function `metamail-buffer' which process the buffer through
+     `metamail' is called by default.
+
+`gnus-mail-reply-method'
+     Specifies a function to begin composing reply mail messages.  The
+     function will be called with an optional argument which means yank
+     original article automatically if non-`nil'.  To use Mail Mode, set
+     the variable to `gnus-mail-reply-using-mail'.  To use mh-e letter
+     Mode, set the variable to `gnus-mail-reply-using-mhe'.
+
+`gnus-mail-forward-method'
+     Specifies a function to forward the current message to another
+     user.  To use Mail Mode, set the variable to
+     `gnus-mail-forward-using-mail'.  To use mh-e letter Mode, set the
+     variable to `gnus-mail-forward-using-mhe'.
+
+`gnus-mail-other-window-method'
+     Specifies a function to begin composing mail messages in other
+     window.  To use Mail Mode, set the variable to
+     `gnus-mail-other-window-using-mail'.  To use mh-e letter Mode, set
+     the variable to `gnus-mail-other-window-using-mhe'.
+
+`gnus-mail-send-method'
+     Specifies a function to mail a message too which is being posted
+     as an article.  The message must have `To:' or `Cc:' field.  The
+     value of the variable `send-mail-function' is the default function
+     which uses sendmail mail program.
+
+`gnus-subscribe-newsgroup-method'
+     Specifies a function called with a newsgroup name when a new
+     newsgroup is found.  GNUS provides the following three functions:
+
+    `gnus-subscribe-randomly'
+          Inserts a new newsgroup at the beginning of newsgroups.  Thus,
+          newsgroups are in random order.
+
+    `gnus-subscribe-alphabetically'
+          Inserts a new newsgroup in strict alphabetic order.
+
+    `gnus-subscribe-hierarchically'
+          Inserts a new newsgroup in hierarchical newsgroup order.
+
+    `gnus-subscribe-interactively'
+          Asks for your decision about a new newsgroup subscription,
+          and inserts it in hierarchical newsgroup order if it is
+          subscribed.  Unless, it is killed.
+
+     The following two definitions illustrate how to write your favorite
+     subscribing method.  The following definition (is the definition
+     of the function gnus-subscribe-randomly) adds new newsgroup at the
+     beginning of newsgroups:
+
+          (setq gnus-subscribe-newsgroup-method
+                '(lambda (newsgroup)
+                   (gnus-subscribe-newsgroup newsgroup
+                                             (car (car gnus-newsrc-assoc)))))
+
+     Instead, if you want to add new newsgroup at the end of
+     newsgroups, use the following:
+
+          (setq gnus-subscribe-newsgroup-method
+                '(lambda (newsgroup)
+                   (gnus-subscribe-newsgroup newsgroup nil)))
+
+     If you want to prevent adding new newsgroups automatically and
+     want to subscribe them later using the command `U'
+     (`gnus-group-unsubscribe-group') in the Newsgroup buffer, use the
+     following:
+
+          (setq gnus-subscribe-newsgroup-method
+                '(lambda (newsgroup) nil))        ;Do nothing.
+
+     The following final example must be the most useful for you who
+     want not to add new newsgroups automatically.  This definition
+     subscribes a new newsgroup first, and then kills it.  The killed
+     newsgroups can be added to the subscription list interactively
+     using Browse-Killed Mode (*note Maintaining Subscriptions::.).
+
+          (setq gnus-subscribe-newsgroup-method
+                '(lambda (newsgroup)
+                   (gnus-subscribe-newsgroup newsgroup)
+                   (gnus-kill-newsgroup newsgroup)))
+
+
+File: gnus,  Node: NNTP Variables,  Next: Spool Variables,  Prev: Variables,  Up: Customization
+
+NNTP Specific Variables
+=======================
+
+`nntp-buggy-select'
+     Non-`nil' means the select routine of your operating system is
+     buggy.  GNUS may hang up while waiting for NNTP server responses.
+     The problem may be solved by setting the variable to `t'.
+
+`nntp-maximum-request'
+     Specifies the maximum number of requests to be sent to the NNTP
+     server at one time.  GNUS may hang up while retrieving headers of
+     a large newsgroup because sending many requests to the NNTP server
+     without reading replies to them causes deadlock.  In this case,
+     set the variable to a lower number.
+
+`nntp-large-newsgroup'
+     Specifies the number of articles which indicates a large
+     newsgroup.  If the number of articles is greater than the value,
+     verbose messages will be shown to indicate the current status.
+
+`nntp-debug-read'
+     Non-`nil' means display dots "..." every 10000 bytes of a message
+     being received.  If it is a number, dots are displayed per the
+     number.  Set the variable to `nil' if you are annoyed about
+     verbose messages while reading news from slow terminal.
+
+`tcp-program-name'
+     This variable specifies the name of the program which establishes
+     communications between Emacs and the NNTP server.  Its default
+     value is `"tcp"'.  (the program `tcp' comes with GNU Emacs.)  This
+     variable is relevant only if you load the library `tcp.el', which
+     you should do only if your Emacs does not have the function
+     `open-network-stream'.
+
+
+File: gnus,  Node: Spool Variables,  Next: Directory Variables,  Prev: NNTP Variables,  Up: Customization
+
+Local News Spool Specific Variables
+===================================
+
+`nnspool-inews-program'
+     Specifies a program to post news.  This is default to the variable
+     `news-inews-program' which is default to `inews'.
+
+`nnspool-inews-switches'
+     Specifies switches for the function `nnspool-request-post' to pass
+     to the command `inews' for posting news.  Its default value is
+     `("-h")'.
+
+`nnspool-spool-directory'
+     Specifies a directory of a local news spool.  This is default to
+     the variable `news-path' which is default to `/usr/spool/news'.
+
+`nnspool-active-file'
+     Specifies an active file of the system for a local news spool.  Its
+     default value is `/usr/lib/news/active'.
+
+`nnspool-newsgroups-file'
+     Specifies an newsgroups file of the system for a local news spool.
+     Its default value is `/usr/lib/news/newsgroups'.
+
+`nnspool-distributions-file'
+     Specifies an distributions file of the system for a local news
+     spool.  Its default value is `/usr/lib/news/distributions'.
+
+`nnspool-history-file'
+     Specifies a history file of the system for a local news spool.  Its
+     default value is `/usr/lib/news/history'.  Some machines may not
+     have this file.  In this case, commands to refer to articles by
+     Message-IDs will not work at all (*note Referencing Articles::.).
+
+
+File: gnus,  Node: Directory Variables,  Next: Hooks,  Prev: Spool Variables,  Up: Customization
+
+Private Directory Specific Variables
+====================================
+
+`mhspool-list-folders-method'
+     Specifies a function to fill the current buffer with file and
+     directory names for a given directory name.  The output format
+     must be the same as that of the Unix command `ls -R1'.  Two
+     functions `mhspool-list-folders-using-ls' and
+     `mhspool-list-folders-using-sh' are provided now.
+
+`mhspool-list-directory-switches'
+     Specifies switches for the function `mhspool-list-folders-using-ls'
+     to pass to the command `ls' for getting file listings in a private
+     directory.  There should be one entry for each line.  Its default
+     value is `("-R")'.  Some machines may require the `("-R1")' switch.
+
+
+File: gnus,  Node: Hooks,  Prev: Directory Variables,  Up: Customization
+
+Function Hooks
+==============
+
+`gnus-group-mode-hook'
+     Called with no arguments after initializing Group Mode if its
+     value is non-`nil'.  This hook is intended to customize Group Mode
+     only once.  It is possible to define or change the NNTP server as
+     you like in this hook since the hook is called before GNUS is
+     connected to an NNTP server.
+
+`gnus-summary-mode-hook'
+     Called with no arguments after initializing Summary Mode if its
+     value is non-`nil'.  This hook is intended to customize Summary
+     Mode only once.  All sorts of searches in Summary Mode normally
+     ignore the case of the text they are searching through.  If you do
+     not want to ignore the case, set the variable `case-fold-search'
+     to `nil' in this hook.
+
+     The following example shows how to assign the functions
+     `gnus-summary-next-group' and `gnus-summary-prev-group' to keys in
+     Summary Mode.
+
+          (setq gnus-summary-mode-hook
+                '(lambda ()
+                   (local-set-key "\C-cn" 'gnus-summary-next-group)
+                   (local-set-key "\C-cp" 'gnus-summary-prev-group)))
+
+`gnus-article-mode-hook'
+     Called with no arguments after initializing Article Mode if its
+     value is non-`nil'.  This hook is intended to customize Article
+     Mode only once.
+
+`gnus-kill-file-mode-hook'
+     Called with no arguments after initializing Kill-File Mode if its
+     value is non-`nil'.
+
+`gnus-browse-killed-mode-hook'
+     Called with no arguments after initializing Browse-Killed Mode if
+     its value is non-`nil'.
+
+`gnus-open-server-hook'
+     Called with no arguments just before opening a connection to NNTP
+     server if its value is non-`nil'.
+
+`gnus-startup-hook'
+     Called with no arguments after an NNTP server is successfully
+     connected to if its value is non-`nil'.  It is possible to change
+     the behavior of GNUS according to the server.
+
+`gnus-group-prepare-hook'
+     Called with no arguments after a list of newsgroups is prepared in
+     the Newsgroup buffer.  This hook is intended to modify the buffer.
+
+`gnus-summary-prepare-hook'
+     Called with no arguments after list of subjects is prepared in the
+     Summary buffer.  This hook is intended to modify the buffer.
+
+`gnus-article-prepare-hook'
+     Called with no arguments after an article is prepared in the
+     Article buffer.  This hook is intended to modify the buffer.  For
+     example, kanji code conversion or un-ROT13/47-ing can be done in
+     this hook.
+
+`gnus-select-group-hook'
+     Called with no arguments when a newsgroup is selected.  This hook
+     is intended to change the behavior of GNUS according to the
+     selected newsgroup.
+
+     The following is an example of sorting the headers listed in the
+     Summary buffer by date and then by subject.  Preceding `Re:' of
+     subjects is ignored while comparing subjects.
+
+          (setq gnus-select-group-hook
+                '(lambda ()
+                   ;; First of all, sort by date.
+                   (gnus-keysort-headers
+                    (function string-lessp)
+                    (function
+                     (lambda (a)
+                       (gnus-sortable-date (gnus-header-date a)))))
+                   ;; Then sort by subject ignoring `Re:'.
+                   (gnus-keysort-headers
+                    (function string-lessp)
+                    (function
+                     (lambda (a)
+                       (if case-fold-search
+                           (downcase (gnus-simplify-subject (gnus-header-subject a) t))
+                         (gnus-simplify-subject (gnus-header-subject a) t)))))
+                  ))
+
+     The following is an example of simplifying subjects like the
+     `gnus-summary-next-same-subject' command does:
+
+          (setq gnus-select-group-hook
+                '(lambda ()
+                   (mapcar (function
+                            (lambda (header)
+                              (nntp-set-header-subject
+                               header
+                               (gnus-simplify-subject
+                                (gnus-header-subject header) 're-only))))
+                           gnus-newsgroup-headers)))
+
+     In some newsgroups, author names are meaningless.  It is possible
+     to prevent listing author names in the Summary buffer as follows:
+
+          (setq gnus-select-group-hook
+                '(lambda ()
+                   (cond ((string-equal "comp.sources.unix"
+                                        gnus-newsgroup-name)
+                          (setq gnus-optional-headers
+                                (function gnus-optional-lines)))
+                         (t
+                          (setq gnus-optional-headers
+                                (function
+                                   gnus-optional-lines-and-from))))))
+
+`gnus-select-article-hook'
+     Called with no arguments when an article is selected if its value
+     is non-`nil'.
+
+     The default hook definition shows conversation thread subtrees of
+     the selected article automatically as follows:
+
+          (setq gnus-select-article-hook
+                '(lambda ()
+                   (gnus-summary-show-thread)))
+
+     It is possible to run Rmail on a digest article automatically as
+     follows:
+
+          (setq gnus-select-article-hook
+                '(lambda ()
+                   (gnus-summary-show-thread)
+                   (cond ((string-equal "comp.sys.sun"
+                                        gnus-newsgroup-name)
+                          (gnus-summary-rmail-digest))
+                         ((and (string-equal "comp.text"
+                                             gnus-newsgroup-name)
+                               (string-match "^TeXhax Digest"
+                                             (gnus-header-subject
+                                                gnus-current-headers)))
+                          (gnus-summary-rmail-digest)
+                          ))))
+
+`gnus-select-digest-hook'
+     Called with no arguments when reading digest messages using Rmail
+     if its value is non-`nil'.  This hook is intended to modify an
+     article so that Rmail can work with it.  *Note Digest Articles::,
+     for more information on digest articles.
+
+     The following example is the default hook definition to modify
+     incomplete digest articles:
+
+          (setq gnus-select-digest-hook
+                '(lambda ()
+                   ;; Reply-To: is required by
+                   ;; `undigestify-rmail-message'.
+                   (or (mail-position-on-field "Reply-to" t)
+                       (progn
+                         (mail-position-on-field "Reply-to")
+                         (insert (gnus-fetch-field "From"))))))
+
+`gnus-rmail-digest-hook'
+     Called with no arguments when reading digest messages using Rmail
+     if its value is non-`nil'.  This hook is intended to customize
+     Rmail Mode for reading digest articles.
+
+`gnus-apply-kill-hook'
+     Called with no arguments when a newsgroup is selected and the
+     Summary buffer is prepared if its value is non-`nil'.  This hook
+     is intended to apply kill files to the selected newsgroup.  It is
+     set to the function `gnus-apply-kill-file' by default.
+
+     Since a general kill file is too heavy to use only for a few
+     newsgroups, a lighter hook function is recommended.  For example,
+     if you'd like to apply kills to articles which contain the string
+     `rmgroup' in subject in newsgroup `control', you can use the
+     following hook:
+
+          (setq gnus-apply-kill-hook
+                '(lambda ()
+                   (cond ((string-match "control" gnus-newsgroup-name)
+                          (gnus-kill "Subject" "rmgroup")
+                          (gnus-expunge "X")))))
+
+     *Note Kill File::, for more information on kill files.
+
+`gnus-mark-article-hook'
+     Called with no arguments when an article is selected for the first
+     time if its value is non-`nil'.  The hook is intended to mark an
+     article as read (or saved) automatically when it is selected.
+
+     The following example is the default definition of the hook:
+
+          (setq gnus-mark-article-hook
+                '(lambda ()
+                   ;; Mark the selected article as read.
+                   (or (memq gnus-current-article gnus-newsgroup-marked)
+                       (gnus-summary-mark-as-read gnus-current-article))
+                   ;; Put "+" on the current subject.
+                   (gnus-summary-set-current-mark "+")
+                   ))
+
+     It is possible to mark as saved (`-') instead when an article is
+     selected as follows:
+
+          (setq gnus-mark-article-hook
+                '(lambda ()
+                   ;; Mark the selected article as saved.
+                   (gnus-summary-mark-as-unread gnus-current-article)
+                   ;; Put "+" on the current subject.
+                   (gnus-summary-set-current-mark "+")
+                   ))
+
+`gnus-prepare-article-hook'
+     Called with no arguments after preparing message body, but before
+     preparing header fields which is automatically generated if its
+     value is non-`nil'.  Text changes made by this hook does not
+     affect on the editing text.  The default hook inserts a signature
+     file by calling the function `gnus-inews-insert-signature'.
+
+`gnus-inews-article-hook'
+     Called with no arguments before posting an article if its value is
+     non-`nil'.  This hook is called just before sending an article to
+     the NNTP server or calling the `inews' program.  Text changes made
+     by this hook does not affect on the editing text.  It is no
+     recommended to alter the number of lines of the article since
+     `Lines:' field may be already there.  The default hook does FCC
+     (save an article to the specified file) by calling the function
+     `gnus-inews-do-fcc'.
+
+`gnus-exit-group-hook'
+     Called with no arguments when exiting the current newsgroup if its
+     value is non-`nil'.  If your machine is so slow that exiting from
+     Summary Mode takes a long time, you can inhibit marking articles
+     as read by using cross-reference information in the `Xref:' field
+     by setting the variable `gnus-newsgroup-headers' to `nil' in this
+     hook.
+
+`gnus-exit-gnus-hook'
+     Called with no arguments when exiting GNUS if its value is
+     non-`nil'.  If you want to clear out Emacs buffers which were
+     created by GNUS and remain afterwards, you can use this hook.
+
+     The following example shows how to kill a buffer which was used for
+     posting news.
+
+          (setq gnus-exit-gnus-hook
+                '(lambda ()
+                   ;; Kill a buffer used for posting news.
+                   (and (get-buffer "*post-news*")
+                        (kill-buffer "*post-news*"))))
+
+`gnus-suspend-gnus-hook'
+     Called with no arguments when suspending GNUS if its value is
+     non-`nil'.  The purpose is the same as the hook
+     `gnus-exit-gnus-hook'.
+
+`gnus-save-newsrc-hook'
+     Called with no arguments before saving the startup file `.newsrc'
+     if its value is non-`nil'.  This hook is intended to change the way
+     of backing up the startup file.
+
+
+File: gnus,  Node: Troubleshooting,  Next: Customization,  Prev: Kill File,  Up: Top
+
+Troubleshooting GNUS
+********************
+
+   Emacs may hang up while waiting for NNTP server responses.  This may
+be caused by a buggy select routine of your operating system.  If so,
+the problem may be solved by loading the source code for the library
+`nntp.el' instead of running the byte-compiled version.  If you still
+have problems with it, set the variable `nntp-buggy-select' to `t'.
+
+   Emacs may hang up while retrieving headers of a large newsgroup.  The
+reason is that too many requests have been sent to the NNTP server
+without reading replies to them.  This causes a deadlock of Emacs and
+the server.  In this case, the number of requests sent to the server at
+one time must be reduced.  Set the variable `nntp-maximum-request' to a
+lower value than the default.  The optimal value depends on your
+computing environment.
+
+
+File: gnus,  Node: Reporting Bugs,  Next: Index,  Prev: Customization,  Up: Top
+
+Reporting Bugs
+**************
+
+Mailing Lists and USENET Newsgroup
+==================================
+
+   There are two mailing lists and one USENET newsgroup for discussing
+GNUS related topics.  These are intended for exchanging useful
+information about GNUS, such as bug reports, useful hooks, and
+extensions of GNUS.  If you have any questions or problems, feel free to
+ask about them.  Suggestions are also welcome.
+
+`gnu.emacs.gnus'
+     This is a USENET newsgroup under the gnu.all hierarchy which is
+     concerned with the GNU Project of the Free Software Foundation.
+
+`info-gnus-english@tut.cis.ohio-state.edu'
+     This is an Internet mailing list which is gated bi-directionally
+     with the gnu.emacs.gnus newsgroup.  English is the official
+     language of the list.  Please send subscription requests to:
+
+          info-gnus-english-request@tut.cis.ohio-state.edu
+
+`info-gnus@flab.Fujitsu.CO.JP'
+     This is a JUNET mailing list.  Messages of info-gnus-english and
+     gnu.emacs.gnus are forwarded to this list.  English and Japanese
+     are the official languages of the list.  Please send subscription
+     requests to:
+
+          info-gnus-request@flab.Fujitsu.CO.JP
+
+   The major difference between info-gnus-english/gnu.emacs.gnus and
+info-gnus is the official language.  There is no need to subscribe to
+info-gnus if you cannot read messages written in Japanese since most
+discussions and important announcements will be sent to
+info-gnus-english.
+
+How to Report a Bug
+===================
+
+   If you find a bug, it is important to report it and to report it in a
+way which is useful.  If it is a bug of a lisp program, what is the most
+useful is an exact backtrace information of the lisp program together
+with the version number of GNUS that you are using.
+
+   To make the backtrace information, you must set the Emacs variable
+`debug-on-error' to `t' before the error happens.  A backtrace obtained
+from a byte-compiled lisp program is not usually understandable.  To
+make a human readable backtrace, load the source program which is not
+byte-compiled yet and then produce the error.
+
+   *note Reporting Bugs: (emacs)Bugs, for more information.
+

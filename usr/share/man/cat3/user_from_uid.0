@@ -1,0 +1,66 @@
+PWCACHE(3)                386BSD Programmer's Manual                PWCACHE(3)
+
+NNAAMMEE
+     ppwwccaacchhee - cache password and group entries
+
+SSYYNNOOPPSSIISS
+     uusseerr__ffrroomm__uuiidd(_u_i_d__t _u_i_d, _i_n_t _n_o_u_s_e_r)
+
+     ggrroouupp__ffrroomm__ggiidd(_g_i_d__t _g_i_d, _i_n_t _n_o_g_r_o_u_p)
+
+DDEESSCCRRIIPPTTIIOONN
+     TThhiiss iinntteerrffaaccee iiss nnoott ppaarrtt ooff tthhee CC lliibbrraarryy..  IItt hhaass bbeeeenn ppllaacceedd iinn tthhee
+     BBeerrkkeelleeyy uuttiilliittyy lliibbrraarryy,, lliibbuuttiill,, aass iitt iiss uusseedd bbyy sseevveerraall ssttaannddaarrdd
+     uuttiilliittiieess..
+
+     The uusseerr__ffrroomm__uuiidd() function returns the user name associated with the
+     argument _u_i_d. The user name is cached so that multiple calls with the
+     same _u_i_d do not require additional calls to getpwuid(3).  If there is no
+     user associated with the _u_i_d, a pointer is returned to an ASCII
+     representation of the _u_i_d, unless the argument _n_o_u_s_e_r is non-zero, in
+     which case a NULL pointer is returned.
+
+     The ggrroouupp__ffrroomm__ggiidd() function returns the group name associated with the
+     argument _g_i_d. The group name is cached so that multiple calls with the
+     same _g_i_d do not require additional calls to getgrgid(3).  If there is no
+     group associated with the _g_i_d, a pointer is returned to an ASCII
+     representation of the _g_i_d, unless the argument _n_o_g_r_o_u_p is non-zero, in
+     which case a NULL pointer is returned.
+
+SSEEEE AALLSSOO
+     getgrgid(3),  getpwuid(3)
+
+HHIISSTTOORRYY
+     The uusseerr__ffrroomm__iidd() and ggrroouupp__ffrroomm__iidd() functions are currently under
+     development.
+
+BSD Experimental                April 19, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

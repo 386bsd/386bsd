@@ -1,0 +1,132 @@
+
+
+
+uuxqt(8)                       1.03                      uuxqt(8)
+
+
+NNAAMMEE
+       uuxqt - UUCP execution daemon
+
+SSYYNNOOPPSSIISS
+       uuuuxxqqtt [ options ]
+
+DDEESSCCRRIIPPTTIIOONN
+       The  _u_u_x_q_t  daemon  executes commands requested by _u_u_x (1)
+       from either the local system or from remote  systems.   It
+       is  started automatically by the _u_u_c_i_c_o (8) daemon (unless
+       _u_u_c_i_c_o (8) is given the --qq option).
+
+       There is normally no need to run this  command,  since  it
+       will be invoked by _u_u_c_i_c_o (8).  However, it can be used to
+       provide greater control over the processing  of  the  work
+       queue.
+
+       Multiple  invocations of _u_u_x_q_t may be run at once, as con-
+       trolled by the _m_a_x-_u_u_x_q_t_s configuration command.
+
+OOPPTTIIOONNSS
+       The following options may be given to _u_u_x_q_t.
+
+       --cc ccoommmmaanndd
+            Only execute requests for the specified command.  For
+            example: uuxqt -c rmail
+
+       --ss ssyysstteemm
+            Only  execute requests originating from the specified
+            system.
+
+       --xx ttyyppee
+            Turn on particular debugging  types.   The  following
+            types  are  recognized:  abnormal,  chat,  handshake,
+            uucp-proto, proto, port, config,  spooldir,  execute,
+            incoming,  outgoing.  Only abnormal, config, spooldir
+            and execute are meaningful for _u_u_x_q_t.
+
+            Multiple types may be given, separated by commas, and
+            the  --xx  option  may appear multiple times.  A number
+            may also be given, which will turn on that many types
+            from the foregoing list; for example, --xx 22 is equiva-
+            lent to --xx aabbnnoorrmmaall,,cchhaatt..
+
+            The debugging output is sent to the  debugging  file,
+            usually       one      of      /usr/spool/uucp/Debug,
+            /usr/spool/uucp/DEBUG,                             or
+            /usr/spool/uucp/.Admin/audit.local.
+
+       --II ffiillee
+            Set  configuration  file to use.  This option may not
+            be available, depending upon how _u_u_x_q_t was  compiled.
+
+
+
+
+
+UUCP                          Taylor                            1
+
+
+
+
+
+uuxqt(8)                       1.03                      uuxqt(8)
+
+
+FFIILLEESS
+       The  file  names  may be changed at compilation time or by
+       the configuration file, so these are only  approximations.
+
+       /usr/lib/uucp/config - Configuration file.
+       /usr/spool/uucp - UUCP spool directory.
+       /usr/spool/uucp/Log - UUCP log file.
+       /usr/spool/uucppublic - Default UUCP public directory.
+       /usr/spool/uucp/Debug - Debugging file.
+
+SSEEEE AALLSSOO
+       uucp(1), uux(1), uucico(8)
+
+AAUUTTHHOORR
+       Ian Lance Taylor (ian@airs.com or uunet!airs!ian)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UUCP                          Taylor                            2
+
+

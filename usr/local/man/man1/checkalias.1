@@ -1,0 +1,41 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH CHECKALIAS 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+checkalias - check to see if an alias is defined.
+.SH SYNOPSIS
+.B checkalias
+alias, alias, ...
+.SH DESCRIPTION
+.I Checkalias
+checks the user file first, and then the system alias file
+to try to find the specified alias or aliases.  If found, 
+the value of the alias is printed out, otherwise an error
+is generated.
+.P
+Note: this is in fact a one-line shell script;
+.nf
+
+	elm -c $*
+.fi
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+elm(1L), elmalias(1L), newalias(1L), mail(1), mailx(1)
+.SH BUGS
+Note that the precedence of aliases is user file then system
+file.  This means that a user can 'overload' an alias by having
+one defined in the system file also defined in theirs.  This
+shouldn't turn out to be a problem, but is something for
+the system administrator to keep in mind when creating the
+system alias file.
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

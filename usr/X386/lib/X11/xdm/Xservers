@@ -1,0 +1,12 @@
+#
+# Xservers file, workstation prototype
+#
+# This file should contain an entry to start the server on the
+# local display; if you have more than one display (not screen),
+# you can add entries to the list (one per line).  If you also
+# have some X terminals connected which do not support XDMCP,
+# you can add them here as well.  Each X terminal line should
+# look like:
+#	XTerminalName:0 foreign
+#
+:0 local /usr/X386/bin/X

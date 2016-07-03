@@ -1,0 +1,68 @@
+# $XConsortium: Xaccess,v 1.5 91/08/26 11:52:51 rws Exp $
+#
+# Access control file for XDMCP connections
+#
+# To control Direct and Broadcast access:
+#
+#	pattern
+#
+# To control Indirect queries:
+#
+# 	pattern		list of hostnames and/or macros ...
+#
+# To use the chooser:
+#
+#	pattern		CHOOSER BROADCAST
+#
+# or
+#
+#	pattern		CHOOSER list of hostnames and/or macros ...
+#
+# To define macros:
+#
+#       %name		list of hosts ...
+#
+# The first form tells xdm which displays to respond to itself.
+# The second form tells xdm to forward indirect queries from hosts matching
+# the specified pattern to the indicated list of hosts.
+# The third form tells xdm to handle indirect queries using the chooser;
+# the chooser is directed to send its own queries out via the broadcast
+# address and display the results on the terminal.
+# The fourth form is similar to the third, except instead of using the
+# broadcast address, it sends DirectQuerys to each of the hosts in the list
+#
+# In all cases, xdm uses the first entry which matches the terminal;
+# for IndirectQuery messages only entries with right hand sides can
+# match, for Direct and Broadcast Query messages, only entries without
+# right hand sides can match.
+#
+
+*					#any host can get a login window
+
+#
+# To hardwire a specific terminal to a specific host, you can
+# leave the terminal sending indirect queries to this host, and
+# use an entry of the form:
+#
+
+#terminal-a	host-a
+
+
+#
+# The nicest way to run the chooser is to just ask it to broadcast
+# requests to the network - that way new hosts show up automatically.
+# Sometimes, however, the chooser can't figure out how to broadcast,
+# so this may not work in all environments.
+#
+
+*		CHOOSER BROADCAST	#any indirect host can get a chooser
+
+#
+# If you'd prefer to configure the set of hosts each terminal sees,
+# then just uncomment these lines (and comment the CHOOSER line above)
+# and edit the %hostlist line as appropriate
+#
+
+#%hostlist	host-a host-b
+
+#*		CHOOSER %hostlist	#

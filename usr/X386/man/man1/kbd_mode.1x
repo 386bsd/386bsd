@@ -1,0 +1,35 @@
+.\" $XFree86: mit/server/ddx/x386/etc/kbd_mode.man,v 1.2 1993/03/27 09:31:31 dawes Exp $
+.TH KBD_MODE 1 "Release 5"  "X Version 11"
+.SH NAME
+kbd_mode \- recover the PC console keyboard
+.SH SYNOPSIS
+.B kbd_mode
+[ -a -u ]
+.SH DESCRIPTION
+.I Kbd_mode
+resets the PC console keyboard to a rational state.
+.SH OPTIONS
+The following options are supported:
+.TP 8
+.B \-a
+Set the keyboard so that ASCII characters are read from the console.
+.TP 8
+.B \-u
+Set the keyboard so that undecoded keyboard values are read from the
+console.
+.SH EXAMPLES
+If the server crashes or otherwise fails to put the keyboard back in
+ascii mode when it exits, it can leave your keyboard dead.  If you are
+able to login remotely, you can reset it typing:
+.sp
+	kbd_mode -a
+.sp
+.PP
+Conversely, changing the keyboard to ascii mode while the server is
+running will make the keyboard appear to be dead while the the mouse
+continues to work.  Again, if you are able to login remotely, you can
+reset it typing:
+.sp
+	kbd_mode -u
+.sp
+

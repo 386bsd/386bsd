@@ -1,0 +1,72 @@
+.ds xL Programming With Xlib
+.TH XDeviceBell 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XDeviceBell \- ring a bell on a device supported through the input extension
+.SH SYNTAX
+Status XDeviceBell\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIfeedbackclass\fP\^, \fIfeedbackid\fP\^, \fIpercent\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      XID *\fIfeedbackclass\fP\^; 
+.br
+      XID *\fIfeedbackid\fP\^; 
+.br
+      int *\fIpercent\fP\^; 
+.br
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device with which the bell is associated.
+.TP 12
+.I feedbackclass
+Specifies the class of the feedback with which the bell is associated.
+.TP 12
+.I feedbackid
+Specifies the id of the feedback with which the bell is associated.
+.TP 12
+.I percent
+Specifies the volume in the range -100 to 100 at which the bell should be rung.
+.SH DESCRIPTION
+The \fIXDeviceBell\fP request causes the server to ring a bell on the 
+specified feedback of the specified device, if possible.  
+The specified volume is relative to the base volume for the bell.
+If an invalid device is specified,
+a \fIBadDevice\fP error will be returned.  The feedbackclass and feedbackid
+parameters contain values returned by an \fIXGetFeedbackControl\fP request
+and uniquely identify the bell to ring.  If a feedbackclass is specified that
+does not support a bell, or if a nonexistent feedbackid is specified,
+or a percent value is specified that is not in the range -100 to 100,
+a \fIBadValue\fP error will be returned.
+.P
+The volume at which the bell is rung when the percent argument is 
+nonnegative is:
+.IP
+base \- [(base * percent) / 100] + percent
+.P
+The volume at which the bell rings
+when the percent argument is negative is:
+.IP
+base + [(base * percent) / 100]
+.P
+To change the base volume of the bell, use \fIXChangeFeedbackControl\fP.
+.P
+\fIXDeviceBell\fP can generate a \fIBadDevice\fP or a \fIBadValue\fP
+error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist, or has 
+not been opened by this client via \fIXOpenInputDevice\fP.
+.TP 12
+\fIBadValue\fP
+An invalid feedbackclass, feedbackid, or percent value was specified.
+.SH "SEE ALSO"
+XChangeFeedbackControl(3X),
+XBell(3X)
+.br
+\fI\*(xL\fP

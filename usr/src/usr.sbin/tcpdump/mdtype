@@ -1,0 +1,14 @@
+#!/bin/csh -f
+# @(#) $Header: mdtype,v 1.1 90/07/02 22:01:38 leres Exp $ (LBL)
+#
+# Determine machine type.
+#
+set mach="UNKNOWN"
+if ( -f /bin/arch ) set mach=`/bin/arch`
+if ($mach == "UNKNOWN") then
+	set temp=`machine`
+	if ($temp != "") set mach=$temp
+endif
+echo $mach
+if ($mach == "UNKNOWN") exit 1
+exit 0

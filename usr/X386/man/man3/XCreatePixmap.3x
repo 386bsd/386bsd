@@ -1,0 +1,204 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XCreatePixmap 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XCreatePixmap, XFreePixmap \- create or destroy pixmaps
+.SH SYNTAX
+.\" $Header: XCrePmap.f,v 1.1 88/02/26 09:59:10 mento Exp $
+Pixmap XCreatePixmap\^(\^\fIdisplay\fP, \fId\fP\^, \fIwidth\fP\^, \fIheight\fP\^, \fIdepth\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.br
+      unsigned int \fIdepth\fP\^;
+.LP
+.\" $Header: XFreePixmap.f,v 1.1 88/02/26 10:00:19 mento Exp $
+XFreePixmap\^(\^\fIdisplay\fP, \fIpixmap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Pixmap \fIpixmap\fP\^;
+.SH ARGUMENTS
+.\" $Header: d_crepix.a,v 1.1 88/02/26 10:06:13 mento Exp $
+.IP \fId\fP 1i
+Specifies which screen the pixmap is created on. 
+.\" $Header: depth1.a,v 1.3 88/05/09 09:53:55 mento Exp $
+.IP \fIdepth\fP 1i
+Specifies the depth of the pixmap.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIpixmap\fP 1i
+Specifies the pixmap.
+.ds Wh , which define the dimensions of the pixmap
+.\" $Header: w+h_gen.a,v 1.2 88/08/04 11:21:28 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height\*(Wh.
+.SH DESCRIPTION
+.\" $Header: XCrePmap.d,v 1.5 88/08/18 07:41:46 mento Exp $
+The
+.ZN XCreatePixmap
+function creates a pixmap of the width, height, and depth you specified
+and returns a pixmap ID that identifies it.
+It is valid to pass an 
+.ZN InputOnly
+window to the drawable argument.
+The width and height arguments must be nonzero,
+or a 
+.ZN BadValue
+error results.
+The depth argument must be one of the depths supported by the screen
+of the specified drawable,
+or a
+.ZN BadValue
+error results.
+.LP
+The server uses the specified drawable to determine on which screen
+to create the pixmap.
+The pixmap can be used only on this screen
+and only with other drawables of the same depth (see
+.ZN XCopyPlane
+for an exception to this rule).
+The initial contents of the pixmap are undefined.
+.LP
+.ZN XCreatePixmap
+can generate
+.ZN BadAlloc ,
+.ZN BadDrawable ,
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XFreePixmap.d,v 1.2 88/05/09 09:56:57 mento Exp $
+The
+.ZN XFreePixmap
+function first deletes the association between the pixmap ID and the pixmap.
+Then, the X server frees the pixmap storage when there are no references to it.
+The pixmap should never be referenced again.
+.LP
+.ZN XFreePixmap
+can generate a
+.ZN BadPixmap 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badpixmap.e,v 1.1 87/09/04 08:23:16 mento Exp $
+.TP 1i
+.ZN BadPixmap
+A value for a Pixmap argument does not name a defined Pixmap.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XCopyArea(3X11)
+.br
+\fI\*(xL\fP

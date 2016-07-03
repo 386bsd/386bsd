@@ -1,0 +1,50 @@
+#********************************************************************
+# lindner
+# 3.1
+# 1993/04/15 21:15:10
+# /home/mudhoney/GopherSrc/CVS/gopher+/gopher/gopherremote.rc,v
+# Exp
+#
+# Paul Lindner, University of Minnesota CIS.
+#
+# Copyright 1991, 1992 by the Regents of the University of Minnesota
+# see the file "Copyright" in the distribution for conditions of use.
+#********************************************************************
+# MODULE: gopher.rc
+# Global rc file for gopher client
+#*********************************************************************
+# Revision History:
+# gopherremote.rc,v
+# Revision 3.1  1993/04/15  21:15:10  lindner
+# Remote gopherrc file
+#
+# Revision 3.3  1993/02/19  21:08:58  lindner
+# Added audio/mulaw, and changed defs for gif and ppm to use the '|'
+# command.
+#
+# Revision 3.2  1993/02/18  23:37:27  lindner
+# Added header info...
+#
+#
+# Map gopher+ types to local commands
+#
+# format is:
+# map: gplusview,view command,printcommand
+#
+#map: Audio/mulaw,|play -v 40 -&,
+map: image/gif,DOWN,lpr %s
+#map: image/ppm,|xv,lpr %s
+#map: Text/dvi,xdvi %s,lpr %s
+#map: Text/postscript,gspreview %s,lpr %s
+#map: Text/troff,nroff %s|more -d,ptroff %s
+map: Text/richtext,richtext %s|Less -f -r,lpr %s
+#
+# Set preference values for each gopher+ type
+#
+# format is
+#
+# prefer: default|gplusview pref value
+#
+prefer: default 5
+prefer: image/gif 10
+#prefer: image/ppm 5

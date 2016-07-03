@@ -1,0 +1,331 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XAddHost 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XAddHost, XAddHosts, XListHosts, XRemoveHost, XRemoveHosts, XSetAccessControl, XEnableAccessControl, XDisableAccessControl, XHostAddress \- control host access and host control structure
+.SH SYNTAX
+.\" $Header: XAddHost.f,v 1.1 88/02/26 09:58:00 mento Exp $
+XAddHost\^(\^\fIdisplay\fP, \fIhost\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XHostAddress *\fIhost\fP\^;	
+.LP
+XAddHosts\^(\^\fIdisplay\fP, \fIhosts\fP, \fInum_hosts\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XHostAddress *\fIhosts\fP\^;
+.br
+      int \fInum_hosts\fP\^;
+.LP
+.\" $Header: XGetHosts.f,v 1.1 88/02/26 10:00:39 mento Exp $
+XHostAddress *XListHosts\^(\^\fIdisplay\fP, \fInhosts_return\fP, \fIstate_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int *\fInhosts_return\fP\^;
+.br
+      Bool *\fIstate_return\fP\^;
+.LP
+.\" $Header: XRemoveHost.f,v 1.1 88/02/26 10:02:40 mento Exp $
+XRemoveHost\^(\^\fIdisplay\fP, \fIhost\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XHostAddress *\fIhost\fP\^;
+.LP
+XRemoveHosts\^(\^\fIdisplay\fP, \fIhosts\fP, \fInum_hosts\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XHostAddress *\fIhosts\fP\^;
+.br
+      int \fInum_hosts\fP\^;
+.LP
+XSetAccessControl\^(\^\fIdisplay\fP, \fImode\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fImode\fP\^;
+.LP
+.\" $Header: XEnAccsCntrl.f,v 1.1 88/02/26 09:59:47 mento Exp $
+XEnableAccessControl\^(\^\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.LP
+.\" $Header: XDisAcsCntrl.f,v 1.1 88/02/26 09:59:41 mento Exp $
+XDisableAccessControl\^(\^\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.ds Ho added or removed
+.\" $Header: host.a,v 1.4 88/08/04 11:14:39 mento Exp $
+.IP \fIhost\fP 1i
+Specifies the host that is to be \*(Ho.
+.ds Ho added or removed
+.IP \fIhosts\fP 1i
+Specifies each host that is to be \*(Ho.
+.IP \fImode\fP 1i
+Specifies the mode.
+You can pass
+.ZN EnableAccess
+or
+.ZN DisableAccess .
+.\" $Header: nhosts.a,v 1.1 88/02/26 10:29:33 mento Exp $
+.IP \fInhosts_return\fP 1i
+Returns the number of hosts currently in the access control list.
+.IP \fInum_hosts\fP 1i
+Specifies the number of hosts.
+.IP \fIstate_return\fP 1i
+Returns the state of the access control.
+.SH DESCRIPTION
+.\" $Header: XAddHost.d,v 1.4 88/06/11 07:48:33 mento Exp $
+The
+.ZN XAddHost
+function adds the specified host to the access control list for that display.
+The server must be on the same host as the client issuing the command, or a
+.ZN BadAccess
+error results.
+.LP
+.ZN XAddHost
+can generate
+.ZN BadAccess
+and
+.ZN BadValue
+errors.
+.LP
+.\" $Header: XAddHosts.d,v 1.4 88/06/11 07:48:33 mento Exp $
+The
+.ZN XAddHosts
+function adds each specified host to the access control list for that display.
+The server must be on the same host as the client issuing the command, or a
+.ZN BadAccess
+error results.
+.LP
+.ZN XAddHosts
+can generate
+.ZN BadAccess
+and
+.ZN BadValue
+errors.
+.LP
+.\" $Header: XGetHosts.d,v 1.2 88/06/11 07:51:06 mento Exp $
+The
+.ZN XListHosts
+function returns the current access control list as well as whether the use 
+of the list at connection setup was enabled or disabled.
+.ZN XListHosts
+allows a program to find out what machines can make connections.
+It also returns a pointer to a list of host structures that
+were allocated by the function. 
+When no longer needed,
+this memory should be freed by calling
+.ZN XFree .
+.LP
+.\" $Header: XRemoveHost.d,v 1.4 88/06/11 07:52:48 mento Exp $
+The
+.ZN XRemoveHost
+function removes the specified host from the access control list 
+for that display.
+The server must be on the same host as the client process, or a
+.ZN BadAccess
+error results.
+If you remove your machine from the access list,
+you can no longer connect to that server,
+and this operation cannot be reversed unless you reset the server.
+.LP
+.ZN XRemoveHost
+can generate
+.ZN BadAccess
+and
+.ZN BadValue
+errors.
+.LP
+.\" $Header: XRemoveHosts.d,v 1.3 88/06/11 07:52:49 mento Exp $
+The
+.ZN XRemoveHosts
+function removes each specified host from the access control list for that 
+display.  
+The X server must be on the same host as the client process, or a
+.ZN BadAccess
+error results.
+If you remove your machine from the access list, 
+you can no longer connect to that server,
+and this operation cannot be reversed unless you reset the server.
+.LP
+.ZN XRemoveHosts
+can generate
+.ZN BadAccess
+and
+.ZN BadValue
+errors.
+.LP
+.\" $Header: XChAccsCntrl.d,v 1.2 88/05/14 10:03:40 mento Exp $
+The
+.ZN XSetAccessControl
+function either enables or disables the use of the access control list 
+at each connection setup.
+.LP
+.ZN XSetAccessControl
+can generate
+.ZN BadAccess
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XEnAccsCntrl.d,v 1.2 88/05/14 10:04:37 mento Exp $
+The
+.ZN XEnableAccessControl
+function enables the use of the access control list at each connection setup.
+.LP
+.ZN XEnableAccessControl
+can generate a
+.ZN BadAccess 
+error.
+.LP
+.\" $Header: XDisAcsCntrl.d,v 1.2 88/05/14 10:05:51 mento Exp $
+The
+.ZN XDisableAccessControl
+function disables the use of the access control list at each connection setup.
+.LP
+.ZN XDisableAccessControl
+can generate a
+.ZN BadAccess 
+error.
+.SH STRUCTURES
+The
+.ZN XHostAddress
+structure contains:
+.LP
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	int family;	/* for example FamilyInternet */
+	int length;	/* length of address, in bytes */
+	char *address;	/* pointer to where to find the address */
+} XHostAddress;
+.De
+.LP
+The family member specifies which protocol address family to use 
+(for example, TCP/IP or DECnet) and can be
+.ZN FamilyInternet ,
+.ZN FamilyDECnet ,
+or
+.ZN FamilyChaos .
+The length member specifies the length of the address in bytes.
+The address member specifies a pointer to the address.
+.SH DIAGNOSTICS
+.\" $Header: badaccess4.e,v 1.1 87/09/04 08:22:51 mento Exp $
+.TP 1i
+.ZN BadAccess
+A client attempted
+to modify the access control list from other than the local
+(or otherwise authorized) host.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XFree(3X11)
+.br
+\fI\*(xL\fP

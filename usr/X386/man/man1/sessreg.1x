@@ -1,0 +1,101 @@
+.TH SESSREG 1 "Release 5" "X Version 11"
+.SH NAME
+sessreg \- manage utmp/wtmp entries for non-init clients
+.SH SYNOPSIS
+.B sessreg
+[-w \fIwtmp-file\fP]
+[-u \fIutmp-file\fP]
+[-l \fIline-name\fP]
+[-h \fIhost-name\fP]
+[-s \fIslot-number\fP]
+[-x \fIXservers-file\fP]
+[-t \fIttys-file\fP]
+[-a]
+[-d]
+\fIuser-name\fP
+.SH DESCRIPTION
+.PP
+\fISessreg\fP is a simple program for managing utmp/wtmp
+entries for xdm sessions.
+.PP
+System V has a better interface to /etc/utmp than BSD; it
+dynamically allocates entries in the file, instead of writing them at fixed
+positions indexed by position in /etc/ttys.
+.PP
+To manage BSD-style utmp files, \fIsessreg\fP has two strategies.  In
+conjunction with xdm, the -x option counts the number of lines in /etc/ttys
+and then adds to that the number of the line in the Xservers file which
+specifies the display.  The display name must be specified as the
+"line-name" using the -l option.  This sum is used as the "slot-number" in
+/etc/utmp that this entry will be written at.  In the more general case, the
+-s option specifies the slot-number directly.  If for some strange reason
+your system uses a file other that /etc/ttys to manage init, the -t option
+can direct
+\fIsessreg\fP to look elsewhere for a count of terminal sessions.
+.PP
+Conversely, System V managers will not ever need to use these options (-x,
+-s and -t).  To make the program easier to document and explain,
+\fIsessreg\fP accepts the BSD-specific flags in the System V
+environment and ignores them.
+.PP
+BSD also has a host-name field in the utmp file which doesn't exist in
+System V.  This option is also ignored by the System V version of
+\fIsessreg\fP.
+.SH USAGE
+.PP
+In Xstartup, place a call like:
+.nf
+
+       sessreg -a -l $DISPLAY -x /usr/lib/X11/xdm/Xservers $USER
+
+.fi
+and in Xreset:
+.nf
+
+       sessreg -d -l $DISPLAY -x /usr/lib/X11/xdm/Xservers $USER
+
+.fi
+.SH OPTIONS
+.IP "\fB-w\fP \fIwtmp-file\fP"
+This specifies an alternate wtmp file, instead of /usr/adm/wtmp for BSD or
+/etc/wtmp for sysV.  The special name "none" disables writing records to
+/usr/adm/wtmp.
+.IP "\fB-u\fP \fIutmp-file\fP"
+This specifies an alternate utmp file, instead of "/etc/utmp".  The special
+name "none" disables writing records to /etc/utmp.
+.IP "\fB-l\fP \fIline-name\fP"
+This describes the "line" name of the entry.  For terminal sessions,
+this is the final pathname segment of the terminal device filename
+(e.g. ttyd0).  For X sessions, it should probably be the local display name
+given to the users session (e.g. :0).  If none is specified, the
+terminal name will be determined with ttyname(3) and stripped of leading
+components.
+.IP "\fB-h\fP \fIhost-name\fP"
+This is set for BSD hosts to indicate that the session was initiated from
+a remote host.  In typical xdm usage, this options is not used.
+.IP "\fB-s\fP \fIslot-number\fP"
+Each potential session has a unique slot number in BSD systems, most are
+identified by the position of the \fIline-name\fP in the /etc/ttys file.
+This option overrides the default position determined with ttyslot(3).
+This option is inappropriate for use with xdm, the -x option is more useful.
+.IP "\fB-x\fP \fIXservers-file\fP"
+As X sessions are one-per-display, and each display is entered in this file,
+this options sets the \fIslot-number\fP to be the number of lines in
+the \fIttys-file\fP plus the index into this file that the \fIline-name\fP
+is found.
+.IP "\fB-t\fP \fIttys-file\fP"
+This specifies an alternate file which the \fI-x\fP option will use to count
+the number of terminal sessions on a host.
+.IP "\fB-a\fP"
+This session should be added to utmp/wtmp.
+.IP "\fB-d\fP"
+This session should be deleted from utmp/wtmp.  One of -a/-d must
+be specified.
+.SH "SEE ALSO"
+xdm(1)
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Keith Packard, MIT X Consortium

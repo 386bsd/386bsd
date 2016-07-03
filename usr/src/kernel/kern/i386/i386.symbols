@@ -1,0 +1,28 @@
+#	$Id: i386.symbols,v 1.1 94/10/19 17:39:56 bill Exp $
+
+#gdb
+	_KernelPTD
+	_PTD
+	_atdevbase
+#	_version	# hmm
+
+#dmesg
+	_msgbufp
+#	_msgbuf
+
+#ps
+	_avail_start
+	_avail_end
+
+#vmstat
+	_intrnames
+	_eintrnames
+	_intrcnt
+	_eintrcnt
+
+#netstat
+	_Sysmap
+
+#savecore
+	_version
+	_dumpsize

@@ -1,0 +1,103 @@
+.TH XLOAD 1 "Release 5" "X Version 11"
+.SH NAME
+xload \- system load average display for X
+.SH SYNOPSIS
+.ta 6n
+\fBxload\fP	[-\fItoolkitoption\fP ...] [-scale \fIinteger\fP] [-update \fIseconds\fP] [-hl \fIcolor\fP] [-highlight \fIcolor\fP] 
+.br
+	[-jumpscroll \fIpixels\fP] [-label \fIstring\fP] [-nolabel] [-lights]
+.SH DESCRIPTION
+The 
+.I xload 
+program displays a periodically updating histogram of the system load average.
+.SH OPTIONS
+.PP
+.I Xload
+accepts all of the standard X Toolkit command line options (see \fIX(1)\fP).
+The order of the options in unimportant.  \fIxload also accepts the
+following additional options:
+.PP
+.TP 8
+.B \-hl \fIcolor\fP or \-highlight \fIcolor\fP
+This option specifies the color of the scale lines.  
+.TP 8
+.B \-jumpscroll \fPnumber of pixels\fP
+The number of pixels to shift the graph to the left when the graph
+reaches the right edge of the window.  The default value is 1/2 the width
+of the current window.  Smooth scrolling can be achieved by setting it to 1.
+.TP 8
+.B \-label \fIstring\fP
+The string to put into the label above the load average.
+.TP 8
+.B \-nolabel
+If this command line option is specified then no label will be
+displayed above the load graph.
+.TP 8
+.B \-lights
+When specified, this option causes
+.I xload
+to display the current load average by using the keyboard leds; for
+a load average of \fIn\fP, xload lights the first \fIn\fP keyboard leds.
+This option turns off the usual screen display.
+.TP 8
+.B \-scale \fIinteger\fP
+This option specifies the minimum number of tick marks in the histogram,
+where one division represents one load average point.  If the load goes
+above this number, \fIxload\fP will create more divisions, but it will never
+use fewer than this number.  The default is 1.
+.PP
+.TP 8
+.B \-update \fIseconds\fP
+This option specifies the interval in seconds at which \fIxload\fP
+updates its display.  The minimum amount of time allowed between updates
+is 1 second.  The default is 10.
+.SH RESOURCES
+In addition to the resources available to each of the widgets used by 
+\fIxload\fP there is one resource defined by the application itself.
+.TP 8
+.B showLabel (\fPclass\fB Boolean)
+If False then no label will be displayed.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxload\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.ta .5i 1.0i 1.5i 2.0i
+XLoad  xload
+	Paned  paned
+		Label  label
+		StripChart  load
+.fi
+.sp
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get the default host and display number.
+.TP 8
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH FILES
+/usr/lib/X11/app-defaults/XLoad - specifies required resources
+.SH SEE ALSO
+X(1), xrdb(1), mem(4), Athena StripChart Widget.
+.SH BUGS
+This program requires the ability to open and read the special system
+file \fI/dev/kmem\fP.  Sites that do not allow general access to this file
+should make \fIxload\fP belong to the same group as \fI/dev/kmem\fP and
+turn on the \fIset group id\fP permission flag.
+.PP
+Reading /dev/kmem is inherently non-portable.  Therefore, the routine
+used to read it (get_load.c) must be ported to each new operating system. 
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+K. Shane Hartman (MIT-LCS) and Stuart A. Malone (MIT-LCS);
+.br
+with features added by Jim Gettys (MIT-Athena), Bob Scheifler (MIT-LCS),
+Tony Della Fera (MIT-Athena), and Chris Peterson (MIT-LCS).

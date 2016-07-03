@@ -1,0 +1,134 @@
+.ds xL Programming With Xlib
+.TH XGetDeviceModifierMapping 3X11 "Release 5" "X Version 11"  "X FUNCTIONS"
+.SH NAME
+XGetDeviceModifierMapping, XSetDeviceModifierMapping \- query or change device modifier mappings
+.SH SYNTAX
+\fB
+XSetDeviceModifierMapping(\^\fIdisplay\fP, \fIdevice\fP, \fImodmap\fP\^)
+.nf
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+      XModifierKeymap  *\fImodmap\fP\^;
+
+XModifierKeymap *XGetDeviceModifierMapping(\^\fIdisplay\fP, \fIdevice\fP\^)
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+.fi
+\fP
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device whose modifier mapping is to be queried or modified.
+.TP 12
+.I modmap
+Specifies a pointer to the \fIXModifierKeymap\fP structure.
+.SH DESCRIPTION
+The \fIXSetDeviceModifierMapping\fP
+request specifies the KeyCodes of the keys (if any) that are to be used 
+as modifiers for the specified device.
+If it succeeds, the X server generates a \fIDeviceMappingNotify\fP
+event, and \fIXSetDeviceModifierMapping\fP returns \fIMappingSuccess\fP.
+X permits at most eight modifier keys.
+If more than eight are specified in the
+\fIXModifierKeymap\fP structure, a \fIBadLength\fP
+error results.
+.P
+The modifiermap member of the \fIXModifierKeymap\fP
+structure contains eight sets of max_keypermod KeyCodes, 
+one for each modifier in the order 
+\fIShift\fP,
+\fILock\fP,
+\fIControl\fP,
+\fIMod1\fP,
+\fIMod2\fP,
+\fIMod3\fP,
+\fIMod4\fP,
+and 
+\fIMod5\fP.
+Only nonzero KeyCodes have meaning in each set, 
+and zero KeyCodes are ignored.
+In addition, all of the nonzero KeyCodes must be in the range specified by 
+min_keycode and max_keycode as returned by
+\fIXListInputDevices\fP, or a \fIBadValue\fP
+error results.
+No KeyCode may appear twice in the entire map,
+or a
+\fIBadValue\fP
+error results.
+.P
+An X server can impose restrictions on how modifiers can be changed, 
+for example,
+if certain keys do not generate up transitions in hardware,
+if auto-repeat cannot be disabled on certain keys,
+or if multiple modifier keys are not supported.  
+If some such restriction is violated, 
+the status reply is
+\fIMappingFailed\fP,
+and none of the modifiers are changed.
+If the new KeyCodes specified for a modifier differ from those
+currently defined and any (current or new) keys for that modifier are
+in the logically down state, 
+\fIXSetDeviceModifierMapping\fP
+returns \fIMappingBusy\fP,
+and none of the modifiers is changed.
+.P
+\fIXSetDeviceModifierMapping\fP
+can generate \fIBadLength\P, \fIBadDevice\fP, \fIBadMatch\fP, \fIBadAlloc\fP,
+and \fIBadValue\fP errors.
+.P
+The
+\fIXGetDeviceModifierMapping\fP
+request returns a pointer to a newly created
+\fIXModifierKeymap\fP
+structure that contains the keys being used as modifiers.
+The structure should be freed after use by calling
+\fIXFreeModifierMapping \fP.
+If only zero values appear in the set for any modifier, 
+that modifier is disabled.
+.P
+\fIXGetDeviceModifierMapping\fP
+can generate \fIBadDevice\fP and \fIBadMatch\fP errors.
+.SH STRUCTURES
+The \fIXModifierKeymap\fP structure contains:
+.P
+.nf
+typedef struct {
+	int max_keypermod;
+	KeyCode *modifiermap;
+} XModifierKeymap;
+.fi
+.P
+.SH DIAGNOSTICS
+.TP 12
+\fIBadLength\fP
+More than eight keys were specified in the
+\fIXModifierKeymap\fP structure.
+.TP 12
+\fIBadAlloc\fP
+The server failed to allocate the requested resource or server memory.
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGetDeviceModifierMapping\fP 
+or \fIXChangeDeviceModifierMapping\fP request was made 
+specifying
+a device that has no keys.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XSetDeviceKeyMapping(3X11) 
+.br
+XSetDeviceButtonMapping(3X11) 
+.br
+\fI\*(xL\fP

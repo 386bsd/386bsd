@@ -1,0 +1,66 @@
+NFSSVC(2)                 386BSD Programmer's Manual                 NFSSVC(2)
+
+NNAAMMEE
+     nnffssssvvcc - create a remote NFS server
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<uunniissttdd..hh>>
+
+     _i_n_t
+     nnffssssvvcc(_i_n_t _s_o_c_k)
+
+DDEESSCCRRIIPPTTIIOONN
+     TThhee ccaalllliinngg sseeqquueennccee ooff tthhiiss ffuunnccttiioonn iiss eexxppeecctteedd ttoo cchhaannggee  NNffssssvvcc()
+     starts an NFS daemon listening on socket _s_o_c_k. The socket must be in the
+     AF_INET family.
+
+RREETTUURRNN VVAALLUUEESS
+     Normally nnffssssvvcc does not return unless the server is terminated by a
+     signal at which time a value of 0 is returned.  Otherwise, -1 is returned
+     and the global variable _e_r_r_n_o is set to indicate the error.
+
+EERRRROORRSS
+     NNffssssvvcc() fails if:
+
+     [EBADF]  _F_d is not a valid open file descriptor.
+
+     [EPERM]  The caller is not the super-user.
+
+SSEEEE AALLSSOO
+     nfsd(8)
+
+HHIISSTTOORRYY
+     The nnffssssvvcc function call is currently under development.
+
+BSD Experimental                 July 23, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

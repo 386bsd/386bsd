@@ -1,0 +1,185 @@
+.TH XBIFF 1 "Release 5" "X Version 11"
+.SH NAME
+xbiff - mailbox flag for X
+.SH SYNOPSIS
+.B xbiff
+[-\fItoolkitoption\fP ...] [-option ...]
+.SH DESCRIPTION
+The
+.I xbiff
+program displays a little image of a mailbox.  When there is no mail, the flag
+on the mailbox is down.  When mail arrives, the flag goes up and the mailbox beeps.
+By default,
+pressing any mouse button in the image forces \fIxbiff\fP to remember the
+current size of the mail file as being the ``empty'' size and to lower
+the flag.
+.PP
+This program is nothing more than a wrapper around the Athena \fIMailbox\fP
+widget.
+.SH OPTIONS
+.I Xbiff
+accepts all of the standard X Toolkit command line options along with the
+additional options listed below:
+.TP 8
+.B \-help
+This option indicates that a brief summary of the allowed options should be
+printed on the standard error.
+.TP 8
+.B \-update \fIseconds\fP
+This option specifies the frequency in seconds at which \fIxbiff\fP
+should update its display.  If the mailbox is obscured and then exposed,
+it will be updated immediately.  The default is 30 seconds.
+.TP 8
+.B \-file \fIfilename\fP
+This option specifies the name of the file which should be monitored.  By
+default, it watches /usr/spool/mail/\fIusername\fP, where \fIusername\fP
+is your login name.
+.TP 8
+.B \-volume \fIpercentage\fP
+This option specifies how loud the bell should be rung when new mail comes in.
+.TP 8
+.B \-shape
+This option indicates that the mailbox window should be shaped if masks for
+the empty or full images are given.
+.PP
+The following standard X Toolkit command line arguments are commonly used with 
+.I xbiff:
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the X server to contact.
+.TP 8
+.B \-geometry \fIgeometry\fP
+This option specifies the preferred size and position of the mailbox window.
+The mailbox is 48 pixels wide and 48 pixels high and will be centered in
+the window.
+.TP 8
+.B \-bg \fIcolor\fP
+This option specifies the color to use for the background of the window.  
+.TP 8
+.B \-bd \fIcolor\fP
+This option specifies the color to use for the border of the window.
+.TP 8
+.B \-bw \fInumber\fP
+This option specifies the width in pixels of the border surrounding the window.
+.TP 8
+.B \-fg \fIcolor\fP
+This option specifies the color to use for the foreground of the window.
+.TP 8
+.B \-rv
+This option indicates that reverse video should be simulated by swapping
+the foreground and background colors.
+.TP 8
+.B \-xrm \fIresourcestring\fP
+This option specifies a resource string to be used.  This is especially
+useful for setting resources that do not have separate command line options.
+.SH X DEFAULTS
+The application class name is XBiff.
+This program uses the 
+.I Mailbox
+widget in the Athena widget set.  It understands all of the core resource names and
+classes as well as:
+.PP
+.TP 8
+.B checkCommand (\fPclass\fB CheckCommand)
+Specifies a shell command to be executed to check for new mail rather than
+examining the size of \fBfile\fP.  The specified string value is used as the
+argument to a \fIsystem\fP(3) call and may therefore contain i/o redirection.
+An exit status of 0 indicates that new mail is waiting, 1 indicates that there
+has been no change in size, and 2 indicates that the mail has been cleared.
+By default, no shell command is provided.
+.TP 8
+.B file (\fPclass\fB File)
+Specifies the name of the file to monitor.  The default is to watch
+/usr/spool/mail/\fIusername\fP, where \fIusername\fP is your login name.
+.TP 8
+.B onceOnly (\fPclass\fB Boolean)
+Specifies that the bell is only rung the first time new mail is found
+and is not rung again until at least one interval has passed with
+no mail waiting.  The window will continue to indicate the presence
+of new mail until it has been retrieved.  The default is false.
+.TP 8
+.B width (\fPclass\fB Width)
+Specifies the width of the mailbox.
+.TP 8
+.B height (\fPclass\fB Height)
+Specifies the height of the mailbox.
+.TP 8
+.B update (\fPclass\fB Interval)
+Specifies the frequency in seconds at which the mail should be checked.
+The default is 30.
+.TP 8
+.B volume (\fPclass\fB Volume)
+Specifies how loud the bell should be rung.  The default is 33 percent.
+.TP 8
+.B foreground (\fPclass\fB Foreground)
+Specifies the color for the foreground.
+.TP 8
+.B reverseVideo (\fPclass\fB ReverseVideo)
+Specifies that the foreground and background should be reversed.
+.TP 8
+.B flip (\fPclass\fB Flip)
+Specifies whether or not the image that is shown when mail has arrived 
+should be inverted.  The default is ``true.''
+.TP 8
+.B fullPixmap (\fPclass\fB Pixmap)
+Specifies a bitmap to be shown when new mail has arrived.
+The default is flagup.
+.TP 8
+.B emptyPixmap (\fPclass\fB Pixmap)
+Specifies a bitmap to be shown when no new mail is present.
+The default is flagdown.
+.TP 8
+.B shapeWindow (\fPclass\fB ShapeWindow)
+Specifies whether or not the mailbox window should be shaped to the
+given fullPixmapMask and emptyPixmapMask.  The default is false.
+.TP 8
+.B fullPixmapMask (\fPclass\fB PixmapMask)
+Specifies a mask for the bitmap to be shown when new mail has arrived.
+The default is none.
+.TP 8
+.B emptyPixmapMask (\fPclass\fB PixmapMask)
+Specifies a mask for the bitmap to be shown when no new mail is present.
+The default is none.
+.SH ACTIONS
+The \fIMailbox\fP widget provides the following actions for use in event
+translations:
+.TP 8
+.B check()
+This action causes the widget to check for new mail and display the flag
+appropriately.
+.TP 8
+.B unset()
+This action causes the widget to lower the flag until new mail comes in.
+.TP 8
+.B set()
+This action causes the widget to raise the flag until the user resets it.
+.PP
+The default translation is 
+.sp
+.nf
+        <ButtonPress>:  unset()
+.fi
+.sp
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get the default host and display number.
+.TP 8
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH "SEE ALSO"
+X(1),
+xrdb(1),
+stat(2)
+.SH BUGS
+The mailbox bitmaps are ugly.
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium
+.br
+Additional hacks by Ralph Swick, DEC/MIT Project Athena

@@ -1,0 +1,214 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XRecolorCursor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XRecolorCursor, XFreeCursor, XQueryBestCursor \- manipulate cursors
+.SH SYNTAX
+.\" $Header: XRecolorCurs.f,v 1.1 88/02/26 10:02:35 mento Exp $
+XRecolorCursor\^(\^\fIdisplay\fP, \fIcursor\fP\^, \fIforeground_color\fP\^, \fIbackground_color\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Cursor \fIcursor\fP\^;
+.br
+      XColor *\fIforeground_color\fP\^, *\fIbackground_color\fP\^;
+.LP
+.\" $Header: XFreeCursor.f,v 1.1 88/02/26 10:00:17 mento Exp $
+XFreeCursor\^(\^\fIdisplay\fP, \fIcursor\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Cursor \fIcursor\fP\^;
+.LP
+.\" $Header: XQryCrsrSh.f,v 1.1 88/02/26 10:02:06 mento Exp $
+Status XQueryBestCursor\^(\^\fIdisplay\fP, \fId\fP, \fIwidth\fP\^, \fIheight\fP\^, \fIwidth_return\fP\^, \fIheight_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.br
+      unsigned int *\fIwidth_return\fP\^, *\fIheight_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: bcolor.a,v 1.2 88/05/13 12:53:45 mento Exp $
+.IP \fIbackground_color\fP 1i
+Specifies the RGB values for the background of the source.
+.\" $Header: cursor.a,v 1.1 88/02/26 10:06:06 mento Exp $
+.IP \fIcursor\fP 1i
+Specifies the cursor. 
+.ds Dr , which indicates the screen
+.\" $Header: d_gen.a,v 1.2 88/08/04 11:09:21 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable\*(Dr. 
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: scolor.a,v 1.2 88/05/13 12:51:29 mento Exp $
+.IP \fIforeground_color\fP 1i
+Specifies the RGB values for the foreground of the source. 
+.ds Wh  of the cursor that you want the size information for
+.\" $Header: w+h_gen.a,v 1.2 88/08/04 11:21:28 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height\*(Wh.
+.\" $Header: rwidtheight2.a,v 1.3 88/05/13 13:09:44 mento Exp $
+.IP \fIwidth_return\fP 1i
+.br
+.ns
+.IP \fIheight_return\fP 1i
+Return the best width and height that is closest to the specified width 
+and height.
+.SH DESCRIPTION
+.\" $Header: XRecolorCurs.d,v 1.3 88/05/19 05:25:50 mento Exp $
+The
+.ZN XRecolorCursor
+function changes the color of the specified cursor, and
+if the cursor is being displayed on a screen,
+the change is visible immediately.
+Note that the pixel members of the
+.ZN XColor
+structures are ignored, only the RGB values are used.
+.LP
+.ZN XRecolorCursor
+can generate a
+.ZN BadCursor 
+error.
+.LP
+.\" $Header: XFreeCursor.d,v 1.2 88/06/11 07:50:46 mento Exp $
+The
+.ZN XFreeCursor
+function deletes the association between the cursor resource ID 
+and the specified cursor.
+The cursor storage is freed when no other resource references it.
+The specified cursor ID should not be referred to again.
+.LP
+.ZN XFreeCursor
+can generate a
+.ZN BadCursor 
+error.
+.LP
+.\" $Header: XQryCrsrSh.d,v 1.2 88/06/11 07:52:32 mento Exp $
+Some displays allow larger cursors than other displays.
+The
+.ZN XQueryBestCursor
+function provides a way to find out what size cursors are actually
+possible on the display.
+.IN "Cursor" "limitations" 
+It returns the largest size that can be displayed.
+Applications should be prepared to use smaller cursors on displays that
+cannot support large ones.
+.LP
+.ZN XQueryBestCursor
+can generate a
+.ZN BadDrawable 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badcursor.e,v 1.1 87/09/04 08:22:58 mento Exp $
+.TP 1i
+.ZN BadCursor
+A value for a Cursor argument does not name a defined Cursor.
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.SH "SEE ALSO"
+XCreateColormap(3X11),
+XCreateFontCursor(3X11),
+XDefineCusor(3X11)
+.br
+\fI\*(xL\fP

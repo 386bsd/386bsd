@@ -1,0 +1,218 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XOpenDisplay 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XOpenDisplay, XCloseDisplay \- connect or disconnect to X server
+.SH SYNTAX
+.\" $Header: XOpenDisplay.f,v 1.1 88/02/26 10:01:40 mento Exp $
+Display *XOpenDisplay\^(\^\fIdisplay_name\fP\^)
+.br
+      char *\fIdisplay_name\fP\^;
+.LP
+.\" $Header: XCloseDisp.f,v 1.1 88/02/26 09:58:48 mento Exp $
+XCloseDisplay\^(\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: display_name.a,v 1.2 88/03/30 14:12:53 mento Exp $
+.IP \fIdisplay_name\fP 1i
+Specifies the hardware display name, which determines the display
+and communications domain to be used.
+On a POSIX-conformant system, if the display_name is NULL, 
+it defaults to the value of the DISPLAY environment variable. 
+.IN "Environment" "DISPLAY"
+.SH DESCRIPTION
+.\" $Header: XOpenDisplay.d,v 1.6 88/08/16 08:38:55 mento Exp $
+The
+.ZN XOpenDisplay
+function returns a 
+.ZN Display 
+structure that serves as the
+connection to the X server and that contains all the information
+about that X server.
+.ZN XOpenDisplay
+connects your application to the X server through TCP 
+or DECnet communications protocols,
+or through some local inter-process communication protocol.
+.IN "Protocol" "TCP"
+.IN "Protocol" "DECnet"
+If the hostname is a host machine name and a single colon (:)
+separates the hostname and display number,
+.ZN XOpenDisplay
+connects using TCP streams.
+If the hostname is not specified,
+Xlib uses whatever it believes is the fastest transport.
+If the hostname is a host machine name and a double colon (::)
+separates the hostname and display number,
+.ZN XOpenDisplay
+connects using DECnet.
+A single X server can support any or all of these transport mechanisms
+simultaneously.
+A particular Xlib implementation can support many more of these transport
+mechanisms.
+.LP
+.IN "Display"
+If successful, 
+.ZN XOpenDisplay 
+returns a pointer to a 
+.ZN Display 
+structure,
+which is defined in 
+.Pn < X11/Xlib.h >.
+If 
+.ZN XOpenDisplay 
+does not succeed, it returns NULL.
+After a successful call to
+.ZN XOpenDisplay ,
+all of the screens in the display can be used by the client.
+The screen number specified in the display_name argument is returned 
+by the 
+.ZN DefaultScreen
+macro (or the
+.ZN XDefaultScreen
+function).
+You can access elements of the
+.ZN Display
+and
+.ZN Screen
+structures only by using the information macros or functions.
+For information about using macros and functions to obtain information from 
+the
+.ZN Display 
+structure,
+see section 2.2.1.
+.LP
+.\" $Header: XCloseDisp.d,v 1.6 88/08/16 09:50:19 mento Exp $
+The
+.ZN XCloseDisplay
+function closes the connection to the X server for the display specified in the
+.ZN Display
+structure and destroys all windows, resource IDs
+.Pn ( Window ,
+.ZN Font ,
+.ZN Pixmap ,
+.ZN Colormap ,
+.ZN Cursor ,
+and
+.ZN GContext ),
+or other resources that the client has created
+on this display, unless the close-down mode of the resource has been changed
+(see
+.ZN XSetCloseDownMode ).
+Therefore, these windows, resource IDs, and other resources should never be 
+referenced again or an error will be generated.
+Before exiting, you should call
+.ZN XCloseDisplay
+explicitly so that any pending errors are reported as
+.ZN XCloseDisplay
+performs a final
+.ZN XSync
+operation.
+.IN "Resource IDs"
+.IN "XCloseDisplay"
+.LP
+.ZN XCloseDisplay
+can generate a
+.ZN BadGC
+error.
+.SH "SEE ALSO"
+AllPlanes(3X11),
+XFlush(3X11),
+XSetCloseDownMode(3X11)
+.br
+\fI\*(xL\fP

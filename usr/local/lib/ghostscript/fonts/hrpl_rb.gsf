@@ -1,0 +1,3 @@
+%!
+/Hershey-Plain findfont /CharData get
+/Hershey-Plain-Bold 4294030 2.2 0 MakeHersheyFont

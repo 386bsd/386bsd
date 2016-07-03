@@ -1,0 +1,400 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH ELMALIAS 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+elmalias - expand and display Elm address aliases
+.SH SYNOPSIS
+.B elmalias
+[
+.B \-adenrsuvV
+] [
+.B \-f
+format ] [ name  ... ]
+.sp
+\fI$lib\fP/\fBprlong\fP
+[ options ... ] < \f2file\fP
+.SH DESCRIPTION
+.I Elmalias
+allows you to examine information about aliases.  The alias databases
+are consulted for each
+.I name
+on the command line, and the alias value is displayed, one value per
+line of output.  If
+.I name
+is not a known alias, then it is displayed unchanged.  If no
+.I name
+is given on the command line then all alias values in the databases
+are displayed.  All of these actions are default behaviors that may
+be modified by command line options.
+.P
+There are two possible alias databases, a user-specific alias file
+(usually in
+.IR $HOME/.elm/aliases )
+and a system-wide alias file (usually in
+.IR $lib/aliases ).
+By default both files are searched, first the user-specific file and
+then the system-wide file.  If an alias file does not exist then
+.I elmalias
+silently ignores it and continues on.  The
+.B \-s
+and
+.B \-u
+command line options (discussed shortly) can restrict what files are
+files searched.
+.P
+There are two types of aliases, Person aliases and Group aliases.  A
+Person alias expands to an individual address and a Group alias contains
+a list of addresses, some of which may be aliases.  By default,
+.I elmalias
+displays the defined value of an alias, regardless of type.  The
+.B \-e
+command line option (discussed shortly) fully expands out Group aliases.
+.P
+The default output produced is just the ``Address'' information for
+each
+.I name
+on the command line.  A number of command line options (discussed
+shortly) may be used to select different output information or specify
+a format of your choosing.  The following information is maintained
+in the alias databases, and may be accessed by the
+.I elmalias
+utility:
+.nf
+
+	\(bu Alias (the alias name)
+	\(bu Last Name
+	\(bu Name (the user's full name)
+	\(bu Comment (not displayed in mail headers)
+	\(bu Address (the alias value)
+	\(bu Type (Person, Group, or Unknown)
+
+.fi
+.P
+When the
+.I name
+specified on the command line is not a known alias, both the ``Alias''
+and ``Address'' information will display as the
+.IR name ,
+the ``Type'' information will display as ``Unknown'', and all other items
+will be blank.
+.P
+The available command line options are:
+.P
+.\"
+.\"
+.\"
+.IP \fB\-a\fP
+Selects an alternative output format.  The ``Alias'' information is
+displayed in addition to and preceding the usual ``Address'' information.
+.\"
+.\"
+.\"
+.IP \fB\-d\fP
+Turns debugging on. Has no effect unless
+.I elmalias
+was compiled with debugging enabled.
+.\"
+.\"
+.\"
+.IP \fB\-e\fP
+Tells
+.I elmalias
+to fully expand group aliases.  This option can be used only when
+.IR name s
+are given on the command line.
+.\"
+.\"
+.\"
+.IP \fB\-f\fP
+The output produced will be in the specified
+.IR format .
+Format specifications will be discussed shortly.
+.\"
+.\"
+.\"
+.IP \fB\-n\fP
+Selects an alternative output format.  The ``Name'' information, if
+it exists, is displayed in addition to and following the usual
+``Address'' information.  The ``Name'' will be enclosed in parenthesis.
+.\"
+.\"
+.\"
+.IP \fB\-r\fP
+If a specified
+.I name
+does not correspond to a known alias then
+.I elmalias
+will display a message and exit with a nonzero status.
+.\"
+.\"
+.\"
+.IP \fB\-s\fP
+Normally
+.I elmalias
+examines both the user-specific and system-wide alias files.  This option
+requests that
+.I elmalias
+use the system-wide alias file, and unless the
+.B \-u
+option is also specified the user-specific alias file will be ignored.
+.\"
+.\"
+.\"
+.IP \fB\-u\fP
+Normally
+.I elmalias
+examines both the user-specific and system-wide alias files.  This option
+requests that
+.I elmalias
+use the user-specific alias file, and unless the
+.B \-s
+option is also specified the system-wide alias file will be ignored.
+.\"
+.\"
+.\"
+.\"
+.\"
+.\"
+.IP \fB\-v\fP
+Selects a verbose output format.  Both the ``Alias'' and the ``Name''
+information will be displayed in addition to the ``Address'' information.
+The ``Alias'' information will precede the ``Address'' information,
+and the ``Name'' information will be enclosed in parenthesis and follow it.
+If there is no ``Name'' information for this alias then that portion of the
+output will be ignored.
+.\"
+.\"
+.\"
+.IP \fB\-V\fP
+Selects a very verbose, multi-line output format.  Displays all available
+information on aliases.
+.\"
+.\"
+.\"
+.P
+The output produced by
+.I elmalias
+is fully customizable with the
+.B \-f
+option.  The
+.I format
+string uses a syntax similar to
+.I date(1)
+(System V version) and
+.IR printf(3) .
+The following field descriptors may be used in
+.I format
+specifications:
+.nf
+
+	%a	Alias (the alias name)
+	%l	Last Name
+	%n	Name (the user's full name)
+	%c	Comment (not displayed in mail headers)
+	%v	Address (the alias value)
+	%t	Type (Person, Group, or Unknown)
+
+.fi
+Field widths in a
+.I [-][m][.n]
+format (again, similar to
+.IR printf(3) )
+may also be used.  For example, "%-20.20a" means print the ``Alias''
+information left justified in a field twenty characters long, with
+the value truncated to twenty characters.
+.P
+The following special character sequences are also recognized in
+format specifications:
+.nf
+
+	\\b	A backspace.
+	\\f	A formfeed.
+	\\n	A newline.
+	\\r	A return.
+	\\t	A tab.
+	\\\fIc\fP	Literal character ``\fIc\fP''.
+
+.fi
+There is a very simplistic conditional evaluation mechanism that may
+be used in format specifications.  The conditional text should be
+surrounded by question marks, and a single character that specifies
+the condition immediately follows the first question mark.  The
+condition characters correspond to the ``%'' field specifier characters,
+and the condition is true if the corresponding alias information is
+defined and nonempty.  For example, if you want to display the ``Name''
+information surrounded by parenthesis, but omit it if the information
+is not available, you may use ``?n(%n)?'' in the format specification.
+.P
+The command line switches that select an alternative format correspond
+to the following format specifiers.
+.nf
+
+	\fIdefault\fP	"%v"
+	\-a	"%-20.20a %v"
+	\-n	"%v?n (%n)?"
+	\-v	"%-20.20a %v?n (%n)?"
+	\-V	"Alias:\\t\\t%a\\n\\
+		  Address:\\t%v\\n\\
+		  Type:\\t\\t%t\\n\\
+		?n  Name:\\t\\t%n\\n?\\
+		?l  Last Name:\\t%l\\n?\\
+		?c  Comment:\\t%c\\n?"
+
+.fi
+.\"
+.\"
+.\"
+.P
+The
+.I prlong
+utility formats long amounts of data, folding across multiple lines.
+It is useful to reformat output of
+.IR elmalias .
+.I Prlong
+reads data from its standard input, one line at a time, and tries to
+place as much information as possible on each output line.  A field
+seperator, by default a single space, seperates each input record in
+the output lines.  Every output line is preceded by a leader field.
+By default the leader of the first output line is an empty string,
+and the leader for all subsequent output lines is a single tab.
+.I prlong
+will never split an input record.  If an input record exceeds the
+maximum output line length, it will appear unmodified on an output
+line all by itself.
+.P
+The
+following options may be used to modify the
+.I prlong
+behavior.
+.IP "\fB\-w\fP \fIwidth\fP" 12
+Constrains output lines to
+.I width
+columns in length (not counting an appended newline character).  The
+default is 78 columns.  The width calculation assumes that tabstops
+occur every eight spaces.
+.IP "\fB\-f\fP \fIstring\fP" 12
+Seperates each input record with the indicated
+.I string
+when displayed to the output.  The default is a single space.
+.IP "\fB\-1\fP \fIstring\fP" 12
+Specifies the leader
+.I string
+used for the first line of output.  (This option is the digit ``one''.)
+The default is an empty string.
+.IP "\fB\-l\fP \fIstring\fP" 12
+Specifies the leader
+.I string
+for all subsequent lines of output.  (This option is a lower-case
+``ell''.) The default is a single tab.
+.SH EXAMPLES
+.P
+Consider an
+.I aliases.text
+file that contains:
+.nf
+.ft CW
+
+	friends = List of Friends = tom, dick, harry
+	tom = Tom Smith = sleepy!tom
+	dick = Dick Jones = dopey!dick
+	harry = = grumpy!harry
+
+.ft R
+.fi
+Below are shown some example commands and the output produced.
+.nf
+.ft CW
+
+	$ \fIelmalias friends\fP
+	tom,dick,harry
+.sp 0.2v
+	$ \fIelmalias mike\fP
+	mike
+.sp 0.2v
+	$ \fIelmalias -r mike\fP
+	elmalias: "mike" is not a known alias
+.sp 0.2v
+	$ \fIelmalias -n friends\fP
+	tom,dick,harry (List of Friends)
+.sp 0.2v
+	$ \fIelmalias -a friends\fP
+	friends              tom,dick,harry
+.sp 0.2v
+	$ \fIelmalias -V friends\fP
+	Alias:          friends
+	  Address:      tom,dick,harry
+	  Type:         Group
+	  Name:         List of Friends
+	  Last Name:    List of Friends
+.sp 0.2v
+	$ \fIelmalias -e friends\fP
+	tom@sleepy.acme.com
+	dick@dopey.acme.com
+	harry@grumpy.acme.com
+.sp 0.2v
+	$ \fIelmalias -ve friends\fP
+	tom                  tom@sleepy.acme.com (Tom Smith)
+	dick                 dick@dopey.acme.com (Dick Jones)
+	harry                harry@grumpy.acme.com
+.sp 0.2v
+	$ \fIelmalias -f "alias %a is \\"%v\\" ?n(%n)?" -e friends\fP
+	alias tom is "tom@sleepy.acme.com" (Tom Smith)
+	alias dick is "dick@dopey.acme.com" (Dick Jones)
+	alias harry is "harry@grumpy.acme.com" 
+.sp 0.2v
+	$ \fIelmalias -en friends | /usr/lib/elm/prlong -w40\fP
+	tom@sleepy.acme.com (Tom Smith) 
+	        dick@dopey.acme.com (Dick Jones) 
+	        harry@grumpy.acme.com
+.sp 0.2v
+	$ \fIelmalias -en friends | /usr/lib/elm/prlong -1 "To: " -f ", " -w40\fP
+	To: tom@sleepy.acme.com (Tom Smith), 
+	        dick@dopey.acme.com (Dick Jones), 
+	        harry@grumpy.acme.com
+
+.ft R
+.fi
+.RE
+.P
+The
+.IR checkalias (1L)
+and
+.IR listalias (1L)
+scripts distributed with the Elm package provide further examples
+of the
+.I elmalias
+and
+.I prlong
+utilities.
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+checkalias(1L),
+elm(1L),
+listalias(1L),
+newalias(1L)
+.SH BUGS
+There is no centralized, comprehensive interface to the Elm 2.4 alias
+system, so every program in the Elm suite that uses aliases implements
+its own interfaces.  It's possible for inconsistencies to creep in
+between what
+.I elmalias
+says and what some Elm utility does.  If you find an inconsistency
+please report it to us!
+.P
+Boy, there sure are a lot of command line switches in this thing.
+.P
+Note that the precedence of aliases is user file then system
+file.  This means that a user can 'overload' an alias by having
+one defined in the system file also defined in theirs.  This
+shouldn't turn out to be a problem, but is something for
+the system administrator to keep in mind when creating the
+system alias file.
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1993 by The USENET Community Trust

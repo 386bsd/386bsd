@@ -1,0 +1,41 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga256/drivers/pvga1/Imakefile,v 2.3 1993/09/22 15:48:07 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 23:00:10 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driver.c bank.s pvgablt.c pvgasolid.c pvgaBitBlt.c pvgapntwin.c
+
+#if i386Bsd
+OBJS = driverp.o bankp.o pvgablt.o pvgasolid.o pvgaBitBlt.o pvgapntwin.o
+#else
+OBJS = driver.o bank.o pvgablt.o pvgasolid.o pvgaBitBlt.o pvgapntwin.o
+#endif
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../cfb.banked -I../../../../cfb -I../../../../mfb \
+           -I../../../../mi -I../../vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(pvga1, $(OBJS))
+
+#if i386Bsd
+ObjectFromSpecialAsmSource(bankp,bank,NullParameter)
+ObjectFromSpecialSource(driverp,driver,NullParameter)
+#endif
+
+InstallLinkKitNonExecFile(paradise.h,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(driver.c,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(bank.s,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(pvgablt.c,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(pvgasolid.c,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(pvgaBitBlt.c,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(pvgapntwin.c,$(LINKKITDIR)/drivers/vga256/pvga1)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga256/pvga1)
+
+DependTarget()
+

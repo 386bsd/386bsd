@@ -1,0 +1,73 @@
+.TH XLSFONTS 1 "Release 5" "X Version 11"
+.SH NAME
+xlsfonts - server font list displayer for X
+.SH SYNOPSIS
+.B xlsfonts
+[-options ...] [-fn pattern]
+.SH DESCRIPTION
+.I Xlsfonts
+lists the fonts that match the given \fIpattern\fP.
+The wildcard character "*" may be used to match any sequence of
+characters (including none), and "?" to match any single character.
+If no pattern is given, "*" is assumed.
+.PP
+The "*" and "?" characters must be quoted to prevent them from
+being expanded by the shell.
+.SH "OPTIONS"
+.PP
+.TP 8
+.B \-display \fIhost\fP:\fIdpy\fP
+This option specifies the X server to contact.
+.PP
+.TP 8
+.B \-l[l[l]]
+This option indicates that medium, long, and very long listings, respectively,
+should be generated for each font.
+.TP 8
+.B \-m
+This option indicates that long listings should also print the minimum and
+maximum bounds of each font.
+.TP 8
+.B \-C
+This option indicates that listings should use multiple columns.  This is the
+same as \fB-n 0\fP.
+.TP 8
+.B \-1
+This option indicates that listings should use a single column.  This is the
+same as \fB-n 1\fP.
+.TP 8
+.B \-w \fIwidth\fP
+This option specifies the width in characters that should be used in 
+figuring out how many columns to print.  The default is 79.
+.TP 8
+.B \-n \fIcolumns\fP
+This option specifies the number of columns to use in displaying the output.
+By default, it will attempt to fit as many columns of font names into the 
+number of character specified by \fB-w \fIwidth\fR.
+.TP 8
+.B \-u
+This option indicates that the output should be left unsorted.
+.TP 8
+.B \-o
+This option indicates that \fIxlsfonts\fP should do an \fBOpenFont\fP (and
+\fBQueryFont\fP, if appropriate) rather than a \fBListFonts\fP.  This is
+useful if \fBListFonts\fP or \fBListFontsWithInfo\fP fail to list a known
+font (as is the case with some scaled font systems).
+.PP
+.SH "SEE ALSO"
+X(1), Xserver(1), xset(1), xfd(1)
+.SH ENVIRONMENT
+.TP 8
+.B DISPLAY
+to get the default host and display to use.
+.SH BUGS
+Doing ``xlsfonts -l'' can tie up your server for a very long time.
+This is really a bug with single-threaded non-preemptable servers, not with
+this program.
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Mark Lillibridge, MIT Project Athena; Jim Fulton, MIT X Consortium;
+Phil Karlton, SGI

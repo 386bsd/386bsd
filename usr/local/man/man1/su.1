@@ -1,0 +1,100 @@
+.TH SU 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+su \- run a shell with substitute user and group IDs
+.SH SYNOPSIS
+.B su
+[\-flmp] [\-c command] [\-s shell] [\-\-login] [\-\-fast]
+[\-\-preserve-environment] [\-\-command=command] [\-\-shell=shell] [\-]
+[\-\-help] [\-\-version] [user [arg...]]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR su .
+.B su
+allows one user to temporarily become another user.  It runs a shell
+with the real and effective user ID, group ID, and supplemental groups
+of USER.  If no USER is given, the default is root, the super-user.
+The shell run is taken from USER's password entry, or /bin/sh if none
+is specified there.  If USER has a password,
+.B su
+prompts for the password unless run by a user with real user ID 0 (the
+super-user).
+.PP
+By default,
+.B su
+does not change the current directory.  It sets the environment
+variables `HOME' and `SHELL' from the password entry for USER, and if
+USER is not the super-user, sets `USER' and `LOGNAME' to USER.  By
+default, the shell is not a login shell.
+.PP
+If one or more ARGs are given, they are passed as additional
+arguments to the shell.
+.PP
+.B su
+does not handle /bin/sh or other shells specially
+(setting argv[0] to "-su", passing -c only to certain shells, etc.).
+.PP
+On systems that have syslog,
+.B su
+can be compiled to report failed, and optionally successful,
+.B su
+attempts using syslog.
+.PP
+This program does not support a "wheel group" that restricts who can
+.B su
+to super-user accounts, because that can help fascist system
+administrators hold unwarranted power over other users.
+.SS OPTIONS
+.TP
+.I "\-c COMMAND, \-\-command=COMMAND"
+Pass COMMAND, a single command line to run, to the shell with a
+.I \-c
+option instead of starting an interactive shell.
+.TP
+.I "\-f, \-\-fast"
+Pass the
+.I \-f
+option to the shell.  This probably only makes sense with
+.B csh
+and
+.BR tcsh ,
+for which the
+.I \-f
+option prevents reading the startup file (.cshrc).  With Bourne-like
+shells, the
+.I \-f
+option disables filename pattern expansion, which is not a generally
+desirable thing to do.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-, \-l, \-\-login"
+Make the shell a login shell.  This means the following.  Unset all
+environment variables except `TERM', `HOME', and `SHELL' (which are
+set as described above), and `USER' and `LOGNAME' (which are set, even
+for the super-user, as described above), and set `PATH' to a
+compiled-in default value.  Change to USER's home directory.  Prepend
+"\-" to the shell's name, to make it read its login startup file(s).
+.TP
+.I "\-m, \-p, \-\-preserve\-environment"
+Do not change the environment variables `HOME', `USER', `LOGNAME', or
+`SHELL'.  Run the shell given in the environment variable `SHELL'
+instead of USER's shell from /etc/passwd, unless the user running
+.B su
+is not the superuser and USER's shell is restricted.  A restricted
+shell is one that is not listed in the file /etc/shells, or in a
+compiled-in list if that file does not exist.  Parts of what this
+option does can be overridden by
+.I \-\-login
+and
+.IR \-\-shell .
+.TP
+.I "\-s, \-\-shell shell"
+Run SHELL instead of USER's shell from /etc/passwd,
+unless the user running
+.B su
+is not the superuser and USER's shell is restricted.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

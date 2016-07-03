@@ -1,0 +1,132 @@
+SETBUF(3)                 386BSD Programmer's Manual                 SETBUF(3)
+
+NNAAMMEE
+     sseettbbuuff, sseettbbuuffffeerr, sseettlliinneebbuuff, sseettvvbbuuff - stream buffering operations
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssttddiioo..hh>>
+
+     _i_n_t
+     sseettbbuuff(_F_I_L_E *_s_t_r_e_a_m, _c_h_a_r *_b_u_f)
+
+     _i_n_t
+     sseettbbuuffffeerr(_F_I_L_E *_s_t_r_e_a_m, _c_h_a_r *_b_u_f, _s_i_z_e__t _s_i_z_e)
+
+     _i_n_t
+     sseettlliinneebbuuff(_F_I_L_E *_s_t_r_e_a_m)
+
+     _i_n_t
+     sseettvvbbuuff(_F_I_L_E *_s_t_r_e_a_m, _c_h_a_r *_b_u_f, _i_n_t _m_o_d_e, _s_i_z_e__t _s_i_z_e)
+
+DDEESSCCRRIIPPTTIIOONN
+     The three types of buffering available are unbuffered, block buffered,
+     and line buffered.  When an output stream is unbuffered, information
+     appears on the destination file or terminal as soon as written; when it
+     is block buffered many characters are saved up and written as a block;
+     when it is line buffered characters are saved up until a newline is
+     output or input is read from any stream attached to a terminal device
+     (typically stdin).  The function fflush(3) may be used to force the block
+     out early.  (See fclose(3).)  Normally all files are block buffered.
+     When the first I/O operation occurs on a file, malloc(3) is called, and a
+     buffer is obtained.  If a stream refers to a terminal (as _s_t_d_o_u_t normally
+     does) it is line buffered.  The standard error stream _s_t_d_e_r_r is always
+     unbuffered.
+
+     The sseettvvbbuuff() function may be used at any time on any open stream to
+     change its buffer.  The _m_o_d_e parameter must be one of the following three
+     macros:
+
+           _IONBF  unbuffered
+
+           _IOLBF  line buffered
+
+           _IOFBF  fully buffered
+
+     Except for unbuffered files, the _b_u_f argument should point to a buffer at
+     least _s_i_z_e bytes long; this buffer will be used instead of the current
+     buffer.  If the argument _b_u_f is NULL, only the mode is affected; a new
+     buffer will be allocated on the next read or write operation.  The
+     sseettvvbbuuff() function may be used at any time, but can only change the mode
+     of a stream when it is not ``active'': that is, before any I/O, or
+     immediately after a call to fflush.
+
+     The other three calls are, in effect, simply aliases for calls to
+     sseettvvbbuuff().  The sseettbbuuff() function is exactly equivalent to the call
+
+           setvbuf(stream, buf, buf ? _IOFBF: _IONBF, BUFSIZ);
+
+     The sseettbbuuffffeerr() function is the same, except that the size of the buffer
+     is up to the caller, rather than being determined by the default BUFSIZ.
+     The sseettlliinneebbuuff() function is exactly equivalent to the call:
+
+           setvbuf(stream, (char *)NULL, _IOLBF, 0);
+
+SSEEEE AALLSSOO
+     fopen(3),  fclose(3),  fread(3),  malloc(3),  puts(3),  printf(3)
+
+SSTTAANNDDAARRDDSS
+     The sseettbbuuff() and sseettvvbbuuff() functions conform to ANSI C3.159-1989 (``ANSI
+     C'').
+
+BBUUGGSS
+     The sseettbbuuffffeerr() and sseettlliinneebbuuff() functions are not portable to versions
+     of BSD UNIX before 4.2BSD. On 4.2BSD and 4.3BSD systems, sseettbbuuff() always
+     uses a suboptimal buffer size and should be avoided.
+
+4th Berkeley Distribution        June 29, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

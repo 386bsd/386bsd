@@ -1,0 +1,149 @@
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.TH XSHAPE 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XShapeQueryExtension, XShapeQueryVersion, XShapeCombineRegion, XShapeCombineRectangles, XShapeCombineMask, XShapeCombineShape, XShapeOffsetShape, XShapeQueryExtents, XShapeSelectInput, XShapeInputSelected, XShapeGetRectangles \- X nonrectangular shape functions
+.SH SYNTAX
+.nf
+.LP
+#include <X11/extensions/shape.h>
+.LP
+Bool XShapeQueryExtension (
+	Display *dpy, 
+	int *event_basep, 
+	int *error_basep);
+.LP
+Status XShapeQueryVersion (
+	Display *dpy, 
+	int *major_versionp, 
+	int *minor_versionp);
+.LP
+void XShapeCombineRegion (
+	Display *dpy, 
+	Window dest, 
+	int destKind, 
+	int xOff, 
+	int yOff, 
+	struct _XRegion *r, 
+	int op);
+.LP
+void XShapeCombineRectangles (
+	Display *dpy, 
+	XID dest, 
+	int destKind, 
+	int xOff, 
+	int yOff, 
+	XRectangle *rects, 
+	int n_rects, 
+	int op, 
+	int ordering);
+.LP
+void XShapeCombineMask (
+	Display *dpy, 
+	XID dest, 
+	int destKind, 
+	int xOff, 
+	int yOff, 
+	Pixmap src, 
+	int op);
+.LP
+void XShapeCombineShape (
+	Display *dpy, 
+	XID dest, 
+	int destKind, 
+	int xOff, 
+	int yOff, 
+	Pixmap src, 
+	int srcKind, 
+	int op);
+.LP
+void XShapeOffsetShape (
+	Display *dpy, 
+	XID dest, 
+	int destKind, 
+	int xOff, 
+	int yOff);
+.LP
+Status XShapeQueryExtents (
+	Display *dpy, 
+	Window window, 
+	int *bShaped, 
+	int *xbs, 
+	int *ybs, 
+	unsigned int *wbs, 
+	unsigned int *hbs, 
+	int *cShaped, 
+	int *xcs, 
+	int *ycs, 
+	unsigned int *wcs, 
+	unsigned int *hcs);
+.LP
+void XShapeSelectInput (
+	Display *dpy, 
+	Window window, 
+	unsigned longmask);
+.LP
+unsigned long XShapeInputSelected (
+	Display *dpy, 
+	Window window);
+.LP
+XRectangle *XShapeGetRectangles (
+	Display *dpy, 
+	Window window, 
+	int kind, 
+	int *count, 
+	int *ordering);
+.fi
+.SH STRUCTURES
+.nf
+.LP
+.ta 3i
+typedef struct {
+    int type;	/* of event */
+    unsigned long serial;	/* # of last request processed by server */
+    Bool send_event;	/* true if this came frome a SendEvent request */
+    Display *display;	/* Display the event was read from */
+    Window window;	/* window of event */
+    int kind;	/* ShapeBounding or ShapeClip */
+    int x, y;	/* extents of new region */
+    unsigned width, height;
+    Time time;	/* server timestamp when region changed */
+    Bool shaped;	/* true if the region exists */
+} XShapeEvent;
+.fi
+.SH DESCRIPTION
+The \fIX11 Nonrectangular Window Shape Extension\fP adds nonrectangular
+windows to the X Window System.
+.SH PREDEFINED VALUES
+Operations:
+.in +.5i
+.nf
+.ZN ShapeSet
+.ZN ShapeUnion
+.ZN ShapeIntersect
+.ZN ShapeSubtract
+.ZN ShapeInvert
+.in -.5i
+.fi
+.sp
+Shape Kinds:
+.in +.5i
+.nf
+.ZN ShapeBounding
+.ZN ShapeClip
+.in -.5i
+.fi
+.sp
+Event defines:
+.in +.5i
+.nf
+.ZN ShapeNotifyMask
+.ZN ShapeNotify
+.in -.5i
+.fi
+.SH BUGS
+This manual pages needs a lot more work.
+.SH SEE ALSO
+\fIX11 Nonrectangular Window Shape Extension\fP

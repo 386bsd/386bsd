@@ -1,0 +1,27 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/tvga8900/Imakefile,v 2.1 1993/08/12 05:42:18 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driverT.c bankT.s
+
+OBJS = driverT.o bankT.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(tvga8900, $(OBJS))
+
+ObjectFromSpecialSource(driverT,$(VGA256DIR)/tvga8900/driver,-DMONOVGA)
+ObjectFromSpecialAsmSource(bankT,$(VGA256DIR)/tvga8900/bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/tvga8900)
+
+DependTarget()

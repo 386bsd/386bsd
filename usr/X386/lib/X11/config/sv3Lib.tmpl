@@ -1,0 +1,73 @@
+XCOMM $XFree86: mit/config/sv3Lib.tmpl,v 1.3 1993/04/27 15:38:30 dawes Exp $
+/*
+ * SVR3 shared library template
+ * Copyright (c) 1992, 1993 by Thomas Wolfram, Berlin, Germany
+ * Author: Thomas Wolfram, thomas@aeon.in-berlin.de, wolf@prz.tu-berlin.de
+ * Conception derived partially from work of Thomas Roell
+ */
+
+#ifndef SharedXlibRev
+#define SharedXlibRev 5.0.1
+#endif
+#ifndef SharedOldXRev
+#define SharedOldXRev 5.0
+#endif
+#ifndef SharedXtRev
+#define SharedXtRev 5.0
+#endif
+#ifndef SharedXawRev
+#define SharedXawRev 5.0
+#endif
+#ifndef SharedXmuRev
+#define SharedXmuRev 5.0
+#endif
+#ifndef SharedXextRev
+#define SharedXextRev 5.0
+#endif
+#ifndef SharedXinputRev
+#define SharedXinputRev 5.0
+#endif
+#ifndef SharedPexRev
+#define SharedPexRev 1.0
+#endif
+
+     SHLIBLDFLAGS = SharedLibraryLoadFlags
+         PICFLAGS = PositionIndependentCFlags
+
+/*
+ * and now a little bit of magic for using imake without source tree; if we
+ * are using shared libraries, we really do not need to depend on anything
+ */
+#if SharedLibXext
+  DEPEXTENSIONLIB = _UseCat($(USRLIBDIR),$(EXTENSIONSRC)/lib,/libXext_s.a)
+     EXTENSIONLIB = LoaderLibPrefix _Use(-lXext_s, $(DEPEXTENSIONLIB))
+#endif
+#if SharedLibX
+          DEPXLIB = $(DEPEXTENSIONLIB) _UseCat($(USRLIBDIR),$(XLIBSRC),/libX11_s.a)
+             XLIB = $(EXTENSIONLIB) LoaderLibPrefix _Use(-lX11_s,$(XLIBSRC)/libX11_s.a)
+#endif
+#if SharedLibXmu
+        DEPXMULIB = _UseCat($(USRLIBDIR),$(XMUSRC),/libXmu_s.a)
+           XMULIB = LoaderLibPrefix _Use(-lXmu_s,$(DEPXMULIB))
+#endif
+#if SharedOldLibX
+       DEPOLDXLIB = _UseCat($(USRLIBDIR),$(OLDXLIBSRC),/liboldX_s.a)
+          OLDXLIB = LoaderLibPrefix _Use(-loldX_s,$(DEPOLDXLIB))
+#endif
+#if SharedLibXt
+      DEPXTOOLLIB = _UseCat($(USRLIBDIR),$(TOOLKITSRC),/libXt_s.a)
+         XTOOLLIB = LoaderLibPrefix _Use(-lXt_s,$(DEPXTOOLLIB))
+#endif
+#if SharedLibXaw
+        DEPXAWLIB = _UseCat($(USRLIBDIR),$(AWIDGETSRC),/libXaw_s.a)
+           XAWLIB = LoaderLibPrefix _Use(-lXaw_s,$(DEPXAWLIB))
+#endif
+#if SharedLibXinput
+         DEPXILIB = _UseCat($(USRLIBDIR),$(XILIBSRC),/libXi_s.a)
+            XILIB = LoaderLibPrefix _Use(-lXi_s,$(DEPXILIB))
+#endif
+#if SharedLibPhigs
+      DEPPHIGSLIB = _UseCat($(USRLIBDIR),$(PHIGSLIBSRC),/libphigs_s.a)
+         PHIGSLIB = LoaderLibPrefix _Use(-lphigs_s,$(DEPPHIGSLIB))
+#endif
+

@@ -1,0 +1,15 @@
+XCOMM $XFree86: mit/server/ddx/x386/accel/s3/drivers/Imakefile,v 2.0 1993/09/04 16:22:54 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:01 gildea Exp $
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SUBDIRS = XF86S3Drivers
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/s3)
+
+#if X386LinkKit
+#include <LinkKit.tmpl>
+#endif

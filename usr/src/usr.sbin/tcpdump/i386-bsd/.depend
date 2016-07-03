@@ -1,0 +1,310 @@
+tcpdump.o : tcpdump.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/signal.h /usr/include/machine/trap.h /usr/include/sys/types.h /usr/include/machine/types.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/nonstd/bsd/netinet/in.h \
+  ../net/bpf.h interface.h os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h \
+  savefile.h addrtoname.h 
+addrtoname.o : addrtoname.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h /usr/include/sys/types.h \
+  /usr/include/machine/types.h /usr/include/sys/socket.h /usr/include/nonstd/bsd/net/if.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/nonstd/bsd/net/if_arp.h \
+  /usr/include/netdb.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/arpa/inet.h /usr/include/signal.h /usr/include/machine/trap.h \
+  interface.h os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h \
+  addrtoname.h nametoaddr.h etherent.h /usr/include/setjmp.h etherproto.h 
+print-ether.o : print-ether.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/time.h \
+  /usr/include/time.h /usr/include/sys/socket.h /usr/include/nonstd/bsd/net/if.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/netinet/in_systm.h /usr/include/nonstd/bsd/netinet/ip.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/nonstd/bsd/netinet/udp.h \
+  /usr/include/nonstd/bsd/netinet/udp_var.h /usr/include/nonstd/bsd/netinet/tcp.h \
+  /usr/include/nonstd/bsd/netinet/tcpip.h interface.h os.h md.h addrtoname.h 
+print-ip.o : print-ip.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h /usr/include/nonstd/bsd/netinet/ip_var.h \
+  /usr/include/nonstd/bsd/netinet/udp.h /usr/include/nonstd/bsd/netinet/udp_var.h \
+  /usr/include/nonstd/bsd/netinet/tcp.h /usr/include/nonstd/bsd/netinet/tcpip.h \
+  interface.h os.h md.h addrtoname.h 
+print-arp.o : print-arp.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  interface.h os.h md.h addrtoname.h 
+print-tcp.o : print-tcp.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/nonstd/bsd/netinet/in.h \
+  /usr/include/nonstd/bsd/netinet/in_systm.h /usr/include/nonstd/bsd/netinet/ip.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/nonstd/bsd/netinet/tcp.h \
+  /usr/include/nonstd/bsd/netinet/tcpip.h interface.h os.h md.h addrtoname.h 
+print-udp.o : print-udp.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h /usr/include/nonstd/bsd/netinet/ip_var.h \
+  /usr/include/nonstd/bsd/netinet/udp.h /usr/include/nonstd/bsd/netinet/udp_var.h \
+  /usr/include/nonstd/bsd/arpa/nameser.h /usr/include/nonstd/bsd/arpa/tftp.h /usr/include/errno.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/nonstd/bsd/rpc/types.h \
+  /usr/include/nonstd/bsd/rpc/auth.h /usr/include/nonstd/bsd/rpc/auth_unix.h /usr/include/nonstd/bsd/rpc/svc.h \
+  /usr/include/nonstd/bsd/rpc/xdr.h /usr/include/nonstd/bsd/rpc/rpc_msg.h interface.h \
+  os.h md.h /usr/include/nonstd/bsd/nfs/nfsv2.h /usr/include/nonstd/bsd/nfs/nfs.h \
+  addrtoname.h appletalk.h bootp.h 
+print-atalk.o : print-atalk.c /usr/include/stdio.h /usr/include/sys/cdefs.h \
+  /usr/include/machine/ansi.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/syslimits.h \
+  /usr/include/sys/signal.h /usr/include/machine/trap.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h /usr/include/nonstd/bsd/netinet/ip_var.h \
+  /usr/include/nonstd/bsd/netinet/udp.h /usr/include/nonstd/bsd/netinet/udp_var.h \
+  /usr/include/nonstd/bsd/netinet/tcp.h /usr/include/nonstd/bsd/netinet/tcpip.h \
+  interface.h os.h md.h addrtoname.h appletalk.h /usr/include/strings.h /usr/include/string.h \
+  extract.h 
+print-domain.o : print-domain.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/netinet/in_systm.h /usr/include/nonstd/bsd/netinet/ip.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/nonstd/bsd/netinet/udp.h \
+  /usr/include/nonstd/bsd/netinet/udp_var.h /usr/include/nonstd/bsd/netinet/tcp.h \
+  /usr/include/nonstd/bsd/netinet/tcpip.h /usr/include/nonstd/bsd/arpa/nameser.h \
+  interface.h os.h md.h addrtoname.h 
+print-tftp.o : print-tftp.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/types.h \
+  /usr/include/machine/types.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/trap.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/nonstd/bsd/arpa/tftp.h \
+  interface.h os.h md.h /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h 
+print-bootp.o : print-bootp.c /usr/include/stdio.h /usr/include/sys/cdefs.h \
+  /usr/include/machine/ansi.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/syslimits.h \
+  /usr/include/sys/signal.h /usr/include/machine/trap.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h interface.h \
+  os.h md.h addrtoname.h bootp.h 
+print-nfs.o : print-nfs.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/netinet/in_systm.h /usr/include/nonstd/bsd/netinet/ip.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/errno.h /usr/include/nonstd/bsd/rpc/types.h \
+  /usr/include/nonstd/bsd/rpc/auth.h /usr/include/nonstd/bsd/rpc/auth_unix.h /usr/include/nonstd/bsd/rpc/svc.h \
+  /usr/include/nonstd/bsd/rpc/xdr.h /usr/include/nonstd/bsd/rpc/rpc_msg.h /usr/include/ctype.h \
+  interface.h os.h md.h /usr/include/nonstd/bsd/nfs/nfsv2.h /usr/include/nonstd/bsd/nfs/nfs.h \
+  addrtoname.h extract.h 
+print-icmp.o : print-icmp.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/types.h \
+  /usr/include/machine/types.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/trap.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/netinet/in_systm.h /usr/include/nonstd/bsd/netinet/ip.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/nonstd/bsd/netinet/udp.h \
+  /usr/include/nonstd/bsd/netinet/udp_var.h /usr/include/nonstd/bsd/netinet/tcp.h \
+  /usr/include/nonstd/bsd/netinet/tcpip.h /usr/include/nonstd/bsd/netinet/ip_icmp.h \
+  interface.h os.h md.h addrtoname.h 
+nametoaddr.o : nametoaddr.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/ctype.h /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/netdb.h /usr/include/nonstd/bsd/netinet/in.h \
+  /usr/include/nonstd/bsd/netinet/if_ether.h /usr/include/errno.h /usr/include/nonstd/bsd/arpa/inet.h \
+  interface.h os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/machine/param.h /usr/include/machine/endian.h /usr/include/machine/inline/inet.h \
+  /usr/include/machine/inline/inet/htonl.h /usr/include/machine/inline/inet/htons.h \
+  /usr/include/machine/inline/inet/ntohl.h /usr/include/machine/inline/inet/ntohs.h \
+  /usr/include/machine/limits.h md.h etherent.h nametoaddr.h etherproto.h 
+print-sl.o : print-sl.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/netdb.h /usr/include/ctype.h /usr/include/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/errno.h /usr/include/nonstd/bsd/sys/param.h \
+  /usr/include/sys/param.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/param.h /usr/include/machine/endian.h /usr/include/machine/inline/inet.h \
+  /usr/include/machine/inline/inet/htonl.h /usr/include/machine/inline/inet/htons.h \
+  /usr/include/machine/inline/inet/ntohl.h /usr/include/machine/inline/inet/ntohs.h \
+  /usr/include/machine/limits.h /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/socket.h \
+  /usr/include/sys/file.h /usr/include/sys/fcntl.h /usr/include/sys/unistd.h /usr/include/nonstd/bsd/sys/mbuf.h \
+  /usr/include/nonstd/bsd/sys/malloc.h /usr/include/sys/ioctl.h /usr/include/nonstd/bsd/net/if.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/nonstd/bsd/netinet/ip_var.h /usr/include/nonstd/bsd/netinet/udp.h \
+  /usr/include/nonstd/bsd/netinet/udp_var.h /usr/include/nonstd/bsd/netinet/tcp.h \
+  /usr/include/nonstd/bsd/netinet/tcpip.h /usr/include/nonstd/bsd/net/slcompress.h \
+  /usr/include/nonstd/bsd/net/slip.h ../net/bpf.h interface.h os.h md.h addrtoname.h 
+print-ppp.o : print-ppp.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/netdb.h /usr/include/ctype.h /usr/include/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/errno.h /usr/include/nonstd/bsd/sys/param.h \
+  /usr/include/sys/param.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/param.h /usr/include/machine/endian.h /usr/include/machine/inline/inet.h \
+  /usr/include/machine/inline/inet/htonl.h /usr/include/machine/inline/inet/htons.h \
+  /usr/include/machine/inline/inet/ntohl.h /usr/include/machine/inline/inet/ntohs.h \
+  /usr/include/machine/limits.h /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/socket.h \
+  /usr/include/sys/file.h /usr/include/sys/fcntl.h /usr/include/sys/unistd.h /usr/include/nonstd/bsd/sys/mbuf.h \
+  /usr/include/nonstd/bsd/sys/malloc.h /usr/include/sys/ioctl.h /usr/include/nonstd/bsd/net/if.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h ../net/bpf.h interface.h os.h md.h addrtoname.h 
+print-rip.o : print-rip.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/in_systm.h \
+  /usr/include/nonstd/bsd/netinet/ip.h /usr/include/nonstd/bsd/netinet/ip_var.h \
+  /usr/include/nonstd/bsd/netinet/udp.h /usr/include/nonstd/bsd/netinet/udp_var.h \
+  /usr/include/nonstd/bsd/protocols/routed.h /usr/include/errno.h interface.h \
+  os.h md.h addrtoname.h 
+print-snmp.o : print-snmp.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/stdio.h \
+  /usr/include/ctype.h interface.h os.h md.h addrtoname.h mib.h 
+print-ntp.o : print-ntp.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/types.h \
+  /usr/include/machine/types.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/trap.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h interface.h \
+  os.h md.h addrtoname.h ntp.h 
+savefile.o : savefile.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/time.h \
+  /usr/include/time.h ../net/bpf.h interface.h os.h /usr/include/nonstd/bsd/sys/param.h \
+  /usr/include/sys/param.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/trap.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h \
+  savefile.h 
+util.o : util.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/ctype.h /usr/include/varargs.h \
+  /usr/include/stdarg.h /usr/include/machine/stdarg.h /usr/include/sys/file.h \
+  /usr/include/sys/fcntl.h /usr/include/sys/unistd.h /usr/include/sys/stat.h interface.h \
+  os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/syslimits.h \
+  /usr/include/sys/signal.h /usr/include/machine/trap.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h 
+etherent.o : etherent.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/ctype.h /usr/include/sys/types.h /usr/include/machine/types.h interface.h \
+  os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/syslimits.h \
+  /usr/include/sys/signal.h /usr/include/machine/trap.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h \
+  etherent.h 
+inet.o : inet.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/ctype.h /usr/include/strings.h /usr/include/string.h /usr/include/sys/types.h \
+  /usr/include/machine/types.h /usr/include/sys/socket.h /usr/include/sys/file.h \
+  /usr/include/sys/fcntl.h /usr/include/sys/unistd.h /usr/include/sys/ioctl.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h interface.h \
+  os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h /usr/include/sys/syslimits.h \
+  /usr/include/sys/signal.h /usr/include/machine/trap.h /usr/include/machine/param.h \
+  /usr/include/machine/endian.h /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h 
+gencode.o : gencode.c /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/socket.h /usr/include/sys/cdefs.h /usr/include/nonstd/bsd/net/if.h \
+  /usr/include/sys/time.h /usr/include/time.h /usr/include/nonstd/bsd/net/if_arp.h \
+  /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  ../net/bpf.h interface.h os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/machine/param.h /usr/include/machine/endian.h /usr/include/machine/inline/inet.h \
+  /usr/include/machine/inline/inet/htonl.h /usr/include/machine/inline/inet/htons.h \
+  /usr/include/machine/inline/inet/ntohl.h /usr/include/machine/inline/inet/ntohs.h \
+  /usr/include/machine/limits.h md.h gencode.h nametoaddr.h extract.h 
+optimize.o : optimize.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/time.h \
+  /usr/include/time.h ../net/bpf.h interface.h os.h /usr/include/nonstd/bsd/sys/param.h \
+  /usr/include/sys/param.h /usr/include/sys/syslimits.h /usr/include/sys/signal.h \
+  /usr/include/machine/trap.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h md.h \
+  gencode.h 
+bpf_dump.o : bpf_dump.c /usr/include/sys/types.h /usr/include/machine/ansi.h \
+  /usr/include/machine/types.h /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/cdefs.h \
+  ../net/bpf.h 
+bpf_filter.o : bpf_filter.c /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/sys/cdefs.h /usr/include/machine/param.h /usr/include/machine/endian.h \
+  /usr/include/machine/inline/inet.h /usr/include/machine/inline/inet/htonl.h \
+  /usr/include/machine/inline/inet/htons.h /usr/include/machine/inline/inet/ntohl.h \
+  /usr/include/machine/inline/inet/ntohs.h /usr/include/machine/limits.h /usr/include/sys/time.h \
+  /usr/include/time.h ../net/bpf.h 
+bpf_image.o : bpf_image.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/string.h /usr/include/sys/types.h /usr/include/machine/types.h \
+  /usr/include/sys/time.h /usr/include/time.h ../net/bpf.h 
+tcpgram.o : tcpgram.c /usr/include/stdio.h /usr/include/sys/cdefs.h /usr/include/machine/ansi.h \
+  /usr/include/sys/types.h /usr/include/machine/types.h /usr/include/sys/socket.h \
+  /usr/include/nonstd/bsd/net/if.h /usr/include/sys/time.h /usr/include/time.h \
+  /usr/include/nonstd/bsd/net/if_arp.h /usr/include/nonstd/bsd/netinet/in.h /usr/include/nonstd/bsd/netinet/if_ether.h \
+  interface.h os.h /usr/include/nonstd/bsd/sys/param.h /usr/include/sys/param.h \
+  /usr/include/sys/syslimits.h /usr/include/sys/signal.h /usr/include/machine/trap.h \
+  /usr/include/machine/param.h /usr/include/machine/endian.h /usr/include/machine/inline/inet.h \
+  /usr/include/machine/inline/inet/htonl.h /usr/include/machine/inline/inet/htons.h \
+  /usr/include/machine/inline/inet/ntohl.h /usr/include/machine/inline/inet/ntohs.h \
+  /usr/include/machine/limits.h md.h ../net/bpf.h gencode.h 
+tcplex.o : tcplex.c /usr/include/sys/types.h /usr/include/machine/ansi.h /usr/include/machine/types.h \
+  nametoaddr.h /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/cdefs.h \
+  ../net/bpf.h tokdefs.h 

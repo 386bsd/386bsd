@@ -1,0 +1,43 @@
+.TH UNSHAR 1 "August 12, 1990"
+.SH NAME
+unshar \- unpack a shar file
+.SH SYNOPSIS
+unshar [ \f2\-d\f1 directory ] [ \f2\-c\f1 ] [ \f2\-e\f1 | \f2\-E\f1 exit_line ] [ file ... ]
+.SH DESCRIPTION
+.PP
+Unshar scans mail messages looking for the start of a shell archive. It
+then passes the archive through a copy of the shell to unpack it. It
+will accept multiple files. If no files are given, standard input is used.
+This manual page reflects unshar version 3.52.3.
+.PP
+The \f2\-d\f1 option tells unshar to change directory before unpacking
+any files.
+.PP
+The \f2\-c\f1 option is passed through to 'sh' as a parameter to
+the unpacked script.  Many archive shar scripts (including those
+produced by shar 3.40 and newer) use this to indicate that existing
+files should be overwritten.
+.PP
+Unshar can unpack shar files that are concatenated in one file with the
+\f2\-e\f1 option, which separates files by recognizing the "exit 0" string
+at the beginning of a line. 
+The \f2\-E\f1 option allows you to specify the string that separates archives
+if "exit 0" isn't appropriate. (Hint: most .signatures have a "\-\-" on a line
+right before them). \f2\-e\f1 is equivalent to \f2\-E "exit 0"\f1.
+.SH SEE ALSO
+shar(1)
+.SH DIAGNOSTICS
+Any message from the shell may be displayed.
+.SH AUTHORS
+.nf
+Michael Mauldin at Carnegie-Mellon University
+guido@mcvax (Guido van Rossum at CWI, Amsterdam)
+davidsen@sixhub.uuxp (Bill Davidsen)
+wht%n4hgf@gatech.edu (Warren Tucker)
+rhg@CPS.COM (Richard H. Gumpertz)
+colas@avahi.inria.fr (Colas Nahaboo)
+
+man pages:
+jhd@irfu.se (Jan Dj{rv)
+.fi
+.PP

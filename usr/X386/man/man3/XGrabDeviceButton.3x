@@ -1,0 +1,206 @@
+.ds xL Programming With Xlib
+.TH XGrabDeviceButton 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XGrabDeviceButton, XUngrabDeviceButton \- grab/ungrab extension input device buttons
+.SH SYNTAX
+\fB
+.nf
+XGrabDeviceButton\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIbutton\fP\^, \fImodifiers\fP\^, \fImodifier_device\fP\^, \fIgrab_window\fP\^,
+\fIowner_events\fP\^, \fIevent_count\fP\^, \fIevent_list\fP\^, \fIthis_device_mode\fP\^, \fIother_devices_mode\fP\^)
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+      unsigned int \fIbutton\fP\^;
+      unsigned int \fImodifiers\fP\^;
+      XDevice *\fImodifier_device\fP\^;
+      Window \fIgrab_window\fP\^;
+      Bool \fIowner_events\fP\^;
+      unsigned int \fIevent_count\fP\^;	
+      XEventClass *\fIevent_list\fP\^;	
+      int \fIthis_device_mode\fP\^, \fIother_devices_mode\fP\^;
+
+XUngrabDeviceButton\^(\^\fIdisplay\fP\^, \fIdevice\fP\^, \fIbutton\fP\^, \fImodifiers\fP\^, \fImodifier_device\fP\^, \fIgrab_window\fP\^)
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+      unsigned int \fIbutton\fP\^;
+      unsigned int \fImodifiers\fP\^;
+      XDevice *\fImodifier_device\fP\^;
+      Window \fIgrab_window\fP\^;
+.fi
+\fP
+.SH ARGUMENTS
+.ds Bu grabbed or released
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device that is to be \*(Bu
+.TP 12
+.I button
+Specifies the device button that is to be \*(Bu or
+\fIAnyButton\fP.
+.TP 12
+.I modifiers
+Specifies the set of keymasks or
+\fIAnyModifier\fP.
+The mask is the bitwise inclusive OR of the valid keymask bits.
+Valid bits are: Shiftmask, LockMask, ControlMask, Mod1Mask, Mod2Mask,
+Mod3Mask, Mod4Mask, Mod5Mask.
+.TP 12
+.I modifier_device
+specifies the device whose modifiers are to be used.  If the modifier_device
+specified is NULL, the X keyboard will be used as the modifier_device.
+.TP 12
+.I grab_window
+Specifies the grab window.
+.TP 12
+.I owner_events
+Specifies a Boolean value that indicates whether the device 
+events are to be reported as usual or reported with respect to the grab window 
+if selected by the event list.
+.TP 12
+.I event_count
+Specifies the number of event classes in the event list.
+.TP 12
+.I event_list
+Specifies which events are reported to the client.
+.TP 12
+.I this_device_mode
+Specifies further processing of events from this device.
+You can pass \fIGrabModeSync\fP or \fIGrabModeAsync\fP.
+.TP 12
+.I other_devices_mode
+Specifies further processing of events from all other devices.
+You can pass \fIGrabModeSync\fP or \fIGrabModeAsync\fP.
+.SH DESCRIPTION
+The \fIXGrabDeviceButton\fP request establishes a passive grab.
+In the future,
+the device is actively grabbed (as for \fIXGrabDevice\fP,
+the last-grab time is set to the time at which the button was pressed
+(as transmitted in the
+\fIDeviceButtonPress\fP
+event), and the
+\fIDeviceButtonPress\fP
+event is reported if all of the following conditions are true:
+.IP \(bu 5
+The device is not grabbed, and the specified button is logically pressed
+when the specified modifier keys are logically down on the specified
+modifier device
+and no other buttons or modifier keys are logically down.
+.IP \(bu 5
+Either the grab window is an ancestor of (or is) the focus window, OR
+the grab window is a descendent of the focus window and contains the
+device.
+.IP \(bu 5
+A passive grab on the same button/modifier combination does not exist
+on any ancestor of grab_window.
+.P
+The interpretation of the remaining arguments is as for
+\fIXGrabDevice\fP.
+The active grab is terminated automatically when the logical state of the
+device has all buttons released
+(independent of the logical state of the modifier keys).
+.P
+Note that the logical state of a device (as seen by client applications)
+may lag the physical state if device event processing is frozen.
+.P
+This request overrides all previous grabs by the same client on the same
+button/modifier combinations on the same window.
+A modifiers of 
+\fIAnyModifier\fP 
+is equivalent to issuing the grab request for all
+possible modifier combinations (including the combination of no modifiers).  
+It is not required that all modifiers specified have currently assigned 
+KeyCodes.
+A button of 
+\fIAnyButton\fP 
+is equivalent to
+issuing the request for all possible buttons.
+Otherwise, it is not required that the specified button currently be assigned
+to a physical button.
+.P
+A modifier_device of NULL indicates that the X keyboard is to be used as the
+modifier_device.
+.P
+If some other client has already issued a 
+\fIXGrabDeviceButton\fP
+with the same button/modifier combination on the same window, a
+\fIBadAccess\fP 
+error results.
+When using 
+\fIAnyModifier\fP 
+or 
+\fIAnyButton\fP , 
+the request fails completely,
+and a
+\fIBadAccess\fP
+error results (no grabs are
+established) if there is a conflicting grab for any combination.
+\fIXGrabDeviceButton\fP
+has no effect on an active grab.
+.P
+\fIXGrabDeviceButton\fP
+can generate
+\fIBadClass\fP,
+\fIBadDevice\fP,
+\fIBadMatch\fP,
+\fIBadValue\fP,
+and
+\fIBadWindow\fP 
+errors.
+.P 
+The \fIXUngrabDeviceButton\fP
+request releases the passive grab for a 
+button/modifier combination on the specified window if
+it was grabbed by this client.
+A modifier of \fIAnyModifier\fP is
+equivalent to issuing 
+the ungrab request for all possible modifier combinations, including 
+the combination of no modifiers.
+A button of 
+\fIAnyButton\fP 
+is equivalent to issuing the
+request for all possible buttons.
+\fIXUngrabDeviceButton\fP
+has no effect on an active grab.
+.P
+A modifier_device of NULL indicates that the X keyboard should be used as
+the modifier_device.
+.P
+\fIXUngrabDeviceButton\fP
+can generate
+\fIBadDevice\fP,
+\fIBadMatch\fP,
+\fIBadValue\fP
+and
+\fIBadWindow\fP 
+errors.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGrabDeviceButton\fP request was made
+specifying
+a device that has no buttons, or specifying a modifier device
+that has no keys.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.TP 12
+\fIBadWindow\fP
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllowDeviceEvents(3X),
+.br
+XGrabDevice(3X),
+.br
+XGrabDeviceKey(3X),
+.br
+\fI\*(xL\fP

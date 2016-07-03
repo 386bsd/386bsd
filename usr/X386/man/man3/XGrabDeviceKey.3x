@@ -1,0 +1,220 @@
+.ds xL Programming with Xlib
+.TH XGrabDeviceKey 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XGrabDeviceKey, XUngrabDeviceKey \- grab/ungrab extension input device Keys
+.SH SYNTAX
+XGrabDeviceKey\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIKey\fP\^, \fImodifiers\fP\^, 
+\fImodifier_device\fP\^, \fIgrab_window\fP\^, \fIowner_events\fP\^, 
+.br
+\fIevent_count\fP\^, \fIevent_list\fP\^, \fIthis_device_mode\fP\^, 
+\fIother_devices_mode\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^;
+.br
+      unsigned int \fIKey\fP\^;
+.br
+      unsigned int \fImodifiers\fP\^;
+.br
+      XDevice *\fImodifier_device\fP\^;
+.br
+      Window \fIgrab_window\fP\^;
+.br
+      Bool \fIowner_events\fP\^;
+.br
+      unsigned int \fIevent_count\fP\^;	
+.br
+      XEventClass \fIevent_list\fP\^;	
+.br
+      int \fIthis_device_mode\fP\^, \fIother_devices_mode\fP\^;
+.sp
+XUngrabDeviceKey\^(\fIdisplay\fP\^, \fIdevice\fP\^, \fIKey\fP\^, \fImodifiers\fP\^, 
+\fImodifier_device\fP\^, \fIgrab_window\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^;
+.br
+      unsigned int \fIKey\fP\^;
+.br
+      unsigned int \fImodifiers\fP\^;
+.br
+      XDevice *\fImodifier_device\fP\^;
+.br
+      Window \fIgrab_window\fP\^;
+.SH ARGUMENTS
+.ds Bu grabbed or released
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device that is to be \*(Bu
+.TP 12
+.I Key
+Specifies the device Key that is to be \*(Bu or
+\fIAnyKey\fP.
+.TP 12
+.I modifiers
+Specifies the set of keymasks or
+\fIAnyModifier\fP.
+The mask is the bitwise inclusive OR of the valid keymask bits.
+Valid bits are: ShiftMask, LockMask, ControlMask, Mod1Mask, Mod2Mask,
+Mod3Mask, Mod4Mask, Mod5Mask.
+.TP 12
+.I modifier_device
+Specifies the device whose modifiers are to be used.  If a modifier_device of
+NULL is specified, the X keyboard will be used as the modifier_device.
+.TP 12
+.I grab_window
+Specifies the grab window.
+.TP 12
+.I owner_events
+Specifies a Boolean value that indicates whether the device 
+events are to be reported as usual or reported with respect to the grab window 
+if selected by the event list.
+.TP 12
+.I event_count
+Specifies the number of event classes in the event list.
+.TP 12
+.I event_list
+Specifies which device events are reported to the client.
+.TP 12
+.I this_device_mode
+Specifies further processing of events from this device.
+You can pass \fIGrabModeSync\fP or \fIGrabModeAsync\fP.
+.TP 12
+.I other_devices_mode
+Specifies further processing of events from other devices.
+You can pass 
+\fIGrabModeSync\fP 
+or
+\fIGrabModeAsync\fP.
+.SH DESCRIPTION
+The \fIXGrabDeviceKey\fP request establishes a passive grab.
+In the future,
+the device is actively grabbed (as for
+\fIXGrabDevice\fP,
+the last-device-grab time is set to the time at which the Key was pressed
+(as transmitted in the
+\fIDeviceKeyPress\fP
+event), and the
+\fIDeviceKeyPress\fP
+event is reported if all of the following conditions are true:
+.IP \(bu 5
+The device is not grabbed, and the specified key is logically pressed
+when the specified modifier keys are logically down,
+and no other keys or modifier keys are logically down.
+.IP \(bu 5
+The grab_window is an ancestor (or is) the focus window OR the grab
+window is a descendant of the focus window and contains the device.
+.IP \(bu 5
+The confine_to window (if any) is viewable.
+.IP \(bu 5
+A passive grab on the same key/modifier combination does not exist
+on any ancestor of grab_window.
+.P
+The interpretation of the remaining arguments is as for
+\fIXGrabDevice\fP .
+The active grab is terminated automatically when the logical state of the
+device has the specified key released.
+.P
+Note that the logical state of a device (as seen by means of the X protocol )
+may lag the physical state if device event processing is frozen.
+.LP
+If the key is not \fIAnyKey\fP, it must be in the range specified by
+min_keycode and max_keycode as returned by the \fIXListInputDevices\fP
+request.  Otherwise, a \fIBadValue\fP error results.
+.P
+This request overrides all previous grabs by the same client on the same
+Key/modifier combinations on the same window.
+A modifier of 
+\fIAnyModifier\fP 
+is equivalent to issuing the grab request for all
+possible modifier combinations (including the combination of no modifiers).  
+It is not required that all modifiers specified have currently assigned 
+KeyCodes.
+A key of 
+\fIAnyKey\fP 
+is equivalent to
+issuing the request for all possible keys.
+Otherwise, it is not required that the specified key currently be assigned
+to a physical Key.
+.P
+If a modifier_device of NULL is specified, the X keyboard will be used as
+the modifier_device.
+.P
+If some other client has already issued a 
+\fIXGrabDeviceKey\fP
+with the same Key/modifier combination on the same window, a
+\fIBadAccess\fP 
+error results.
+When using 
+\fIAnyModifier\fP 
+or 
+\fIAnyKey\fP , 
+the request fails completely,
+and a
+\fIBadAccess\fP
+error results (no grabs are
+established) if there is a conflicting grab for any combination.
+\fIXGrabDeviceKey\fP
+has no effect on an active grab.
+.P
+\fIXGrabDeviceKey\fP
+can generate
+\fIBadAccess\fP,
+\fIBadClass\fP,
+\fIBadDevice\fP,
+\fIBadMatch\fP,
+\fIBadValue\fP,
+and
+\fIBadWindow\fP 
+errors.  It returns \fISuccess\fI on successful completion of the request.
+.P 
+The \fIXUngrabDeviceKey\fP
+request releases the passive grab for a key/modifier combination on the 
+specified window if it was grabbed by this client.
+A modifier of \fIAnyModifier\fP is
+equivalent to issuing 
+the ungrab request for all possible modifier combinations, including 
+the combination of no modifiers.
+A Key of \fIAnyKey\fP 
+is equivalent to issuing the request for all possible Keys.
+\fIXUngrabDeviceKey\fP has no effect on an active grab.
+.P
+If a modifier_device of NULL is specified, the X keyboard will be used as the
+modifier_device.
+.P
+\fIXUngrabDeviceKey\fP can generate \fIBadDevice\fP, \fIBadMatch\fP,
+\fIBadValue\fP and \fIBadWindow\fP errors.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGrabDeviceKey\fP request was made
+specifying a device that has no keys, or a modifier device that has no
+keys.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.TP 12
+\fIBadWindow\fP
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllowDeviceEvents(3X),
+.br
+XGrabDevice(3X),
+.br
+XGrabDeviceButton(3X),
+.br
+.br
+\fI\*(xL\fP

@@ -1,0 +1,157 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH NEWMAIL 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+newmail,wnewmail - programs to asynchronously notify of new mail
+.SH SYNOPSIS
+.B newmail
+.B [-d]
+.B [-i \fIinterval\fB]
+.B [-w]
+\fIfile-spec\fR {\fIfile-spec\fR...}
+.br
+.B wnewmail
+.B [-d]
+.B [-i \fIinterval\fB]
+.B [-w]
+\fIfile-spec\fR {\fIfile-spec\fR...}
+.PP
+.SH DESCRIPTION
+.I Newmail\^
+is a program to allow monitoring of mailboxes in an intelligent
+fashion.  It is based loosely on \fIbiff(1)\fR and the version
+of \fInewmail\fR that was distributed with \fBElm 1.7\fR.
+.P
+The basic operation is that the program will check the list of
+specified mailboxes each \fIinterval\fR seconds and will list
+any new mail that has arrived in any of the mailboxes,
+indicating the sender name, and the subject of the message.
+.P
+Each entry displayed can be in a number of different formats
+depending on the mode of the program, the number of folders
+being monitored, and the status of the message.  If you're 
+running it as a \fIwindow\fR (e.g. ``-w''
+or invoked as \fIwnewmail\fR) then the output will be
+similar to:
+.nf
+
+   \fIsender name\fR - \fIsubject of message\fR
+   Priority: \fIsender name\fR - \fIsubject of message\fR
+
+.fi
+where <sender name> is either the name of the person sending it,
+if available (the ARPA 'From:' line) or some other brief
+indication of origin.   If you are the sender, <sender name> will be
+replaced by "to <recipient name>".  If there
+is no subject, the message "<no subject>" will appear on
+the screen.
+.P
+Folders are indicated by having the folder name appear first
+on the output line, as in:
+.nf
+
+   \fIfolder\fR: \fIsender name\fR - \fIsubject of message\fR
+
+.fi
+If you're running \fInewmail\fR without the windows option,
+then the output is more suitable for popping up on an otherwise
+active screen, and will be formatted:
+.nf
+
+   >> New mail from \fIsender name\fR - \fIsubject of message\fR
+   >> Priority mail from \fIsender name\fR - \fIsubject of message\fR
+
+.fi
+Again, with folder names indicated as a prefix.
+.P
+The flags available are:
+.TP 1.0i
+.B "-d"
+This will turn on the debugging, verbose output mode.  It is not
+recommended that you use this option unless you're interested in
+actually debugging the program.
+.TP
+.B "-i \fIinterval\fR  "
+This will change the frequency that the program checks the folders
+to the interval specified, in seconds.  The default interval for
+the program is 60 seconds.  \fINote: if you change the interval
+to less than 10 seconds, the program will warn you that it isn't
+recommended.\fR
+.TP
+.B "-w"
+Use of the ``-w'' flag will simulate having the program run
+from within a window (e.g. the more succinct output format,
+and so on).  Most likely, rather than using this option you
+should be simply invoking \fIwnewmail\fR instead.
+.P
+\fIFile specs\fR are made up of two components, the
+\fIfolder name\fR and the \fIprefix string\fR, the
+latter of which can always be omitted.
+The format is \fIfoldername=prefixstring\fR, and
+you can specify folders by full name, by simply
+the name of the user whose mailbox should be 
+monitored, or by the standard \fBElm\fR 
+metacharacters to specify your folder 
+directory (e.g. ``+'', ``='', or ``%'').
+.P
+Folders that cannot be opened due to permission mismatches
+will cause the program to immediately abort.  On the other
+hand, files that do not exist will continue to be checked
+every \fIinterval\fR seconds, so some care should be 
+exercised when invoking the program.
+.P
+The program will run until you log out or explicitly kill
+it, and can internally reset 
+itself if any of the folders shrink in size and 
+then grow again.
+.P
+The default folder to monitor is always your incoming mailbox.
+.SH EXAMPLES
+Some example invocations:
+.nf
+
+	$ \fBnewmail\fR
+
+.fi
+will check your incoming mailbox every 60 seconds.
+.nf
+
+	$ \fBnewmail  -i  15  joe  root\fR
+
+.fi
+will monitor the incoming mailboxes for ``joe'' and ``root'',
+checking every 15 seconds for new mail.
+.nf
+
+	$ \fBnewmail  "mary=Mary"  +postmaster=POBOX\fR
+
+.fi
+will monitor the incoming mailbox for user ``mary'', prefixing
+all messages with the string ``Mary'', and the folder in 
+the users \fImaildir\fR directory called ``postmaster'', 
+prefixing all of those messages with ``POBOX''.
+.P
+You can also have more complex monitoring too, for example:
+.nf
+
+	$ \fBnewmail  -i  30  $LOGNAME=me  ${LOGNAME}su=myroot   /tmp/mbox\fR
+
+.fi
+will check every 30 seconds for the users mailbox, a mailbox that
+is the users login-name with ``su'' appended (e.g. ``joe'' would
+become ``joesu'') and the file /tmp/mbox, prefixing new mail
+for each with ``me'', ``myroot'' and ``mbox'' respectively.
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+notify in sh(1) or csh(1)
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

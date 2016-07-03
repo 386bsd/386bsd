@@ -1,0 +1,8 @@
+XCOMM $XFree86: mit/config/gnu_mnx_386.cf,v 1.1 1993/03/23 12:56:39 dawes Exp $
+
+#include "x_mnx_i386.cf"
+
+#define ExtraLoadFlags		-lsoft -N
+#define CrossConf		MinixConf
+
+#include "gnucross386.cf"

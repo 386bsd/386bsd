@@ -1,0 +1,92 @@
+		Information for Trident Chipset Users
+		-------------------------------------
+
+Contents
+--------
+	1) Supported chipsets
+	2) Special considerations for 512k boards
+	3) Additional notes
+
+1 - Supported chipsets
+----------------------
+  The Trident driver has undergone major work between XFree86 1.2 and
+XFree86 1.3.  Because of this work, all of the Trident SVGA chipsets, except
+the very first one, are supported by both the color and monochrome servers.
+Specifically, the following chipsets are supported:
+
+	8800CS
+	8900B
+	8900C
+	8900CL
+	9000
+
+The original Trident chipset, 8800BR, cannot be supported as an SVGA chipset 
+by either the color or monochrome servers.  The chip is supported, however, 
+by the "generic" driver for the monochrome server.
+
+2 - Special considerations for 512k boards
+------------------------------------------
+  512k cards require the clocks in the ModeDB entries to be double the normal 
+value when operating in 256 color mode.  This doubled clock must be a clock 
+value on the card.  The reason for this is that each pixel takes two clock 
+cycles in 256 color mode.
+
+To create timings for the color modes, take the timings for the corresponding 
+monochrome mode, and double the clock.  For example:
+
+	monochrome timings (taken from Xconfig.sample):
+	 "640x480"     25      640  664  760  800    480  491  493  525
+	 "800x600"     36      800  824  896 1024    600  601  603  625
+
+	color timings:
+	 "640x480c"    50      640  664  760  800    480  491  493  525
+	 "800x600c"    72      800  824  896 1024    600  601  603  625
+
+Be aware that older Trident chipsets support a maximum clock of 65Mhz.  Hence 
+the best actual clock available to the color server is 32.5Mhz.  This means, 
+in broad terms, that the color server will require an interlaced mode to be 
+defined for resolutions above 640x480.  Newer chipsets (8900CL and 9000) 
+support up to 16 clocks, and can support much higher clocks, which will allow 
+800x600 modes, non-interlaced.
+
+3 - Additional Notes
+--------------------
+  We have had reports of the server failing to detect the amount of installed
+memory and the correct dot-clocks on older TVGA8900 boards.  If the server 
+fails to detect the correct amount of memory, use the "Videoram" keyword in 
+your Xconfig file to specify it.  (e.g. Videoram 512 or Videoram 1024).  If 
+the server has problems detecting the dot-clocks, try adding the following 
+line to your Xconfig file:
+
+	Clocks	25 28 45 36 57 65 50 40
+
+This line gives the clock values provided by older Trident clock synthesizer
+chipsets.  This also appears to be the standard first 8 clocks for the newer
+clock synthesizers, but you should have no problems on newer boards.
+  
+  Some newer Trident 8900B/C boards are apparently being built with the clock
+synthesizers used on the 9000 and 8900CL boards.  If your board has a chip
+labeled "Trident TCK900x" ("x" has been seen as 2 or 4; there may be others),
+your board may actually have a 4th clock select bit.  The 9002 has twelve
+distinct clocks (the other 4 are duplicates); the 9004 has 16 clocks (the
+same 12 as the 9002 + 4 others).  If you see such a chip on a board with
+an 8900B or 8900C, put the following line in your Xconfig file after the
+"vga256" and/or "vga2" line:
+
+	Option "16clocks"
+
+This will cause the same clock selection code as is used for the 8900CL to
+be used for the board.
+
+  While developing the Trident driver, an interesting and perturbing hardware
+phenomenon was discovered.  When using the default board jumper configuration,
+dot-clocks above 57Mhz would frequently lock up the machine.  There appear
+to be jumpers on all of the Trident boards that determine whether the
+board will operate in zero-wait-state mode on the ISA bus.  Disabling the
+zero-wait-state mode via jumpers cured the lockups, but at the expense
+of performance.  Whether or not a given system will experience this problem
+is likely a combination of (a) bus speed, (b) video memory speed, and (c) dot
+clock speed.  So be prepared for this phenomenon to occur, and have the board
+documentation handy.
+
+$XFree86: mit/server/ddx/x386/etc/README.trident,v 1.8 1993/05/04 10:18:10 dawes Exp $

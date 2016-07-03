@@ -1,0 +1,26 @@
+XCOMM $XFree86: mit/config/amoeba.cf,v 1.2 1993/03/23 12:58:52 dawes Exp $
+
+/*
+ * Defines for X11 Amoeba that are both compiler set and architecture
+ * independent.
+ */
+#define	OSName			AMOEBA
+#define	OSMajorVersion		5
+#define	OSMinorVersion		1
+#define OSVendor		Vrije Universiteit
+
+#define	Amoeba			YES
+
+#define BuildServer		YES
+#define	BuildFonts		NO
+#define BuildFontServer		NO
+#define	BuildPex		NO
+
+#define	ExecableScripts		NO
+#define	HasPutenv		NO	/* will change, some day */
+#define	HasVoidSignalReturn	YES
+#define	HasSharedLibraries	NO
+#define	HasShm			NO
+#define	HasNdbm			YES	/* i.e. something that looks like it */
+
+#define NdbmDefines		-DSDBM -DNDBM -I$(INCLUDESRC)

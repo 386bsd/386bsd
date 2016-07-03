@@ -1,0 +1,102 @@
+.ds xL Programming With Xlib
+.TH XSetDeviceButtonMapping 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XSetDeviceButtonMapping, XGetDeviceButtonMapping \- query or change device button mappings
+.SH SYNTAX
+int XSetDeviceButtonMapping\^(\^\fIdisplay\fP, \fIdevice\fP, \fImap\fP, \fInmap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^;
+.br
+      unsigned char \fImap\fP\^[]\^;
+.br
+      int \fInmap\fP\^;
+.sp
+int XGetDeviceButtonMapping\^(\^\fIdisplay\fP, \fIdevice\fP, \fImap_return\fP, 
+\fInmap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^;
+.br
+      unsigned char \fImap_return\fP\^[]\^;
+.br
+      int \fInmap\fP\^;
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device whose button mapping is to be queried or changed.
+.TP 12
+.I map
+Specifies the mapping list.
+.TP 12
+.I map_return
+Returns the mapping list.
+.TP 12
+.I nmap
+Specifies the number of items in the mapping list.
+.SH DESCRIPTION
+The \fIXSetDeviceButtonMapping\fP
+request sets the mapping of the specified device.
+If it succeeds, the X server generates a
+\fIDeviceMappingNotify\fP event, and
+\fIXSetDeviceButtonMapping\fP returns \fIMappingSuccess\fP.
+Element map[i] defines the logical button number for the physical button
+i+1.
+The length of the list must be the same as
+\fIXGetDeviceButtonMapping\fP
+would return, or a \fIBadValue\fP
+error results.
+A zero element disables a button, and elements are not restricted in
+value by the number of physical buttons.
+However, no two elements can have the same nonzero value,
+or a \fIBadValue\fP error results.
+If any of the buttons to be altered are logically in the down state,
+\fIXSetDeviceButtonMapping\fP returns \fIMappingBusy\fP,
+and the mapping is not changed.
+.P
+\fIXSetDeviceButtonMapping\fP
+can generate \fIBadDevice\fP, \fIBadMatch\fP, and  \fIBadValue\fP errors.
+.P
+The \fIXGetDeviceButtonMapping\fP
+request returns the current mapping of the specified device.
+Buttons are numbered starting from one.
+\fIXGetDeviceButtonMapping\fP
+returns the number of physical buttons actually on the device.
+The nominal mapping for a device is map[i]=i+1.
+The nmap argument specifies the length of the array where the device
+mapping is returned, and only the first nmap elements are returned 
+in map_return.
+.P
+\fIXGetDeviceButtonMapping\fP
+can generate \fIBadDevice\fP or \fIBadMatch\fP errors.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGetDeviceButtonMapping\fP or 
+\fIXSetDeviceButtonMapping\fP request was made 
+specifying a device that has no buttons.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XChangeDeviceKeyboardControl(3X),
+.br
+XChangeDeviceKeyMapping(3X)
+.br
+XChangeDeviceModifierMapping(3X)
+.br
+.br
+\fI\*(xL\fP

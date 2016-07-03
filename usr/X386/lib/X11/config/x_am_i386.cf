@@ -1,0 +1,30 @@
+XCOMM $XFree86: mit/config/x_am_i386.cf,v 2.0 1993/08/12 11:34:01 dawes Exp $
+
+/*
+ * Defines for X11/i80386 Amoeba that are compiler set independent.
+ */
+
+#define WantServerLocks		YES
+#define BuildSpeedo		YES
+
+#include "amoeba.cf"
+
+#define DefaultFontPath         $(FONTDIR)/misc/,$(FONTDIR)/75dpi/
+
+#include "xf86_vers.def"
+
+#define	XF86SVGAServer		YES
+#define	XF86MonoServer		YES
+#define Target_486		NO	/* we have 386s as well */
+
+/*
+ * When building clients, X11R5 uses the default make rules.
+ * However, under SunOs 4.X, make insists on including -target
+ * options even though these are useless for other compilers.
+ * The following assigment fixes this problem, but it pretends
+ * to know a lot about make's mysterious ways.
+ */
+#if defined(sun)
+COMPILE.c=$(CC) $(CFLAGS) $(CPPFLAGS) -c
+LINK.c=$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+#endif

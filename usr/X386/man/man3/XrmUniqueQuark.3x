@@ -1,0 +1,253 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XrmUniqueQuark 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XrmUniqueQuark, XrmStringToQuark, XrmPermStringToQuark, XrmQuarkToString, XrmStringToQuarkList, XrmStringToBindingQuarkList \- manipulate resource quarks
+.SH SYNTAX
+XrmQuark XrmUniqueQuark\^(\|)
+.LP
+#define XrmStringToName(string) XrmStringToQuark(string)
+#define XrmStringToClass(string) XrmStringToQuark(string)
+#define XrmStringToRepresentation(string) XrmStringToQuark(string)
+.sp
+XrmQuark XrmStringToQuark\^(\^\fIstring\fP\^)
+.br
+     char *\fIstring\fP\^;
+.sp
+XrmQuark XrmPermStringToQuark\^(\^\fIstring\fP\^)
+.br
+     char *\fIstring\fP\^;
+.LP
+#define XrmStringToName(string) XrmStringToQuark(string)
+#define XrmStringToClass(string) XrmStringToQuark(string)
+#define XrmStringToRepresentation(string) XrmStringToQuark(string)
+.sp
+XrmQuark XrmStringToQuark\^(\^\fIstring\fP\^)
+.br
+     char *\fIstring\fP\^;
+.sp
+XrmQuark XrmPermStringToQuark\^(\^\fIstring\fP\^)
+.br
+     char *\fIstring\fP\^;
+.LP
+#define XrmNameToString(name) XrmQuarkToString(name)
+#define XrmClassToString(class) XrmQuarkToString(class)
+#define XrmRepresentationToString(type) XrmQuarkToString(type)
+.sp
+char *XrmQuarkToString\^(\^\fIquark\fP\^)
+.br
+     XrmQuark \fIquark\fP\^;
+.LP
+#define XrmStringToNameList(str, name)  XrmStringToQuarkList((str), (name))
+#define XrmStringToClassList(str,class) XrmStringToQuarkList((str), (class))
+.sp
+void XrmStringToQuarkList\^(\^\fIstring\fP, \fIquarks_return\fP\^)
+.br
+     char *\fIstring\fP\^;
+.br
+     XrmQuarkList \fIquarks_return\fP\^;
+.LP
+XrmStringToBindingQuarkList\^(\^\fIstring\fP, \fIbindings_return\fP, \
+\fIquarks_return\fP\^)
+.br
+     char *\fIstring\fP\^;
+.br
+     XrmBindingList \fIbindings_return\fP\^;
+.br
+     XrmQuarkList \fIquarks_return\fP\^;
+.SH ARGUMENTS
+.IP \fIbindings_return\fP 1i
+Returns the binding list.
+.IP \fIquark\fP 1i
+Specifies the quark for which the equivalent string is desired.
+.IP \fIquarks_return\fP 1i
+Returns the list of quarks.
+.ds Ql \ or quark list
+.IP \fIstring\fP 1i
+Specifies the string for which a quark\*(Ql is to be allocated.
+.SH DESCRIPTION
+The
+.ZN XrmUniqueQuark
+function allocates a quark that is guaranteed not to represent any string that
+is known to the resource manager.
+.LP
+These functions can be used to convert from string to quark representation.
+If the string is not in the Host Portable Character Encoding
+the conversion is implementation dependent.
+The string argument to
+.ZN XrmStringToQuark
+need not be permanently allocated storage.
+.ZN XrmPermStringToQuark
+is just like
+.ZN XrmStringToQuark ,
+except that Xlib is permitted to assume the string argument is permanently
+allocated,
+and hence that it can be used as the value to be returned by
+.ZN XrmQuarkToString .
+.LP
+This function can be used to convert from quark representation to string.
+The string pointed to by the return value must not be modified or freed.
+The returned string is byte-for-byte equal to the original
+string passed to one of the string-to-quark routines.
+If no string exists for that quark,
+.ZN XrmQuarkToString
+returns NULL.
+For any given quark, if
+.ZN XrmQuarkToString
+returns a non-NULL value,
+all future calls will return the same value (identical address).
+.LP
+These functions can be used to convert from string to quark representation.
+If the string is not in the Host Portable Character Encoding
+the conversion is implementation dependent.
+The string argument to
+.ZN XrmStringToQuark
+need not be permanently allocated storage.
+.ZN XrmPermStringToQuark
+is just like
+.ZN XrmStringToQuark ,
+except that Xlib is permitted to assume the string argument is permanently
+allocated,
+and hence that it can be used as the value to be returned by
+.ZN XrmQuarkToString .
+.LP
+The
+.ZN XrmStringToQuarkList
+function converts the null-terminated string (generally a fully qualified name)
+to a list of quarks.
+Note that the string must be in the valid ResourceName format 
+(see section 15.1).
+If the string is not in the Host Portable Character Encoding
+the conversion is implementation dependent.
+.LP
+A binding list is a list of type
+.ZN XrmBindingList
+and indicates if components of name or class lists are bound tightly or loosely
+(that is, if wildcarding of intermediate components is specified).
+.LP
+.Ds 0
+typedef enum {XrmBindTightly, XrmBindLoosely} XrmBinding, *XrmBindingList;
+.De
+.LP
+.ZN XrmBindTightly
+indicates that a period separates the components, and
+.ZN XrmBindLoosely
+indicates that an asterisk separates the components.
+.LP
+The
+.ZN XrmStringToBindingQuarkList
+function converts the specified string to a binding list and a quark list.
+If the string is not in the Host Portable Character Encoding
+the conversion is implementation dependent.
+Component names in the list are separated by a period or
+an asterisk character.
+If the string does not start with period or asterisk,
+a period is assumed.
+For example, ``*a.b*c'' becomes:
+.LP
+.Ds 0
+.TA .75i 1.5i 2.25i
+.ta .75i 1.5i 2.25i
+quarks	a	b	c
+.br
+bindings	loose	tight	loose
+.De
+.SH "SEE ALSO"
+XrmGetResource(3X11),
+XrmInitialize(3X11),
+XrmMergeDatabases(3X11),
+XrmPutResource(3X11)
+.br
+\fI\*(xL\fP

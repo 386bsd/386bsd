@@ -1,0 +1,193 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XIfEvent 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XIfEvent, XCheckIfEvent, XPeekIfEvent \- check the event queue with a predicate procedure
+.SH SYNTAX
+XIfEvent\^(\^\fIdisplay\fP, \fIevent_return\fP, \fIpredicate\fP, \fIarg\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.br
+      Bool (\^*\fIpredicate\fP\^)\^(\^)\^;
+.br
+      XPointer \fIarg\fP\^;
+.LP
+Bool XCheckIfEvent\^(\^\fIdisplay\fP, \fIevent_return\fP, \fIpredicate\fP, \fIarg\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.br
+      Bool (\^*\fIpredicate\fP\^)\^(\^)\^;
+.br
+      XPointer \fIarg\fP\^;
+.LP
+XPeekIfEvent\^(\^\fIdisplay\fP, \fIevent_return\fP, \fIpredicate\fP, \fIarg\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.br
+      Bool (\^*\fIpredicate\fP\^)\^(\^)\^;
+.br
+      XPointer \fIarg\fP\^;
+.SH ARGUMENTS
+.IP \fIarg\fP 1i
+Specifies the user-supplied argument that will be passed to the predicate procedure.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.ds Ev \ either a copy of or 
+.\" $Header: event_gen.a,v 1.2 88/08/04 11:12:20 mento Exp $
+.IP \fIevent_return\fP 1i
+Returns\*(Ev the matched event's associated structure.
+.IP \fIpredicate\fP 1i
+Specifies the procedure that is to be called to determine
+if the next event in the queue matches what you want.
+.SH DESCRIPTION
+.\" $Header: XIfEvent.d,v 1.2 88/06/11 07:51:39 mento Exp $
+The
+.ZN XIfEvent
+function completes only when the specified predicate
+procedure returns 
+.ZN True 
+for an event, 
+which indicates an event in the queue matches.
+.ZN XIfEvent
+flushes the output buffer if it blocks waiting for additional events.
+.ZN XIfEvent
+removes the matching event from the queue 
+and copies the structure into the client-supplied
+.ZN XEvent
+structure.
+.LP
+.\" $Header: XCkIfEvent.d,v 1.2 88/06/11 07:49:21 mento Exp $
+When the predicate procedure finds a match,
+.ZN XCheckIfEvent
+copies the matched event into the client-supplied
+.ZN XEvent
+structure and returns 
+.ZN True .
+(This event is removed from the queue.)
+If the predicate procedure finds no match,
+.ZN XCheckIfEvent
+returns
+.ZN False ,
+and the output buffer will have been flushed.
+All earlier events stored in the queue are not discarded.
+.LP
+.\" $Header: XPkIfEvent.d,v 1.3 88/06/11 07:52:13 mento Exp $
+The
+.ZN XPeekIfEvent
+function returns only when the specified predicate
+procedure returns 
+.ZN True
+for an event.
+After the predicate procedure finds a match,
+.ZN XPeekIfEvent
+copies the matched event into the client-supplied
+.ZN XEvent
+structure without removing the event from the queue.
+.ZN XPeekIfEvent
+flushes the output buffer if it blocks waiting for additional events.
+.SH "SEE ALSO"
+XAnyEvent(3X11),
+XNextEvent(3X11),
+XPutBackEvent(3X11)
+XSendEvent(3X11)
+.br
+\fI\*(xL\fP

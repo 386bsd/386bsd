@@ -1,0 +1,343 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XRaiseWindow 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XRaiseWindow, XLowerWindow, XCirculateSubwindows, XCirculateSubwindowsUp, XCirculateSubwindowsDown, XRestackWindows \- change window stacking order
+.SH SYNTAX
+.\" $Header: XRaiseWindow.f,v 1.1 88/02/26 10:02:34 mento Exp $
+XRaiseWindow\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+.\" $Header: XLowerWindow.f,v 1.1 88/02/26 10:01:27 mento Exp $
+XLowerWindow\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+.\" $Header: XCircWindow.f,v 1.1 88/02/26 09:58:44 mento Exp $
+XCirculateSubwindows\^(\^\fIdisplay\fP, \fIw\fP\^, \fIdirection\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      int \fIdirection\fP\^;
+.LP
+.\" $Header: XCircWinUp.f,v 1.1 88/02/26 09:58:43 mento Exp $
+XCirculateSubwindowsUp\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+.\" $Header: XCircWinDn.f,v 1.1 88/02/26 09:58:42 mento Exp $
+XCirculateSubwindowsDown\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+.\" $Header: XRestackWins.f,v 1.1 88/02/26 10:02:42 mento Exp $
+XRestackWindows\^(\^\fIdisplay\fP, \fIwindows\fP\^, \^\fInwindows\fP\^);
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIwindows\fP\^[];
+.br
+      int \fInwindows\fP\^;
+.SH ARGUMENTS
+.\" $Header: direction.a,v 1.2 88/04/04 11:12:47 mento Exp $
+.IP \fIdirection\fP 1i
+Specifies the direction (up or down) that you want to circulate
+the window. 
+You can pass 
+.ZN RaiseLowest
+or
+.ZN LowerHighest .
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: nwindows.a,v 1.1 88/02/26 10:29:55 mento Exp $
+.IP \fInwindows\fP 1i
+Specifies the number of windows to be restacked.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.\" $Header: windows.a,v 1.2 88/04/05 14:11:11 mento Exp $
+.IP \fIwindows\fP 1i
+Specifies an array containing the windows to be restacked.
+.SH DESCRIPTION
+.\" $Header: XRaiseWindow.d,v 1.2 88/06/11 07:52:45 mento Exp $
+The
+.ZN XRaiseWindow
+function
+raises the specified window to the top of the stack so that no sibling window
+obscures it.
+If the windows are regarded as overlapping sheets of paper stacked 
+on a desk,
+then raising a window is analogous to moving the sheet to the top of
+the stack but leaving its x and y location on the desk constant.
+Raising a mapped window may generate 
+.ZN Expose
+events for the window and any mapped subwindows that were formerly obscured.  
+.LP
+If the override-redirect attribute of the window is 
+.ZN False 
+and some
+other client has selected 
+.ZN SubstructureRedirectMask 
+on the parent, the X server generates a
+.ZN ConfigureRequest 
+event, and no processing is performed.
+Otherwise, the window is raised.
+.LP
+.ZN XRaiseWindow
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XLowerWindow.d,v 1.2 88/06/11 07:51:55 mento Exp $
+The
+.ZN XLowerWindow
+function lowers the specified window to the bottom of the stack
+so that it does not obscure any sibling
+windows.
+If the windows are regarded as overlapping sheets of paper
+stacked on a desk, then lowering a window is analogous to moving the
+sheet to the bottom of the stack but leaving its x and y location on
+the desk constant.
+Lowering a mapped window will generate 
+.ZN Expose 
+events on any windows it formerly obscured.
+.LP
+If the override-redirect attribute of the window is 
+.ZN False 
+and some
+other client has selected 
+.ZN SubstructureRedirectMask 
+on the parent, the X server generates a
+.ZN ConfigureRequest 
+event, and no processing is performed.  
+Otherwise, the window is lowered to the bottom of the
+stack.
+.LP
+.ZN XLowerWindow
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XCircWindow.d,v 1.4 88/06/11 07:49:20 mento Exp $
+The
+.ZN XCirculateSubwindows
+function circulates children of the specified window in the specified 
+direction.
+If you specify
+.ZN RaiseLowest ,
+.ZN XCirculateSubwindows
+raises the lowest mapped child (if any) that is occluded 
+by another child to the top of the stack.
+If you specify
+.ZN LowerHighest ,
+.ZN XCirculateSubwindows
+lowers the highest mapped child (if any) that occludes another child
+to the bottom of the stack.
+Exposure processing is then performed on formerly obscured windows.
+If some other client has selected 
+.ZN SubstructureRedirectMask 
+on the window, the X server generates a 
+.ZN CirculateRequest 
+event, and no further processing is performed.
+If a child is actually restacked,
+the X server generates a
+.ZN CirculateNotify
+event. 
+.LP
+.ZN XCirculateSubwindows
+can generate
+.ZN BadValue
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XCircWinUp.d,v 1.3 88/08/17 08:27:23 mento Exp $
+The
+.ZN XCirculateSubwindowsUp
+function raises the lowest mapped child of the specified window that
+is partially
+or completely
+occluded by another child.
+Completely unobscured children are not affected.
+This is a convenience function equivalent to
+.ZN XCirculateSubwindows
+with
+.ZN RaiseLowest
+specified.
+.LP
+.ZN XCirculateSubwindowsUp
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XCircWinDn.d,v 1.3 88/08/17 08:28:27 mento Exp $
+The
+.ZN XCirculateSubwindowsDown
+function lowers the highest mapped child of the specified window that partially
+or completely occludes another child.
+Completely unobscured children are not affected.
+This is a convenience function equivalent to
+.ZN XCirculateSubwindows
+with
+.ZN LowerHighest
+specified.
+.LP
+.ZN XCirculateSubwindowsDown
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XRestackWins.d,v 1.4 88/06/11 07:52:50 mento Exp $
+The
+.ZN XRestackWindows
+function restacks the windows in the order specified,
+from top to bottom.
+The stacking order of the first window in the windows array is unaffected,
+but the other windows in the array are stacked underneath the first window,
+in the order of the array.
+The stacking order of the other windows is not affected.
+For each window in the window array that is not a child of the specified window,
+a
+.ZN BadMatch
+error results.
+.LP
+If the override-redirect attribute of a window is 
+.ZN False 
+and some
+other client has selected 
+.ZN SubstructureRedirectMask 
+on the parent, the X server generates 
+.ZN ConfigureRequest 
+events for each window whose override-redirect flag is not set, 
+and no further processing is performed.
+Otherwise, the windows will be restacked in top to bottom order.
+.LP
+.ZN XRestackWindows
+can generate
+.ZN BadWindow 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XChangeWindowAttributes(3X11),
+XConfigureWindow(3X11),
+XCreateWindow(3X11),
+XDestroyWindow(3X11),
+XMapWindow(3X11),
+XUnmapWindow(3X11)
+.br
+\fI\*(xL\fP

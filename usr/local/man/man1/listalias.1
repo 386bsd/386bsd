@@ -1,0 +1,50 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH LISTALIAS 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+listalias - list user and system aliases
+.SH SYNOPSIS
+.B listalias
+[ -s | -u ] [ regular-expression ]
+.SH DESCRIPTION
+.I Listalias
+outputs a line per alias in both the user and the system 
+aliases.  Each line is of the form;
+.nf
+   
+   <alias>     <address>  (<comment>)
+
+.fi
+If an optional regular expression is used, just the aliases
+that match the specified expression are listed.  If not, 
+they are all listed.
+.sp
+Either way, the output is sorted.
+.SH OPTIONS
+.TP
+.B \-s
+Display only the system aliases.  
+.BR \ \-s \ and \ \-u
+are mutually exclusive.
+.TP
+.B \-u
+Display only the user aliases.  
+.BR \ \-s \ and \ \-u
+are mutually exclusive.
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+checkalias(1L), elm(1L), elmalias(1L), newalias(1L)
+.SH BUGS
+Since the program uses a pipe to egrep, how expressions are evaluated is
+a function of \fIthat\fR program, not this one!
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

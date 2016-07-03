@@ -1,0 +1,8 @@
+# $Id: net.symbols,v 1.1 94/10/20 00:01:33 bill Exp $
+
+#netstat
+	_rawcb
+#	_ifnet
+
+#routed
+	_ifnet

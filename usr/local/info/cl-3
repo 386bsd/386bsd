@@ -1,0 +1,1138 @@
+This is Info file ../info/cl, produced by Makeinfo-1.55 from the input
+file cl.texi.
+
+   This file documents the GNU Emacs Common Lisp emulation package.
+
+   Copyright (C) 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the section entitled "GNU General Public License" is included
+exactly as in the original, and provided that the entire resulting
+derived work is distributed under the terms of a permission notice
+identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that the section entitled "GNU General Public License"
+may be included in a translation approved by the author instead of in
+the original English.
+
+
+File: cl,  Node: For Clauses,  Next: Iteration Clauses,  Prev: Loop Examples,  Up: Loop Facility
+
+For Clauses
+-----------
+
+Most loops are governed by one or more `for' clauses.  A `for' clause
+simultaneously describes variables to be bound, how those variables are
+to be stepped during the loop, and usually an end condition based on
+those variables.
+
+   The word `as' is a synonym for the word `for'.  This word is
+followed by a variable name, then a word like `from' or `across' that
+describes the kind of iteration desired.  In Common Lisp, the phrase
+`being the' sometimes precedes the type of iteration; in this package
+both `being' and `the' are optional.  The word `each' is a synonym for
+`the', and the word that follows it may be singular or plural:  `for x
+being the elements of y' or `for x being each element of y'.  Which
+form you use is purely a matter of style.
+
+   The variable is bound around the loop as if by `let':
+
+     (setq i 'happy)
+     (loop for i from 1 to 10 do (do-something-with i))
+     i
+          => happy
+
+`for VAR from EXPR1 to EXPR2 by EXPR3'
+     This type of `for' clause creates a counting loop.  Each of the
+     three sub-terms is optional, though there must be at least one
+     term so that the clause is marked as a counting clause.
+
+     The three expressions are the starting value, the ending value, and
+     the step value, respectively, of the variable.  The loop counts
+     upwards by default (EXPR3 must be positive), from EXPR1 to EXPR2
+     inclusively.  If you omit the `from' term, the loop counts from
+     zero; if you omit the `to' term, the loop counts forever without
+     stopping (unless stopped by some other loop clause, of course); if
+     you omit the `by' term, the loop counts in steps of one.
+
+     You can replace the word `from' with `upfrom' or `downfrom' to
+     indicate the direction of the loop.  Likewise, you can replace
+     `to' with `upto' or `downto'.  For example, `for x from 5 downto
+     1' executes five times with `x' taking on the integers from 5 down
+     to 1 in turn.  Also, you can replace `to' with `below' or `above',
+     which are like `upto' and `downto' respectively except that they
+     are exclusive rather than inclusive limits:
+
+          (loop for x to 10 collect x)
+               => (0 1 2 3 4 5 6 7 8 9 10)
+          (loop for x below 10 collect x)
+               => (0 1 2 3 4 5 6 7 8 9)
+
+     The `by' value is always positive, even for downward-counting
+     loops.  Some sort of `from' value is required for downward loops;
+     `for x downto 5' is not a legal loop clause all by itself.
+
+`for VAR in LIST by FUNCTION'
+     This clause iterates VAR over all the elements of LIST, in turn.
+     If you specify the `by' term, then FUNCTION is used to traverse
+     the list instead of `cdr'; it must be a function taking one
+     argument.  For example:
+
+          (loop for x in '(1 2 3 4 5 6) collect (* x x))
+               => (1 4 9 16 25 36)
+          (loop for x in '(1 2 3 4 5 6) by 'cddr collect (* x x))
+               => (1 9 25)
+
+`for VAR on LIST by FUNCTION'
+     This clause iterates VAR over all the cons cells of LIST.
+
+          (loop for x on '(1 2 3 4) collect x)
+               => ((1 2 3 4) (2 3 4) (3 4) (4))
+
+     With `by', there is no real reason that the `on' expression must
+     be a list.  For example:
+
+          (loop for x on first-animal by 'next-animal collect x)
+
+     where `(next-animal x)' takes an "animal" X and returns the next
+     in the (assumed) sequence of animals, or `nil' if X was the last
+     animal in the sequence.
+
+`for VAR in-ref LIST by FUNCTION'
+     This is like a regular `in' clause, but VAR becomes a `setf'-able
+     "reference" onto the elements of the list rather than just a
+     temporary variable.  For example,
+
+          (loop for x in-ref my-list do (incf x))
+
+     increments every element of `my-list' in place.  This clause is an
+     extension to standard Common Lisp.
+
+`for VAR across ARRAY'
+     This clause iterates VAR over all the elements of ARRAY, which may
+     be a vector or a string.
+
+          (loop for x across "aeiou"
+                do (use-vowel (char-to-string x)))
+
+`for VAR across-ref ARRAY'
+     This clause iterates over an array, with VAR a `setf'-able
+     reference onto the elements; see `in-ref' above.
+
+`for VAR being the elements of SEQUENCE'
+     This clause iterates over the elements of SEQUENCE, which may be a
+     list, vector, or string.  Since the type must be determined at
+     run-time, this is somewhat less efficient than `in' or `across'.
+     The clause may be followed by the additional term `using (index
+     VAR2)' to cause VAR2 to be bound to the successive indices
+     (starting at 0) of the elements.
+
+     This clause type is taken from older versions of the `loop' macro,
+     and is not present in modern Common Lisp.  The `using (sequence
+     ...)' term of the older macros is not supported.
+
+`for VAR being the elements of-ref SEQUENCE'
+     This clause iterates over a sequence, with VAR a `setf'-able
+     reference onto the elements; see `in-ref' above.
+
+`for VAR being the symbols [of OBARRAY]'
+     This clause iterates over symbols, either over all interned symbols
+     or over all symbols in OBARRAY.  The loop is executed with VAR
+     bound to each symbol in turn.  The symbols are visited in an
+     unspecified order.
+
+     As an example,
+
+          (loop for sym being the symbols
+                when (fboundp sym)
+                when (string-match "^map" (symbol-name sym))
+                collect sym)
+
+     returns a list of all the functions whose names begin with `map'.
+
+     The Common Lisp words `external-symbols' and `present-symbols' are
+     also recognized but are equivalent to `symbols' in Emacs Lisp.
+
+     Due to a minor implementation restriction, it will not work to have
+     more than one `for' clause iterating over symbols, hash tables,
+     keymaps, overlays, or intervals in a given `loop'.  Fortunately,
+     it would rarely if ever be useful to do so.  It *is* legal to mix
+     one of these types of clauses with other clauses like `for ... to'
+     or `while'.
+
+`for VAR being the hash-keys of HASH-TABLE'
+     This clause iterates over the entries in HASH-TABLE.  For each
+     hash table entry, VAR is bound to the entry's key.  If you write
+     `the hash-values' instead, VAR is bound to the values of the
+     entries.  The clause may be followed by the additional term `using
+     (hash-values VAR2)' (where `hash-values' is the opposite word of
+     the word following `the') to cause VAR and VAR2 to be bound to the
+     two parts of each hash table entry.
+
+`for VAR being the key-codes of KEYMAP'
+     This clause iterates over the entries in KEYMAP.  In GNU Emacs 18
+     and 19, keymaps are either alists or vectors, and key-codes are
+     integers or symbols.  In Lucid Emacs 19, keymaps are a special new
+     data type, and key-codes are symbols or lists of symbols.  The
+     iteration does not enter nested keymaps or inherited (parent)
+     keymaps.  You can use `the key-bindings' to access the commands
+     bound to the keys rather than the key codes, and you can add a
+     `using' clause to access both the codes and the bindings together.
+
+`for VAR being the key-seqs of KEYMAP'
+     This clause iterates over all key sequences defined by KEYMAP and
+     its nested keymaps, where VAR takes on values which are strings in
+     Emacs 18 or vectors in Emacs 19.  The strings or vectors are
+     reused for each iteration, so you must copy them if you wish to
+     keep them permanently.  You can add a `using (key-bindings ...)'
+     clause to get the command bindings as well.
+
+`for VAR being the overlays [of BUFFER] ...'
+     This clause iterates over the Emacs 19 "overlays" or Lucid Emacs
+     "extents" of a buffer (the clause `extents' is synonymous with
+     `overlays').  Under Emacs 18, this clause iterates zero times.  If
+     the `of' term is omitted, the current buffer is used.  This clause
+     also accepts optional `from POS' and `to POS' terms, limiting the
+     clause to overlays which overlap the specified region.
+
+`for VAR being the intervals [of BUFFER] ...'
+     This clause iterates over all intervals of a buffer with constant
+     text properties.  The variable VAR will be bound to conses of
+     start and end positions, where one start position is always equal
+     to the previous end position.  The clause allows `of', `from',
+     `to', and `property' terms, where the latter term restricts the
+     search to just the specified property.  The `of' term may specify
+     either a buffer or a string.  This clause is useful only in GNU
+     Emacs 19; in other versions, all buffers and strings consist of a
+     single interval.
+
+`for VAR being the frames'
+     This clause iterates over all frames, i.e., X window system windows
+     open on Emacs files.  This clause works only under Emacs 19.  The
+     clause `screens' is a synonym for `frames'.  The frames are
+     visited in `next-frame' order starting from `selected-frame'.
+
+`for VAR being the windows [of FRAME]'
+     This clause iterates over the windows (in the Emacs sense) of the
+     current frame, or of the specified FRAME.  (In Emacs 18 there is
+     only ever one frame, and the `of' term is not allowed there.)
+
+`for VAR being the buffers'
+     This clause iterates over all buffers in Emacs.  It is equivalent
+     to `for VAR in (buffer-list)'.
+
+`for VAR = EXPR1 then EXPR2'
+     This clause does a general iteration.  The first time through the
+     loop, VAR will be bound to EXPR1.  On the second and successive
+     iterations it will be set by evaluating EXPR2 (which may refer to
+     the old value of VAR).  For example, these two loops are
+     effectively the same:
+
+          (loop for x on my-list by 'cddr do ...)
+          (loop for x = my-list then (cddr x) while x do ...)
+
+     Note that this type of `for' clause does not imply any sort of
+     terminating condition; the above example combines it with a
+     `while' clause to tell when to end the loop.
+
+     If you omit the `then' term, EXPR1 is used both for the initial
+     setting and for successive settings:
+
+          (loop for x = (random) when (> x 0) return x)
+
+     This loop keeps taking random numbers from the `(random)' function
+     until it gets a positive one, which it then returns.
+
+   If you include several `for' clauses in a row, they are treated
+sequentially (as if by `let*' and `setq').  You can instead use the
+word `and' to link the clauses, in which case they are processed in
+parallel (as if by `let' and `psetq').
+
+     (loop for x below 5 for y = nil then x collect (list x y))
+          => ((0 nil) (1 1) (2 2) (3 3) (4 4))
+     (loop for x below 5 and y = nil then x collect (list x y))
+          => ((0 nil) (1 0) (2 1) (3 2) (4 3))
+
+In the first loop, `y' is set based on the value of `x' that was just
+set by the previous clause; in the second loop, `x' and `y' are set
+simultaneously so `y' is set based on the value of `x' left over from
+the previous time through the loop.
+
+   Another feature of the `loop' macro is "destructuring", similar in
+concept to the destructuring provided by `defmacro'.  The VAR part of
+any `for' clause can be given as a list of variables instead of a
+single variable.  The values produced during loop execution must be
+lists; the values in the lists are stored in the corresponding
+variables.
+
+     (loop for (x y) in '((2 3) (4 5) (6 7)) collect (+ x y))
+          => (5 9 13)
+
+   In loop destructuring, if there are more values than variables the
+trailing values are ignored, and if there are more variables than
+values the trailing variables get the value `nil'.  If `nil' is used as
+a variable name, the corresponding values are ignored.  Destructuring
+may be nested, and dotted lists of variables like `(x . y)' are allowed.
+
+
+File: cl,  Node: Iteration Clauses,  Next: Accumulation Clauses,  Prev: For Clauses,  Up: Loop Facility
+
+Iteration Clauses
+-----------------
+
+Aside from `for' clauses, there are several other loop clauses that
+control the way the loop operates.  They might be used by themselves,
+or in conjunction with one or more `for' clauses.
+
+`repeat INTEGER'
+     This clause simply counts up to the specified number using an
+     internal temporary variable.  The loops
+
+          (loop repeat n do ...)
+          (loop for temp to n do ...)
+
+     are identical except that the second one forces you to choose a
+     name for a variable you aren't actually going to use.
+
+`while CONDITION'
+     This clause stops the loop when the specified condition (any Lisp
+     expression) becomes `nil'.  For example, the following two loops
+     are equivalent, except for the implicit `nil' block that surrounds
+     the second one:
+
+          (while COND FORMS...)
+          (loop while COND do FORMS...)
+
+`until CONDITION'
+     This clause stops the loop when the specified condition is true,
+     i.e., non-`nil'.
+
+`always CONDITION'
+     This clause stops the loop when the specified condition is `nil'.
+     Unlike `while', it stops the loop using `return nil' so that the
+     `finally' clauses are not executed.  If all the conditions were
+     non-`nil', the loop returns `t':
+
+          (if (loop for size in size-list always (> size 10))
+              (some-big-sizes)
+            (no-big-sizes))
+
+`never CONDITION'
+     This clause is like `always', except that the loop returns `t' if
+     any conditions were false, or `nil' otherwise.
+
+`thereis CONDITION'
+     This clause stops the loop when the specified form is non-`nil';
+     in this case, it returns that non-`nil' value.  If all the values
+     were `nil', the loop returns `nil'.
+
+
+File: cl,  Node: Accumulation Clauses,  Next: Other Clauses,  Prev: Iteration Clauses,  Up: Loop Facility
+
+Accumulation Clauses
+--------------------
+
+These clauses cause the loop to accumulate information about the
+specified Lisp FORM.  The accumulated result is returned from the loop
+unless overridden, say, by a `return' clause.
+
+`collect FORM'
+     This clause collects the values of FORM into a list.  Several
+     examples of `collect' appear elsewhere in this manual.
+
+     The word `collecting' is a synonym for `collect', and likewise for
+     the other accumulation clauses.
+
+`append FORM'
+     This clause collects lists of values into a result list using
+     `append'.
+
+`nconc FORM'
+     This clause collects lists of values into a result list by
+     destructively modifying the lists rather than copying them.
+
+`concat FORM'
+     This clause concatenates the values of the specified FORM into a
+     string.  (It and the following clause are extensions to standard
+     Common Lisp.)
+
+`vconcat FORM'
+     This clause concatenates the values of the specified FORM into a
+     vector.
+
+`count FORM'
+     This clause counts the number of times the specified FORM
+     evaluates to a non-`nil' value.
+
+`sum FORM'
+     This clause accumulates the sum of the values of the specified
+     FORM, which must evaluate to a number.
+
+`maximize FORM'
+     This clause accumulates the maximum value of the specified FORM,
+     which must evaluate to a number.  The return value is undefined if
+     `maximize' is executed zero times.
+
+`minimize FORM'
+     This clause accumulates the minimum value of the specified FORM.
+
+   Accumulation clauses can be followed by `into VAR' to cause the data
+to be collected into variable VAR (which is automatically `let'-bound
+during the loop) rather than an unnamed temporary variable.  Also,
+`into' accumulations do not automatically imply a return value.  The
+loop must use some explicit mechanism, such as `finally return', to
+return the accumulated result.
+
+   It is legal for several accumulation clauses of the same type to
+accumulate into the same place.  From Steele:
+
+     (loop for name in '(fred sue alice joe june)
+           for kids in '((bob ken) () () (kris sunshine) ())
+           collect name
+           append kids)
+          => (fred bob ken sue alice joe kris sunshine june)
+
+
+File: cl,  Node: Other Clauses,  Prev: Accumulation Clauses,  Up: Loop Facility
+
+Other Clauses
+-------------
+
+This section describes the remaining loop clauses.
+
+`with VAR = VALUE'
+     This clause binds a variable to a value around the loop, but
+     otherwise leaves the variable alone during the loop.  The following
+     loops are basically equivalent:
+
+          (loop with x = 17 do ...)
+          (let ((x 17)) (loop do ...))
+          (loop for x = 17 then x do ...)
+
+     Naturally, the variable VAR might be used for some purpose in the
+     rest of the loop.  For example:
+
+          (loop for x in my-list  with res = nil  do (push x res)
+                finally return res)
+
+     This loop inserts the elements of `my-list' at the front of a new
+     list being accumulated in `res', then returns the list `res' at
+     the end of the loop.  The effect is similar to that of a `collect'
+     clause, but the list gets reversed by virtue of the fact that
+     elements are being pushed onto the front of `res' rather than the
+     end.
+
+     If you omit the `=' term, the variable is initialized to `nil'.
+     (Thus the `= nil' in the above example is unnecessary.)
+
+     Bindings made by `with' are sequential by default, as if by
+     `let*'.  Just like `for' clauses, `with' clauses can be linked
+     with `and' to cause the bindings to be made by `let' instead.
+
+`if CONDITION CLAUSE'
+     This clause executes the following loop clause only if the
+     specified condition is true.  The following CLAUSE should be an
+     accumulation, `do', `return', `if', or `unless' clause.  Several
+     clauses may be linked by separating them with `and'.  These
+     clauses may be followed by `else' and a clause or clauses to
+     execute if the condition was false.  The whole construct may
+     optionally be followed by the word `end' (which may be used to
+     disambiguate an `else' or `and' in a nested `if').
+
+     The actual non-`nil' value of the condition form is available by
+     the name `it' in the "then" part.  For example:
+
+          (setq funny-numbers '(6 13 -1))
+               => (6 13 -1)
+          (loop for x below 10
+                if (oddp x)
+                  collect x into odds
+                  and if (memq x funny-numbers) return (cdr it) end
+                else
+                  collect x into evens
+                finally return (vector odds evens))
+               => [(1 3 5 7 9) (0 2 4 6 8)]
+          (setq funny-numbers '(6 7 13 -1))
+               => (6 7 13 -1)
+          (loop <same thing again>)
+               => (13 -1)
+
+     Note the use of `and' to put two clauses into the "then" part, one
+     of which is itself an `if' clause.  Note also that `end', while
+     normally optional, was necessary here to make it clear that the
+     `else' refers to the outermost `if' clause.  In the first case,
+     the loop returns a vector of lists of the odd and even values of
+     X.  In the second case, the odd number 7 is one of the
+     `funny-numbers' so the loop returns early; the actual returned
+     value is based on the result of the `memq' call.
+
+`when CONDITION CLAUSE'
+     This clause is just a synonym for `if'.
+
+`unless CONDITION CLAUSE'
+     The `unless' clause is just like `if' except that the sense of the
+     condition is reversed.
+
+`named NAME'
+     This clause gives a name other than `nil' to the implicit block
+     surrounding the loop.  The NAME is the symbol to be used as the
+     block name.
+
+`initially [do] FORMS...'
+     This keyword introduces one or more Lisp forms which will be
+     executed before the loop itself begins (but after any variables
+     requested by `for' or `with' have been bound to their initial
+     values).  `initially' clauses can appear anywhere; if there are
+     several, they are executed in the order they appear in the loop.
+     The keyword `do' is optional.
+
+`finally [do] FORMS...'
+     This introduces Lisp forms which will be executed after the loop
+     finishes (say, on request of a `for' or `while').  `initially' and
+     `finally' clauses may appear anywhere in the loop construct, but
+     they are executed (in the specified order) at the beginning or
+     end, respectively, of the loop.
+
+`finally return FORM'
+     This says that FORM should be executed after the loop is done to
+     obtain a return value.  (Without this, or some other clause like
+     `collect' or `return', the loop will simply return `nil'.)
+     Variables bound by `for', `with', or `into' will still contain
+     their final values when FORM is executed.
+
+`do FORMS...'
+     The word `do' may be followed by any number of Lisp expressions
+     which are executed as an implicit `progn' in the body of the loop.
+     Many of the examples in this section illustrate the use of `do'.
+
+`return FORM'
+     This clause causes the loop to return immediately.  The following
+     Lisp form is evaluated to give the return value of the `loop'
+     form.  The `finally' clauses, if any, are not executed.  Of
+     course, `return' is generally used inside an `if' or `unless', as
+     its use in a top-level loop clause would mean the loop would never
+     get to "loop" more than once.
+
+     The clause `return FORM' is equivalent to `do (return FORM)' (or
+     `return-from' if the loop was named).  The `return' clause is
+     implemented a bit more efficiently, though.
+
+   While there is no high-level way to add user extensions to `loop'
+(comparable to `defsetf' for `setf', say), this package does offer two
+properties called `cl-loop-handler' and `cl-loop-for-handler' which are
+functions to be called when a given symbol is encountered as a
+top-level loop clause or `for' clause, respectively.  Consult the
+source code in file `cl-macs.el' for details.
+
+   This package's `loop' macro is compatible with that of Common Lisp,
+except that a few features are not implemented:  `loop-finish' and
+data-type specifiers.  Naturally, the `for' clauses which iterate over
+keymaps, overlays, intervals, frames, windows, and buffers are
+Emacs-specific extensions.
+
+
+File: cl,  Node: Multiple Values,  Prev: Loop Facility,  Up: Control Structure
+
+Multiple Values
+===============
+
+Common Lisp functions can return zero or more results.  Emacs Lisp
+functions, by contrast, always return exactly one result.  This package
+makes no attempt to emulate Common Lisp multiple return values; Emacs
+versions of Common Lisp functions that return more than one value
+either return just the first value (as in `compiler-macroexpand') or
+return a list of values (as in `get-setf-method').  This package *does*
+define placeholders for the Common Lisp functions that work with
+multiple values, but in Emacs Lisp these functions simply operate on
+lists instead.  The `values' form, for example, is a synonym for `list'
+in Emacs.
+
+ - Special Form: multiple-value-bind (VAR...) VALUES-FORM FORMS...
+     This form evaluates VALUES-FORM, which must return a list of
+     values.  It then binds the VARs to these respective values, as if
+     by `let', and then executes the body FORMS.  If there are more
+     VARs than values, the extra VARs are bound to `nil'.  If there are
+     fewer VARs than values, the excess values are ignored.
+
+ - Special Form: multiple-value-setq (VAR...) FORM
+     This form evaluates FORM, which must return a list of values.  It
+     then sets the VARs to these respective values, as if by `setq'.
+     Extra VARs or values are treated the same as in
+     `multiple-value-bind'.
+
+   The older Quiroz package attempted a more faithful (but still
+imperfect) emulation of Common Lisp multiple values.  The old method
+"usually" simulated true multiple values quite well, but under certain
+circumstances would leave spurious return values in memory where a
+later, unrelated `multiple-value-bind' form would see them.
+
+   Since a perfect emulation is not feasible in Emacs Lisp, this
+package opts to keep it as simple and predictable as possible.
+
+
+File: cl,  Node: Macros,  Next: Declarations,  Prev: Control Structure,  Up: Top
+
+Macros
+******
+
+This package implements the various Common Lisp features of `defmacro',
+such as destructuring, `&environment', and `&body'.  Top-level `&whole'
+is not implemented for `defmacro' due to technical difficulties.  *Note
+Argument Lists::.
+
+   Destructuring is made available to the user by way of the following
+macro:
+
+ - Special Form: destructuring-bind ARGLIST EXPR FORMS...
+     This macro expands to code which executes FORMS, with the
+     variables in ARGLIST bound to the list of values returned by EXPR.
+     The ARGLIST can include all the features allowed for `defmacro'
+     argument lists, including destructuring.  (The `&environment'
+     keyword is not allowed.)  The macro expansion will signal an error
+     if EXPR returns a list of the wrong number of arguments or with
+     incorrect keyword arguments.
+
+   This package also includes the Common Lisp `define-compiler-macro'
+facility, which allows you to define compile-time expansions and
+optimizations for your functions.
+
+ - Special Form: define-compiler-macro NAME ARGLIST FORMS...
+     This form is similar to `defmacro', except that it only expands
+     calls to NAME at compile-time; calls processed by the Lisp
+     interpreter are not expanded, nor are they expanded by the
+     `macroexpand' function.
+
+     The argument list may begin with a `&whole' keyword and a
+     variable.  This variable is bound to the macro-call form itself,
+     i.e., to a list of the form `(NAME ARGS...)'.  If the macro
+     expander returns this form unchanged, then the compiler treats it
+     as a normal function call.  This allows compiler macros to work as
+     optimizers for special cases of a function, leaving complicated
+     cases alone.
+
+     For example, here is a simplified version of a definition that
+     appears as a standard part of this package:
+
+          (define-compiler-macro member* (&whole form a list &rest keys)
+            (if (and (null keys)
+                     (eq (car-safe a) 'quote)
+                     (not (floatp-safe (cadr a))))
+                (list 'memq a list)
+              form))
+
+     This definition causes `(member* A LIST)' to change to a call to
+     the faster `memq' in the common case where A is a
+     non-floating-point constant; if A is anything else, or if there
+     are any keyword arguments in the call, then the original `member*'
+     call is left intact.  (The actual compiler macro for `member*'
+     optimizes a number of other cases, including common `:test'
+     predicates.)
+
+ - Function: compiler-macroexpand FORM
+     This function is analogous to `macroexpand', except that it
+     expands compiler macros rather than regular macros.  It returns
+     FORM unchanged if it is not a call to a function for which a
+     compiler macro has been defined, or if that compiler macro decided
+     to punt by returning its `&whole' argument.  Like `macroexpand',
+     it expands repeatedly until it reaches a form for which no further
+     expansion is possible.
+
+   *Note Macro Bindings::, for descriptions of the `macrolet' and
+`symbol-macrolet' forms for making "local" macro definitions.
+
+
+File: cl,  Node: Declarations,  Next: Symbols,  Prev: Macros,  Up: Top
+
+Declarations
+************
+
+Common Lisp includes a complex and powerful "declaration" mechanism
+that allows you to give the compiler special hints about the types of
+data that will be stored in particular variables, and about the ways
+those variables and functions will be used.  This package defines
+versions of all the Common Lisp declaration forms: `declare',
+`locally', `proclaim', `declaim', and `the'.
+
+   Most of the Common Lisp declarations are not currently useful in
+Emacs Lisp, as the byte-code system provides little opportunity to
+benefit from type information, and `special' declarations are redundant
+in a fully dynamically-scoped Lisp.  A few declarations are meaningful
+when the optimizing Emacs 19 byte compiler is being used, however.
+Under the earlier non-optimizing compiler, these declarations will
+effectively be ignored.
+
+ - Function: proclaim DECL-SPEC
+     This function records a "global" declaration specified by
+     DECL-SPEC.  Since `proclaim' is a function, DECL-SPEC is evaluated
+     and thus should normally be quoted.
+
+ - Special Form: declaim DECL-SPECS...
+     This macro is like `proclaim', except that it takes any number of
+     DECL-SPEC arguments, and the arguments are unevaluated and
+     unquoted.  The `declaim' macro also puts an `(eval-when (compile
+     load eval) ...)' around the declarations so that they will be
+     registered at compile-time as well as at run-time.  (This is vital,
+     since normally the declarations are meant to influence the way the
+     compiler treats the rest of the file that contains the `declaim'
+     form.)
+
+ - Special Form: declare DECL-SPECS...
+     This macro is used to make declarations within functions and other
+     code.  Common Lisp allows declarations in various locations,
+     generally at the beginning of any of the many "implicit `progn's"
+     throughout Lisp syntax, such as function bodies, `let' bodies,
+     etc.  Currently the only declaration understood by `declare' is
+     `special'.
+
+ - Special Form: locally DECLARATIONS... FORMS...
+     In this package, `locally' is no different from `progn'.
+
+ - Special Form: the TYPE FORM
+     Type information provided by `the' is ignored in this package; in
+     other words, `(the TYPE FORM)' is equivalent to FORM.  Future
+     versions of the optimizing byte-compiler may make use of this
+     information.
+
+     For example, `mapcar' can map over both lists and arrays.  It is
+     hard for the compiler to expand `mapcar' into an in-line loop
+     unless it knows whether the sequence will be a list or an array
+     ahead of time.  With `(mapcar 'car (the vector foo))', a future
+     compiler would have enough information to expand the loop in-line.
+     For now, Emacs Lisp will treat the above code as exactly equivalent
+     to `(mapcar 'car foo)'.
+
+   Each DECL-SPEC in a `proclaim', `declaim', or `declare' should be a
+list beginning with a symbol that says what kind of declaration it is.
+This package currently understands `special', `inline', `notinline',
+`optimize', and `warn' declarations.  (The `warn' declaration is an
+extension of standard Common Lisp.)  Other Common Lisp declarations,
+such as `type' and `ftype', are silently ignored.
+
+`special'
+     Since all variables in Emacs Lisp are "special" (in the Common
+     Lisp sense), `special' declarations are only advisory.  They
+     simply tell the optimizing byte compiler that the specified
+     variables are intentionally being referred to without being bound
+     in the body of the function.  The compiler normally emits warnings
+     for such references, since they could be typographical errors for
+     references to local variables.
+
+     The declaration `(declare (special VAR1 VAR2))' is equivalent to
+     `(defvar VAR1) (defvar VAR2)' in the optimizing compiler, or to
+     nothing at all in older compilers (which do not warn for non-local
+     references).
+
+     In top-level contexts, it is generally better to write `(defvar
+     VAR)' than `(declaim (special VAR))', since `defvar' makes your
+     intentions clearer.  But the older byte compilers can not handle
+     `defvar's appearing inside of functions, while `(declare (special
+     VAR))' takes care to work correctly with all compilers.
+
+`inline'
+     The `inline' DECL-SPEC lists one or more functions whose bodies
+     should be expanded "in-line" into calling functions whenever the
+     compiler is able to arrange for it.  For example, the Common Lisp
+     function `cadr' is declared `inline' by this package so that the
+     form `(cadr X)' will expand directly into `(car (cdr X))' when it
+     is called in user functions, for a savings of one (relatively
+     expensive) function call.
+
+     The following declarations are all equivalent.  Note that the
+     `defsubst' form is a convenient way to define a function and
+     declare it inline all at once, but it is available only in Emacs
+     19.
+
+          (declaim (inline foo bar))
+          (eval-when (compile load eval) (proclaim '(inline foo bar)))
+          (proclaim-inline foo bar)      ; Lucid Emacs only
+          (defsubst foo (...) ...)       ; instead of defun; Emacs 19 only
+
+     *Note:*  This declaration remains in effect after the containing
+     source file is done.  It is correct to use it to request that a
+     function you have defined should be inlined, but it is impolite to
+     use it to request inlining of an external function.
+
+     In Common Lisp, it is possible to use `(declare (inline ...))'
+     before a particular call to a function to cause just that call to
+     be inlined; the current byte compilers provide no way to implement
+     this, so `(declare (inline ...))' is currently ignored by this
+     package.
+
+`notinline'
+     The `notinline' declaration lists functions which should not be
+     inlined after all; it cancels a previous `inline' declaration.
+
+`optimize'
+     This declaration controls how much optimization is performed by
+     the compiler.  Naturally, it is ignored by the earlier
+     non-optimizing compilers.
+
+     The word `optimize' is followed by any number of lists like
+     `(speed 3)' or `(safety 2)'.  Common Lisp defines several
+     optimization "qualities"; this package ignores all but `speed' and
+     `safety'.  The value of a quality should be an integer from 0 to
+     3, with 0 meaning "unimportant" and 3 meaning "very important."
+     The default level for both qualities is 1.
+
+     In this package, with the Emacs 19 optimizing compiler, the
+     `speed' quality is tied to the `byte-compile-optimize' flag, which
+     is set to `nil' for `(speed 0)' and to `t' for higher settings;
+     and the `safety' quality is tied to the
+     `byte-compile-delete-errors' flag, which is set to `t' for
+     `(safety 3)' and to `nil' for all lower settings.  (The latter
+     flag controls whether the compiler is allowed to optimize out code
+     whose only side-effect could be to signal an error, e.g.,
+     rewriting `(progn foo bar)' to `bar' when it is not known whether
+     `foo' will be bound at run-time.)
+
+     Note that even compiling with `(safety 0)', the Emacs byte-code
+     system provides sufficient checking to prevent real harm from
+     being done.  For example, barring serious bugs in Emacs itself,
+     Emacs will not crash with a segmentation fault just because of an
+     error in a fully-optimized Lisp program.
+
+     The `optimize' declaration is normally used in a top-level
+     `proclaim' or `declaim' in a file; Common Lisp allows it to be
+     used with `declare' to set the level of optimization locally for a
+     given form, but this will not work correctly with the current
+     version of the optimizing compiler.  (The `declare' will set the
+     new optimization level, but that level will not automatically be
+     unset after the enclosing form is done.)
+
+`warn'
+     This declaration controls what sorts of warnings are generated by
+     the byte compiler.  Again, only the optimizing compiler generates
+     warnings.  The word `warn' is followed by any number of "warning
+     qualities," similar in form to optimization qualities.  The
+     currently supported warning types are `redefine', `callargs',
+     `unresolved', and `free-vars'; in the current system, a value of 0
+     will disable these warnings and any higher value will enable them.
+     See the documentation for the optimizing byte compiler for details.
+
+
+File: cl,  Node: Symbols,  Next: Numbers,  Prev: Declarations,  Up: Top
+
+Symbols
+*******
+
+This package defines several symbol-related features that were missing
+from Emacs Lisp.
+
+* Menu:
+
+* Property Lists::       `get*', `remprop', `getf', `remf'
+* Creating Symbols::     `gensym', `gentemp'
+
+
+File: cl,  Node: Property Lists,  Next: Creating Symbols,  Prev: Symbols,  Up: Symbols
+
+Property Lists
+==============
+
+These functions augment the standard Emacs Lisp functions `get' and
+`put' for operating on properties attached to symbols.  There are also
+functions for working with property lists as first-class data
+structures not attached to particular symbols.
+
+ - Function: get* SYMBOL PROPERTY &optional DEFAULT
+     This function is like `get', except that if the property is not
+     found, the DEFAULT argument provides the return value.  (The Emacs
+     Lisp `get' function always uses `nil' as the default; this
+     package's `get*' is equivalent to Common Lisp's `get'.)
+
+     The `get*' function is `setf'-able; when used in this fashion, the
+     DEFAULT argument is allowed but ignored.
+
+ - Function: remprop SYMBOL PROPERTY
+     This function removes the entry for PROPERTY from the property
+     list of SYMBOL.  It returns a true value if the property was
+     indeed found and removed, or `nil' if there was no such property.
+     (This function was probably omitted from Emacs originally because,
+     since `get' did not allow a DEFAULT, it was very difficult to
+     distinguish between a missing property and a property whose value
+     was `nil'; thus, setting a property to `nil' was close enough to
+     `remprop' for most purposes.)
+
+ - Function: getf PLACE PROPERTY &optional DEFAULT
+     This function scans the list PLACE as if it were a property list,
+     i.e., a list of alternating property names and values.  If an
+     even-numbered element of PLACE is found which is `eq' to PROPERTY,
+     the following odd-numbered element is returned.  Otherwise,
+     DEFAULT is returned (or `nil' if no default is given).
+
+     In particular,
+
+          (get sym prop)  ==  (getf (symbol-plist sym) prop)
+
+     It is legal to use `getf' as a `setf' place, in which case its
+     PLACE argument must itself be a legal `setf' place.  The DEFAULT
+     argument, if any, is ignored in this context.  The effect is to
+     change (via `setcar') the value cell in the list that corresponds
+     to PROPERTY, or to cons a new property-value pair onto the list if
+     the property is not yet present.
+
+          (put sym prop val)  ==  (setf (getf (symbol-plist sym) prop) val)
+
+     The `get' and `get*' functions are also `setf'-able.  The fact
+     that `default' is ignored can sometimes be useful:
+
+          (incf (get* 'foo 'usage-count 0))
+
+     Here, symbol `foo''s `usage-count' property is incremented if it
+     exists, or set to 1 (an incremented 0) otherwise.
+
+     When not used as a `setf' form, `getf' is just a regular function
+     and its PLACE argument can actually be any Lisp expression.
+
+ - Special Form: remf PLACE PROPERTY
+     This macro removes the property-value pair for PROPERTY from the
+     property list stored at PLACE, which is any `setf'-able place
+     expression.  It returns true if the property was found.  Note that
+     if PROPERTY happens to be first on the list, this will effectively
+     do a `(setf PLACE (cddr PLACE))', whereas if it occurs later, this
+     simply uses `setcdr' to splice out the property and value cells.
+
+
+File: cl,  Node: Creating Symbols,  Prev: Property Lists,  Up: Symbols
+
+Creating Symbols
+================
+
+These functions create unique symbols, typically for use as temporary
+variables.
+
+ - Function: gensym &optional X
+     This function creates a new, uninterned symbol (using
+     `make-symbol') with a unique name.  (The name of an uninterned
+     symbol is relevant only if the symbol is printed.)  By default,
+     the name is generated from an increasing sequence of numbers,
+     `G1000', `G1001', `G1002', etc.  If the optional argument X is a
+     string, that string is used as a prefix instead of `G'.
+     Uninterned symbols are used in macro expansions for temporary
+     variables, to ensure that their names will not conflict with
+     "real" variables in the user's code.
+
+ - Variable: *gensym-counter*
+     This variable holds the counter used to generate `gensym' names.
+     It is incremented after each use by `gensym'.  In Common Lisp this
+     is initialized with 0, but this package initializes it with a
+     random (time-dependent) value to avoid trouble when two files that
+     each used `gensym' in their compilation are loaded together.
+     (Uninterned symbols become interned when the compiler writes them
+     out to a file and the Emacs loader loads them, so their names have
+     to be treated a bit more carefully than in Common Lisp where
+     uninterned symbols remain uninterned after loading.)
+
+ - Function: gentemp &optional X
+     This function is like `gensym', except that it produces a new
+     *interned* symbol.  If the symbol that is generated already
+     exists, the function keeps incrementing the counter and trying
+     again until a new symbol is generated.
+
+   The Quiroz `cl.el' package also defined a `defkeyword' form for
+creating self-quoting keyword symbols.  This package automatically
+creates all keywords that are called for by `&key' argument specifiers,
+and discourages the use of keywords as data unrelated to keyword
+arguments, so the `defkeyword' form has been discontinued.
+
+
+File: cl,  Node: Numbers,  Next: Sequences,  Prev: Symbols,  Up: Top
+
+Numbers
+*******
+
+This section defines a few simple Common Lisp operations on numbers
+which were left out of Emacs Lisp.
+
+* Menu:
+
+* Predicates on Numbers::       `plusp', `oddp', `floatp-safe', etc.
+* Numerical Functions::         `abs', `expt', `floor*', etc.
+* Random Numbers::              `random*', `make-random-state'
+* Implementation Parameters::   `most-positive-fixnum', `most-positive-float'
+
+
+File: cl,  Node: Predicates on Numbers,  Next: Numerical Functions,  Prev: Numbers,  Up: Numbers
+
+Predicates on Numbers
+=====================
+
+These functions return `t' if the specified condition is true of the
+numerical argument, or `nil' otherwise.
+
+ - Function: plusp NUMBER
+     This predicate tests whether NUMBER is positive.  It is an error
+     if the argument is not a number.
+
+ - Function: minusp NUMBER
+     This predicate tests whether NUMBER is negative.  It is an error
+     if the argument is not a number.
+
+ - Function: oddp INTEGER
+     This predicate tests whether INTEGER is odd.  It is an error if
+     the argument is not an integer.
+
+ - Function: evenp INTEGER
+     This predicate tests whether INTEGER is even.  It is an error if
+     the argument is not an integer.
+
+ - Function: floatp-safe OBJECT
+     This predicate tests whether OBJECT is a floating-point number.
+     On systems that support floating-point, this is equivalent to
+     `floatp'.  On other systems, this always returns `nil'.
+
+
+File: cl,  Node: Numerical Functions,  Next: Random Numbers,  Prev: Predicates on Numbers,  Up: Numbers
+
+Numerical Functions
+===================
+
+These functions perform various arithmetic operations on numbers.
+
+ - Function: abs NUMBER
+     This function returns the absolute value of NUMBER.  (Newer
+     versions of Emacs provide this as a built-in function; this package
+     defines `abs' only for Emacs 18 versions which don't provide it as
+     a primitive.)
+
+ - Function: expt BASE POWER
+     This function returns BASE raised to the power of NUMBER.  (Newer
+     versions of Emacs provide this as a built-in function; this
+     package defines `expt' only for Emacs 18 versions which don't
+     provide it as a primitive.)
+
+ - Function: gcd &rest INTEGERS
+     This function returns the Greatest Common Divisor of the arguments.
+     For one argument, it returns the absolute value of that argument.
+     For zero arguments, it returns zero.
+
+ - Function: lcm &rest INTEGERS
+     This function returns the Least Common Multiple of the arguments.
+     For one argument, it returns the absolute value of that argument.
+     For zero arguments, it returns one.
+
+ - Function: isqrt INTEGER
+     This function computes the "integer square root" of its integer
+     argument, i.e., the greatest integer less than or equal to the true
+     square root of the argument.
+
+ - Function: floor* NUMBER &optional DIVISOR
+     This function implements the Common Lisp `floor' function.  It is
+     called `floor*' to avoid name conflicts with the simpler `floor'
+     function built-in to Emacs 19.
+
+     With one argument, `floor*' returns a list of two numbers: The
+     argument rounded down (toward minus infinity) to an integer, and
+     the "remainder" which would have to be added back to the first
+     return value to yield the argument again.  If the argument is an
+     integer X, the result is always the list `(X 0)'.  If the argument
+     is an Emacs 19 floating-point number, the first result is a Lisp
+     integer and the second is a Lisp float between 0 (inclusive) and 1
+     (exclusive).
+
+     With two arguments, `floor*' divides NUMBER by DIVISOR, and
+     returns the floor of the quotient and the corresponding remainder
+     as a list of two numbers.  If `(floor* X Y)' returns `(Q R)', then
+     `Q*Y + R = X', with R between 0 (inclusive) and R (exclusive).
+     Also, note that `(floor* X)' is exactly equivalent to `(floor* X
+     1)'.
+
+     This function is entirely compatible with Common Lisp's `floor'
+     function, except that it returns the two results in a list since
+     Emacs Lisp does not support multiple-valued functions.
+
+ - Function: ceiling* NUMBER &optional DIVISOR
+     This function implements the Common Lisp `ceiling' function, which
+     is analogous to `floor' except that it rounds the argument or
+     quotient of the arguments up toward plus infinity.  The remainder
+     will be between 0 and minus R.
+
+ - Function: truncate* NUMBER &optional DIVISOR
+     This function implements the Common Lisp `truncate' function,
+     which is analogous to `floor' except that it rounds the argument
+     or quotient of the arguments toward zero.  Thus it is equivalent
+     to `floor*' if the argument or quotient is positive, or to
+     `ceiling*' otherwise.  The remainder has the same sign as NUMBER.
+
+ - Function: round* NUMBER &optional DIVISOR
+     This function implements the Common Lisp `round' function, which
+     is analogous to `floor' except that it rounds the argument or
+     quotient of the arguments to the nearest integer.  In the case of
+     a tie (the argument or quotient is exactly halfway between two
+     integers), it rounds to the even integer.
+
+ - Function: mod* NUMBER DIVISOR
+     This function returns the same value as the second return value of
+     `floor'.
+
+ - Function: rem* NUMBER DIVISOR
+     This function returns the same value as the second return value of
+     `truncate'.
+
+   These definitions are compatible with those in the Quiroz `cl.el'
+package, except that this package appends `*' to certain function names
+to avoid conflicts with existing Emacs 19 functions, and that the
+mechanism for returning multiple values is different.
+
+
+File: cl,  Node: Random Numbers,  Next: Implementation Parameters,  Prev: Numerical Functions,  Up: Numbers
+
+Random Numbers
+==============
+
+This package also provides an implementation of the Common Lisp random
+number generator.  It uses its own additive-congruential algorithm,
+which is much more likely to give statistically clean random numbers
+than the simple generators supplied by many operating systems.
+
+ - Function: random* NUMBER &optional STATE
+     This function returns a random nonnegative number less than
+     NUMBER, and of the same type (either integer or floating-point).
+     The STATE argument should be a `random-state' object which holds
+     the state of the random number generator.  The function modifies
+     this state object as a side effect.  If STATE is omitted, it
+     defaults to the variable `*random-state*', which contains a
+     pre-initialized `random-state' object.
+
+ - Variable: *random-state*
+     This variable contains the system "default" `random-state' object,
+     used for calls to `random*' that do not specify an alternative
+     state object.  Since any number of programs in the Emacs process
+     may be accessing `*random-state*' in interleaved fashion, the
+     sequence generated from this variable will be irreproducible for
+     all intents and purposes.
+
+ - Function: make-random-state &optional STATE
+     This function creates or copies a `random-state' object.  If STATE
+     is omitted or `nil', it returns a new copy of `*random-state*'.
+     This is a copy in the sense that future sequences of calls to
+     `(random* N)' and `(random* N S)' (where S is the new random-state
+     object) will return identical sequences of random numbers.
+
+     If STATE is a `random-state' object, this function returns a copy
+     of that object.  If STATE is `t', this function returns a new
+     `random-state' object seeded from the date and time.  As an
+     extension to Common Lisp, STATE may also be an integer in which
+     case the new object is seeded from that integer; each different
+     integer seed will result in a completely different sequence of
+     random numbers.
+
+     It is legal to print a `random-state' object to a buffer or file
+     and later read it back with `read'.  If a program wishes to use a
+     sequence of pseudo-random numbers which can be reproduced later
+     for debugging, it can call `(make-random-state t)' to get a new
+     sequence, then print this sequence to a file.  When the program is
+     later rerun, it can read the original run's random-state from the
+     file.
+
+ - Function: random-state-p OBJECT
+     This predicate returns `t' if OBJECT is a `random-state' object,
+     or `nil' otherwise.
+

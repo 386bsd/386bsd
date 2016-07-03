@@ -1,0 +1,660 @@
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+NNAAMMEE
+       btree_open,  hash_open, recno_open - database access meth-
+       ods
+
+SSYYNNOOPPSSIISS
+       ##iinncclluuddee <<ssyyss//ttyyppeess..hh>>
+       ##iinncclluuddee <<ddbb..hh>>
+
+       DDBB **
+       bbttrreeee__ooppeenn((ccoonnsstt cchhaarr **ffiillee,, iinntt ffllaaggss,, iinntt mmooddee,,
+            ccoonnsstt BBTTRREEEEIINNFFOO ** ooppeenniinnffoo));;
+
+       DDBB **
+       hhaasshh__ooppeenn((ccoonnsstt cchhaarr **ffiillee,, iinntt ffllaaggss,, iinntt mmooddee,,
+            ccoonnsstt HHAASSHHIINNFFOO ** ooppeenniinnffoo));;
+
+       DDBB **
+       rreeccnnoo__ooppeenn((ccoonnsstt cchhaarr **ffiillee,, iinntt ffllaaggss,, iinntt mmooddee,,
+            ccoonnsstt RREECCNNOOIINNFFOO ** ooppeenniinnffoo));;
+
+DDEESSCCRRIIPPTTIIOONN
+       _B_t_r_e_e__o_p_e_n, _h_a_s_h__o_p_e_n, and _r_e_c_n_o__o_p_e_n  are  access  method
+       interfaces  to  database files in btree, hashed, and flat-
+       file formats, respectively.  The btree format is a  repre-
+       sentation  of  a  sorted,  balanced  tree  structure.  The
+       hashed format is an extensible,  dynamic  hashing  scheme.
+       The flat-file format is a UNIX file with fixed or variable
+       length lines.  These formats are described in more  detail
+       below.
+
+       Access to all file types is based on key/data pairs.
+
+       Each  routine  opens  _f_i_l_e  for  reading  and/or  writing.
+       Databases never intended to be preserved on  disk  may  be
+       created  by setting the file parameter to NULL.  The _f_l_a_g_s
+       and _m_o_d_e _a_r_g_u_m_e_n_t_s are as specified to  the  _o_p_e_n(2)  rou-
+       tine, however, only the O_CREAT, O_EXCL, O_RDONLY, O_RDWR,
+       O_TRUNC and O_WRONLY flags are meaningful.   The  argument
+       _o_p_e_n_i_n_f_o  is a pointer to an access method specific struc-
+       ture described below.
+
+       The open routines return a pointer to a  DB  structure  on
+       success  and  NULL on error.  The DB structure contains at
+       least the following fields:
+
+       typedef struct {
+              int (*close)(const DB *db);
+              int (*sync)(const DB *db);
+              int (*del)(const DB *db, const DBT *key, u_int flags);
+              int (*get)(const DB *db, DBT *key, DBT *data, u_int flags);
+              int (*put)(const DB *db, const DBT *key, const DBT *data,
+                   u_int flags);
+              int (*seq)(const DB *db, DBT *key, DBT *data, u_int flags);
+              int type;
+
+
+
+2,                            April                             1
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+              void *openinfo;
+       } DB;
+
+       The elements of this structure consist of a pointer to  an
+       access  method  specific  structure  and a set of routines
+       which perform various functions.  All  of  these  routines
+       take  a  pointer  to a structure as returned by one of the
+       open routines, one or more  pointers  to  key/data  struc-
+       tures, and, optionally, a flag value.
+
+       openinfo
+              A  pointer to an internal structure specific to the
+              access method.
+
+       type   The type of the underlying  access  method;  either
+              DB_BTREE, DB_HASH or DB_RECNO.
+
+       close  A pointer to a routine to flush any cached informa-
+              tion to disk, free  any  allocated  resources,  and
+              close  the database file.  Since key/data pairs may
+              be cached in memory, failing to close the file with
+              a  _c_l_o_s_e routine may result in inconsistent or lost
+              information.  _C_l_o_s_e routines  return  -1  on  error
+              (setting _e_r_r_n_o) and 0 on success.
+
+       del    A  pointer  to  a  routine to remove key/data pairs
+              from the database.  _D_e_l_e_t_e routines  return  -1  on
+              error  (setting  _e_r_r_n_o), 0 on success, and 1 if the
+              specified _k_e_y was not in the file.
+
+       get    A pointer to a routine which is the  interface  for
+              keyed retrieval from the database.  The address and
+              length of the data associated  with  the  specified
+              _k_e_y  are  returned  in  the structure referenced by
+              _d_a_t_a.  _G_e_t routines return  -1  on  error  (setting
+              _e_r_r_n_o),  0  on success, and 1 if the _k_e_y was not in
+              the file.
+
+       put    A pointer to a routine to store key/data  pairs  in
+              the database.
+
+              The  parameter  _f_l_a_g must be set to one of the fol-
+              lowing values:
+
+              R_IAFTER
+                     Append the data immediately after  the  data
+                     referenced  by  _k_e_y, creating a new key/data
+                     pair.  (This implies that the access  method
+                     is  able  to  create new keys, i.e. the keys
+                     are ordered and  independent,  for  example,
+                     record  numbers.   Applicable  only  to  the
+                     RREECCNNOO access method.)
+
+
+
+
+
+2,                            April                             2
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+              R_IBEFORE
+                     Insert the data immediately before the  data
+                     referenced  by  _k_e_y, creating a new key/data
+                     pair.  (This implies that the access  method
+                     is  able  to  create new keys, i.e. the keys
+                     are ordered and  independent,  for  example,
+                     record  numbers.   Applicable  only  to  the
+                     RREECCNNOO access method.)
+
+              R_NOOVERWRITE
+                     Enter the new key/data pair only if the  key
+                     does not previously exist.
+
+              R_PUT  Enter  the new key/data pair and replace any
+                     previously existing key.
+
+              _P_u_t routines return -1 on error (setting _e_r_r_n_o),  0
+              on success, and 1 if the R_NOOVERWRITE _f_l_a_g was set
+              and the key already exists in the file.
+
+       seq    A pointer to a routine which is the  interface  for
+              sequential   retrieval   from  the  database.   The
+              address and length of the key are returned  in  the
+              structure  referenced  by  _k_e_y, and the address and
+              length of the data are returned  in  the  structure
+              referenced by _d_a_t_a.
+
+              Sequential key/data pair retrieval may begin at any
+              time, and the position of  the  ``cursor''  is  not
+              affected  by  calls  to  the _d_e_l, _g_e_t, _p_u_t, or _s_y_n_c
+              routines.  Modifications to the database  during  a
+              sequential scan will be reflected in the scan, i.e.
+              records inserted behind  the  cursor  will  not  be
+              returned  while  records  inserted  in front of the
+              cursor will be returned.
+
+              The flag value must be set to one of the  following
+              values:
+
+              R_CURSOR
+                     The  data  associated with the specified key
+                     is returned.  This differs from the _g_e_t rou-
+                     tines  in that it sets the ``cursor'' to the
+                     location of the key as well.  (This  implies
+                     that  the access method has a implicit order
+                     which does not change.  Applicable  only  to
+                     the BBTTRREEEE and RREECCNNOO access methods.)
+
+              R_FIRST
+                     The  first  key/data pair of the database is
+                     returned.
+
+              R_LAST The last key/data pair of  the  database  is
+                     returned.   (This  implies  that  the access
+
+
+
+2,                            April                             3
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+                     method has a implicit order which  does  not
+                     change.   Applicable  only  to the BBTTRREEEE and
+                     RREECCNNOO access methods.)
+
+              R_NEXT Retrieve the key/data pair immediately after
+                     the  key/data  pair  most recently retrieved
+                     using the _s_e_q routine.  The cursor is  moved
+                     to  the  returned key/data pair.  If _f_l_a_g is
+                     set to R_NEXT the first time the _s_e_q routine
+                     is  called,  the  first key/data pair of the
+                     database is returned.
+
+              R_PREV Retrieve  the  key/data   pair   immediately
+                     before   the  key/data  pair  most  recently
+                     retrieved using the _s_e_q routine.  The cursor
+                     is  moved to the returned key/data pair.  If
+                     _f_l_a_g is set to R_PREV the first time the _s_e_q
+                     routine is called, the last key/data pair of
+                     the database  is  returned.   (This  implies
+                     that  the access method has a implicit order
+                     which does not change.  Applicable  only  to
+                     the BBTTRREEEE and RREECCNNOO access methods.)
+
+              _S_e_q  routines return -1 on error (setting _e_r_r_n_o), 0
+              on success, 1 if there are no more  key/data  pairs
+              available.   If  the  RREECCNNOO  access method is being
+              used, and if the database file is a character  spe-
+              cial  file  and no complete key/data pairs are cur-
+              rently available, the _s_e_q routines return 2.
+
+       sync   A pointer to a routine to flush any cached informa-
+              tion  to  disk.  If the database is in memory only,
+              the _s_y_n_c routine has no effect and will always suc-
+              ceed.   _S_y_n_c  routines  return -1 on error (setting
+              _e_r_r_n_o) and 0 on success.
+
+KKEEYY//DDAATTAA PPAAIIRRSS
+       Access to all file types is based on key/data pairs.  Both
+       keys and data are represented by the following data struc-
+       ture:
+
+       typedef struct {
+              void *data;
+              size_t size;
+       } DBT;
+
+       The elements of the DBT structure are defined as follows:
+
+       data   A pointer to a byte string.
+
+       size   The length of the byte string.
+
+       Key/data strings must fit into available memory.
+
+
+
+
+2,                            April                             4
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+BBTTRREEEE
+       One of the access methods is a btree: a  sorted,  balanced
+       tree structure with associated key/data pairs.
+
+       The  access  method  specific  data  structure provided to
+       _b_t_r_e_e__o_p_e_n is as follows:
+
+       typedef struct {
+              u_long flags;
+              u_int psize;
+              u_int cachesize;
+              int (*compare)(const void *, const void *);
+              int lorder;
+       } BTREEINFO;
+
+       The elements of this structure are defined as follows:
+
+       flags  The flag value is specified by _o_r'ing  any  of  the
+              following values:
+
+              R_DUP  On  insertion,  if  the  key  to be inserted
+                     already  exists,  permit  insertion  anyway.
+                     This  flag  permits  duplicate  keys  in the
+                     tree.  By default, duplicates are  not  per-
+                     mitted,  and  attempts  to  insert them will
+                     fail.   Note,  the  order  of  retrieval  of
+                     key/data  pairs with duplicate keys is unde-
+                     fined.
+
+       cachesize
+              A suggested maximum size, in bytes, of  the  memory
+              cache.   Setting  this value to zero specifies that
+              an appropriate amount of  memory  should  be  used.
+              Since  every  search  examines the root page of the
+              tree, caching the most recently used pages substan-
+              tially improves access time.  In addition, physical
+              writes are delayed as long as possible, so a moder-
+              ate  cache  can reduce the number of I/O operations
+              significantly.  Obviously, using a cache  increases
+              the  likelihood  of  corruption or lost data if the
+              system crashes while  a  tree  is  being  modified.
+              However,  caching  10  pages decreases the creation
+              time of a large  tree  by  between  two  and  three
+              orders of magnitude.
+
+       compare
+              Compare  is a user defined comparison function.  It
+              must return an integer  less  than,  equal  to,  or
+              greater  than zero if the first argument is consid-
+              ered to be respectively less  than,  equal  to,  or
+              greater than the second.  The same comparison func-
+              tion must be used on a given tree every time it  is
+              opened.   If  no  comparison function is specified,
+              _s_t_r_c_m_p(3) is used.
+
+
+
+2,                            April                             5
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+       lorder The byte order for 4-byte integers  in  the  stored
+              database metadata.  The number should represent the
+              order as an integer; for example, big endian  order
+              would  be  the  number  4,321.   If _l_o_r_d_e_r is 0 (no
+              order is specified) the current host order is used.
+              If the  file already exists, the specified value is
+              ignored and the value specified when the  tree  was
+              created  is  used.   (Obviously, portability of the
+              data forming the key/data pairs is the  concern  of
+              the application program.)
+
+       psize  Page  size  is  the size in bytes of the pages used
+              for nodes  in  the  tree.   If  the   file  already
+              exists,  the  specified  value  is  ignored and the
+              value specified when the tree was created is  used.
+              If  _p_s_i_z_e is zero, an appropriate page size is cho-
+              sen (based on the system memory and/or file  system
+              constraints),  but  will  never  be  less  than 512
+              bytes.
+
+       If the pointer to the _o_p_e_n_i_n_f_o data structure is NULL, the
+       _b_t_r_e_e__o_p_e_n routine will use appropriate values.
+
+       If  the database file already exists, and the O_TRUNC flag
+       is  not  specified  to  _b_t_r_e_e__o_p_e_n,  the  parameter  _p_s_i_z_e
+       ignored.
+
+       Key structures may reference byte strings of slightly less
+       than one-half the tree's page size only (see _p_s_i_z_e).  Data
+       structures  may  reference  byte  strings  of  essentially
+       unlimited length.
+
+       Searches, insertions, and deletions in a  btree  will  all
+       complete in O lg N.
+
+       Forward  sequential scans of a tree are from the least key
+       to the greatest.
+
+       Space freed up by deleting key/data pairs from a btree  is
+       never  reclaimed,  although  it is normally made available
+       for reuse.  The exception to this is that  space  occupied
+       by  large  data  items (those greater than one quarter the
+       size of a page) is neither  reclaimed  nor  reused.   This
+       means  that the btree storage structure is grow-only.  The
+       only solutions are to avoid  excessive  deletions,  or  to
+       create  a fresh tree periodically from a scan of an exist-
+       ing one.
+
+HHAASSHH
+       One of the access methods is hashed  access  and  storage.
+       The  access  method  specific  data  structure provided to
+       _h_a_s_h__o_p_e_n is as follows:
+
+       typedef struct {
+
+
+
+2,                            April                             6
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+              u_long (*hash)(const void *, const size_t);
+              u_int cachesize;
+              int bsize;
+              int ffactor;
+              int lorder;
+              int nelem;
+       } HASHINFO;
+
+       The elements of this structure are defined as follows:
+
+       bsize  _B_s_i_z_e defines the hash table bucket size,  and  is,
+              by  default,  256  bytes.   It may be preferable to
+              increase the page size for disk-resident tables and
+              tables with large data items.
+
+       cachesize
+              A  suggested  maximum size, in bytes, of the memory
+              cache.  Setting this value to zero  specifies  that
+              an appropriate amount of memory should be used.
+
+       ffactor
+              _F_f_a_c_t_o_r indicates a desired density within the hash
+              table.  It is an approximation  of  the  number  of
+              keys  allowed  to  accumulate  in  any  one bucket,
+              determining when the hash table grows  or  shrinks.
+              The default value is 8.
+
+       hash   _H_a_s_h  is  a  user  defined hash function.  Since no
+              hash function performs equally well on all possible
+              data,  the  user  may  find  that the built-in hash
+              function does poorly  on  a  particular  data  set.
+              User  specified  hash functions must take two argu-
+              ments (a pointer to a byte string and a length) and
+              return an u_long to be used as the hash value.
+
+       lorder The  byte  order  for 4-byte integers in the stored
+              database metadata.  The number should represent the
+              order  as an integer; for example, big endian order
+              would be the number 4,321.   If  _l_o_r_d_e_r  is  0  (no
+              order is specified) the current host order is used.
+              If the  file already exists, the specified value is
+              ignored  and  the value specified when the tree was
+              created is used.  (Obviously,  portability  of  the
+              data  forming  the key/data pairs is the concern of
+              the application program.)
+
+       nelem  _N_e_l_e_m is an estimate of the final size of the  hash
+              table.  If not set, the default value is 1.  If not
+              set or set too low, hash tables will expand  grace-
+              fully  as  keys are entered, although a slight per-
+              formance degradation may be noticed.
+
+       If the pointer to the _o_p_e_n_i_n_f_o data structure is NULL, the
+       _h_a_s_h__o_p_e_n routine will use appropriate values.
+
+
+
+2,                            April                             7
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+       If  the hash table already exists, and the O_TRUNC flag is
+       not specified to _h_a_s_h__o_p_e_n, the parameters _b_s_i_z_e, _f_f_a_c_t_o_r,
+       and _n_e_l_e_m are ignored.
+
+       If a hash function is specified, _h_a_s_h__o_p_e_n will attempt to
+       determine if the hash function specified is  the  same  as
+       the one with which the database was created, and will fail
+       if it is not.
+
+       Both key and data structures may reference byte strings of
+       essentially unlimited length.
+
+       Backward  compatible  interfaces to the routines described
+       in _d_b_m(3), _h_s_e_a_r_c_h(3), and _n_d_b_m(3) are provided,  however,
+       these  interfaces  are  not  compatible with previous file
+       formats.
+
+RREECCNNOO
+       One of the access methods is  either  variable  or  fixed-
+       length  records,  the  former delimited by a specific byte
+       value.  The access method specific data structure provided
+       to _r_e_c_n_o__o_p_e_n is as follows:
+
+       typedef struct {
+              u_long flags;
+              u_int cachesize;
+              size_t reclen;
+              u_char bval;
+       } RECNOINFO;
+
+       The elements of this structure are defined as follows:
+
+       flags  The  flag  value  is specified by _o_r'ing any of the
+              following values:
+
+              R_FIXEDLEN
+                     The  records  are  fixed-length,  not   byte
+                     delimited.   The  structure  element  _r_e_c_l_e_n
+                     specifies the length of the record, and  the
+                     structure  element  _b_v_a_l  is used as the pad
+                     character.
+
+              R_SNAPSHOT
+                     This flag requires that a  snapshot  of  the
+                     file  be  taken  when  _r_e_c_n_o__o_p_e_n is called,
+                     instead of permitting any unmodified records
+                     to be read from the original file.
+
+       cachesize
+              A  suggested  maximum size, in bytes, of the memory
+              cache.  Setting this value to zero  specifies  that
+              an appropriate amount of memory should be used.
+
+       reclen The length of a fixed-length record.
+
+
+
+2,                            April                             8
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+       bval   The delimiting byte to be used to mark the end of a
+              record for variable-length  records,  and  the  pad
+              character for fixed-length records.
+
+       Variable-length  and  fixed-length  data files require _k_e_y
+       structures to reference the following structure:
+
+       typedef struct {
+              u_long length;
+              u_long number;
+              u_long offset;
+              u_char valid;
+       } RECNOKEY;
+
+       The elements of this structure are defined as follows:
+
+       length The length of the record.
+
+       number The record number.
+
+       offset The offset in the  file  at  which  the  record  is
+              located.
+
+       valid  A  flag  value  which indicates the validity of the
+              other fields in the structure.  The flag  value  is
+              specified  by  _o_r'ing  one or more of the following
+              values:
+
+              R_LENGTH
+                     The record length is valid.
+
+              R_NUMBER
+                     The record number is valid.
+
+              R_OFFSET
+                     The byte offset is valid.
+
+       If the record retrieval is successful, the record  number,
+       byte  offset  and  record  length  are set in the RECNOKEY
+       structure referenced by the caller's _k_e_y structure.
+
+       Data structures may reference byte strings of  essentially
+       unlimited length.
+
+EERRRROORRSS
+       The  _o_p_e_n  routines  may fail and set _e_r_r_n_o for any of the
+       errors specified for the library routines _o_p_e_n(2) and _m_a_l-
+       _l_o_c(3) or the following:
+
+       [EFTYPE]
+              A  file  used by one of the _o_p_e_n routines is incor-
+              rectly formatted.
+
+
+
+
+
+2,                            April                             9
+
+
+
+
+
+DB(3)                          1991                         DB(3)
+
+
+       [EINVAL]
+              A parameter has been specified (hash function,  pad
+              byte  etc.)  that  is incompatible with the current
+              file specification or there is a  mismatch  between
+              the version number of file and the software.
+
+       The  _c_l_o_s_e  routines may fail and set _e_r_r_n_o for any of the
+       errors  specified  for  the  library  routines   _c_l_o_s_e(2),
+       _r_e_a_d(2), _w_r_i_t_e(2), _f_r_e_e(3), or _f_s_y_n_c(2).
+
+       The  _d_e_l, _g_e_t, _p_u_t and _s_e_q routines may fail and set _e_r_r_n_o
+       for any of the errors specified for the  library  routines
+       _r_e_a_d(2), _w_r_i_t_e(2), _f_r_e_e(3) or _m_a_l_l_o_c(3).
+
+       The  _s_y_n_c  routines  may fail and set _e_r_r_n_o for any of the
+       errors specified for the library routine _f_s_y_n_c(2).
+
+SSEEEE AALLSSOO
+       _D_y_n_a_m_i_c _H_a_s_h _T_a_b_l_e_s, Per-Ake Larson, Communications of the
+       ACM, April 1988.
+       _A  _N_e_w  _H_a_s_h  _P_a_c_k_a_g_e _f_o_r _U_N_I_X, Margo Seltzer, USENIX Pro-
+       ceedings, Winter 1991.
+
+BBUUGGSS
+       The typedef DBT is a mnemonic for ``data base thang'', and
+       was  used  because  noone could think of a reasonable name
+       that wasn't already used.
+
+       None of the access methods provide any form of  concurrent
+       access, locking, or transactions.
+
+       Only big and little endian byte order is supported.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2,                            April                            10
+
+

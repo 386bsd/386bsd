@@ -1,0 +1,175 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XmbDrawString 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XmbDrawString, XwcDrawString \- draw text using a single font set
+.SH SYNTAX
+void XmbDrawString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_bytes\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      XFontSet \fIfont_set\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIx\fP\^, \fIy\fP\^;
+.br
+      char *\fIstring\fP\^;
+.br
+      int \fInum_bytes\fP\^;
+.LP
+void XwcDrawString\^(\^\fIdisplay\fP\^, \fId\fP\^, \fIfont_set\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIstring\fP\^, \fInum_wchars\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      XFontSet \fIfont_set\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIx\fP\^, \fIy\fP\^;
+.br
+      wchar_t *\fIstring\fP\^;
+.br
+      int \fInum_wchars\fP\^;
+.SH ARGUMENTS
+.\" $Header: d.a,v 1.1 88/02/26 10:04:25 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable. 
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: fontset.a,v 1.2 88/05/09 14:28:06 mento Exp $
+.IP \fIfont_set\fP 1i
+Specifies the font set.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.IP \fInum_bytes\fP 1i
+Specifies the number of bytes in the string argument.
+.IP \fInum_wchars\fP 1i
+Specifies the number of characters in the string argument.
+.\" $Header: string.a,v 1.1 88/02/26 10:31:32 mento Exp $
+.IP \fIstring\fP 1i
+Specifies the character string.
+.ds Xy
+.\" $Header: xy_gen.a,v 1.2 88/08/04 11:22:37 mento Exp $
+.IP \fIx\fP 1i
+.br
+.ns
+.IP \fIy\fP 1i
+Specify the x and y coordinates\*(Xy.
+.SH DESCRIPTION
+.ZN XmbDrawString
+and
+.ZN XwcDrawString
+draw the specified text with the foreground pixel.
+When the 
+.ZN XFontSet
+has missing charsets, each unavailable character is drawn 
+with the default string returned by 
+.ZN XCreateFontSet .
+The behavior for an invalid codepoint is undefined.
+.SH "SEE ALSO"
+XXDrawImageString(3X11),
+XDrawString(3X11),
+XDrawText(3X11),
+XmbDrawImageString(3X11),
+XmbDrawText(3X11)
+.br
+\fI\*(xL\fP

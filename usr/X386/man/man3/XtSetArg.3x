@@ -1,0 +1,193 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtSetArg 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtSetArg, XtMergeArgLists \- set and merge ArgLists
+.SH SYNTAX
+XtSetArg(\fIarg\fP, \fIname\fP, \fIvalue\fP)
+.br
+      Arg \fIarg\fP;
+.br
+      String \fIname\fP;
+.br
+      XtArgVal \fIvalue\fP;
+.LP
+ArgList XtMergeArgLists(\fIargs1\fP, \fInum_args1\fP, \fIargs2\fP, \
+\fInum_args2\fP)
+.br
+     ArgList \fIargs1\fP;
+.br
+     Cardinal \fInum_args1\fP;
+.br
+     ArgList \fIargs2\fP;
+.br
+     Cardinal \fInum_args2\fP;
+.SH ARGUMENTS
+.IP \fIarg\fP 1i
+Specifies the name-value pair to set.
+.IP \fIargs1\fP 1i
+Specifies the first
+.ZN ArgList .
+.IP \fIargs2\fP 1i
+Specifies the second 
+.ZN ArgList .
+.IP \fInum_args1\fP 1i
+Specifies the number of arguments in the first argument list.
+.IP \fInum_args2\fP 1i
+Specifies the number of arguments in the second argument list.
+.IP \fIname\fP 1i
+Specifies the name of the resource.
+.IP \fIvalue\fP 1i
+Specifies the value of the resource if it will fit in an
+.ZN XtArgVal 
+or the address.
+.SH DESCRIPTION
+The
+.ZN XtSetArg
+function is usually used in a highly stylized manner to
+minimize the probability of making a mistake; for example:
+.LP
+.Ds
+.TA .5i 3i
+.ta .5i 3i
+Arg args[20];
+int n;
+
+n = 0;
+XtSetArg(args[n], XtNheight, 100);	n++;
+XtSetArg(args[n], XtNwidth, 200);	n++;
+XtSetValues(widget, args, n);
+.De
+.LP
+Alternatively, an application can statically declare the argument list
+and use
+.ZN XtNumber :
+.LP
+.Ds
+.TA .5i 3i
+.ta .5i 3i
+static Args args[] = {
+	{XtNheight, (XtArgVal) 100},
+	{XtNwidth, (XtArgVal) 200},
+};
+XtSetValues(Widget, args, XtNumber(args));
+.De
+.LP
+Note that you should not use auto-increment or auto-decrement
+within the first argument to
+.ZN XtSetArg .
+.ZN XtSetArg
+can be implemented as a macro that dereferences the first argument twice.
+.LP
+The
+.ZN XtMergeArgLists
+function allocates enough storage to hold the combined
+.ZN ArgList
+structures and copies them into it.
+Note that it does not check for duplicate entries.
+When it is no longer needed,
+free the returned storage by using
+.ZN XtFree .
+.SH "SEE ALSO"
+XtOffset(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

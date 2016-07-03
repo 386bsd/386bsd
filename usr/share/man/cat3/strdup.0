@@ -1,0 +1,66 @@
+STRDUP(3)                 386BSD Programmer's Manual                 STRDUP(3)
+
+NNAAMMEE
+     ssttrrdduupp - save a copy of a string
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssttrriinngg..hh>>
+
+     _c_h_a_r *
+     ssttrrdduupp(_c_o_n_s_t _c_h_a_r *_s_t_r)
+
+DDEESSCCRRIIPPTTIIOONN
+     The ssttrrdduupp() function allocates sufficient memory for a copy of the
+     string _s_t_r, does the copy, and returns a pointer to it.  The pointer may
+     subsequently be used as an argument to the function free(3).
+
+SSEEEE AALLSSOO
+     calloc(3) malloc(3) realloc(3) free(3)
+
+HHIISSTTOORRYY
+     The ssttrrdduupp() function currently under development.
+
+BSD Experimental                April 19, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

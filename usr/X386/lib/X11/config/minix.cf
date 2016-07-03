@@ -1,0 +1,25 @@
+XCOMM $XFree86: mit/config/minix.cf,v 1.2 1993/04/20 05:09:29 dawes Exp $
+
+/*
+ * Defines for Minix/X386 that are compiler set independent.
+ */
+#define	OSName			Minix
+#define	OSMajorVersion		1
+#define	OSMinorVersion		6
+#define	OSVendor		/**/
+
+#define	Minix			YES
+
+#define BuildServer		YES
+#define	BuildFonts		NO
+#define BuildFontServer		NO
+#define	BuildPex		NO
+
+#define	ExecableScripts		NO
+#define	HasPutenv		YES
+#define	HasVoidSignalReturn	YES
+#define	HasSharedLibraries	NO
+#define	HasShm			NO
+#define	HasNdbm			YES	/* i.e. something that looks like it */
+
+#define NdbmDefines             -DSDBM -DNDBM -I$(INCLUDESRC)

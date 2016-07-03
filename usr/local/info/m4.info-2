@@ -1,0 +1,1129 @@
+This is Info file m4.info, produced by Makeinfo-1.47 from the input
+file m4.texinfo.
+
+   This file documents the GNU m4 utility.
+
+   Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation,
+Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+
+File: m4.info,  Node: Diversions,  Next: Text handling,  Prev: File Inclusion,  Up: Top
+
+Diverting and undiverting output
+********************************
+
+   Diversions are a way of temporarily saving output.  The output of
+`m4' can at any time be diverted to a temporary file, and be reinserted
+into the output stream, "undiverted", again at a later time.
+
+   Up to ten numbered diversions (numbered from 0 to 9) are supported in
+`m4', of which diversion number 0 is the normal output stream.  The
+number of available diversions can be increased with the `-N' option.
+
+* Menu:
+
+* Divert::                      Diverting output
+* Undivert::                    Undiverting output
+* Divnum::                      Diversion numbers
+* Cleardiv::                    Discarding diverted text
+
+
+File: m4.info,  Node: Divert,  Next: Undivert,  Prev: Diversions,  Up: Diversions
+
+Diverting output
+================
+
+   Output is diverted using `divert':
+
+     divert(opt NUMBER)
+
+where NUMBER is the diversion to be used.  If NUMBER is left out, it is
+assumed to be zero.
+
+   The expansion of `divert' is void.
+
+   Diverted output, that hasn't been explicitly undiverted, will be
+automatically undiverted to the main output stream when all the input
+has been processed.
+
+     divert(1)
+     This text is diverted.
+     divert
+     =>
+     This text is not diverted.
+     =>This text is not diverted.
+     ^D
+     =>
+     =>This text is diverted.
+
+   Several calls of `divert' with the same argument do not overwrite
+the previous diverted text, but append to it.
+
+   If output is diverted to a non-existent diversion, it is simply
+discarded.  This can be used to suppress unwanted output.  A common
+example of unwanted output is the trailing newlines after macro
+definitions.  Here is how to avoid them.
+
+     divert(-1)
+     define(`foo', `Macro `foo'.')
+     define(`bar', `Macro `bar'.')
+     divert
+     =>
+
+   This is a common programming idiom in `m4'.
+
+
+File: m4.info,  Node: Undivert,  Next: Divnum,  Prev: Divert,  Up: Diversions
+
+Undiverting output
+==================
+
+   Diverted text can be undiverted explicitly using the built-in
+`undivert':
+
+     undivert(opt NUMBER, ...)
+
+which undiverts the diversions given by the arguments, in the order
+given.  If no arguments are supplied, all diversions are undiverted, in
+numerical order.
+
+   The expansion of `undivert' is void.
+
+     divert(1)
+     This text is diverted.
+     divert
+     =>
+     This text is not diverted.
+     =>This text is not diverted.
+     undivert(1)
+     =>
+     =>This text is diverted.
+     =>
+
+   Notice the last two blank lines.  One of them comes from the newline
+following `undivert', the other from the newline that followed the
+`divert'!  A diversion often starts with a blank line like this.
+
+   When diverted text is undiverted, it is *not* reread by `m4', but
+rather copied directly to the current output, and it is therefore not
+an error to undivert into a diversion.
+
+   When a diversion has been undiverted, the diverted text is discarded,
+and it is not possible to bring back diverted text more than once.
+
+     divert(1)
+     This text is diverted first.
+     divert(0)undivert(1)dnl
+     =>
+     =>This text is diverted first.
+     undivert(1)
+     =>
+     divert(1)
+     This text is also diverted but not appended.
+     divert(0)undivert(1)dnl
+     =>
+     =>This text is also diverted but not appended.
+
+   Attempts to undivert the current diversion are silently ignored.
+
+   GNU `m4' allows named files to be undiverted.  Given a non-numeric
+argument, the contents of the file named will be copied, uninterpreted,
+to the current output.  This complements the built-in `include' (*note
+Include::.).  To illustrate the difference, assume the file `foo'
+contains the word `bar':
+
+     define(`bar', `BAR')
+     =>
+     undivert(`foo')
+     =>bar
+     =>
+     include(`foo')
+     =>BAR
+     =>
+
+
+File: m4.info,  Node: Divnum,  Next: Cleardiv,  Prev: Undivert,  Up: Diversions
+
+Diversion numbers
+=================
+
+   The built-in `divnum':
+
+     divnum
+
+expands to the number of the current diversion.
+
+     Initial divnum
+     =>Initial 0
+     divert(1)
+     Diversion one: divnum
+     divert(2)
+     Diversion two: divnum
+     divert
+     =>
+     ^D
+     =>
+     =>Diversion one: 1
+     =>
+     =>Diversion two: 2
+
+   The last call of `divert' without argument is necessary, since the
+undiverted text would otherwise be diverted itself.
+
+
+File: m4.info,  Node: Cleardiv,  Prev: Divnum,  Up: Diversions
+
+Discarding diverted text
+========================
+
+   Often it is not known, when output is diverted, whether the diverted
+text is actually needed.  Since all non-empty diversion are brought back
+on the main output stream when the end of input is seen, a method of
+discarding a diversion is needed.  If all diversions should be
+discarded, the easiest is to end the input to `m4' with `divert(-1)'
+followed by an explicit `undivert':
+
+     divert(1)
+     Diversion one: divnum
+     divert(2)
+     Diversion two: divnum
+     divert(-1)
+     undivert
+     ^D
+
+No output is produced at all.
+
+   Clearing selected diversions can be done with the following macro:
+
+     define(`cleardivert',
+     `pushdef(`_num', divnum)divert(-1)undivert($@)divert(_num)popdef(`_num')')
+     =>
+
+   It is called just like `undivert', but the effect is to clear the
+diversions, given by the arguments.  (This macro has a nasty bug!  You
+should try to see if you can find it and correct it.)
+
+
+File: m4.info,  Node: Text handling,  Next: Arithmetic,  Prev: Diversions,  Up: Top
+
+Macros for text handling
+************************
+
+   There are a number of built-ins in `m4' for manipulating text in
+various ways, extracting substrings, searching, substituting, and so on.
+
+* Menu:
+
+* Len::                         Calculating length of strings
+* Index::                       Searching for substrings
+* Regexp::                      Searching for regular expressions
+* Substr::                      Extracting substrings
+* Translit::                    Translating characters
+* Patsubst::                    Substituting text by regular expression
+* Format::                      Formatting strings (printf-like)
+
+
+File: m4.info,  Node: Len,  Next: Index,  Prev: Text handling,  Up: Text handling
+
+Calculating length of strings
+=============================
+
+   The length of a string can be calculated by `len':
+
+     len(STRING)
+
+which expands to the length of STRING, as a decimal number.
+
+     len()
+     =>0
+     len(`abcdef')
+     =>6
+
+   The builtin macro `len' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Index,  Next: Regexp,  Prev: Len,  Up: Text handling
+
+Searching for substrings
+========================
+
+   Searching for substrings is done with `index':
+
+     index(STRING, SUBSTRING)
+
+which expands to the index of the first occurrence of SUBSTRING in
+STRING.  The first character in STRING has index 0.  If SUBSTRING does
+not occur in STRING, `index' expands to `-1'.
+
+     index(`gnus, gnats, and armadillos', `nat')
+     =>7
+     index(`gnus, gnats, and armadillos', `dag')
+     =>-1
+
+   The builtin macro `index' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Regexp,  Next: Substr,  Prev: Index,  Up: Text handling
+
+Searching for regular expressions
+=================================
+
+   Searching for regular expressions is done with the built-in `regexp':
+
+     regexp(STRING, REGEXP, opt REPLACEMENT)
+
+which searches for REGEXP in STRING.  The syntax for regular
+expressions is the same as in GNU Emacs.  *Note Syntax of Regular
+Expressions: (emacs)Regexps.
+
+   If REPLACEMENT is omitted, `regexp' expands to the index of the
+first match of REGEXP in STRING.  If REGEXP does not match anywhere in
+STRING, it expands to -1.
+
+     regexp(`GNUs not Unix', `\<[a-z]\w+')
+     =>5
+     regexp(`GNUs not Unix', `\<Q\w*')
+     =>-1
+
+   If REPLACEMENT is supplied, `regexp' changes the expansion to this
+argument, with `\&' substituted by STRING, and `\N' substituted by the
+text matched by the Nth parenthesized sub-expression of REGEXP, `\0'
+being the text the entire regular expression matched.
+
+     regexp(`GNUs not Unix', `\w\(\w+\)$', `*** \0 *** \1 ***')
+     =>*** Unix *** nix ***
+
+   The builtin macro `regexp' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Substr,  Next: Translit,  Prev: Regexp,  Up: Text handling
+
+Extracting substrings
+=====================
+
+   Substrings are extracted with `substr':
+
+     substr(STRING, FROM, opt LENGTH)
+
+which expands to the substring of STRING, which starts at index FROM,
+and extends for LENGTH characters, or to the end of STRING, if LENGTH
+is omitted.  The starting index of a string is always 0.
+
+     substr(`gnus, gnats, and armadillos', 6)
+     =>gnats, and armadillos
+     substr(`gnus, gnats, and armadillos', 6, 5)
+     =>gnats
+
+   The builtin macro `substr' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Translit,  Next: Patsubst,  Prev: Substr,  Up: Text handling
+
+Translating characters
+======================
+
+   Character translation is done with `translit':
+
+     translit(STRING, CHARS, REPLACEMENT)
+
+which expands to STRING, with each character that occurs in CHARS
+translated into the character from REPLACEMENT with the same index.
+
+   If REPLACEMENT is shorter than CHARS, the excess characters are
+deleted from the expansion.  If REPLACEMENT is omitted, all characters
+in STRING, that are present in CHARS are deleted from the expansion.
+
+   Both CHARS and REPLACEMENT can contain character-ranges, e.g., `a-z'
+(meaning all lowercase letters) or `0-9' (meaning all digits).  To
+include a dash `-' in CHARS or REPLACEMENT, place it first or last.
+
+   It is not an error for the last character in the range to be `larger'
+than the first.  In that case, the range runs backwards, i.e., `9-0'
+means the string `9876543210'.
+
+     translit(`GNUs not Unix', `A-Z')
+     =>s not nix
+     translit(`GNUs not Unix', `a-z', `A-Z')
+     =>GNUS NOT UNIX
+     translit(`GNUs not Unix', `A-Z', `z-a')
+     =>tmfs not fnix
+
+   The first example deletes all uppercase letters, the second converts
+lowercase to uppercase, and the third `mirrors' all uppercase letters,
+while converting them to lowercase.  The two first cases are by far the
+most common.
+
+   The builtin macro `translit' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Patsubst,  Next: Format,  Prev: Translit,  Up: Text handling
+
+Substituting text by regular expression
+=======================================
+
+   Global substitution in a string is done by `patsubst':
+
+     patsubst(STRING, REGEXP, opt REPLACEMENT)
+
+which searches STRING for matches of REGEXP, and substitutes
+REPLACEMENT for each match.  The syntax for regular expressions is the
+same as in GNU Emacs.
+
+   The parts of STRING that are not covered by any match of REGEXP are
+copied to the expansion.  Whenever a match is found, the search
+proceeds from the end of the match, so a character from STRING will
+never be substituted twice.  If REGEXP matches a string of zero length,
+the start position for the search is incremented, to avoid infinite
+loops.
+
+   When a replacement is to be made, REPLACEMENT is inserted into the
+expansion, with `\&' substituted by STRING, and `\N' substituted by the
+text matched by the Nth parenthesized sub-expression of REGEXP, `\0'
+being the text the entire regular expression matched.
+
+   The REPLACEMENT argument can be omitted, in which case the text
+matched by REGEXP is deleted.
+
+     patsubst(`GNUs not Unix', `^', `OBS: ')
+     =>OBS: GNUs not Unix
+     patsubst(`GNUs not Unix', `\<', `OBS: ')
+     =>OBS: GNUs OBS: not OBS: Unix
+     patsubst(`GNUs not Unix', `\w*', `(\0)')
+     =>(GNUs)() (not)() (Unix)
+     patsubst(`GNUs not Unix', `\w+', `(\0)')
+     =>(GNUs) (not) (Unix)
+     patsubst(`GNUs not Unix', `[A-Z][a-z]+')
+     =>GN not
+
+   Here is a slightly more realistic example, which capitalizes
+individual word or whole sentences, by substituting calls of the macros
+`upcase' and `downcase' into the strings.
+
+     define(`upcase', `translit(`$*', `a-z', `A-Z')')dnl
+     define(`downcase', `translit(`$*', `A-Z', `a-z')')dnl
+     define(`capitalize1',
+          `regexp(`$1', `^\(\w\)\(\w*\)', `upcase(`\1')`'downcase(`\2')')')dnl
+     define(`capitalize',
+          `patsubst(`$1', `\w+', `capitalize1(`\0')')')dnl
+     capitalize(`GNUs not Unix')
+     =>Gnus Not Unix
+
+   The builtin macro `patsubst' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Format,  Prev: Patsubst,  Up: Text handling
+
+Formatted output
+================
+
+   Formatted output can be made with `format':
+
+     format(FORMAT-STRING, ...)
+
+which works much like the C function `printf'.  The first argument is a
+format string, which can contain `%' specifications, and the expansion
+of `format' is the formatted string.
+
+   Its use is best described by a few examples:
+
+     define(`foo', `The brown fox jumped over the lazy dog')
+     =>
+     format(`The string "%s" is %d characters long', foo, len(foo))
+     =>The string "The brown fox jumped over the lazy dog" is 38 characters long
+
+   Using the `forloop' macro defined in *Note Loops::, this example
+shows how `format' can be used to produce tabular output.
+
+     forloop(`i', 1, 10, `format(`%6d squared is %10d
+     ', i, eval(i**2))')
+     =>     1 squared is	    1
+     =>     2 squared is	    4
+     =>     3 squared is	    9
+     =>     4 squared is	   16
+     =>     5 squared is	   25
+     =>     6 squared is	   36
+     =>     7 squared is	   49
+     =>     8 squared is	   64
+     =>     9 squared is	   81
+     =>    10 squared is	  100
+
+   The built-in `format' is modeled after the ANSI C `printf' function,
+and supports the normal `%' specifiers: `c', `s', `d', `o', `x', `X',
+`u', `e', `E' and `f'; it supports field widths and precisions, and the
+modifiers `+', `-', ` ', `0', `#', `h' and `l'.  For more details on
+the functioning of `printf', see the C Library Manual.
+
+
+File: m4.info,  Node: Arithmetic,  Next: Unix commands,  Prev: Text handling,  Up: Top
+
+Macros for doing arithmetic
+***************************
+
+   Integer arithmetic is included in `m4', with a C-like syntax.  As
+convenient shorthands, there are built-ins for simple increment and
+decrement operations.
+
+* Menu:
+
+* Incr::                        Decrement and increment operators
+* Eval::                        Evaluating integer expressions
+
+
+File: m4.info,  Node: Incr,  Next: Eval,  Prev: Arithmetic,  Up: Arithmetic
+
+Decrement and increment operators
+=================================
+
+   Increment and decrement of integers are supported using the built-ins
+`incr' and `decr':
+
+     incr(NUMBER)
+     decr(NUMBER)
+
+which expand to the numerical value of NUMBER, incremented, or
+decremented, respectively, by one.
+
+     incr(4)
+     =>5
+     decr(7)
+     =>6
+
+   The builtin macros `incr' and `decr' are recognized only when given
+arguments.
+
+
+File: m4.info,  Node: Eval,  Prev: Incr,  Up: Arithmetic
+
+Evaluating integer expressions
+==============================
+
+   Integer expressions are evaluated with `eval':
+
+     eval(EXPRESSION, opt RADIX, opt WIDTH)
+
+which expands to the value of EXPRESSION.
+
+   Expressions can contain the following operators, listed in order of
+decreasing precedence.
+
+`-'
+     Unary minus
+
+`**'
+     Exponentiation
+
+`*  /  %'
+     Multiplication, division and modulo
+
+`+  -'
+     Addition and subtraction
+
+`<<  >>'
+     Shift left or right
+
+`==  !=  >  >=  <  <='
+     Relational operators
+
+`!'
+     Logical negation
+
+`~'
+     Bitwise negation
+
+`&'
+     Bitwise and
+
+`^'
+     Bitwise exclusive-or
+
+`|'
+     Bitwise or
+
+`&&'
+     Logical and
+
+`||'
+     Logical or
+
+   All operators, except exponentiation, are left associative.
+
+   Note that many `m4' implementations use `^' as an alternate operator
+for the exponentiation, while many others use `^' for the bitwise
+exclusive-or.  GNU `m4' changed its behavior: it used to exponentiate
+for `^', it now computes the bitwise exclusive-or.
+
+   Numbers without special prefix are given decimal.  A simple `0'
+prefix introduces an octal number.  `0x' introduces an hexadecimal
+number.  `0b' introduces a binary number.  `0r' introduces a number
+expressed in any radix between 1 and 36: the prefix should be
+immediately followed by the decimal expression of the radix, a colon,
+then the digits making the number.  For any radix, the digits are `0',
+`1', `2', ....  Beyond `9', the digits are `a', `b' ... up to `z'. 
+Lower and upper case letters can be used interchangeably in numbers
+prefixes and as number digits.
+
+   Parentheses may be used to group subexpressions whenever needed. 
+For the relational operators, a true relation returns `1', and a false
+relation return `0'.
+
+   Here are a few examples of use of `eval'.
+
+     eval(-3 * 5)
+     =>-15
+     eval(index(`Hello world', `llo') >= 0)
+     =>1
+     define(`square', `eval(($1)**2)')
+     =>
+     square(9)
+     =>81
+     square(square(5)+1)
+     =>676
+     define(`foo', `666')
+     =>
+     eval(`foo'/6)
+     error-->m4:51.eval:14: bad expression in eval: foo/6
+     =>
+     eval(foo/6)
+     =>111
+
+   As the second to last example shows, `eval' does not handle macro
+names, even if they expand to a valid expression (or part of a valid
+expression).  Therefore all macros must be expanded before they are
+passed to `eval'.
+
+   If RADIX is specified, it specifies the radix to be used in the
+expansion.  The default radix is 10.  The result of `eval' is always
+taken to be signed.  The WIDTH argument specifies a minimum output
+width.  The result is zero-padded to extend the expansion to the
+requested width.
+
+     eval(666, 10)
+     =>666
+     eval(666, 11)
+     =>556
+     eval(666, 6)
+     =>3030
+     eval(666, 6, 10)
+     =>0000003030
+     eval(-666, 6, 10)
+     =>-000003030
+
+   Take note that RADIX cannot be larger than 36.
+
+   The builtin macro `eval' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Unix commands,  Next: Miscellaneous,  Prev: Arithmetic,  Up: Top
+
+Running Unix commands
+*********************
+
+   There are a few built-in macros in `m4' that allow you to run Unix
+commands from within `m4'.
+
+* Menu:
+
+* Syscmd::                      Executing simple commands
+* Esyscmd::                     Reading the output of commands
+* Sysval::                      Exit codes
+* Maketemp::                    Making names for temporary files
+
+
+File: m4.info,  Node: Syscmd,  Next: Esyscmd,  Prev: Unix commands,  Up: Unix commands
+
+Executing simple commands
+=========================
+
+   Any shell command can be executed, using `syscmd':
+
+     syscmd(SHELL-COMMAND)
+
+which executes SHELL-COMMAND as a shell command.
+
+   The expansion of `syscmd' is void.
+
+   The expansion is *not* the output from the command!  Instead the
+standard input, output and error of the command are the same as those of
+`m4'.  This means that output or error messages from the commands are
+not read by `m4', and might get mixed up with the normal output from
+`m4'.  This can produce unexpected results.  It is therefore a good
+habit to always redirect the input and output of shell commands used
+with `syscmd'.
+
+   The builtin macro `syscmd' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Esyscmd,  Next: Sysval,  Prev: Syscmd,  Up: Unix commands
+
+Reading the output of commands
+==============================
+
+   If you want `m4' to read the output of a Unix command, use `esyscmd':
+
+     esyscmd(SHELL-COMMAND)
+
+which expands to the standard output of the shell command SHELL-COMMAND.
+
+   The error output of SHELL-COMMAND is not a part of the expansion. It
+will appear along with the error output of `m4'.  Assume you are
+positioned into the `checks' directory of GNU `m4' distribution, then:
+
+     define(`vice', `esyscmd(grep Vice ../COPYING)')
+     =>
+     vice
+     =>  Ty Coon, President of Vice
+     =>
+
+   Note how the expansion of `esyscmd' has a trailing newline.
+
+   The builtin macro `esyscmd' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Sysval,  Next: Maketemp,  Prev: Esyscmd,  Up: Unix commands
+
+Exit codes
+==========
+
+   To see whether a shell command succeeded, use `sysval':
+
+     sysval
+
+which expands to the exit status of the last shell command run with
+`syscmd' or `esyscmd'.
+
+     syscmd(`false')
+     =>
+     ifelse(sysval, 0, zero, non-zero)
+     =>non-zero
+     syscmd(`true')
+     =>
+     sysval
+     =>0
+
+
+File: m4.info,  Node: Maketemp,  Prev: Sysval,  Up: Unix commands
+
+Making names for temporary files
+================================
+
+   Commands specified to `syscmd' or `esyscmd' might need a temporary
+file, for output or for some other purpose. There is a built-in macro,
+`maketemp', for making temporary file names:
+
+     maketemp(TEMPLATE)
+
+which expands to a name of a non-existent file, made from the string
+TEMPLATE, which should end with the string `XXXXXX'.  The six `X''s are
+then replaced, usually with something that includes the process id of
+the `m4' process, in order to make the filename unique.
+
+     maketemp(`/tmp/fooXXXXXX')
+     =>/tmp/fooa07346
+     maketemp(`/tmp/fooXXXXXX')
+     =>/tmp/fooa07346
+
+   As seen in the example, several calls of `maketemp' might expand to
+the same string, since the selection criteria is whether the file exists
+or not.  If a file has not been created before the next call, the two
+macro calls might expand to the same name.
+
+   The builtin macro `maketemp' is recognized only when given arguments.
+
+
+File: m4.info,  Node: Miscellaneous,  Next: Compatibility,  Prev: Unix commands,  Up: Top
+
+Miscellaneous built-in macros
+*****************************
+
+   This chapter describes various built-ins, that don't really belong in
+any of the previous chapters.
+
+* Menu:
+
+* Errprint::                    Printing error messages
+* M4exit::                      Exiting from m4
+
+
+File: m4.info,  Node: Errprint,  Next: M4exit,  Prev: Miscellaneous,  Up: Miscellaneous
+
+Printing error messages
+=======================
+
+   You can print error messages using `errprint':
+
+     errprint(MESSAGE, ...)
+
+which simply prints MESSAGE and the rest of the arguments on the
+standard error output.
+
+   The expansion of `errprint' is void.
+
+     errprint(`Illegal arguments to forloop
+     ')
+     error-->Illegal arguments to forloop
+     =>
+
+   A trailing newline is *not* printed automatically, so it must be
+supplied as part of the argument, as in the example.
+
+   To make it possible to specify the location of the error, two
+utility built-ins exist:
+
+     __file__
+     __line__
+
+which expands to the quoted name of the current input file, and the
+current input line number in that file.
+
+     errprint(`m4:'__file__:__line__: `Input error
+     ')
+     error-->m4:56.errprint:2: Input error
+     =>
+
+
+File: m4.info,  Node: M4exit,  Prev: Errprint,  Up: Miscellaneous
+
+Exiting from `m4'
+=================
+
+   If you need to exit from `m4' before the entire input has been read,
+you can use `m4exit':
+
+     m4exit(opt CODE)
+
+which causes `m4' to exit, with exit code CODE.  If CODE is left out,
+the exit code is zero.
+
+     define(`fatal_error', `errprint(`m4: '__file__: __line__`: fatal error: $*
+     ')m4exit(1)')
+     =>
+     fatal_error(`This is a BAD one, buster')
+     error-->m4: 57.m4exit: 5: fatal error: This is a BAD one, buster
+
+   After this macro call, `m4' will exit with exit code 1.  This macro
+is only intended for error exits, since the normal exit procedures are
+not followed, e.g., diverted text is not undiverted, and saved text
+(*note M4wrap::.) is not reread.
+
+
+File: m4.info,  Node: Compatibility,  Next: Concept index,  Prev: Miscellaneous,  Up: Top
+
+Compatibility with other versions of `m4'
+*****************************************
+
+   This chapter describes the differences between this implementation of
+`m4', and the implementation found under Unix, notably System V,
+Release 3.
+
+* Menu:
+
+* Extensions::                  Extensions in GNU m4
+* Incompatibilities::           Facilities in System V m4 not in GNU m4
+* Other Incompat::              Other incompatibilities
+
+
+File: m4.info,  Node: Extensions,  Next: Incompatibilities,  Prev: Compatibility,  Up: Compatibility
+
+Extensions in GNU `m4'
+======================
+
+   This version of `m4' contains a few facilities, that do not exist in
+System V `m4'.  These extra facilities are all suppressed by using the
+`-G' command line option, unless overridden by other command line
+options.
+
+   * In the `$'N notation for macro arguments, N can contain several
+     digits, while the System V `m4' only accepts one digit. This
+     allows macros in GNU `m4' to take any number of arguments, and not
+     only nine (*note Arguments::.).
+
+   * Files included with `include' and `sinclude' are sought in a user
+     specified search path, if they are not found in the working
+     directory.  The search path is specified by the `-I' option and the
+     `M4PATH' environment variable (*note Search Path::.).
+
+   * Arguments to `undivert' can be non-numeric, in which case the named
+     file will be included uninterpreted in the output (*note
+     Undivert::.).
+
+   * Formatted output is supported through the `format' built-in, which
+     is modeled after the C library function `printf' (*note Format::.).
+
+   * Searches and text substitution through regular expressions are
+     supported by the `regexp' and `patsubst' built-ins (*note
+     Regexp::. and *Note Patsubst::).
+
+   * The output of shell commands can be read into `m4' with `esyscmd'
+     (*note Esyscmd::.).
+
+   * There is indirect access to any built-in macro with `builtin'
+     (*note Builtin::.).
+
+   * Macros can be called indirectly through `indir' (*note Indir::.).
+
+   * The name of the current input file and the current input line
+     number are accessible through the built-ins `__file__' and
+     `__line__' (*note Errprint::.).
+
+   * The format of the output from `dumpdef' and macro tracing can be
+     controlled with `debugmode' (*note Debug Levels::.).
+
+   * The destination of trace and debug output can be controlled with
+     `debugfile' (*note Debug Output::.).
+
+   In addition to the above extensions, GNU `m4' implements the
+following command line options: `-V', `-d', `-l', `-o', `-N', `-I' and
+`-t'.  For a description of these options, *note Invoking m4::.
+
+   Also, the debugging and tracing facilities in GNU `m4' are much more
+extensive than in most other versions of `m4'.
+
+
+File: m4.info,  Node: Incompatibilities,  Next: Other Incompat,  Prev: Extensions,  Up: Compatibility
+
+Facilities in System V `m4' not in GNU `m4'
+===========================================
+
+   The version of `m4' from System V contains a few facilities that
+have not been implemented in GNU `m4' yet.
+
+   * System V `m4' supports multiple arguments to `defn'.  This is not
+     implemented in GNU `m4'.  Its usefulness is unclear to me.
+
+
+File: m4.info,  Node: Other Incompat,  Prev: Incompatibilities,  Up: Compatibility
+
+Other incompatibilities
+=======================
+
+   There are a few other incompatibilities between this implementation
+of `m4', and the System V version.
+
+   * GNU `m4' implements sync lines differently from System V `m4',
+     when text is being diverted.  GNU `m4' outputs the sync lines when
+     the text is being diverted, and System V `m4' when the diverted
+     text is being brought back.
+
+     The problem is which lines and filenames should be attached to
+     text that is being, or has been, diverted.  System V `m4' regards
+     all the diverted text as being generated by the source line
+     containing the `undivert' call, whereas GNU `m4' regards the
+     diverted text as being generated at the time it is diverted.
+
+     I expect the sync line option to be used mostly when using `m4' as
+     a front end to a compiler.  If a diverted line causes a compiler
+     error, the error messages should most probably refer to the place
+     where the diversion were made, and not where it was inserted again.
+
+   * GNU `m4' without `-G' option will define the macro `__gnu__' to
+     expand to the empty string.
+
+     On Unix systems, GNU `m4' without the `-G' option will define the
+     macro `__unix__', otherwise the macro `unix'.  Both will expand to
+     the empty string.
+
+
+File: m4.info,  Node: Concept index,  Next: Macro index,  Prev: Compatibility,  Up: Top
+
+Concept index
+*************
+
+* Menu:
+
+* Arguments to macros:                  Macro Arguments.
+* Arguments to macros:                  Arguments.
+* Arguments to macros, special:         Pseudo Arguments.
+* Arguments, quoted macro:              Quoting Arguments.
+* Arithmetic:                           Arithmetic.
+* Builtins, indirect call of:           Builtin.
+* Call of built-ins, indirect:          Builtin.
+* Call of macros, indirect:             Indir.
+* Changing comment delimiters:          Changecom.
+* Changing the quote delimiters:        Changequote.
+* Characters, translating:              Translit.
+* Command line, filenames on the:       Invoking m4.
+* Command line, macro definitions on the: Invoking m4.
+* Command line, options:                Invoking m4.
+* Commands, exit code from Unix:        Sysval.
+* Commands, running Unix:               Unix commands.
+* Comment delimiters, changing:         Changecom.
+* Comments:                             Comments.
+* Comments, copied to output:           Changecom.
+* Comparing strings:                    Ifelse.
+* Compatibility:                        Compatibility.
+* Conditionals:                         Ifdef.
+* Controlling debugging output:         Debug Levels.
+* Counting loops:                       Loops.
+* Debugging output, controlling:        Debug Levels.
+* Debugging output, saving:             Debug Output.
+* Decrement operator:                   Incr.
+* Defining new macros:                  Definitions.
+* Definitions, displaying macro:        Dumpdef.
+* Deleting macros:                      Undefine.
+* Deleting whitespace in input:         Dnl.
+* Discarding diverted text:             Cleardiv.
+* Displaying macro definitions:         Dumpdef.
+* Diversion numbers:                    Divnum.
+* Diverted text, discarding:            Cleardiv.
+* Diverting output to files:            Divert.
+* Error messages, printing:             Errprint.
+* Evaluation, of integer expressions:   Eval.
+* Executing Unix commands:              Unix commands.
+* Exit code from Unix commands:         Sysval.
+* Exiting from m4:                      M4exit.
+* Expansion of macros:                  Macro expansion.
+* Expansion, tracing macro:             Trace.
+* Expressions, evaluation of integer:   Eval.
+* Extracting substrings:                Substr.
+* File inclusion:                       File Inclusion.
+* File inclusion:                       Undivert.
+* Filenames, on the command line:       Invoking m4.
+* Files, diverting output to:           Divert.
+* Files, names of temporary:            Maketemp.
+* Forloops:                             Loops.
+* Formatted output:                     Format.
+* GNU extensions:                       Arguments.
+* GNU extensions:                       Search Path.
+* GNU extensions:                       Format.
+* GNU extensions:                       Builtin.
+* GNU extensions:                       Regexp.
+* GNU extensions:                       Esyscmd.
+* GNU extensions:                       Undivert.
+* GNU extensions:                       Debug Output.
+* GNU extensions:                       Extensions.
+* GNU extensions:                       Indir.
+* GNU extensions:                       Patsubst.
+* GNU extensions:                       Debug Levels.
+* Included files, search path for:      Search Path.
+* Inclusion, of files:                  File Inclusion.
+* Inclusion, of files:                  Undivert.
+* Increment operator:                   Incr.
+* Indirect call of built-ins:           Builtin.
+* Indirect call of macros:              Indir.
+* Input tokens:                         Syntax.
+* Input, saving:                        M4wrap.
+* Integer arithmetic:                   Arithmetic.
+* Integer expression evaluation:        Eval.
+* Length of strings:                    Len.
+* Loops:                                Loops.
+* Loops, counting:                      Loops.
+* Macro definitions, on the command line: Invoking m4.
+* Macro expansion, tracing:             Trace.
+* Macro invocation:                     Invocation.
+* Macros, arguments to:                 Macro Arguments.
+* Macros, arguments to:                 Arguments.
+* Macros, displaying definitions:       Dumpdef.
+* Macros, expansion of:                 Macro expansion.
+* Macros, how to define new:            Definitions.
+* Macros, how to delete:                Undefine.
+* Macros, how to rename:                Defn.
+* Macros, indirect call of:             Indir.
+* Macros, quoted arguments to:          Quoting Arguments.
+* Macros, recursive:                    Loops.
+* Macros, special arguments to:         Pseudo Arguments.
+* Macros, temporary redefinition of:    Pushdef.
+* Messages, printing error:             Errprint.
+* Multibranches:                        Ifelse.
+* Names:                                Names.
+* Options, command line:                Invoking m4.
+* Output, diverting to files:           Divert.
+* Output, formatted:                    Format.
+* Output, saving debugging:             Debug Output.
+* Pattern substitution:                 Patsubst.
+* Printing error messages:              Errprint.
+* Quote delimiters, changing the:       Changequote.
+* Quoted macro arguments:               Quoting Arguments.
+* Quoted string:                        Quoted strings.
+* Recursive macros:                     Loops.
+* Redefinition of macros, temporary:    Pushdef.
+* Regular expressions:                  Patsubst.
+* Regular expressions:                  Regexp.
+* Renaming macros:                      Defn.
+* Running Unix commands:                Unix commands.
+* Saving debugging output:              Debug Output.
+* Saving input:                         M4wrap.
+* Search path for included files:       Search Path.
+* Special arguments to macros:          Pseudo Arguments.
+* Strings, length of:                   Len.
+* Substitution by regular expression:   Patsubst.
+* Substrings, extracting:               Substr.
+* Temporary filenames:                  Maketemp.
+* Temporary redefinition of macros:     Pushdef.
+* Tokens:                               Syntax.
+* Tracing macro expansion:              Trace.
+* Translating characters:               Translit.
+* Undefining macros:                    Undefine.
+* Unix commands, exit code from:        Sysval.
+* Unix commands, running:               Unix commands.
+
+
+File: m4.info,  Node: Macro index,  Prev: Concept index,  Up: Top
+
+Macro index
+***********
+
+   References are exclusively to the places where a built-in is
+introduced the first time.  Names starting and ending with `__' have
+these characters removed in the index.
+
+* Menu:
+
+* builtin:                              Builtin.
+* changecom:                            Changecom.
+* changequote:                          Changequote.
+* debugfile:                            Debug Output.
+* debugmode:                            Debug Levels.
+* decr:                                 Incr.
+* define:                               Define.
+* defn:                                 Defn.
+* divert:                               Divert.
+* divnum:                               Divnum.
+* dnl:                                  Dnl.
+* dumpdef:                              Dumpdef.
+* errprint:                             Errprint.
+* esyscmd:                              Esyscmd.
+* eval:                                 Eval.
+* file:                                 Errprint.
+* format:                               Format.
+* gnu:                                  Other Incompat.
+* ifdef:                                Ifdef.
+* ifelse:                               Ifelse.
+* include:                              Include.
+* incr:                                 Incr.
+* index:                                Index.
+* indir:                                Indir.
+* len:                                  Len.
+* line:                                 Errprint.
+* m4exit:                               M4exit.
+* m4wrap:                               M4wrap.
+* maketemp:                             Maketemp.
+* patsubst:                             Patsubst.
+* popdef:                               Pushdef.
+* pushdef:                              Pushdef.
+* regexp:                               Regexp.
+* shift:                                Loops.
+* sinclude:                             Include.
+* substr:                               Substr.
+* syscmd:                               Syscmd.
+* sysval:                               Sysval.
+* traceoff:                             Trace.
+* traceon:                              Trace.
+* translit:                             Translit.
+* undefine:                             Undefine.
+* undivert:                             Undivert.
+* unix:                                 Other Incompat.
+
+

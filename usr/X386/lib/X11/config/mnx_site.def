@@ -1,0 +1,68 @@
+XCOMM $XFree86: mit/config/mnx_site.def,v 1.1 1993/03/23 12:56:44 dawes Exp $
+
+/*
+ * Minix configuration defines that should require no change.
+ */
+#ifdef BeforeVendorCF
+
+#define ProjectRoot		MinixConf/$(ARCH).$(TOOLSET)/X11R5
+
+#define CommonMinixDefines	-D_POSIX_C_SOURCE=2 -D_POSIX_SOURCE=2 -D_MINIX=2 -D_PCH_EXT -D_VMD_EXT -D_ARCH=_IBM_386_VM -D_ACK_LIB
+#define StandardDefines		CommonMinixDefines
+#define StandardCppDefines	StandardDefines
+
+#endif /* BeforeVendorCF */
+
+#ifdef AfterVendorCF
+
+#define	InstallXdmConfig	NO
+#define	InstallXinitConfig	NO
+#define	InstallFSConfig		NO
+
+#define MinixLibX11		/usr/lib/X11
+#define UsrLibDir		MinixLibX11
+#define LibDir			MinixLibX11
+#define ManDirectoryRoot	MinixLibX11/man
+#define IncRoot			MinixLibX11/include
+#define FontDir			MinixLibX11/fonts
+#define DefaultRGBDatabase      MinixLibX11/rgb
+#define BinDir			/usr/X386/bin
+
+#define DefaultUserPath		:/bin:$(BINDIR)
+#define DefaultSystemPath	/bin:$(BINDIR):
+
+#define StandardIncludes	-I$(MTOP)/incl -I$(MTOP)/include -I$(MTOP)/include/vmd -I$(MTOP)/include/minix
+
+/* ServerExtraDefines contains -DXDMCP by default */
+#ifdef AckToolset
+#define	ServerExtraDefines	-DNO_ALLOCA
+#else
+#ifdef GccGasOption
+#define	ServerExtraDefines	GccGasOption
+#endif
+#endif
+
+#define	Malloc0ReturnsNull	YES
+#define FontDefines		-DFONT_SNF
+#define ConnectionFlags		-DTCPCONN
+#ifndef ExtraFPLoadFlags
+#define ExtraFPLoadFlags
+#endif
+#define OSLibraries		$(MLIB)/libc/libc.a ExtraFPLoadFlags
+
+MTOP		= MinixTop
+MLIB		= MinixConf/$(ARCH).$(TOOLSET)/lib
+#ifdef AckToolset 
+HEAD		=
+#else
+HEAD		= $(MLIB)/crtso/crtso.o
+#endif
+
+ABIN		= MinixBin
+AINSTALL	= /bin/sh $(SCRIPTSRC)/aminstall.sh $(ABIN)
+AINSTALLFLAGS	=
+TOB		= /bin/sh $(SCRIPTSRC)/aminstall.sh $(ABIN)
+MKXDIRHIER	= /bin/sh $(SCRIPTSRC)/ammkdirhier.sh $(ABIN)
+
+#endif /* AfterVendorCF */
+

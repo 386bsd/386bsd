@@ -1,0 +1,31 @@
+xlogin*login.translations: #override\
+	Ctrl<Key>R: abort-display()\n\
+	<Key>F1: set-session-argument(failsafe) finish-field()\n\
+	Ctrl<Key>Return: set-session-argument(failsafe) finish-field()\n\
+	<Key>Return: set-session-argument() finish-field()
+xlogin*borderWidth: 3
+xlogin*greeting: CLIENTHOST
+xlogin*namePrompt: login:\ 
+xlogin*fail: Login incorrect
+#ifdef COLOR
+xlogin*greetColor: CadetBlue
+xlogin*failColor: red
+*Foreground: black
+*Background: #fffff0
+#else
+xlogin*Foreground: black
+xlogin*Background: white
+#endif
+
+XConsole.text.geometry:	480x130
+XConsole.verbose:	true
+XConsole*iconic:	true
+XConsole*font:		fixed
+
+Chooser*geometry:		700x500+300+200
+Chooser*allowShellResize:	false
+Chooser*viewport.forceBars:	true
+Chooser*label.font:		*-new century schoolbook-bold-i-normal-*-240-*
+Chooser*label.label:		XDMCP Host Menu  from CLIENTHOST
+Chooser*list.font:		-*-*-medium-r-normal-*-*-230-*-*-c-*-iso8859-1
+Chooser*Command.font:		*-new century schoolbook-bold-r-normal-*-180-*

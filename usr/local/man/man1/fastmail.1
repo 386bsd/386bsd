@@ -1,0 +1,122 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH FASTMAIL 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+fastmail - quick batch mail interface to a single address
+.SH SYNOPSIS
+.B fastmail
+[-b bcc-list] [-c cc-list] [-C comments] [-d] [-f fromname]
+[-i msg-id] [-r replyto] [-R references] [-s subject] filename|- address-list
+.br
+.SH DESCRIPTION
+.I Fastmail
+is a low-level interface to the mail system that allows batch
+processing of mail.  It's intended for mailing to very large
+groups of people in a staggered fashion. 
+.PP
+The starting options are;
+.TP 1.0i
+.B "-b bcc-list"
+This allows a list of people to receive blind-carbon copies, or BCCs, of
+the message.  This list should be full email addresses.
+.TP
+.B "-c cc-list"
+This allows a list of people to receive carbon copies, or CCs, of
+the message.  This list should be full email addresses.
+.TP
+.B "-C comments"
+This allows a Comments: line to be added to the RFC822 header with any
+text you desire.
+.TP
+.B "-d"
+Debug.  This is helpful for strange, unfriendly errors from
+the program (etc).
+.TP
+.B "-f from"
+This overrides the users name in the From: line, so that if
+the user was x@y, and their name was MrX then the default 
+From: line would be "From: x@y (MrX)".  Using "-f Joe" when
+invoking this, though, would change it to "From: x@y (Joe)"
+.TP
+.B "-i msg-id"
+This allows a message-id to which this message refers.
+.TP
+.B "-r replyto"
+Occasionally, you might send mail but want the replies to go
+to a different address (very common with mailing lists).  
+There is a header for this purpose called "Reply-To:" which
+can be utilized by using this starting option.  For example,
+we could send mail with a reply-to to list-request by
+using "-r list-request".  The header generated would then
+be of the form "Reply-To: list-request".
+.TP
+.B "-R references"
+This allows descriptive/reference text for this message.
+.TP
+.B "-s subject"
+The subject of the message is specified by using 
+this starting option.
+.PP
+Either the name of the file containing the message, or a - to indicate
+usage of standard-in is required.
+.SH EXAMPLE
+Let's say we're user "big" on machine "big-vax" and we have a
+shell script called 'batch-mail' that contains the following
+lines:
+.nf
+
+   #
+   # Batch Mail - batch mailing of a file to a LOT of users
+   #  
+   # Usage: batch-mail "from" "subject" filename
+
+   sender_copy = $LOGIN
+   replyto = "The-Mr-Big-list"
+
+   fastmail -b $sender_copy -r $replyto -f "$1" -s "$2" $3 person1
+   sleep 10
+   fastmail -r $replyto -f "$1" -s "$2" $3 person2
+   sleep 10
+   fastmail -r $replyto -f "$1" -s "$2" $3 person3
+   sleep 10
+   fastmail -r $replyto -f "$1" -s "$2" $3 person4
+
+   < etc >
+
+with the invocation:
+
+   batch-mail "Mr. Big" "Warning to all" warning.text
+
+.fi
+would mail a copy of the 'warning.text' file to person1, person2, 
+person3, etc.  "$LOGIN" will also receive a copy of the first message
+in the mail, \fIsilently\fR.  Each resultant message will include the headers:
+.nf
+
+    From: big-vax!big (Mr. Big)
+    Subject: Warning to all
+    Reply-To: The-Mr-Big-list
+
+.fi
+This program should turn out to be considerably
+faster than the alternative methods of accomplishing this task.
+.SH FILES
+/usr/lib/sendmail       sendmail transport if available
+.br
+/bin/rmail              transport if no sendmail
+.br
+/tmp/fastmail.$$        temporary file 
+.SH AUTHOR
+Elm Development Group
+.SH SEE\ ALSO
+sendmail(1), rmail(1), elm(1L)
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

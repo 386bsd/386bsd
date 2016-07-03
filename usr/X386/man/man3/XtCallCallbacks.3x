@@ -1,0 +1,154 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtCallCallbacks 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtCallCallbacks, XtHasCallbacks \- process callbacks
+.SH SYNTAX
+void XtCallCallbacks(\fIw\fP, \fIcallback_name\fP, \fIcall_data\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.br
+      XtPointer \fIcall_data\fP;
+.LP
+typedef enum {XtCallbackNoList, XtCallbackHasNone, XtCallbackHasSome} \
+XtCallbackStatus;
+.sp
+XtCallbackStatus XtHasCallbacks(\fIw\fP, \fIcallback_name\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.SH ARGUMENTS
+.ds Cn \ to be executed or checked
+.IP \fIcallback_name\fP 1i
+Specifies the callback list\*(Cn.
+.IP \fIcall_data\fP 1i
+Specifies a callback-list specific data value to pass to each of the callback
+procedure in the list.
+.IP \fIw\fP 1i
+Specifies the widget.
+.SH DESCRIPTION
+The
+.ZN XtCallCallbacks
+function calls each procedure that is registered in the specified widget's
+callback list.
+.LP
+The
+.ZN XtHasCallbacks
+function first checks to see if the widget has a callback list identified 
+by callback_name.
+If the callback list does not exist,
+.ZN XtHasCallbacks
+returns
+.ZN XtCallbackNoList .
+If the callback list exists but is empty,
+it returns
+.ZN XtCallbackHasNone .
+If the callback list exists and has at least one callback registered,
+it returns
+.ZN XtCallbackHasSome .
+.SH "SEE ALSO"
+XtAddCallback(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

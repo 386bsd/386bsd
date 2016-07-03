@@ -1,0 +1,13 @@
+#	$Id: inet.symbols,v 1.1 94/10/20 10:53:30 root Exp $
+
+#arp
+#	_arptab
+#	_arptab_size
+
+#netstat
+#	_ipstat
+#	_tcb
+#	_tcpstat
+#	_udb
+#	_udpstat
+#	_icmpstat

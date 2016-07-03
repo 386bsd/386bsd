@@ -1,0 +1,174 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtConvert 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtConvert, XtDirectConvert \- invoke resource converters
+.SH SYNTAX
+void XtConvert(\fIw\fP, \fIfrom_type\fP, \fIfrom\fP, \fIto_type\fP, \
+\fIto_return\fP)
+.br
+    Widget \fIw\fP;
+.br
+    String \fIfrom_type\fP;
+.br
+    XrmValuePtr \fIfrom\fP;
+.br
+    String \fIto_type\fP;
+.br
+    XrmValuePtr \fIto_return\fP;
+.LP
+void XtDirectConvert(\fIconverter\fP, \fIargs\fP, \fInum_args\fP, \fIfrom\fP, \
+\fIto_return\fP)
+.br
+    XtConverter \fIconverter\fP;
+.br
+    XrmValuePtr \fIargs\fP;
+.br
+    Cardinal \fInum_args\fP;
+.br
+    XrmValuePtr \fIfrom\fP;
+.br
+    XrmValuePtr \fIto_return\fP;
+.SH ARGUMENTS
+.ds Al that contains the additional arguments needed to perform \
+the conversion (often NULL)
+.IP \fIargs\fP 1i
+Specifies the argument list \*(Al.
+.IP \fIconverter\fP 1i
+Specifies the conversion procedure that is to be called.
+.IP \fIfrom\fP 1i
+Specifies the value to be converted.
+.IP \fIfrom_type\fP 1i
+Specifies the source type.
+.IP \fInum_args\fP 1i
+Specifies the number of additional arguments (often zero).
+.IP \fIto_type\fP 1i
+Specifies the destination type.
+.IP \fIto_return\fP 1i
+Returns the converted value.
+.ds Wi to use for additional arguments (if any are needed)
+.IP \fIw\fP 1i
+Specifies the widget \*(Wi.
+.SH DESCRIPTION
+The
+.ZN XtConvert
+function looks up the type converter registered to convert from_type 
+to to_type, computes any additional arguments needed, and then calls
+.ZN XtDirectConvert .
+.LP
+The
+.ZN XtDirectConvert
+function looks in the converter cache to see if this conversion procedure
+has been called with the specified arguments.
+If so, it returns a descriptor for information stored in the cache;
+otherwise, it calls the converter and enters the result in the cache.
+.LP
+Before calling the specified converter,
+.ZN XtDirectConvert
+sets the return value size to zero and the return value address to NULL.
+To determine if the conversion was successful,
+the client should check to_return.address for non-NULL.
+.SH "SEE ALSO"
+XtAppAddConverter(3Xt),
+XtStringConversionWarning(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

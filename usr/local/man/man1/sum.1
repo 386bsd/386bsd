@@ -1,0 +1,48 @@
+.TH SUM 1L "GNU Text Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+sum \- checksum and count the blocks in a file
+.SH SYNOPSIS
+.B sum
+[\-rs] [\-\-sysv] [\-\-help] [\-\-version] [file...]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR sum .
+.B sum
+computes a 16-bit checksum for each named file, or the standard input
+if none are given or when a file named `\-' is given.  It prints the
+checksum for each file along with the number of blocks in the file
+(rounded up).
+By default each corresponding file name is also printed if at least two
+arguments are specified.
+With the
+.I "\-\-sysv"
+option, corresponding file name are printed when there is at least
+one file argument.  By
+default, the GNU
+.B sum
+computes checksums using an algorithm that is compatible with the BSD
+.B sum
+and prints file sizes in units of 1K blocks.
+.SS OPTIONS
+.TP
+.I \-r
+Use the default (BSD compatible) algorithm.  This option is included
+for compatibility with the System V
+.BR sum .
+Unless the
+.I \-s
+option was also given, it has no effect.
+.TP
+.I "\-s, \-\-sysv"
+Compute checksums using an algorithm that is compatible with the one
+the System V
+.B sum
+uses by default
+and print file sizes in units of 512-byte blocks instead of 1K.
+.TP
+.I "\-\-help"
+Print a usage message and exit with a non-zero status.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit.

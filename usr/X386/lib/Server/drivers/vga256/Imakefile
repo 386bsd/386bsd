@@ -1,0 +1,15 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga256/drivers/Imakefile,v 1.7 1993/03/04 13:07:12 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:01 gildea Exp $
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SUBDIRS = X386Vga256Drivers
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga256)
+
+#if X386LinkKit
+#include <LinkKit.tmpl>
+#endif

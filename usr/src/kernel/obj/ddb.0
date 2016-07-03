@@ -1,0 +1,396 @@
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+NNAAMMEE
+       ddb - kernel debugger
+
+MMOODDUULLEE
+       ddb.
+
+DDEESSCCRRIIPPTTIIOONN
+       The kernel debugger has a gdb-like syntax.
+
+       The  current  location  is  called  'dot'.   The  'dot' is
+       displayed with a hexadecimal format at a prompt.   Examine
+       and write commands update 'dot' to the address of the last
+       line examined or  the  last  location  modified,  and  set
+       'next'  to the address of the next location to be examined
+       or changed.  Other commands don't change  'dot',  and  set
+       'next' to be the same as 'dot'.
+
+       The general command syntax is:
+
+           _c_o_m_m_a_n_d[/_m_o_d_i_f_i_e_r] _a_d_d_r_e_s_s [,_c_o_u_n_t]
+
+       A  blank line repeats from the address 'next' with count 1
+       and no modifiers.  Specifying 'address' sets 'dot' to  the
+       address.    Omitting  'address'  uses  'dot'.   A  missing
+       'count' is taken to be 1 for printing commands or infinity
+       for stack traces.
+
+
+       CCOOMMMMAANNDDSS
+
+
+
+   eexxaammiinnee((xx)) [/<_m_o_d_i_f_i_e_r>] <_a_d_d_r>[,<_c_o_u_n_t>] [ <_t_h_r_e_a_d> ]
+
+       Display  the  addressed locations according to the formats
+       in  the  modifier.   Multiple  modifier  formats   display
+       multiple  locations.   If no format is specified, the last
+       formats specified for this command is used.  Address space
+       other  than  that  of  the current thread can be specified
+       with 't' option in the modifier and 'thread' parameter.
+       The format characters are
+
+
+
+       b    look at by bytes(8 bits)
+
+       h    look at by half words(16 bits)
+
+       l    look at by long words(32 bits)
+
+       a    print the location being displayed
+
+       ,    skip one unit producing no output
+
+
+
+
+                                                                1
+
+
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+       A    print the location with a line number if possible
+
+       x    display in unsigned hex
+
+       z    display in signed hex
+
+       o    display in unsigned octal
+
+       d    display in signed decimal
+
+       u    display in unsigned decimal
+
+       r    display in current radix, signed
+
+       c    display low 8  bits  as  a  character.   Non-printing
+            characters  are  displayed  as  an  octal escape code
+            (e.g. '\000').
+
+       s    display the null-terminated string at  the  location.
+            Non-printing   characters   are  displayed  as  octal
+            escapes.
+
+       m    display in unsigned hex with character  dump  at  the
+            end  of each line.  The location is also displayed in
+            hex at the beginning of each line.
+
+       i    display as an instruction
+
+
+
+   pprriinntt[[//aaxxzzoodduurrcc]] <_a_d_d_r_1> [ <_a_d_d_r_2> ... ]
+
+       Print 'addr's according to the modifier character.   Valid
+       formats  are:  a  x  z  o  d  u  r  c.   If no modifier is
+       specified, the last one specified to it is  used.   'addr'
+       can be a string, and it is printed as it is.  For example,
+
+           print/x "eax = " $eax "\necx = " $ecx "\n"
+
+       will print like
+
+           eax = xxxxxx
+           ecx = yyyyyy
+
+
+   wwrriittee[[//bbhhll]] <_a_d_d_r> <_e_x_p_r_1> [ <_e_x_p_r_2> ... ]
+
+       Write the expressions at succeeding locations.  The  write
+       unit size can be specified in the modifier with a letter b
+       (byte), h (half word) or l(long  word)  respectively.   If
+       omitted, long word is assumed.
+       Warning:  since there is no delimiter between expressions,
+       strange things may happen.   It's  best  to  enclose  each
+       expression in parentheses.
+
+
+
+                                                                2
+
+
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+   sseett $<_v_a_r_i_a_b_l_e> [=] <_e_x_p_r>
+
+       Set  the  named  variable  or  register  with the value of
+       'expr'.  Valid variable names are described below.
+
+   bbrreeaakk <_a_d_d_r>[,<_c_o_u_n_t>]
+
+       Set a break  point  at  'addr'.   If  count  is  supplied,
+       continues  (count-1)  times  before  stopping at the break
+       point.  If the break point is set, a break point number is
+       printed with '#'.  This number can be used in deleting the
+       break point or adding conditions to it.
+
+   ddeelleettee <_a_d_d_r>|#<_n_u_m_b_e_r>
+
+       Delete the break point.  The target  break  point  can  be
+       specified  by  a break point number with '#', or by 'addr'
+       like specified in 'break' command.
+
+   sstteepp[[//pp]] [,<_c_o_u_n_t>]
+
+       Single step 'count' times.  If 'p'  option  is  specified,
+       print  each  instruction  at  each  step.  Otherwise, only
+       print the last instruction.
+
+       Warning: depending on machine type, it may not be possible
+       to  single-step  through some low-level code paths or user
+       space code.
+
+   ccoonnttiinnuuee
+
+       Continue execution until a breakpoint or watchpoint.
+
+       Warning: when counting, the debugger  is  really  silently
+       single-stepping.   This means that single-stepping on low-
+       level code may cause strange behavior (also, timeing loops
+       will suddenly get 100-200x slower).
+
+   uunnttiill
+
+       Stop at the next call or return instruction.
+
+   nneexxtt[[//pp]]
+
+       Stop at the matching return instruction.  If 'p' option is
+       specified, print the call nesting depth and the cumulative
+       instruction count at each call or return.  Otherwise, only
+       print when the matching return is hit.
+
+   mmaattcchh[[//pp]]
+
+       A synonym for 'next'.
+
+   ttrraaccee [<_f_r_a_m_e__a_d_d_r>][,<_c_o_u_n_t>]
+
+
+
+                                                                3
+
+
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+       Stack trace.  It shows the  stack  trace  of  the  current
+       thread  from the frame address specified by a parameter or
+       from the current frame.  'count' is the number  of  frames
+       to  be  traced.  If the 'count' is omitted, all frames are
+       printed.
+
+       Warning: If the target thread's stack is not in  the  main
+       memory  at  that  time,  the  stack trace will fail.  User
+       space stack trace is valid only if the  machine  dependent
+       code supports it.
+
+   sseeaarrcchh[[//bbhhll]] <_a_d_d_r> <_v_a_l_u_e> [<_m_a_s_k>] [,<_c_o_u_n_t>]
+
+       Search  memory  for  a  value.  This command might fail in
+       interesting ways  if  it  doesn't  find  the  searched-for
+       value.   This  is  because ddb doesn't always recover from
+       touching bad memory.  The optional count  argument  limits
+       the search.
+
+   sshhooww mmaapp <_a_d_d_r>
+
+       Prints the vm_map at 'addr'.
+
+   sshhooww oobbjjeecctt  <_a_d_d_r>
+
+       Prints the vm_object at 'addr'.
+
+   sshhooww ppaaggee <_a_d_d_r>
+
+       Prints the vm_page structure at 'addr'.
+
+   sshhooww wwaattcchheess
+
+       Displays all watchpoints.
+
+   wwaattcchh <_a_d_d_r>,<_s_i_z_e>
+
+       Set  a  watchpoint  for a region.  Execution stops when an
+       attempt to modify the region occurs.  The 'size'  argument
+       defaults to 4.
+
+
+
+       VVAARRIIAABBLLEESS
+
+       The  debugger accesses registers and variables as $<_n_a_m_e>.
+       Register names are as in  the  "sshhooww  rreeggiisstteerrss"  command.
+       Some  variables  are  suffixed  with numbers, and may have
+       some modifier following  a  colon  immediately  after  the
+       variable  name.   For example, register variables can have
+       'u' and 't' modifier to indicate user register and that of
+       a  default  target  thread  instead of that of the current
+       thread (e.g. $eax:tu).
+
+
+
+
+                                                                4
+
+
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+       Built-in variables currently supported are:
+
+
+       radix       Input and output radix
+
+       maxoff      Addresses  are  printed   as   'symbol'+offset
+                   unless offset is greater than maxoff.
+
+       maxwidth    The width of the displayed line.
+
+       lines       The  number  of  lines.   It is used by "more"
+                   feature.
+
+       tabstops    Tab stop width.
+
+       arg_x_x       Parameters passed to a macro.  '_x_x' can  be  1
+                   to 10.
+
+       work_x_x      Work variable.  '_x_x' can be 0 to 31.
+
+
+
+       EEXXPPRREESSSSIIOONNSS
+
+       Almost  all expression operators in C are supported except
+       '~', '^', and unary '&'.  Special rules in "ddddbb" are:
+
+       <identifier>   name of a symbol.  It is translated to  the
+                      address(or  value) of it.  '.'  and ':' can
+                      be used in the identifier.  If supported by
+                      an   object   format   dependent   routine,
+                      [<_f_i_l_e__n_a_m_e>:]<_f_u_n_c>[:<_l_i_n_e__n_u_m_b_e_r>]
+                      [<_f_i_l_e__n_a_m_e>:]<_v_a_r_i_a_b_l_e>,               and
+                      <_f_i_l_e__n_a_m_e>[:<_l_i_n_e__n_u_m_b_e_r>] can be accepted
+                      as  a  symbol.   The symbol may be prefixed
+                      with      '<_s_y_m_b_o_l__t_a_b_l_e__n_a_m_e>::'      like
+                      'emulator::mach_msg_trap'  to specify other
+                      than kernel symbols.
+
+       <number>       radix  is  determined  by  the  first   two
+                      letters:  0x:  hex, 0o: octal, 0t: decimal,
+                      otherwise, follow current radix.
+
+       .              'dot'
+
+       +              'next'
+
+       ..             address of  the  start  of  the  last  line
+                      examined.   Unlike 'dot' or 'next', this is
+                      only  changed  by  "examine"   or   "write"
+                      command.
+
+       '              last address explicitly specified.
+
+
+
+
+                                                                5
+
+
+
+
+
+DDB(4)                                                     DDB(4)
+
+
+       $<variable>    register   name   or   variable.    It   is
+                      translated to the value of it.  It  may  be
+                      followed   by   a   ':'  and  modifiers  as
+                      described above.
+
+       #              a binary operator which rounds up the  left
+                      hand  side  to  the  next multiple of right
+                      hand side.
+
+       *<expr>        indirection.  It may be followed by  a  ':'
+                      and  modifiers as described above.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                6
+
+

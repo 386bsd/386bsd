@@ -1,0 +1,91 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH ANSWER 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+answer - phone message transcription system
+.SH SYNOPSIS
+.B answer
+[
+.B \-pu
+]
+.PP
+.SH DESCRIPTION
+.I Answer\^
+is a part of the 
+.B Elm
+mail system and is designed for secretaries and the like
+to allow them to answer phones and|or listen to phone message
+machines and quickly and easily transcribe the messages into
+electronic mail.
+.PP
+The program will use standard mail addresses or aliases
+included in the standard .elm directory alias files.
+It can also use
+its own alias set (usually a subset of the
+system aliases, with more fields per user (i.e. unique first
+names, unique last names, first-initial last name, and so on)).
+Note that if you want to use this capability, it
+means that you must create this alias set and then install it, using
+.I newalias,
+as a separate alias table for the account this program is to 
+be run from.
+.PP
+Options are:
+.TP 1.0i
+.B "  -p"
+Prompt for phone slip type message fields.
+.TP
+.B "  -u"
+Allow names that are not in the alias table.  Without this
+option all names must be resolvable as aliases and answer will
+reprompt for a new name if the alias cannot be resolved.
+.PP
+Interface-wise, the program is a breeze to use - type 'answer'
+to start it up and then merely type a user name at the
+.nf
+	
+	Message to:
+
+.fi
+prompt, fill in the requested information (simply type an
+"x" next to the pertinent information - "TELEPHONED",
+"PLEASE CALL", "URGENT", etc. if the -p option was given), 
+and then enter a message, if any, ending with a blank line.
+If you elect to use the special alias file, 
+names can be entered as 'Firstname Lastname' and the system
+will try to find a mail alias based on the first letter of the
+first name plus the last name.  For example, 'Dave Taylor'
+will cause the program to search for an alias 'd_taylor' in
+the file (note the transliteration into lower case).   The 
+program will loop until killed or quit.
+.PP
+.I Answer
+can be easily exited by typing any of 'quit', 'exit' 'done', 
+or 'bye' at the 'Message to:' prompt.
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+.I "The Elm Alias System Users Guide"
+.sp
+.br
+newalias(1L), checkalias(1L), mail(1), mailx(1), from(1L), printmail(1L)
+.SH FILES
+$HOME/.elm/aliases.text       individual alias source
+.br
+$HOME/.elm/aliases.dir        individual alias dbz directory table
+.br
+$HOME/.elm/aliases.pag        individual alias dbz hash table
+.br
+$HOME/.elm/aliases            individual alias data table
+.br
+/tmp/snd.$$                   edit buffer for outgoing mail
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

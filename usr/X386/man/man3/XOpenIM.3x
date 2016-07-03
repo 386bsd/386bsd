@@ -1,0 +1,236 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XOpenIM 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XOpenIM, XCloseIM, XGetIMValues, XDisplayOfIM, XLocaleOfIM \- open, close, and otain input method information
+.SH SYNTAX
+XIM XOpenIM\^(\^\fIdisplay\fP\^, \fIdb\fP\^, \fIres_name\fP\^, \fIres_class\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XrmDataBase \fIdb\fP\^;
+.br
+      char *\fIres_name\fP\^;
+.br
+      char *\fIres_class\fP\^;
+.LP
+Status XCloseIM\^(\^\fIim\fP\^)
+.br
+      XIM \fIim\fP\^;
+.LP
+char * XGetIMValues\^(\^\fIim\fP\^, ...)
+.br
+      XIM \fIim\fP\^; 
+.LP
+Display * XDisplayOfIM\^(\^\fIim\fP\^)
+.br
+	XIM \fIim\fP\^;
+.LP
+char * XLocaleOfIM\^(\^\fIim\fP\^)
+.br
+      XIM \fIim\fP\^; 
+.LP
+.SH ARGUMENTS
+.IP \fIdb\fP 1i
+Specifies a pointer to the resource database.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIim\fP 1i
+Specifies the input method.
+.IP \fIres_class\fP 1i
+Specifies the full class name of the application.
+.IP \fIres_name\fP 1i
+Specifies the full resource name of the application.
+.ds Al \ to get XIM values
+.IP ... 1i
+Specifies the variable length argument list\*(Al.
+.SH DESCRIPTION
+The
+.ZN XOpenIM
+function opens an input method, 
+matching the current locale and modifiers specification.
+Current locale and modifiers are bound to the input method at opening time.
+The locale associated with an input method cannot be changed dynamically.
+This implies the strings returned by
+.ZN XmbLookupString
+or
+.ZN XwcLookupString ,
+for any input context affiliated with a given input method,
+will be encoded in the locale current at the time input method is opened.
+.LP
+The specific input method to which this call will be routed
+is identified on the basis of the current locale. 
+.ZN XOpenIM
+will identify a default input method corresponding to the
+current locale.
+That default can be modified using 
+.ZN XSetLocaleModifiers
+for the input method modifier.
+.LP
+The db argument is the resource database to be used by the input method
+for looking up resources that are private to the input method.
+It is not intended that this database be used to look
+up values that can be set as IC values in an input context.
+If db is NULL,
+no data base is passed to the input method.
+.LP
+The res_name and res_class arguments specify the resource name 
+and class of the application. 
+They are intended to be used as prefixes by the input method
+when looking up resources that are common to all input contexts
+that may be created for this input method.
+The characters used for resource names and classes must be in the
+X portable character set.
+The resources looked up are not fully specified
+if res_name or res_class is NULL.
+.LP
+The res_name and res_class arguments are not assumed to exist beyond
+the call to
+.ZN XOpenIM .
+The specified resource database is assumed to exist for the lifetime
+of the input method.
+.LP
+.ZN XOpenIM
+returns NULL if no input method could be opened.
+.LP
+The
+.ZN XCloseIM
+function closes the specified input method.
+.LP
+The
+.ZN XGetIMValues
+function presents a variable argument list programming interface
+for querying properties or features of the specified input method.
+This function returns NULL if it succeeds;
+otherwise,
+it returns the name of the first argument that could not be obtained.
+.LP
+Only one standard argument is defined by Xlib:
+.ZN XNQueryInputStyle ,
+which must be used to query about input styles supported by the input method.
+.LP
+A client should always query the input method to determine which styles
+are supported.
+The client should then find an input style it is capable of supporting.
+.LP
+If the client cannot find an input style that it can support
+it should negotiate with the user the continuation of the program
+(exit, choose another input method, and so on).
+.LP
+The argument value must be a pointer to a location
+where the returned value will be stored.
+The returned value is a pointer to a structure of type
+.ZN XIMStyles .
+Clients are responsible for freeing the 
+.ZN XIMStyles
+data structure.
+To do so, use
+.ZN XFree .
+.LP
+The
+.ZN XDisplayOfIM
+function returns the display associated with the specified input method.
+.LP
+The
+.ZN XLocaleOfIM
+returns the locale associated with the specified input method.
+.SH "SEE ALSO"
+XCreateIC(3X11),
+XSetICFocus(3X11),
+XSetICValues(3X11),
+XmbResetIC(3X11)
+.br
+\fI\*(xL\fP

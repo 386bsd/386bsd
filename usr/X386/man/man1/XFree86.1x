@@ -1,0 +1,362 @@
+.\" $XFree86: mit/server/ddx/x386/XFree86.man,v 2.9 1993/10/21 15:54:01 dawes Exp $
+.\" $XConsortium: X386.man,v 1.3 91/08/26 15:31:19 gildea Exp $
+.TH XFree86 1 "Version 2.0"  "XFree86"
+.SH NAME
+XFree86 - X11R5 Enhancement Package for UNIX on x86 platforms
+.SH DESCRIPTION
+.I XFree86
+is a package of bug-fixes, enhancements, and ports of X11R5 to new OSs,
+for Intel Unix-like OSs, and a collection of new X Window System
+servers.  This work is derived from
+.I "X386\ 1.2"
+which was contributed to X11R5 by Snitily Graphics Consulting Service.
+.PP
+The
+.I XFree86
+servers support all MIT-supplied extensions except the X Input Extension.
+.I PEX
+is supported on the 8-bit pseudo-colour servers, but does not function
+well on the class of hardware supported.
+.SH CONFIGURATIONS
+.PP
+.I XFree86
+operates under the following operating systems:
+.RS .5i
+.na
+.PP
+-- SVR3.2: ISC, AT&T, SCO
+.br
+-- SVR4.0: ESIX, Microport, Dell, UHC, Consensys, MST, ISC, AT&T, NCR
+.br
+-- SVR4.2: Consensys, Univel (UnixWare)
+.br
+-- 386BSD version 0.1, FreeBSD 1.0, NetBSD 0.9 (i386 port only)
+.br
+-- BSD/386 version 1.0
+.br
+-- Mach (from CMU)
+.br
+-- Linux
+.br
+-- Minix-386 version 1.6.16 rev 92 and higher
+.br
+-- Amoeba version 5.1
+.ad
+.RE
+.PP
+.SH "NETWORK CONNECTIONS"
+\fIXFree86\fP supports connections made using the following reliable
+byte-streams:
+.TP 4
+.I "Local"
+\fIXFree86\fP supports local connections via Streams pipe via various mechanisms,
+using the following paths (\fIn\fP represents the display number):
+.sp .5v
+.in 8
+.nf
+/dev/X/server.\fBn\fR (SVR3 and SVR4)
+/dev/X/Nserver.\fBn\fR (SVR4)
+/tmp/.X11-unix/X\fBn\fR (ISC SVR3)
+/dev/X\fBn\fRS and /dev/X\fBn\fRR (SCO SVR3)
+.fi
+.in
+.sp .5v
+On SVR4.0.4, if the \fIAdvanced Compatibility Package\fP 
+is installed, and in SVR4.2, \fIXFree86\fP supports local connections 
+from clients for SCO XSight/ODT, and (with modifications to the binary) 
+clients for ISC SVR3.
+.TP 4
+.I "Unix Domain"
+\fIXFree86\fP uses \fI/tmp/.X11-unix/X\fBn\fR as the filename for the socket,
+where \fIn\fP is the display number (SVR4, BSD, Linux, Mach).
+.TP 4
+.I TCP\/IP
+\fIXFree86\fP listens on port htons(6000+\fIn\fP), where \fIn\fP is the display
+number (SVR3, SVR4, BSD, Linux, Mach, Minix).
+.TP 4
+.I "Amoeba RPC"
+This is the default communication medium used under native Amoeba.
+Note that under Amoeba, the server should be started
+with a ``\fIhostname\fP:\fIdisplaynumber\fP'' argument.
+.SH "ENVIRONMENT VARIABLES"
+For operating systems that support local connections other than Unix Domain
+sockets (SVR3 and SVR4), there is a compiled-in list specifying the order 
+in which local connections should be attempted.  This list can be overridden by
+the \fIXLOCAL\fP environment variable described below.  If the display name 
+indicates a best-choice connection should be made (e.g. \fI:0.0\fP), each 
+connection mechanism is tried until a connection succeeds or no more 
+mechanisms are available.
+.PP
+The \fIXLOCAL\fP environment variable should contain a list of one more
+more of the following:
+.sp .5v
+.in 8
+.nf
+UNIX
+NAMED
+USL
+SCO
+ISC
+.fi
+.in
+.sp .5v
+which represent Unix-Domain socket, SVR4 Named Streams pipe, Old-style USL
+Streams pipe, SCO XSight Streams pipe, and ISC Streams pipe, respectively.
+You can select a single mechanism (e.g. \fIXLOCAL=NAMED\fP), or an ordered
+list (e.g. \fIXLOCAL="NAMED:USL:SCO"\fP).  This variable overrides the
+compiled-in defaults.
+.PP
+To globally override the compiled-in defaults, you should define (and
+export if using \fIsh\fP or \fIksh\fP) \fIXLOCAL\fP globally.  If you
+use \fIstartx/xinit\fP, the definition should be at the top of your
+\fI.xinitrc\fP file.  If you use \fIxdm\fP, the definitions should be
+early on in the \fI/usr/X386/lib/X11/xdm/Xsession\fP script.
+.PP
+XFree86 supports installing the binary distribution in a directory other
+than the compile-time selected default.  This may be set at run-time
+by setting the \fIXWINHOME\fP environment variable.  In this and related
+documentation, \fI/usr/X386\fP may be replaced by \fI$XWINHOME\fP.  In
+addition to changing \fIXWINHOME\fP, the \fIPATH\fP, \fIMANPATH\fP, and
+\fILD_LIBRARY_PATH\fP variables should also be updated where applicable.
+Note: changing the installed location may cause problems for systems with
+shared libraries which don't have something analogous to
+\fILD_LIBRARY_PATH\fP (like SVR3).
+.SH OPTIONS
+In addition to the normal server options described in the \fIXserver(1)\fP
+manual page, \fIXFree86\fP accepts the following command line switches:
+.TP 8
+.B vt\fIXX\fP
+\fIXX\fP specifies the Virtual Terminal device number which 
+\fIXFree86\fP will use.  Without this option, \fIXFree86\fP will pick the first
+available Virtual Terminal that it can locate.  This option applies only
+to SVR3, SVR4, Linux, and BSD OSs with the 'syscons' driver.
+.TP 8
+.B \-probeonly
+Causes the server to exit after the device probing stage.  The Xconfig file
+is still used when this option is given, so information that can be
+auto-detected should be commented out.
+.TP 8
+.B \-quiet
+Suppress most informational messages at startup.
+.TP 8
+.B \-showconfig
+Print out a list of screen drivers configured in the server.
+.TP 8
+.B \-verbose
+Maximise information printed at startup (this is the default).
+.TP 8
+.B \-xconfig \fIfile\fP
+Read the server configuration from \fIfile\fP.
+.TP 8
+.B \-keeptty
+Prevent the server from detaching its initial controlling terminal.  This
+option is only useful when debugging the server.
+.SH "KEYBOARD"
+Multiple key presses recognized directly by \fIXFree86\fP are:
+.TP 8
+.B Ctrl+Alt+Backspace
+Immediately kills the server -- no questions asked.  (Can be disabled by
+specifying "dontzap" in the configuration file.)
+.TP 8
+.B Ctrl+Alt+Keypad-Plus
+Change video mode to next one specified in the configuration file,
+(increasing video resolution order).
+.TP 8
+.B Ctrl+Alt+Keypad-Minus
+Change video mode to previous one specified in the configuration file,
+(decreasing video resolution order).
+.TP 8
+.B Ctrl+Alt+F1...F12
+For BSD systems using the syscons driver and Linux, these keystroke
+combinations are used to switch to Virtual 
+Console 1 through 12.
+.PP
+\fIXFree86\fP provides several capabilities for easing the use of international
+keyboards, and generating non-ASCII Latin-1 keysyms.  Refer to the
+.I XFree86kbd(1)
+manual page for more information.
+.SH SETUP
+.I XFree86
+uses a configuration file called \fBXconfig\fP for its initial setup.  
+Refer to the
+.I Xconfig(4/5)
+manual page for more information.
+.SH FILES
+.TP 30
+/usr/X386/bin/XF86_SVGA
+The 8-bit color X server
+.TP 30
+/usr/X386/bin/XF86_Mono
+The monochrome X server
+.TP 30
+/usr/X386/bin/XF86_S3
+The accelerated S3 X server
+.TP 30
+/usr/X386/bin/XF86_Mach8
+The accelerated Mach8 X server
+.TP 30
+/usr/X386/bin/XF86_Mach32
+The accelerated Mach32 X server
+.TP 30
+/usr/X386/bin/XF86_8514
+The accelerated 8514/A X server
+.TP 30
+/usr/X386/lib/X11/Xconfig
+Server configuration file
+.TP 30
+/usr/X386/lib/X11/etc
+Additional \fIXFree86\fP support files
+.TP 30
+/usr/X386/lib/X11/etc/VideoModes.doc
+The Video Timing tutorial by Eric Raymond
+.TP 30
+/usr/X386/bin/\(**
+Client binaries
+.TP 30
+/usr/X386/include/\(**
+Header files
+.TP 30
+/usr/X386/lib/\(**
+Libraries
+.TP 30
+/usr/X386/lib/X11/fonts/\(**
+Fonts
+.TP 30
+/usr/X386/lib/X11/rgb.txt
+Color names to RGB mapping
+.TP 30
+/usr/X386/lib/X11/XErrorDB
+Client error message database
+.TP 30
+/usr/X386/lib/X11/app-defaults/\(**
+Client resource specifications
+.TP 30
+/usr/X386/man/man?/\(**
+Manual pages
+.TP 30
+/tmp/.X\fIn\fP-lock
+Server lock file for display \fIn\fP
+.TP 30
+/etc/X\fIn\fP.hosts
+Initial access control list for display \fIn\fP
+.SH "SEE ALSO"
+X(1), Xserver(1), XFree86kbd(1), xdm(1), xinit(1), Xconfig(4/5),
+XF86_SVGA(1), XF86_VGA16(1), XF86_Mono(1), XF86_S3(1), XF86_8514(1),
+XF86_Mach8(1), XF86_Mach32(1)
+.SH BUGS
+.PP
+There are no known bugs at this time, although we welcome reports emailed
+to the address listed below.
+.SH AUTHORS
+.PP
+For X11R5, \fIX386 1.2\fP was provided by:
+.TP 8
+Thomas Roell,      \fIroell@informatik.tu-muenchen.de\fP
+TU-Muenchen:  Server and SVR4 stuff
+.TP 8
+Mark W. Snitily,   \fImark@sgcs.com\fP
+SGCS:  SVR3 support, X Consortium Sponsor
+.PP
+ ... and many more people out there on the net who helped with ideas and
+bug-fixes.
+.PP
+\fIX386\fP X11R5 source and binaries are available from SGCS.
+Send email to \fIinfo@sgcs.com\fP or \fImark@sgcs.com\fP
+for details.
+.PP
+The \fIXFree86\fP enhancement package was provided by:
+.TP 8
+David Dawes,       \fIdawes@physics.su.oz.au\fP
+Mono server, and many other fixes (e.g. VT switching).
+Administration of FTP repository and mailing lists.  Source tree management
+and integration, accelerated server integration, fixing, and coding.
+.TP 8
+Glenn Lai,         \fIglenn@cs.utexas.edu\fP
+The SpeedUp code for ET4000 based SVGA cards. 
+.TP 8
+Jim Tsillas,       \fIjtsilla@damon.ccs.northeastern.edu\fP
+Many server speedups from the fX386 series of enhancements, port of LOCALCONN
+from X11R4.
+.TP 8
+David Wexelblat,   \fIdwex@goblin.org\fP, \fIdwex@aib.com\fP
+Release coordination, integration of the fX386 code into the default server, 
+many driver fixes, and driver documentation, assembly of the VGA 
+card/monitor database, development of the generic video mode listing.
+Accelerated server integration, fixing, and coding.
+.TP 8
+Dirk Hohndel,      \fIhohndel@informatik.uni-wuerzburg.de\fP
+Linux shared libraries and release coordination.  Accelerated server
+integration and fixing.  Generic administrivia and documentation.
+.PP
+.TP 8
+Amancio Hasty Jr., \fIhasty@netcom.com\fP
+Porting to \fB386BSD\fP version 0.1 and XS3 development.
+.TP 8
+Rich Murphey,      \fIRich@Rice.edu\fP
+Ported to \fB386BSD\fP version 0.1 based on the original port by Pace Willison.
+Support for \fB386BSD\fP, \fBFreeBSD\fP, and \fBNetBSD\fP.
+.TP 8
+Robert Baron,      \fIRobert.Baron@ernst.mach.cs.cmu.edu\fP
+Ported to \fBMach\fP.
+.TP 8
+Orest Zborowski,   \fIorestz@microsoft.com\fP
+Ported to \fBLinux\fP.
+.TP 8
+David McCullough,  \fIdavidm@stallion.oz.au\fP
+Ported to \fBSCO SVR3\fP.
+.TP 8
+Kees Verstoep,     \fIversto@cs.vu.nl\fP
+Ported to \fBAmoeba\fP based on Leendert van Doorn's original Amoeba port of
+X11R5.
+.TP 8
+Marc Evans,        \fIMarc@Synergetics.Com\fP
+Ported to \fBOSF/1\fP.
+.TP 8
+Philip Homburg,    \fIphilip@cs.vu.nl\fP
+Ported to \fBMinix-386\fP.
+.TP 8
+Thomas Wolfram,    \fIwolf@prz.tu-berlin.de\fP
+SVR3 shared libraries.
+.TP 8
+Jon Tombs,         \fIjon@gtex02.us.es\fP
+S3 server and accelerated server coordination.
+.TP 8
+Kevin Martin,      \fImartin@cs.unc.edu\fP
+Overall work on the base accelerated servers (ATI and 8514/A).
+.TP 8
+Rik Faith,         \fIfaith@cs.unc.edu\fP
+Overall work on the base accelerated servers (ATI and 8514/A).
+.TP 8
+Tiago Gons,        \fItiago@comosjn.hobby.nl\fP
+Mach8 and 8514/A server development
+.TP 8
+Hans Nasten,       \fInasten@everyware.se\fP
+Mach8 and 8514/A server development and BSD/386 support
+.TP 8
+Mike Bernson,      \fImike@mbsun.mlb.org\fP
+Mach32 server development.
+.TP 8
+Mark Weaver,       \fIMark_Weaver@brown.edu\fP
+Mach32 server development.
+.TP 8
+Simon Cooper,      \fIscooper@vizlab.rutgers.edu\fP
+Cirrus accelerated code (based on work by Bill Reynolds).
+.TP 8
+Mike Tierney,      \fIfloyd@eng.umd.edu\fP
+WD accelerated code.
+.TP 8
+Gertjan Akkerman,  \fIakkerman@dutiba.twi.tudelft.nl\fP
+16 colour VGA server.
+.TP 8
+Davor Matic,       \fIdmatic@Athena.MIT.EDU\fP
+Hercules driver and frame buffer support.
+.TP 8
+Pascal Haible,     \fIhaible@izfm.uni-stuttgart.de\fP
+Mono frame buffer support for dumb monochrome devices (bdm2)
+.PP
+ ... and many more people out there on the net who helped with beta-testing
+this enhancement.
+.PP
+\fIXFree86\fP source is available from the FTP servers 
+\fIftp.physics.su.oz.au\fP and \fIftp.x.org\fP, among others.  Send email to
+\fIXFree86@physics.su.oz.au\fP for details.

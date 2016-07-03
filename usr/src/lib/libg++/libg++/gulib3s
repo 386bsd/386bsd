@@ -1,0 +1,106 @@
+	.file	"gnulib3.c"
+gcc2_compiled.:
+.text
+	.align 2
+.globl ___main
+___main:
+	pushl %ebp
+	movl %esp,%ebp
+	movl ___DTOR_LIST__,%eax
+	movl %eax,___dli
+	movl $___DTOR_LIST__,___dlp
+	call ___do_global_init
+L1:
+	leave
+	ret
+	.align 2
+.globl _exit
+_exit:
+	pushl %ebp
+	movl %esp,%ebp
+	call ___do_global_cleanup
+	call __cleanup
+	pushl 8(%ebp)
+	call __exit
+	addl $4,%esp
+L2:
+	leave
+	ret
+	.align 2
+.globl ___do_global_init
+___do_global_init:
+	pushl %ebp
+	movl %esp,%ebp
+	subl $4,%esp
+	pushl %edi
+	pushl %esi
+	pushl %ebx
+	movl $___CTOR_LIST__+4,%edi
+	movl ___CTOR_LIST__,%esi
+	xorl %ebx,%ebx
+L4:
+	cmpl %esi,%ebx
+	jge L5
+	movl (%edi,%ebx,4),%eax
+	movl %eax,-4(%ebp)
+	movl -4(%ebp),%eax
+	call *%eax
+L6:
+	incl %ebx
+	jmp L4
+	.align 2,0x90
+L5:
+L3:
+	leal -16(%ebp),%esp
+	popl %ebx
+	popl %esi
+	popl %edi
+	leave
+	ret
+	.align 2
+.globl ___do_global_cleanup
+___do_global_cleanup:
+	pushl %ebp
+	movl %esp,%ebp
+	subl $4,%esp
+	pushl %esi
+	pushl %ebx
+	nop
+L8:
+	cmpl $0,___dlp
+	je L9
+L10:
+	decl ___dli
+	cmpl $0,___dli
+	jl L11
+	movl ___dlp,%eax
+	movl ___dli,%edx
+	movl 4(%eax,%edx,4),%esi
+	movl %esi,-4(%ebp)
+	movl -4(%ebp),%ebx
+	call *%ebx
+	jmp L10
+	.align 2,0x90
+L11:
+	movl ___dlp,%eax
+	movl ___dlp,%edx
+	movl (%edx),%ecx
+	movl 4(%eax,%ecx,4),%esi
+	movl %esi,___dlp
+	cmpl $0,___dlp
+	je L12
+	movl ___dlp,%eax
+	movl (%eax),%esi
+	movl %esi,___dli
+L12:
+	jmp L8
+	.align 2,0x90
+L9:
+L7:
+	leal -12(%ebp),%esp
+	popl %ebx
+	popl %esi
+	leave
+	ret
+.comm ___dlp,4
+.comm ___dli,4

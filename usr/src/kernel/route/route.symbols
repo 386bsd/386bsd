@@ -1,0 +1,6 @@
+#	$Id: route.symbols,v 1.1 94/10/20 10:55:42 root Exp $
+
+#netstat
+#	_rthost
+#	_rtnet
+	_rthashsize

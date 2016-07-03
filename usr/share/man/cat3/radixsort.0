@@ -1,0 +1,66 @@
+RADIXSORT(3)              386BSD Programmer's Manual              RADIXSORT(3)
+
+NNAAMMEE
+     rraaddiixxssoorrtt - radix sort
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<lliimmiittss..hh>>
+     ##iinncclluuddee <<ssttddlliibb..hh>>
+
+     _i_n_t
+     rraaddiixxssoorrtt(_u__c_h_a_r **_b_a_s_e, _i_n_t _n_m_e_m_b, _u__c_h_a_r *_t_a_b_l_e, _u__c_h_a_r _e_n_d_b_y_t_e)
+
+DDEESSCCRRIIPPTTIIOONN
+     The rraaddiixxssoorrtt() function is a modified radix sort.
+
+     The rraaddiixxssoorrtt() function sorts an array of _n_m_e_m_b pointers to byte
+     strings, the initial member of which is referenced by _b_a_s_e. The byte
+     strings may contain any values; the end of each string is denoted by the
+     user-specified value _e_n_d_b_y_t_e. The contents of the array are sorted in
+     ascending order according to the ASCII order of the byte strings they
+     reference.
+
+     Applications may specify a sort order by providing the _t_a_b_l_e argument.
+     If non-NULL, _t_a_b_l_e must reference an array of UCHAR_MAX + 1 bytes which
+     contains the sort weight of each possible byte value.  The end-of-string
+     byte must have a sort weight of 0.  More than one byte may have the same
+     sort weight.  The _t_a_b_l_e argument is useful for applications which wish to
+     sort different characters equally; for example, providing a table with
+     the same weights for A-Z as for a-z will result in a case-insensitive
+     sort.
+
+     The rraaddiixxssoorrtt() function is stable, that is, if two elements compare as
+     equal, their order in the sorted array is unchanged.
+
+     The rraaddiixxssoorrtt() function is a variant of most-significant-byte radix
+     sorting; in particular, see D.E. Knuth's Algorithm R and section 5.2.5,
+     exercise 10.  The rraaddiixxssoorrtt() function takes linear time relative to the
+     number of bytes in the strings.
+
+RREETTUURRNN VVAALLUUEESS
+     Upon successful completion 0 is returned.  Otherwise, -1 is returned and
+     the global variable _e_r_r_n_o is set to indicate the error.
+
+EERRRROORRSS
+     The rraaddiixxssoorrtt() function may fail and set _e_r_r_n_o for any of the errors
+     specified for the library routine malloc(3).
+
+SSEEEE AALLSSOO
+     sort(1),  qsort(3)
+
+     Knuth, D.E., "Sorting and Searching", _T_h_e _A_r_t _o_f _C_o_m_p_u_t_e_r _P_r_o_g_r_a_m_m_i_n_g,
+     Vol. 3, pp. 170-178, 1968.
+
+     Paige, R., "Three Partition Refinement Algorithms", _S_I_A_M _J. _C_o_m_p_u_t., No.
+     6, Vol. 16, 1987.
+
+HHIISSTTOORRYY
+     The rraaddiixxssoorrtt() function is currently under development.
+
+BBUUGGSS
+     The _n_m_e_m_b argument must be less than the maximum integer, INT_MAX.
+
+BSD Experimental                April 19, 1991                               1
+
+
+

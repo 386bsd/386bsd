@@ -1,0 +1,56 @@
+.\" $XConsortium: x11pcomp.man,v 1.3 91/08/26 18:00:32 gildea Exp $
+.TH X11PERFCOMP 1 "Release 5" "X Version 11"
+.SH NAME
+x11perfcomp \- X11 server performance comparison program
+.SH SYNTAX
+.B x11perfcomp
+[ \-r | \-ro ] [ \-l label_file ] files
+.SH DESCRIPTION
+The
+.I x11perfcomp
+program merges the output of several
+.I x11perf(1)
+runs into a nice tabular
+format.  It takes the results in each file, fills in any missing test results if
+necessary, and for each test shows the objects/second rate of each server.
+If invoked with the -r or -ro options, it shows the relative performance 
+of each server to the first server.
+.PP
+Normally,
+.I x11perfcomp
+uses the first file specified to determine which specific tests it should
+report on.  Some (non-DEC :) servers may fail to perform
+all tests.  In this case,
+.I x11perfcomp
+automatically substitutes in a rate of 0.0 objects/second. 
+Since the first file
+determines which tests to report on, this file must contain a superset of
+the tests reported in the other files, else 
+.I x11perfcomp
+will fail.
+.PP
+You can provide an explicit list of tests to report on
+by using the -l switch to specify a file of labels.  You can create a label
+file by using the -label option in 
+.I x11perf.
+.SH OPTIONS
+.I x11perfcomp
+accepts the options listed below:
+.TP 16
+.B \-r
+Specifies that the output should also include relative server
+performance.
+.TP 16
+.B \-ro
+Specifies that the output should include only relative server performance.
+.TP 16
+.B \-l label_file
+Specifies a label file to use.
+.SH X DEFAULTS
+There are no X defaults used by this program.
+.SH "SEE ALSO"
+X(1), x11perf(1)
+.SH AUTHORS
+Mark Moraes wrote the original scripts to compare servers.
+.br
+Joel McCormack just munged them together a bit.

@@ -1,0 +1,123 @@
+.TH XWUD 1 "Release 5" "X Version 11"
+.SH NAME
+xwud - image displayer for X
+.SH SYNOPSIS
+.B "xwud"
+[-in \fIfile\fP] [-noclick] [-geometry \fIgeom\fP] [-display \fIdisplay\fP]
+[-new] [-std <maptype>] [-raw] [-vis <vis-type-or-id>]
+[-help] [-rv] [-plane \fInumber\fP] [-fg \fIcolor\fP] [-bg \fIcolor\fP]
+.SH DESCRIPTION
+.PP
+.I Xwud
+is an X Window System image undumping utility.
+.I Xwud
+allows X users to display in a window an image saved
+in a specially formatted dump file, such as produced by \fIxwd(1)\fP.
+.SH OPTIONS
+.PP
+.TP 8
+.B "-bg \fIcolor\fP"
+If a bitmap image (or a single plane of an image) is displayed, this option
+can be used to specify the color to display for the "0" bits in the image.
+.PP
+.TP 8
+.B "-display \fIdisplay\fP"
+This option allows you to specify the server to connect to; see \fIX(1)\fP.
+.PP
+.TP 8
+.B "-fg \fIcolor\fP"
+If a bitmap image (or a single plane of an image) is displayed, this option
+can be used to specify the color to display for the "1" bits in the image.
+.PP
+.TP 8
+.B "-geometry \fIgeom\fP"
+This option allows you to specify the size and position of the window.
+Typically you will only want to specify the position, and let the size
+default to the actual size of the image.
+.PP
+.TP 8
+.B "-help"
+Print out a short description of the allowable options.
+.PP
+.TP 8
+.B "-in \fIfile\fP"
+This option allows the user to explicitly specify the input 
+file on the command line.  If no input file is given, the standard input
+is assumed.
+.PP
+.TP 8
+.B -new
+This option forces creation of a new colormap for displaying the image.
+If the image characteristics happen to match those of the display, this
+can get the image on the screen faster, but at the cost of using a new
+colormap (which on most displays will cause other windows to go
+technicolor).
+.PP
+.TP 8
+.B "-noclick"
+Clicking any button in the window will terminate the application,
+unless this option is specified.  Termination can always be achieved
+by typing 'q', 'Q', or ctrl-c.
+.PP
+.TP 8
+.B "-plane \fInumber\fP"
+You can select a single bit plane of the image to display
+with this option.  Planes are numbered with zero being the least
+significant bit.  This option can be used to figure out which plane to
+pass to \fIxpr(1)\fP for printing.
+.PP
+.TP 8
+.B -raw
+This option forces the image to be displayed with whatever color values
+happen to currently exist on the screen.  This option is mostly useful when
+undumping an image back onto the same screen that the image originally
+came from, while the original windows are still on the screen, and results
+in getting the image on the screen faster.
+.PP
+.TP 8
+.B -rv
+If a bitmap image (or a single plane of an image) is displayed, this option
+forces the foreground and background colors to be swapped.  This may be
+needed when displaying a bitmap image which has the color sense of pixel
+values "0" and "1" reversed from what they are on your display.
+.PP
+.TP 8
+.B "-std \fImaptype\fP"
+This option causes the image to be displayed using the specified
+Standard Colormap.  The property name is obtained by converting the
+type to upper case, prepending "RGB_", and appending "_MAP".
+Typical types are "best", "default", and "gray".  See \fIxstdcmap(1)\fP
+for one way of creating Standard Colormaps.
+.PP
+.TP 8
+.B "-vis \fIvis-type-or-id\fP"
+This option allows you to specify a particular visual or visual class.
+The default is to pick the "best" one.  A particular class can be
+specified: "StaticGray", "GrayScale", "StaticColor", "PseudoColor",
+"DirectColor", or "TrueColor".  Or "Match" can be specified, meaning
+use the same class as the source image.  Alternatively, an exact
+visual id (specific to the server) can be specified, either as a
+hexadecimal number (prefixed with "0x") or as a decimal number.
+Finally, "default" can be specified, meaning to use the same class
+as the colormap of the root window.  Case is not significant in
+any of these strings.
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+To get default display.
+.SH FILES
+.PP
+.TP 8
+.B XWDFile.h
+X Window Dump File format definition file.
+.SH SEE ALSO
+xwd(1), xpr(1), xstdcmap(1), X(1)
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Bob Scheifler, MIT X Consortium
+
+

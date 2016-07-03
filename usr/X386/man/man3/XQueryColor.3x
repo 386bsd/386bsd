@@ -1,0 +1,337 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XQueryColor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XQueryColor, XQueryColors, XLookupColor, XParseColor \- obtain color values
+.SH SYNTAX
+.\" $Header: XQueryColor.f,v 1.3 88/05/09 09:40:30 mento Exp $
+XQueryColor\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \fIdef_in_out\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      XColor *\fIdef_in_out\fP\^;
+.LP
+.\" $Header: XQueryColors.f,v 1.3 88/05/09 09:42:25 mento Exp $
+XQueryColors\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \fIdefs_in_out\fP\^, \fIncolors\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      XColor \fIdefs_in_out\fP[\^]\^;
+.br
+      int \fIncolors\fP\^;
+.LP
+Status XLookupColor\^(\^\fIdisplay\fP, \fIcolormap\fP, \fIcolor_name\fP, \
+\fIexact_def_return\fP\^, \fIscreen_def_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      char *\fIcolor_name\fP\^;
+.br
+      XColor *\fIexact_def_return\fP\^, *\fIscreen_def_return\fP\^;
+.LP
+.\" $Header: XParseColor.f,v 1.2 88/05/20 05:14:03 mento Exp $
+Status XParseColor\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \^\fIspec\fP\^, \fIexact_def_return\fP\^)
+.br
+        Display *\fIdisplay\fP\^;
+.br
+        Colormap \fIcolormap\fP\^;
+.br
+        char *\fIspec\fP\^;
+.br
+        XColor *\fIexact_def_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: cmap.a,v 1.2 88/05/09 06:39:13 mento Exp $
+.IP \fIcolormap\fP 1i
+Specifies the colormap.
+.\" $Header: colorname.a,v 1.2 88/05/09 07:14:45 mento Exp $
+.IP \fIcolor_name\fP 1i
+Specifies the color name string (for example, red) whose color 
+definition structure you want returned.
+.IP \fIdef_in_out\fP 1i
+Specifies and returns the RGB values for the pixel specified in the structure.
+.\" $Header: defs_ret.a,v 1.4 88/05/09 09:43:05 mento Exp $
+.IP \fIdefs_in_out\fP 1i
+Specifies and returns an array of color definition structures for the pixel
+specified in the structure.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: exact_def.a,v 1.1 88/02/26 10:26:55 mento Exp $
+.IP \fIexact_def_return\fP 1i
+Returns the exact RGB values.
+.\" $Header: ncolors.a,v 1.1 88/02/26 10:29:17 mento Exp $
+.IP \fIncolors\fP 1i
+.\"Specifies the number of color definition structures. 
+Specifies the number of 
+.ZN XColor
+structures in the color definition array.
+.\" $Header: hard_def.a,v 1.2 88/04/23 08:59:18 mento Exp $
+.IP \fIscreen_def_return\fP 1i
+Returns the closest RGB values provided by the hardware.
+.\" $Header: spec.a,v 1.4 88/07/10 12:59:48 mento Exp $
+.IP \fIspec\fP 1i
+Specifies the color name string;
+case is ignored.
+.\" $Header: def.a,v 1.2 88/04/07 16:52:05 mento Exp $
+.IP \fIexact_def_return\fP 1i
+Returns the exact color value for later use and sets the
+.ZN DoRed ,
+.ZN DoGreen ,
+and
+.ZN DoBlue
+flags.
+.SH DESCRIPTION
+.\" $Header: XQueryColor.d,v 1.4 88/06/11 07:52:34 mento Exp $
+The
+.ZN XQueryColor
+function returns the current RGB value for the pixel in the
+.ZN XColor
+structure and sets the
+.ZN DoRed ,
+.ZN DoGreen ,
+and
+.ZN DoBlue
+flags.
+The
+.ZN XQueryColors
+function returns the RGB value for each pixel in each
+.ZN XColor
+structure, and sets the
+.ZN DoRed ,
+.ZN DoGreen ,
+and
+.ZN DoBlue
+flags in each structure.
+
+.LP
+.ZN XQueryColor
+and
+.ZN XQueryColors
+can generate
+.ZN BadColor
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XLkUpColor.d,v 1.3 88/06/11 07:51:53 mento Exp $
+The
+.ZN XLookupColor
+function looks up the string name of a color with respect to the screen
+associated with the specified colormap.
+It returns both the exact color values and
+the closest values provided by the screen 
+with respect to the visual type of the specified colormap.
+If the color name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+.ZN XLookupColor
+returns nonzero if the name is resolved,
+otherwise it returns zero.
+.LP
+.\" $Header: XParseColor.d,v 1.4 88/08/23 15:05:59 mento Exp $
+The
+.ZN XParseColor
+function looks up the string name of a color with respect to the screen
+associated with the specified colormap.
+It returns the exact color value.
+If the color name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+.ZN XParseColor
+returns nonzero if the name is resolved,
+otherwise it returns zero.
+.LP
+.ZN XLookupColor
+and
+.ZN XParseColor
+can generate
+.ZN BadColor 
+error.
+.SH "COLOR NAMES"
+An RGB Device specification is identified by
+the prefix "rgb:" and conforms to the following syntax:
+.LP
+.\" Start marker code here
+.Ds 0
+rgb:\fI<red>/<green>/<blue>\fP
+
+    \fI<red>\fP, \fI<green>\fP, \fI<blue>\fP := \fIh\fP | \fIhh\fP | \fIhhh\fP | \fIhhhh\fP
+    \fIh\fP := single hexadecimal digits (case insignificant)
+.De
+.\" End marker code here
+.LP
+Note that \fIh\fP indicates the value scaled in 4 bits, 
+\fIhh\fP the value scaled in 8 bits,
+\fIhhh\fP the value scaled in 12 bits,
+and \fIhhhh\fP the value scaled in 16 bits, respectively.
+.LP
+For backward compatibility, an older syntax for RGB Device is
+supported, but its continued use is not encouraged.
+The syntax is an initial sharp sign character followed by
+a numeric specification, in one of the following formats:
+.LP
+.Ds 0
+.TA 2i
+.ta 2i
+#RGB	(4 bits each)
+#RRGGBB	(8 bits each)
+#RRRGGGBBB	(12 bits each)
+#RRRRGGGGBBBB	(16 bits each)
+.De
+.LP
+The R, G, and B represent single hexadecimal digits.
+When fewer than 16 bits each are specified, 
+they represent the most-significant bits of the value
+(unlike the "rgb:" syntax, in which values are scaled).
+For example, #3a7 is the same as #3000a0007000.
+.LP
+An RGB intensity specification is identified
+by the prefix "rgbi:" and conforms to the following syntax:
+.LP
+.\" Start marker code here
+.Ds 0
+rgbi:\fI<red>/<green>/<blue>\fP
+.De
+.\" End marker code here
+.LP
+Note that red, green, and blue are floating point values
+between 0.0 and 1.0, inclusive.
+The input format for these values is an optional sign,
+a string of numbers possibly containing a decimal point,
+and an optional exponent field containing an E or e 
+followed by a possibly signed integer string.
+.LP
+The standard device-independent string specifications have
+the following syntax:
+.LP
+.Ds 0
+CIEXYZ:\fI<X>/<Y>/<Z>\fP
+CIEuvY:\fI<u>/<v>/<Y>\fP
+CIExyY:\fI<x>/<y>/<Y>\fP
+CIELab:\fI<L>/<a>/<b>\fP
+CIELuv:\fI<L>/<u>/<v>\fP
+TekHVC:\fI<H>/<V>/<C>\fP
+.De
+.LP
+All of the values (C, H, V, X, Y, Z, a, b, u, v, y, x) are
+floating point values.
+The syntax for these values is an optional '+' or '-' sign,
+a string of digits possibly containing a decimal point,
+and an optional exponent field consisting of an 'E' or 'e'
+followed by an optional '+' or '-' followed by a string of digits.
+.SH DIAGNOSTICS
+.\" $Header: badcolor.e,v 1.1 87/09/04 08:22:57 mento Exp $
+.TP 1i
+.ZN BadColor
+A value for a Colormap argument does not name a defined Colormap.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XAllocColor(3X11),
+XCreateColormap(3X11),
+XStoreColors(3X11)
+.br
+\fI\*(xL\fP

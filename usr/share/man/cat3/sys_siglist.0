@@ -1,0 +1,66 @@
+PSIGNAL(3)                386BSD Programmer's Manual                PSIGNAL(3)
+
+NNAAMMEE
+     ppssiiggnnaall, ssyyss__ssiigglliisstt - system signal messages
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssyyss//ssiiggnnaall..hh>>
+
+     _v_o_i_d
+     ppssiiggnnaall(_u_n_s_i_g_n_e_d _s_i_g, _c_o_n_s_t _c_h_a_r *_s)
+
+     _e_x_t_e_r_n _c_h_a_r *_s_y_s__s_i_g_l_i_s_t[];
+
+DDEESSCCRRIIPPTTIIOONN
+     The ppssiiggnnaall() function locates the descriptive message string for the
+     given signal _s_i_g number and writes it to the _s_t_d_e_r_r.
+
+     If the argument _s is non-NULL it is written to the _s_t_d_e_r_r prior to the
+     message string.  The signal number should be from among those found in
+     <_s_i_g_n_a_l._h>.
+
+     The message strings can be accessed directly using the external character
+     array _s_y_s__s_i_g_l_i_s_t. The defined variable NSIG contains a count of the
+     messages in _s_y_s__s_i_g_l_i_s_t.
+
+SSEEEE AALLSSOO
+     sigaction(2),  perror(3)
+
+HHIISSTTOORRYY
+     The ppssiiggnnaall() function appeared in 4.2BSD.
+
+4.2 Berkeley Distribution       April 19, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,316 @@
+'\" e
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" e
+.TH XrmGetResource 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XrmGetResource, XrmQGetResource, XrmQGetSearchList, XrmQGetSearchResource \- retrieve database resources and search lists
+.SH SYNTAX
+Bool XrmGetResource\^(\^\fIdatabase\fP, \fIstr_name\fP, \fIstr_class\fP, \
+\fIstr_type_return\fP, \fIvalue_return\fP\^)
+.br
+     XrmDatabase \fIdatabase\fP\^;
+.br
+     char *\fIstr_name\fP\^;
+.br
+     char *\fIstr_class\fP\^;
+.br
+     char **\fIstr_type_return\fP\^;
+.br
+     XrmValue *\fIvalue_return\fP\^; 
+.LP
+Bool XrmQGetResource\^(\^\fIdatabase\fP, \fIquark_name\fP, \fIquark_class\fP, \
+\fIquark_type_return\fP, \fIvalue_return\fP\^)
+.br
+     XrmDatabase \fIdatabase\fP\^;
+.br
+     XrmNameList \fIquark_name\fP\^;
+.br
+     XrmClassList \fIquark_class\fP\^;
+.br
+     XrmRepresentation *\fIquark_type_return\fP\^;
+.br
+     XrmValue *\fIvalue_return\fP\^; 
+.LP
+typedef XrmHashTable *XrmSearchList;
+.sp
+Bool XrmQGetSearchList\^(\^\fIdatabase\fP, \fInames\fP, \fIclasses\fP, \
+\fIlist_return\fP, \fIlist_length\fP\^)
+.br
+     XrmDatabase \fIdatabase\fP\^;
+.br
+     XrmNameList \fInames\fP\^;
+.br
+     XrmClassList \fIclasses\fP\^;
+.br
+     XrmSearchList \fIlist_return\fP\^;
+.br
+     int \fIlist_length\fP\^;
+.LP
+Bool XrmQGetSearchResource\^(\^\fIlist\fP, \fIname\fP, \fIclass\fP, \
+\fItype_return\fP, \fIvalue_return\fP\^)
+.br
+     XrmSearchList \fIlist\fP\^;
+.br
+     XrmName \fIname\fP\^;
+.br
+     XrmClass \fIclass\fP\^;
+.br
+     XrmRepresentation *\fItype_return\fP\^;
+.br
+     XrmValue *\fIvalue_return\fP\^;
+.SH ARGUMENTS
+.IP \fIclass\fP 1i
+Specifies the resource class.
+.IP \fIclasses\fP 1i
+Specifies a list of resource classes.
+.IP \fIdatabase\fP 1i
+Specifies the database that is to be used.
+.IP \fIlist\fP 1i
+Specifies the search list returned by
+.ZN XrmQGetSearchList .
+.IP \fIlist_length\fP 1i
+Specifies the number of entries (not the byte size) allocated for list_return.
+.IP \fIlist_return\fP 1i
+Returns a search list for further use.
+.IP \fIname\fP 1i
+Specifies the resource name.
+.IP \fInames\fP 1i
+Specifies a list of resource names.
+.IP \fIquark_class\fP 1i
+Specifies the fully qualified class of the value being retrieved (as a quark).
+.IP \fIquark_name\fP 1i
+Specifies the fully qualified name of the value being retrieved (as a quark).
+.IP \fIquark_type_return\fP 1i
+Returns the representation type of the destination (as a quark).
+.IP \fIstr_class\fP 1i
+Specifies the fully qualified class of the value being retrieved (as a string).
+.IP \fIstr_name\fP 1i
+Specifies the fully qualified name of the value being retrieved (as a string).
+.IP \fIstr_type_return\fP 1i
+Returns the representation type of the destination (as a string).
+.IP \fItype_return\fP 1i
+Returns data representation type.
+.IP \fIvalue_return\fP 1i
+Returns the value in the database.
+.SH DESCRIPTION
+The 
+.ZN XrmGetResource 
+and 
+.ZN XrmQGetResource 
+functions retrieve a resource from the specified database.
+Both take a fully qualified name/class pair, a destination
+resource representation, and the address of a value
+(size/address pair).  
+The value and returned type point into database memory;
+therefore, you must not modify the data.
+.LP
+The database only frees or overwrites entries on
+.ZN XrmPutResource , 
+.ZN XrmQPutResource ,
+or 
+.ZN XrmMergeDatabases .
+A client that is not storing new values into the database or
+is not merging the database should be safe using the address passed 
+back at any time until it exits.
+If a resource was found, both
+.ZN XrmGetResource 
+and
+.ZN XrmQGetResource 
+return 
+.ZN True ;
+otherwise, they return 
+.ZN False .
+.LP
+.EQ
+delim %%
+.EN
+The
+.ZN XrmQGetSearchList
+function takes a list of names and classes
+and returns a list of database levels where a match might occur.
+The returned list is in best-to-worst order and
+uses the same algorithm as 
+.ZN XrmGetResource 
+for determining precedence.
+If list_return was large enough for the search list,
+.ZN XrmQGetSearchList
+returns 
+.ZN True ;
+otherwise, it returns
+.ZN False .
+.LP
+The size of the search list that the caller must allocate is
+dependent upon the number of levels and wildcards in the resource specifiers 
+that are stored in the database.
+The worst case length is %3 sup n%,
+where \fIn\fP is the number of name or class components in names or classes.
+.LP
+When using 
+.ZN XrmQGetSearchList 
+followed by multiple probes for resources with a common name and class prefix,
+only the common prefix should be specified in the name and class list to 
+.ZN XrmQGetSearchList .
+.LP
+The
+.ZN XrmQGetSearchResource
+function searches the specified database levels for the resource 
+that is fully identified by the specified name and class.
+The search stops with the first match.
+.ZN XrmQGetSearchResource
+returns 
+.ZN True 
+if the resource was found;
+otherwise, it returns
+.ZN False .
+.LP
+A call to 
+.ZN XrmQGetSearchList 
+with a name and class list containing all but the last component 
+of a resource name followed by a call to 
+.ZN XrmQGetSearchResource 
+with the last component name and class returns the same database entry as 
+.ZN XrmGetResource 
+and 
+.ZN XrmQGetResource 
+with the fully qualified name and class.
+.SH "MATCHING RULES"
+The algorithm for determining which resource database entry
+matches a given query is the heart of the resource manager.
+All queries must fully specify the name and class of the desired resource
+(use of "*" and "?" are not permitted).
+The library supports up to 100 components in a full name or class.
+Resources are stored in the database with only partially specified
+names and classes, using pattern matching constructs.
+An asterisk (*) is a loose binding and is used to represent any number
+of intervening components, including none.
+A period (.) is a tight binding and is used to separate immediately
+adjacent components.
+A question mark (?) is used to match any single component name or class.
+A database entry cannot end in a loose binding;
+the final component (which cannot be "?") must be specified.
+The lookup algorithm searches the database for the entry that most
+closely matches (is most specific for) the full name and class being queried.
+When more than one database entry matches the full name and class,
+precedence rules are used to select just one.
+.LP
+The full name and class are scanned from left to right (from highest
+level in the hierarchy to lowest), one component at a time.
+At each level, the corresponding component and/or binding of each
+matching entry is determined, and these matching components and
+bindings are compared according to precedence rules.
+Each of the rules is applied at each level,
+before moving to the next level,
+until a rule selects a single entry over all others.
+The rules (in order of precedence) are:
+.IP 1. 5
+An entry that contains a matching component (whether name, class, or "?")
+takes precedence over entries that elide the level (that is, entries
+that match the level in a loose binding).
+.IP 2. 5
+An entry with a matching name takes precedence over both
+entries with a matching class and entries that match using "?".
+An entry with a matching class takes precedence over
+entries that match using "?".
+.IP 3. 5
+An entry preceded by a tight binding takes precedence over entries
+preceded by a loose binding.
+.SH "SEE ALSO"
+XrmInitialize(3X11),
+XrmMergeDatabases(3X11),
+XrmPutResource(3X11),
+XrmUniqueQuark(3X11)
+.br
+\fI\*(xL\fP

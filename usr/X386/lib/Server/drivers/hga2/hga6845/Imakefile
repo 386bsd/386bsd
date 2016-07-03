@@ -1,0 +1,32 @@
+XCOMM $XFree86: mit/server/ddx/x386/hga2/drivers/hga6845/Imakefile,v 2.0 1993/07/12 16:03:27 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driver.c
+
+#if i386Bsd
+OBJS = driver6845.o 
+#else
+OBJS = driver.o 
+#endif
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../os-support -I../../hga \
+           -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(hga6845, $(OBJS))
+
+#if i386Bsd
+ObjectFromSpecialSource(driver6845,driver,NullParameter)
+#endif
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/hga2/hga6845)
+InstallLinkKitNonExecFile(driver.c,$(LINKKITDIR)/drivers/hga2/hga6845)
+
+DependTarget()
+

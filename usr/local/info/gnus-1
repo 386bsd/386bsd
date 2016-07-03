@@ -1,0 +1,1397 @@
+This is Info file ../info/gnus, produced by Makeinfo-1.55 from the
+input file gnus.texi.
+
+   This file documents GNUS, the GNU Emacs newsreader.
+
+   Copyright (C) 1989, 1990, 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+
+File: gnus,  Node: Top,  Next: Starting Up,  Prev: (DIR),  Up: (DIR)
+
+The GNUS News Reader
+********************
+
+   You can read netnews within Emacs using the GNUS package.  GNUS uses
+the NNTP protocol to communicate with a news server, which is a
+repository of news articles.  This need not be the same computer you
+are logged in on.
+
+   While the author of GNUS recommends pronouncing it as "news", we
+recommend pronouncing it as "gnoose", to avoid confusion.
+
+* Menu:
+
+* Starting Up::
+* Buffers of GNUS::
+* Newsgroup Commands::
+* Summary Commands::
+* Article Commands::
+* Startup File::
+* Kill File::
+* Troubleshooting::
+* Customization::
+* Reporting Bugs::
+* Index::
+
+
+File: gnus,  Node: Starting Up,  Next: Buffers of GNUS,  Prev: Top,  Up: Top
+
+Starting GNUS
+*************
+
+   This chapter describes how to get started GNUS, how to use a local
+news spool directly, and how to read private directory.
+
+* Menu:
+
+* Getting Started::     How to get started GNUS.
+* Finding the News::    Configuring how GNUS gets access to the news.
+
+
+File: gnus,  Node: Getting Started,  Next: Finding the News,  Up: Starting Up
+
+Getting Started GNUS
+====================
+
+   To start GNUS, type `M-x gnus'.
+
+`M-x gnus'
+     Run GNUS using the default NNTP server.
+
+`C-u M-x gnus'
+     Run GNUS without using the default NNTP server.
+
+
+File: gnus,  Node: Finding the News,  Prev: Getting Started,  Up: Starting Up
+
+Telling GNUS Where To Find the News
+===================================
+
+   Somehow or other, GNUS has to know how to find the current netnews.
+Usually this means it has to know the hostname of the NNTP server.
+
+   There are several ways that GNUS can get this information.  Most
+often, it comes from the environment variable `NNTPSERVER'.  You can
+specify a default when you install Emacs by setting the variable
+`gnus-nntp-server' in the `site-init.el' file.  If neither this default
+nor the environment variable is defined, then GNUS reads the server
+name using the minibuffer when you start it.
+
+   You can override the default by specifying a prefix argument for the
+`gnus' command.  Then it always reads the hostname to use.
+
+   GNUS can also bypass NNTP and read the news directly from the file
+system.  This reduces the overhead, but the features for retrieving by
+their message IDs may fail to work (*note Spool Variables::.).  To do
+this, specify `::' as the NNTP server "machine name".
+
+   You can also specify a subdirectory of your home directory to use as
+the current news spool.  To do this, specify a colon and the
+subdirectory name as the NNTP server "machine name".  For example,
+`:Mail' says to use the directory `~/Mail' as the news spool.  This
+makes it possible to read mail stored in MH folders or articles saved
+by GNUS.  The files in the directory with numeric names are considered
+news articles, and the other files in the directory are ignored.
+
+   A server specific startup file for each directory must exist before
+you start GNUS.  For example, a startup file for the directory `~/Mail'
+should be a file named `.newsrc-:Mail'.  *Note Startup File::, for more
+information on the server specific startup file.
+
+   Each news server has its own "active file" which lists the numbers
+of the active articles in each newsgroup.  Reading this file from the
+server is among the first things GNUS does when it starts.  Commands
+such as `g' that report additional newly-arrived articles work by
+rereading the active file.
+
+
+File: gnus,  Node: Buffers of GNUS,  Next: Newsgroup Commands,  Prev: Starting Up,  Up: Top
+
+Buffers Used by GNUS
+********************
+
+   GNUS uses three Emacs buffers: the Newsgroup buffer, the Summary
+buffer, and the Article buffer.  Each has its own particular purpose
+and its own major mode.  GNUS often displays all three buffers at the
+same time, with a configuration you can customize by setting the
+variable `gnus-window-configuration'.
+
+   The "Article buffer" is where GNUS displays the text of an article.
+Its major mode is always "Article Mode".  Users rarely select this
+buffer because you can read the text while keeping the Summary buffer
+selected.
+
+* Menu:
+
+* Newsgroup Buffer::  A buffer for listing newsgroups.
+* Summary Buffer::    A buffer for listing subjects and other important
+                        headers.
+
+
+File: gnus,  Node: Newsgroup Buffer,  Next: Summary Buffer,  Up: Buffers of GNUS
+
+Newsgroup Buffer
+================
+
+   "Newsgroup buffer" contains a list of newsgroups.  Its major mode is
+"Group Mode".  This is the first buffer that GNUS displays when it
+starts up.
+
+   Normally the list contains only the newsgroups which you subscribe to
+and which contain unread articles.  It is normally empty if there is no
+such newsgroups.  When you start GNUS, it displays the message `No news
+is good news.' in the echo area.
+
+   The format of the Newsgroup buffer looks like this:
+
+     SM  NUMBER: NEWSGROUP
+
+S
+     A character indicating whether the newsgroup is subscribed to.  `U'
+     means you subscribe to the newsgroup; ` ' means that you don't.
+     You can change your subscriptions using commands available in Group
+     mode.
+
+M
+     A character indicating whether there are newly arrived and unread
+     articles in the newsgroup.  `*' means there are no newly arrived
+     articles in the newsgroup.  ` ' means there are newly arrived
+     articles.
+
+NUMBER
+     The number of unread articles in the newsgroup.
+
+NEWSGROUP
+     The name of the newsgroup.
+
+
+File: gnus,  Node: Summary Buffer,  Prev: Newsgroup Buffer,  Up: Buffers of GNUS
+
+Summary Buffer
+==============
+
+   The "Summary buffer" displays a summary of articles in a single
+newsgroup, including their subjects, their numbers, and who posted
+them.  Its major mode is Summary mode.  GNUS creates a Summary buffer
+for a newsgroup when you select the group in the Newsgroup buffer.
+
+   A Summary buffer contains a line for each article.  Each line looks
+like this:
+
+     S NUMBER:C[LINES:AUTHOR] SUBJECT
+
+   Here is what the fields mean:
+
+S
+     The status code for this article.  ` ' means the article is newly
+     arrived and never read.  `D' means you read the article already.
+     `-' means you read it but marked it as saved.
+
+NUMBER
+     The number assigned to the article.
+
+C
+     A character indicating which article is currently selected.  `+' is
+     placed on the current article.
+
+LINES
+     The number of lines of the article body.
+
+AUTHOR
+     The mail address of the author of the article.
+
+SUBJECT
+     The subject of the article.
+
+   You can customize the format by setting the variable
+`gnus-optional-headers'.
+
+
+File: gnus,  Node: Newsgroup Commands,  Next: Summary Commands,  Prev: Buffers of GNUS,  Up: Top
+
+Newsgroup Commands
+******************
+
+   The Newsgroup buffer normally lists the newsgroups which you
+subscribe to and which contain unread articles.  But not always--some
+of the things you can do display additional newsgroups.  The commands
+available in this buffer are mostly concerned with subscribing and
+unsubscribing.
+
+* Menu:
+
+* Browsing Newsgroups::         Moving around in the Newsgroup buffer.
+* Selecting a Newsgroup::       Selecting a newsgroup to read articles.
+* Maintaining Subscriptions::   Subscribing and unsubscribing, etc.
+* Exiting GNUS::                How to exit GNUS.
+* Other Newsgroup Commands::    Other miscellaneous commands.
+
+
+File: gnus,  Node: Browsing Newsgroups,  Next: Selecting a Newsgroup,  Up: Newsgroup Commands
+
+Browsing Newsgroups
+===================
+
+   Most of the newsgroup commands operate on the group described by the
+current line.  To use them, you need to move the cursor to the group you
+want to act on.  You can use ordinary Emacs motion commands, or these
+special commands:
+
+`n'
+     Move point to the next newsgroup containing unread articles
+     (`gnus-group-next-unread-group').
+
+`p'
+`DEL'
+     Move point to the previous newsgroup containing unread articles
+     (`gnus-group-prev-unread-group').
+
+`C-n'
+     Move point to the next newsgroup (`gnus-group-next-group').
+
+`C-p'
+     Move point to the previous newsgroup (`gnus-group-prev-group').
+
+`j NEWSGROUP RET'
+     Move point to the NEWSGROUP specified by name
+     (`gnus-group-jump-to-group').
+
+`<'
+     Move point to the beginning of the buffer (`beginning-of-buffer').
+
+`>'
+     Move point to the end of the buffer (`end-of-buffer').
+
+`r'
+     Restrict visible newsgroups to the current region specified by
+     point and the mark (`gnus-group-restrict-groups').
+
+   The command `j' (`gnus-group-jump-to-group') reads a newsgroup name
+interactively, and moves point to it.  If there is no such newsgroup in
+the buffer, a line for the newsgroup is inserted at the beginning of
+the buffer.
+
+   The command `r' (`gnus-group-restrict-groups') restricts visibility
+in the Newsgroup buffer to the region specified by point and mark.  It
+is not quite the same as `C-x n'; it includes all of the line that the
+region starts in, and all of the line that the region ends in.  Type
+`C-x w' (`widen') to widen visibility to the whole buffer.
+
+
+File: gnus,  Node: Selecting a Newsgroup,  Next: Maintaining Subscriptions,  Prev: Browsing Newsgroups,  Up: Newsgroup Commands
+
+Selecting a Newsgroup
+=====================
+
+   To start reading the articles in a newsgroup, move to that newsgroup
+in the Newsgroup buffer and type `SPC' (`gnus-group-read-group') or `='
+(`gnus-group-select-group').
+
+`SPC'
+     Select the newsgroup at point, and then select the first unread
+     article automatically (`gnus-group-read-group').
+
+`='
+     Select the newsgroup at point (`gnus-group-select-group').
+
+   Normally, when you select a newsgroup, GNUS prepares to read only the
+unread articles (including saved articles).  If the newsgroup has no
+unread articles and you select it anyway, GNUS prepares to read all the
+articles.  You can force GNUS to include all the articles by giving a
+prefix argument to the commands `SPC' and `=' (`gnus-group-read-group'
+and `gnus-group-select-group').
+
+   If the number of articles being selected is larger than the variable
+`gnus-large-newsgroup', GNUS prompts for the number of articles to
+prepare.  If your answer N is positive, GNUS prepares the last N
+articles.  If N is negative, GNUS prepares the first -N articles.  If
+you answer with the empty string, GNUS prepares all articles.
+
+
+File: gnus,  Node: Maintaining Subscriptions,  Next: Exiting GNUS,  Prev: Selecting a Newsgroup,  Up: Newsgroup Commands
+
+Maintaining Subscriptions
+=========================
+
+   This section explains how to subscribe and unsubscribe, as well as
+other related activities.  Most of the commands operate on the newsgroup
+listed on the current line.
+
+`c'
+     Mark all newly arrived articles in the newsgroup as read, but don't
+     alter articles explicitly marked as saved (`gnus-group-catchup').
+
+`C'
+     Mark all articles in the newsgroup  as read
+     (`gnus-group-catchup-all').
+
+`l'
+     Show only the newsgroups which you now subscribe to and which now
+     contain unread and saved articles (`gnus-group-list-groups').
+
+`L'
+     Show all newsgroups available on your news server
+     (`gnus-group-list-all-groups').
+
+`u'
+     Unsubscribe from (or subscribe to) the newsgroup
+     (`gnus-group-unsubscribe-current-group').
+
+`U NEWSGROUP RET'
+     Unsubscribe from (or subscribe to) the newsgroup named NEWSGROUP
+     (`gnus-group-unsubscribe-group').
+
+`C-k'
+     Kill the newsgroup line that point is in (`gnus-group-kill-group').
+
+`C-w'
+     Kill newsgroups in current region (excluding current line)
+     (`gnus-group-kill-region').
+
+`C-y'
+     Yank the last newsgroup killed (`gnus-group-yank-group').  It is
+     inserted just before the current line.  Successive uses of `C-y'
+     yank earlier kills, in last-in first-out order.
+
+`C-x C-t'
+     Exchange current newsgroup and previous newsgroup.
+     (`gnus-group-transpose-groups').
+
+`M-x gnus-list-killed-groups'
+`C-c C-l'
+     Display a list of the newsgroups you have killed.  This is so you
+     can copy them back into the startup file.
+
+`b'
+     Delete bogus newsgroups (`gnus-group-check-bogus-groups').
+
+`g'
+     Get newly arrived articles for all groups
+     (`gnus-group-get-new-news').
+
+   The commands `c' and `C' (`gnus-group-catchup' and
+`gnus-group-catchup-all') mark all or most of the articles in a
+newsgroup as read.  They are useful if you have been away from news
+reading for a while, and you don't want to slog through the backlog of
+old postings.  These commands do not take account of the cross-reference
+information in the `Xref:' field, while the `c' command in Summary Mode
+does.
+
+   Only subscribed newsgroups containing unread and saved articles are
+usually displayed in the Newsgroup buffer.  Type `L'
+(`gnus-group-list-all-groups') to show all newsgroups which are
+currently active.  Use `l' (`gnus-group-list-groups') to go back to the
+usual contents--only groups which have news for you to read.
+
+   The command `U' (`gnus-group-unsubscribe-group') reads a newsgroup
+name interactively, and toggles its subscription flag.  This is the
+usual way to subscribe to new groups.  (You can also type `L' and then
+use `u' on the groups you want to read.)  You can also arrange to
+subscribe automatically to some or all newly created newsgroups using
+the options line in your startup file, `~/.newsrc'.  *Note Startup
+File::, for more information.
+
+   The command `C-k' (`gnus-group-kill-group') kills a newsgroup from
+both the Newsgroup buffer and the raw startup file.  If you change your
+mind, type `C-y' (`gnus-group-yank-group'); this yanks the last
+newsgroup killed with the `C-k' command.
+
+   The command `C-c C-l' (`gnus-list-killed-groups') pops up a buffer
+listing the newsgroups you have killed.  You can yank any of these
+newsgroups by moving point to the entry for the newsgroup you want, and
+then typing `y' or `C-y' (`gnus-browse-killed-yank').  So a convenient
+way to change the order of newsgroups is to kill some of them, then go
+to the list of killed groups and yank them in the order you want.
+
+   You are not limited to yanking only the groups that you killed in the
+current GNUS session.  All the groups you have ever killed are
+remembered in the quick startup file, and you can restore them any time
+unless you lose the file.
+
+   A "bogus newsgroup" is one not in the list of active newsgroups in
+the active file.  Type `b' (`gnus-group-check-bogus-groups') to delete
+all the bogus newsgroups that you subscribe to.  Bogus newsgroups that
+you have unsubscribed or killed are deleted also.
+
+   The `g' command rereads the active file to get updated lists of
+articles available to be read.
+
+
+File: gnus,  Node: Exiting GNUS,  Next: Other Newsgroup Commands,  Prev: Maintaining Subscriptions,  Up: Newsgroup Commands
+
+Exiting GNUS
+============
+
+`z'
+     Suspend the current GNUS session (`gnus-group-suspend').
+
+`q'
+     Update the startup file `.newsrc', and then exit GNUS
+     (`gnus-group-exit').
+
+`Q'
+     Exit GNUS without updating the startup file `.newsrc'
+     (`gnus-group-quit').
+
+   Suspending GNUS with `z' (`gnus-group-suspend') kills all GNUS
+buffers except for the Newsgroup buffer.  To resume again, switch to
+the Newsgroup buffer and type `g' (`gnus-group-get-new-news') to get
+newly arrived articles.  It is a good idea to update the startup file
+(*note Startup File::.) before suspending GNUS.
+
+   If you want to forget what you read this GNUS session, exit GNUS by
+the command `Q' (`gnus-group-quit').  Otherwise, exit by the command
+`q' (`gnus-group-exit') to update the startup file.
+
+   The hook `gnus-exit-gnus-hook' is called when exiting GNUS, and the
+hook `gnus-suspend-gnus-hook' is called when suspending GNUS.
+
+
+File: gnus,  Node: Other Newsgroup Commands,  Prev: Exiting GNUS,  Up: Newsgroup Commands
+
+Miscellaneous Commands
+======================
+
+   Other miscellaneous Group mode commands are described here.
+
+`a'
+     Compose a new article (`gnus-group-post-news').  *Note Posting
+     Articles::, for more information.
+
+`M-k'
+     Edit a local kill file (`gnus-group-edit-local-kill').  *Note Kill
+     File::, for more information.
+
+`M-K'
+     Edit your global kill file (`gnus-group-edit-global-kill').  *Note
+     Kill File::, for more information.
+
+
+File: gnus,  Node: Summary Commands,  Next: Article Commands,  Prev: Newsgroup Commands,  Up: Top
+
+Summary Commands
+****************
+
+   The Summary buffer shows you a summary of the contents of a single
+newsgroup, with one line for each article.  You can move around in the
+Summary buffer, giving commands to view articles, save them, reply to
+them, and so on.  When you view an article, its text appears in a
+separate buffer, but the Summary buffer remains current.  In fact,
+there is hardly ever a reason to select the Article buffer; you can do
+almost all news reading tasks while staying in the Summary buffer.
+
+* Menu:
+
+* Reading Articles::            How to read articles.
+* Searching Articles::          Searching for articles.
+* Referencing Articles::        Referencing parent articles.
+* Saving Articles::             Saving articles in your favorite format.
+* Sorting Headers::             Sorting the Summary buffer.
+* Posting Articles::            How to post a new article or followup article.
+* Forward and Reply::           How to mail a reply to a message,
+                                  or forward the message by mail.
+* Exiting Newsgroup::           How to exit the current newsgroup.
+
+
+File: gnus,  Node: Reading Articles,  Next: Searching Articles,  Up: Summary Commands
+
+Reading Articles
+================
+
+   The most basic command for reading articles is SPC
+(`gnus-summary-next-page').  When you are viewing the middle of a
+article, SPC scrolls the article forward.  When you get to the end of
+an article, SPC advances to the next article.  You can read all the
+unread articles straight through using just SPC.
+
+   Naturally, though, there are plenty of more advanced features
+available.
+
+* Menu:
+
+* Summary Motion::              Special cursor motion commands for Summary.
+* Reading an Article::          Commands for viewing an article differently.
+* Scrolling::                   Browsing through a message.
+* Moving Among Articles::       Selecting articles.
+* Marking Articles::            Marking articles as (un)read.
+
+* Thread-based Reading::        Reading articles based on conversation threads.
+* Digest Articles::             How to read digest articles.
+
+
+File: gnus,  Node: Summary Motion,  Next: Reading an Article,  Up: Reading Articles
+
+Cursor Motion in the Summary Buffer
+-----------------------------------
+
+   For moving around in the Summary buffer, you can use these special
+commands as well as the usual cursor motion commands.
+
+`C-n'
+     Move point to the next header (`gnus-summary-next-subject').
+
+`C-p'
+     Move point to the previous header (`gnus-summary-prev-subject').
+
+`M-n'
+     Move point to the next header, skipping marked articles
+     (`gnus-summary-next-unread-subject').
+
+`M-p'
+     Move point to the previous header, skipping marked articles
+     (`gnus-summary-prev-unread-subject').
+
+`j NUMBER RET'
+     Move point to the line describing an article specified by number
+     with a prefix argument (`gnus-summary-goto-subject').
+
+
+File: gnus,  Node: Reading an Article,  Next: Scrolling,  Prev: Summary Motion,  Up: Reading Articles
+
+Commands to Read Articles
+-------------------------
+
+`SPC'
+     SPC in the Summary buffer scrolls the Article buffer to the next
+     screenful or to the next article (`gnus-summary-next-page')
+
+`g'
+     Select the article on the current line
+     (`gnus-summary-show-article').  This command always rereads the
+     article text from the server even if the same article is already
+     selected.
+
+`='
+     Expand the Summary buffer's window to occupy all the screen space
+     that GNUS is now using (`gnus-summary-expand-window').
+
+`C-t'
+     Toggle truncation of lines in the Summary buffer
+     (`gnus-summary-toggle-truncation').
+
+`w'
+     Stop page breaking of article buffer
+     (`gnus-summary-stop-page-breaking').
+
+`t'
+     Show all headers of the current article if pruned header currently
+     shown, or vice versa (`gnus-summary-toggle-header').
+
+`M-t'
+     Toggle MIME processing (`gnus-summary-toggle-mime').
+
+`C-c C-r'
+     Caesar rotate letters by 13 places and Japanese characters by 47
+     places (`gnus-summary-caesar-message').
+
+   The command `=' (`gnus-summary-expand-window') expands the Summary
+window by deleting the Article window.  Use it when you want to
+concentrate on the Summary buffer.  This command is different from `C-x
+1' when more than two windows exist.
+
+   The command `C-c C-r' (`gnus-summary-caesar-message') rotates all
+letters in the body of the current article by 13/47 places.  (This
+encoding is often called "rot 13".)  To undo this operation, run it a
+second time.
+
+   If an article contains multiple pages, GNUS normally displays just
+one page at a time.  To advance to the next page of an article, simply
+type SPC.  It advances to the next page whenever the end of a page is
+on the screen.
+
+   The command `w' (`gnus-summary-stop-page-breaking') temporarily
+suspends page breaking; it makes the entire current article visible.
+You can turn off page breaking all the time by setting the variable
+`gnus-break-pages' to `nil'.
+
+   Page boundaries are defined by the variable `gnus-page-delimiter',
+whose value is a regular expression.  The default is to match a
+formfeed character at the beginning of a line.
+
+   GNUS normally hides many uninteresting header fields when it displays
+an article.  (The variable `gnus-ignored-headers' controls which fields
+are ignored.)  If you want to see the whole header, type `t'
+(`gnus-summary-toggle-header').  Use `t' a second time to hide the
+uninteresting header fields again.
+
+
+File: gnus,  Node: Scrolling,  Next: Moving Among Articles,  Prev: Reading an Article,  Up: Reading Articles
+
+Scrolling Within an Article
+---------------------------
+
+   This section describes the commands you can type in the Summary
+buffer to scroll the Article buffer.  (If you want to scroll the
+Summary buffer, you can use the usual Emacs scrolling commands.)
+
+`SPC'
+     Scroll to the next page of the current article
+     (`gnus-summary-next-page').  Select it first if no article is
+     selected yet.  Select the next unread article automatically at the
+     end of the message.
+
+`DEL'
+     Scroll the current article backward (`gnus-summary-prev-page').
+
+`RET'
+     Scroll the current article one (or N) lines forward
+     (`gnus-summary-scroll-up').  A negative argument scrolls backward.
+
+`<'
+     Move point to the beginning of the current article
+     (`gnus-summary-beginning-of-article').
+
+`>'
+     Move point to the end of the current article
+     (`gnus-summary-end-of-article').
+
+
+File: gnus,  Node: Moving Among Articles,  Next: Marking Articles,  Prev: Scrolling,  Up: Reading Articles
+
+Moving Among Articles
+---------------------
+
+   These commands move point in the Summary buffer to a different line
+and display that line's article.
+
+`n'
+     Read the next article, skipping marked articles
+     (`gnus-summary-next-unread-article').
+
+`p'
+     Read the previous article, skipping marked articles
+     (`gnus-summary-prev-unread-article').
+
+`N'
+     Read the next article (`gnus-summary-next-article').
+
+`P'
+     Read the previous article (`gnus-summary-prev-article').
+
+`C-M-n'
+     Read the next article with the same subject as the current article
+     (`gnus-summary-next-same-subject').
+
+`C-M-p'
+     Read the previous article with the same subject as the current
+     article (`gnus-summary-prev-same-subject').
+
+`.'
+     Read the first unread article
+     (`gnus-summary-first-unread-article').
+
+`l'
+     Read the article selected last (`gnus-summary-goto-last-article').
+
+   If the variable `gnus-auto-select-same' is non-`nil', the commands
+`n' and `p' (`gnus-summary-next-unread-article' and
+`gnus-summary-prev-unread-article') skip articles until they come to
+another article with the same subject.  If you are used to reading news
+with `rn -S', set the variable to non-`nil' to get familiar behavior.
+
+   If the variable `gnus-auto-extend-newsgroup' is non-`nil', the
+commands `N' and `P' (`gnus-summary-next-article' and
+`gnus-summary-prev-article') extend visible articles to forward and
+backward if possible.  The Summary buffer normally displays just a
+subset of the extant articles; extending the buffer means that if you
+try to move forward from the last article shown, it looks for later
+articles that are not shown, and puts them into the buffer so you can
+move to them.
+
+   The variable `gnus-auto-select-next' defines the behavior of GNUS
+when there is no unread article in the current newsgroup and a command
+selecting the next unread article is executed.  If the variable is
+non-`nil', the next newsgroup containing unread articles is selected
+automatically.
+
+
+File: gnus,  Node: Marking Articles,  Next: Thread-based Reading,  Prev: Moving Among Articles,  Up: Reading Articles
+
+Marking Articles
+----------------
+
+   GNUS uses single-character marks to indicate the status of an
+article.
+
+` ' (a space)
+     A newly arrived article.
+
+`-'
+     An article marked as saved.
+
+anything else
+     An article marked as read.
+
+Both newly arrived articles and saved articles are considered "unread".
+
+   The status is displayed at the beginning of each line of the Summary
+buffer.  Here are some commands for changing these marks:
+
+`d'
+     Mark this line's article as read, then move point to the following
+     line (`gnus-summary-mark-as-read-forward').  This and the
+     following similar commands do not select an article; they only
+     move point in the Summary buffer.
+
+`u'
+     Mark this line's article as saved, then move point to the
+     following line (`gnus-summary-mark-as-unread-forward').
+
+`M-u'
+     Clear marks on this line's article, then move point to the next
+     line (`gnus-summary-clear-mark-forward').  This sets the status to
+     "newly arrived".
+
+`D'
+`U'
+`M-U'
+     Analogous to `d', `u' and `M-u', except that they move backwards
+     instead of forwards in the Summary buffer.
+
+`k'
+     Mark as read all articles with the same subject as the current
+     article, then select the next unread article
+     (`gnus-summary-kill-same-subject-and-select').  Use this when you
+     decide a certain discussion is not interesting.
+
+`C-k'
+     Mark as read all articles with the same subject as the current
+     article (`gnus-summary-kill-same-subject').
+
+`c'
+     Mark all newly arrived articles as read; then exit the current
+     newsgroup (`gnus-summary-catchup-and-exit').  This does not change
+     the status of articles that are saved.
+
+`M-x gnus-summary-catchup-all-and-exit'
+     Mark all articles (including saved articles) as read, and then
+     exit the current newsgroup.
+
+`M-x gnus-summary-catchup'
+     Mark all newly arrived articles as read, but don't alter saved
+     articles.
+
+`M-x gnus-summary-catchup-all'
+     Mark all articles as read.
+
+`x'
+     Delete summary lines for articles marked as read
+     (`gnus-summary-delete-marked-as-read').
+
+`X MARKS RET'
+     Delete headers marked with any of MARKS
+     (`gnus-summary-delete-marked-with').
+
+   You can make it easier to see the remaining unread articles in the
+Summary buffer by deleting the lines describing the already read
+articles.  To do this, use the command `x'
+(`gnus-summary-delete-marked-as-read').  The command `X'
+(`gnus-summary-delete-marked-with') deletes headers which have certain
+specified marks.  Thus, `X D - RET' deletes all articles marked with
+`D' or `-'--which is to say, all read and saved articles.  (There are
+no spaces in that command; we inserted spaces for clarity when showing
+it here.)
+
+
+File: gnus,  Node: Thread-based Reading,  Next: Digest Articles,  Prev: Marking Articles,  Up: Reading Articles
+
+Reading Based on Conversation Threads
+-------------------------------------
+
+   A "thread" is defined as a set of articles related by
+cross-reference.  These references make use of header fields
+`References:' and `In-Reply-To:', which cite the message ID of another
+article.
+
+   Conversations in a newsgroup usually contain several threads under a
+single subject.  This makes it difficult to know which article follows
+which without reading references directly.  You can use the thread-based
+commands to do this automatically.  You can follow threads of
+conversation, mark entire threads as read, and go up and down thread
+trees.
+
+   The command `M-C-t' (`gnus-summary-toggle-threads') toggles showing
+conversation threads in Summary mode.  If it is turned on, Summary
+buffer is displayed in a tree structured form which shows the thread
+structure.
+
+`C-M-t'
+     Toggle thread-based reading (`gnus-summary-toggle-threads').
+
+`C-M-s'
+     Show the thread subtree of the current line
+     (`gnus-summary-show-thread').
+
+`M-x gnus-summary-show-all-threads'
+     Show all thread subtrees.
+
+`C-M-h'
+     Hide the thread subtrees of the current line
+     (`gnus-summary-hide-thread').
+
+`M-x gnus-summary-hide-all-threads'
+     Hide all thread subtrees.
+
+`C-M-f'
+     Go to the next thread at the same level
+     (`gnus-summary-next-thread').
+
+`C-M-b'
+     Go to the previous thread at the same level
+     (`gnus-summary-prev-thread').
+
+`C-M-d'
+     Go down to next thread subordinate to the current line.
+     (`gnus-summary-down-thread').
+
+`C-M-u'
+     Go up to the parent thread of the current line
+     (`gnus-summary-up-thread').
+
+`C-M-k'
+     Mark all articles under current thread as read
+     (`gnus-summary-kill-thread').
+
+   Thread subtrees can be hidden by using the command `C-M-h'
+(`gnus-summary-hide-thread'), and the hidden subtrees can be shown by
+using the command `C-M-s' (`gnus-summary-show-thread').
+
+   If the variable `gnus-thread-hide-killed' is non-`nil', thread
+subtrees killed by the command `C-M-k' (`gnus-summary-kill-thread') are
+hidden automatically.
+
+   If you want to hide thread subtrees initially, set the variable
+`gnus-thread-hide-subtree' to non-`nil'.
+
+   If you want to enable thread-based reading automatically, set the
+variable `gnus-show-threads' to non-`nil'.
+
+
+File: gnus,  Node: Digest Articles,  Prev: Thread-based Reading,  Up: Reading Articles
+
+Reading Digest Articles
+-----------------------
+
+   "Digest article" is a message containing many messages in "digest"
+format.  Since a digest article contains many messages in one article,
+it is a little bit difficult to read it on a per message basis.  The
+following commands make it easier to read each message in a digest.
+
+`C-c C-n'
+     Scroll to the next digest message of the current article
+     (`gnus-summary-next-digest').
+
+`C-c C-p'
+     Scroll to the previous digest message of the current article
+     (`gnus-summary-prev-digest').
+
+`C-d'
+     Read the current digest article using Rmail
+     (`gnus-summary-rmail-digest').
+
+   The commands `C-c C-n' and `C-c C-p' (`gnus-summary-next-digest' and
+`gnus-summary-prev-digest') scroll a digest article to the next and
+previous digested message, respectively.  The variable
+`gnus-digest-separator' specifies a regexp which separates digested
+messages.
+
+   The command `C-d' (`gnus-summary-rmail-digest') runs Rmail on a
+digest article and makes it possible to read messages not in digest
+form using Rmail Mode.  *Note Rmail: (emacs)Rmail, for more information
+on Rmail Mode.  Use the hook `gnus-select-article-hook' to run Rmail on
+digest articles automatically.
+
+   Some newsgroups use a digest format that cannot be read using Rmail.
+In this case, `C-d' displays `Article is not a digest' in the echo
+area.  It is, however, possible to read these incomplete digest
+articles by modifying the message headers or bodies appropriately using
+the hook `gnus-select-digest-hook'.  *Note Hooks::, to modify
+incomplete digest articles.
+
+   If the variable `gnus-digest-show-summary' is non-`nil', a summary
+of the digest article is also displayed automatically when Rmail is
+invoked.
+
+
+File: gnus,  Node: Searching Articles,  Next: Referencing Articles,  Prev: Reading Articles,  Up: Summary Commands
+
+Searching Articles
+==================
+
+`s'
+     Do incremental search on the current article
+     (`gnus-summary-isearch-article').
+
+`M-s REGEXP RET'
+     Search for articles containing a match for REGEXP forward
+     (`gnus-summary-search-article-forward').  If REGEXP is empty, the
+     last regexp used is used again.
+
+`M-r REGEXP RET'
+     Search for articles containing a match for REGEXP backward
+     (`gnus-summary-search-article-backward').  If REGEXP is empty, the
+     last regexp used is used again.
+
+`& FIELD RET REGEXP RET COMMAND RET'
+     Execute COMMAND on articles containing a match for REGEXP in FIELD
+     of the headers (`gnus-summary-execute-command').  If FIELD is
+     empty, the entire article is searched for.
+
+   The command `s' (`gnus-summary-isearch-article') does an incremental
+search on the current article.  This is like switching to the Article
+buffer and typing `C-s' except that the Summary buffer remains
+selected.  The command `M-s' (`gnus-summary-search-article-forward')
+searches for articles containing a match for regexp.  The search starts
+from the current point of the current article.  To search backwards,
+use the command `M-r' (`gnus-summary-search-article-backward').
+
+   The command `&' (`gnus-summary-execute-command') interactively reads
+a header field name, a regular expression, and a valid key sequence.
+It then searches for all articles in which that regular expression
+matches the contents of the specified header field.  It executes the
+key sequence in each such message.
+
+
+File: gnus,  Node: Referencing Articles,  Next: Saving Articles,  Prev: Searching Articles,  Up: Summary Commands
+
+Referencing Articles
+====================
+
+`^'
+     Refer to parent of the current article in terms of the `References'
+     field (`gnus-summary-refer-parent-article').  With a prefix
+     argument, go back to the child.
+
+`M-^ MESSAGE-ID RET'
+     Refer to the article by using the MESSAGE-ID
+     (`gnus-summary-refer-article').
+
+   The command `^' (`gnus-summary-refer-parent-article') refers to
+parent article of the current article.  You can go back to the child
+article with `C-u ^'.
+
+   `^' and `M-^' select a new article without moving point in the
+Summary buffer.  As a consequence, you can use `g' to go back to the
+article in which you started the last sequence of `^' and `M-^'
+commands.
+
+   You can use the `r' command in Article mode to follow a reference
+contained in the text of an article.  *Note Article Commands::.
+
+
+File: gnus,  Node: Saving Articles,  Next: Sorting Headers,  Prev: Referencing Articles,  Up: Summary Commands
+
+Saving Articles
+===============
+
+   GNUS supports four different formats for saving articles: Rmail
+format, Unix mailbox format, MH folder, and article format.
+
+`o'
+     Save the current article in Rmail format
+     (`gnus-summary-save-article').
+
+`C-o'
+     Save the current article in Unix mail file format
+     (`gnus-summary-save-in-mail').
+
+`| COMMAND RET'
+     Send contents of the current article through a pipe to a subprocess
+     running COMMAND (`gnus-summary-pipe-output').
+
+   The variable `gnus-default-article-saver' controls the formats used
+by the `o' command.  By default, it uses Rmail format.  If you set the
+variable to `gnus-summary-save-in-folder', `o' uses MH format.  If you
+set it to `gnus-summary-save-in-file', `o' saves the article text
+verbatim.  The default value is `gnus-summary-save-in-rmail'.  (All
+three of these values are commands that you can bind to other keys.)
+
+   The variable `gnus-article-save-directory' specifies the default
+directory for saving articles.  If you don't set this variable
+explicitly, it is initialized from the `SAVEDIR' environment variable,
+or, as a last resort, `~/News'.
+
+
+File: gnus,  Node: Sorting Headers,  Next: Posting Articles,  Prev: Saving Articles,  Up: Summary Commands
+
+Sorting Headers
+===============
+
+   GNUS can sort the Summary buffer by number, subject, date, or author
+of articles.
+
+`C-c C-s C-n'
+     Sort the headers by number (`gnus-summary-sort-by-number').
+
+`C-c C-s C-s'
+     Sort the headers by subject (`gnus-summary-sort-by-subject').
+
+`C-c C-s C-d'
+     Sort the headers by date (`gnus-summary-sort-by-date').
+
+`C-c C-s C-a'
+     Sort the headers by author (`gnus-summary-sort-by-author').
+
+   Sorting is "stable", which means that it does not disturb the
+relative order of articles whose sort keys are equal.  So you can sort
+on multiple keys by using several sort commands in a row; the last sort
+command specifies the most powerful sort key.  Thus, `C-c C-s C-a C-c
+C-s C-d C-c C-s C-n' sorts by author, and sorts the messages for each
+author by date, and any messages with the same author and date are
+sorted by number.
+
+   To sort in reverse order, give a prefix argument to the sort
+commands.    It is also possible to sort the headers automatically when
+a newsgroup is selected using the hook `gnus-select-group-hook' (*note
+Hooks::.).
+
+
+File: gnus,  Node: Posting Articles,  Next: Forward and Reply,  Prev: Sorting Headers,  Up: Summary Commands
+
+Posting Articles
+================
+
+`a'
+     Compose a new article (`gnus-summary-post-news').
+
+`f'
+     Compose a followup to the current article
+     (`gnus-summary-followup').
+
+`F'
+     Compose a followup, and insert the original article right away
+     (`gnus-summary-followup-with-original').
+
+`C'
+     Cancel the current article you posted
+     (`gnus-summary-cancel-article').
+
+   Type `a' (`gnus-summary-post-news') to post a new article.  If the
+variable `gnus-interactive-post' is non-`nil', this command reads the
+newsgroup, subject, and distribution interactively.  The command `f'
+(`gnus-summary-followup') fills these values in automatically from
+those of the selected article; thus, the article you post will be a
+"followup" to the selected article.
+
+   Type `C-c C-y' (`news-reply-yank-original') to include the original
+article in the text of the followup.  Unless the original article is
+quite short, you should edit it to keep only the particular sentences
+you are directly responding to.
+
+   The command `F' (`gnus-summary-followup-with-original') yanks the
+original article automatically.  If you want to followup to several
+articles in a single article and want to include them in it, type `F'
+for each of them.  You will be asked if a text being edited should be
+erased.  You should answer `n' to the question.
+
+   If the variable `gnus-novice-user' is non-`nil', your confirmations
+will be required for composing a new article.
+
+   The major mode for composing a new article is "News Mode" which is
+borrowed from `rnewspost.el'.  Type `C-h m' (`describe-mode') to get
+more help on News Mode.
+
+   Suppose you post an article and then later realize that you made a
+horrible mistake.  You really do not want anyone to see your article.
+You want the article to be removed from any machines that it may have
+reached.  The command `C' (`gnus-summary-cancel-article') is intended
+to do this.  First select the offending article as current, then type
+`C'.
+
+
+File: gnus,  Node: Forward and Reply,  Next: Exiting Newsgroup,  Prev: Posting Articles,  Up: Summary Commands
+
+Forwarding Messages and Replying To Them
+========================================
+
+`r'
+     Reply to the author of the current article (`gnus-summary-reply').
+
+`R'
+     Reply to the author of the current article with the original
+     article (`gnus-summary-reply-with-original').
+
+`C-c C-f'
+     Forward current message to someone else.
+     (`gnus-summary-mail-forward').
+
+`m'
+     Compose a mail message in other window
+     (`gnus-summary-mail-other-window').
+
+   Use the command `r' (`gnus-summary-reply') to mail a reply to the
+author of the article.  Type `C-c C-y' to yank the text of the article
+you are replying to.  The command `R'
+(`gnus-summary-reply-with-original') yanks the original article
+automatically.
+
+   *Note Mail Mode: (emacs)Mail Mode, for information on how to finish
+sending the reply.
+
+
+File: gnus,  Node: Exiting Newsgroup,  Prev: Forward and Reply,  Up: Summary Commands
+
+Exiting the Current Newsgroup
+=============================
+
+   "Exiting" a newsgroup means going back to the Newsgroup buffer and
+(normally) saving the changes you have made in the status of articles.
+
+`q'
+     Exit the current newsgroup, and return to Group Mode
+     (`gnus-summary-exit').  This updates the startup file to indicate
+     the changes in article status in this newsgroup.
+
+`Q'
+     Exit the current newsgroup without saving information about article
+     status (`gnus-summary-quit').  The effect is to cancel all the
+     status changes that took place while you were reading this
+     newsgroup.
+
+`C-x C-s'
+     Save the article status changes, but keep the newsgroup selected
+     (`gnus-summary-reselect-current-group').
+
+   The command `C-x C-s' (`gnus-summary-reselect-current-group')
+selects the current newsgroup again after temporary exiting the
+newsgroup.  If no articles remain unread, all articles in the newsgroup
+will be selected.  A prefix argument to the command means to select all
+articles in the newsgroup.
+
+
+File: gnus,  Node: Article Commands,  Next: Startup File,  Prev: Summary Commands,  Up: Top
+
+Article Commands
+****************
+
+   GNUS displays one article at a time, in a buffer called the Article
+buffer.  When you select an article, GNUS puts the Article buffer on the
+screen and displays the article there.
+
+   If the Article buffer is not visible, it appears on the screen
+whenever you select an article for display.  You can specify the height
+of the Article buffer as a fraction of the screen height by setting the
+variable `gnus-window-configuration'.
+
+   The Article buffer has a special major mode, Article mode.  It
+provides these commands:
+
+`SPC'
+     Scroll this window forward (`gnus-article-next-page').
+
+`DEL'
+     Scroll this window backward (`gnus-article-prev-page').
+
+`r'
+     Select another article by following a cross reference
+     (`gnus-article-refer-article').  A cross reference is specified by
+     a Message-ID included in the text of the article.  Move point to a
+     message ID before using this command.
+
+`o'
+     Return to the previous article from the referenced article
+     (`gnus-article-pop-article').
+
+`h'
+     Reconfigure Emacs windows to show the Summary buffer above the
+     Article buffer and select the Summary buffer
+     (`gnus-article-show-summary').  The occasion to use this is when
+     you have been editing a message to send or article to post.
+
+
+File: gnus,  Node: Startup File,  Next: Kill File,  Prev: Article Commands,  Up: Top
+
+The Startup File
+****************
+
+   Each user who reads news has a file called the "startup file" which
+records which groups he or she subscribes to and which articles have
+been read.
+
+   GNUS actually uses two startup files that contain the same
+information.  The "raw" startup file, named `~/.newsrc', is the master
+copy of the information; this is the same file that other news readers
+use, and it is kept in the standard format.  The "quick" startup file
+contains the same information in a format convenient for Lisp to read.
+GNUS automatically updates the quick startup file from the raw startup
+file whenever the latter is newer; but normally it saves time by reading
+only the quick startup file.
+
+   These commands in Group mode operate on the startup files:
+
+`R'
+     Restart GNUS, using the raw startup file instead of the quick one,
+     and get newly arrived articles (`gnus-group-restart').
+
+`s'
+     Update both startup files based on changes you have made in the
+     Newsgroups buffer (`gnus-group-force-update').
+
+
+File: gnus,  Node: Kill File,  Next: Troubleshooting,  Prev: Startup File,  Up: Top
+
+Kill File
+*********
+
+   A "kill" file contains lisp expressions to be applied to a selected
+newsgroup.  The purpose is to mark articles as read on the basis of
+some set of regexps.
+
+   There are two kinds of kill files, global and local.  A global kill
+file is applied to every newsgroup, and a local kill file to a specified
+newsgroup.
+
+* Menu:
+
+* Making a Kill File::          How to make a kill file.
+* Editing Kill Files::          How to edit kill files.
+* Kill File Example::           A real example of a kill file.
+* Names of Kill Files::         Where kill files are kept in the file system.
+* Background Kills::            Background kill processing.
+* Advanced Kills::              Advanced kill processing.
+
+
+File: gnus,  Node: Making a Kill File,  Next: Editing Kill Files,  Up: Kill File
+
+Making a Kill File
+==================
+
+   A kill file is simply a file of Lisp code that is loaded (i.e.,
+evaluated) while the Summary buffer is current.  In order to work
+properly, the contents of the file must be designed to interact properly
+with GNUS.  To make it easier to write a valid kill file, GNUS provides
+a general function which does the things users typically want to do in a
+kill file.
+
+     (gnus-kill FIELD REGEXP &optional COMMAND ALL)
+
+The `gnus-kill' function performs an action on each article that
+matches a specified condition.
+
+   The two required arguments specify the condition.  The argument
+FIELD specifies a portion of an article; it is either the name of a
+header field to search, or `""', which says to search the entire
+article body.  The argument REGEXP says what to search for.  The
+condition is this: an article is eligible if the specified portion of
+the article contains a match for REGEXP.
+
+   The argument COMMAND says what to do when an article fits the
+condition.  It is either a valid key sequence in Summary mode, or a Lisp
+expression which is a list, or `nil'.  A key sequence stands for its
+command definition in Summary mode; it means to execute that command.
+A Lisp expression means to evaluate that expression.  `nil' says to
+mark the article with the character `X'.
+
+   If ALL is omitted or `nil', `gnus-kill' checks only newly arrived
+articles for meeting the condition.  If ALL is non-`nil', it checks all
+articles.
+
+   Here as an example is how to mark all articles whose subjects contain
+the string `AI':
+
+     (gnus-kill "Subject" "AI")
+
+   If you want to mark articles with `D' instead of `X', you can use
+the following expression, which works by executing the `d' command.
+
+     (gnus-kill "Subject" "AI" "d")
+
+   The usual aim of a kill file is to delete certain articles.  The way
+to do this is to mark them with `X' and then call `gnus-expunge', like
+this:
+
+     (gnus-expunge "X")
+
+   `gnus-expunge' takes one argument, a string containing a number of
+mark characters, and deletes all the lines that are marked with any of
+those characters.
+
+   It works to use `gnus-expunge' for the marker `D', but you may not
+like what it does, because this prevents you from ever rereading an
+article marked as read in a previous session.  That's why the default
+marker for `gnus-kill' is `X' rather than `D'.
+
+   Searching in the Summary buffer normally ignores case; this includes
+the searching inside of `gnus-kill'.  If you do not want to ignore the
+case, set the variable `case-fold-search' to `nil'.
+
+   After GNUS has finished applying the appropriate kill files, if the
+newsgroup has no articles left, GNUS exits that newsgroup right away.
+
+
+File: gnus,  Node: Editing Kill Files,  Next: Kill File Example,  Prev: Making a Kill File,  Up: Kill File
+
+Editing Kill Files
+==================
+
+   You can use these GNUS commands to find a kill file for editing:
+
+`M-k'
+     Edit a local KILL file applied to the current newsgroup
+     (`gnus-summary-edit-local-kill').
+
+`M-K'
+     Edit a global KILL file applied to all newsgroups
+     (`gnus-summary-edit-global-kill').
+
+The same key sequences (`M-k' and `M-K') are available in Group mode
+also, but the commands that implement them are
+`gnus-group-edit-local-kill' and `gnus-group-edit-global-kill'.
+
+   The major mode of these buffers is Kill-File mode, which is like
+Emacs Lisp mode but with the following additional commands:
+
+`C-c C-k C-s'
+     Insert a template of a kill command on subject
+     (`gnus-kill-file-kill-by-subject').
+
+`C-c C-k C-a'
+     Insert a template of a kill command on author
+     (`gnus-kill-file-kill-by-author').
+
+`C-c C-a'
+     Evaluate the whole current buffer, but do so with the Summary
+     buffer current (`gnus-kill-file-apply-buffer').  This is a
+     convenient way to try out a kill file you have been editing.
+
+`C-c C-e'
+     Evaluate the sexp before point in current buffer, but do so with
+     the Summary buffer current (`gnus-kill-file-apply-last-sexp').
+
+`C-c C-c'
+     Save the kill file and then return to the previous buffer
+     (`gnus-kill-file-exit').
+
+   The effects of `C-c C-k C-s' and `C-c C-k C-a' depend on how you
+began editing the kill file.  If you gave the command `M-k' or `M-K'
+while in the Summary buffer, then the article that was current at that
+time supplies the string to search for, from its own subject or author.
+
+
+File: gnus,  Node: Kill File Example,  Next: Names of Kill Files,  Prev: Editing Kill Files,  Up: Kill File
+
+Example of a Kill File
+======================
+
+   This is a real example of a local kill file for newsgroup `control'.
+
+     ;; Apply to the newsgroup `control' if the NNTP server is flab.
+     (if (string-equal gnus-nntp-server "flab")
+         (progn
+           (gnus-kill "Subject" "ihave flab\\|sendme")
+           (gnus-kill "Subject" "cancel\\|newgroup\\|rmgroup" "d")
+           (gnus-expunge "X")))
+

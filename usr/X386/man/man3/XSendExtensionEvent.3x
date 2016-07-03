@@ -1,0 +1,138 @@
+.ds xL Programming with Xlib
+.TH XSendExtensionEvent 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XSendExtensionEvent \- send input extension events to a client
+.SH SYNTAX
+Status XSendExtensionEvent\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIdestination\fP\^, \fIpropagate\fP\^, \fIevent_count\fP\^, \fIevent_list\fP\^, \fIevent_send\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^;
+.br
+      Window \fIdestination\fP\^;
+.br
+      Bool \fIpropagate\fP\^;
+.br
+      int \fIevent_count\fP\^;
+.br
+      XEventClass *\fIevent_list\fP\^;
+.br
+      XEvent *\fIevent_send\fP\^;
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device from which the events are to be sent.
+.TP 12
+.I destination
+Specifies the window the event is to be sent to.  You can pass window id,
+\fIPointerWindow\fP, \
+or \
+\fIInputFocus\fP.
+.TP 12
+.I propagate
+Specifies a Boolean value that is either True or False. 
+.TP 12
+.I event_count
+Specifies the count of XEventClasses in event_list.
+.TP 12
+.I event_list
+Specifies the list of event selections to be used.
+.TP 12
+.I event_send
+Specifies a pointer to the event that is to be sent.
+.TP 12
+.SH DESCRIPTION
+The
+\fIXSendExtensionEvent\fP
+request identifies the destination window, 
+determines which clients should receive the specified events, 
+and ignores any active grabs.
+This request requires you to pass an event class list.
+For a discussion of the valid event class names,
+see \fIXOpenDevice(3X11)\fP.
+This request uses the w argument to identify the destination window as follows:
+.IP \(bu 5
+If w is
+\fIPointerWindow\fP ,
+the destination window is the window that contains the pointer.
+.IP \(bu 5
+If w is
+\fIInputFocus\fP 
+and if the focus window contains the pointer, 
+the destination window is the window that contains the pointer; 
+otherwise, the destination window is the focus window.
+.P
+To determine which clients should receive the specified events,
+\fIXSendExtensionEvent\fP
+uses the propagate argument as follows:
+.IP \(bu 5
+If event_list is the empty set,
+the event is sent to the client that created the destination window.
+If that client no longer exists,
+no event is sent.
+.IP \(bu 5
+If propagate is 
+\fIFalse\fP,
+the event is sent to every client selecting on destination any of the event
+types specified by the event_list array.
+.IP \(bu 5
+If propagate is 
+\fITrue\fP 
+and no clients have selected on destination any of
+the events specified by the event_list array, 
+the destination is replaced with the
+closest ancestor of destination for which some client has selected a
+type specified by the event-list array and for which no intervening 
+window has that type in its
+do-not-propagate-mask. 
+If no such window exists or if the window is
+an ancestor of the focus window and 
+\fIInputFocus\fP 
+was originally specified
+as the destination, the event is not sent to any clients.
+Otherwise, the event is reported to every client selecting on the final
+destination any of the events specified in the event_list array.
+.P
+The event in the
+\fIXEvent\fP
+structure must be one of the events defined by the input extension (or a 
+\fIBadValue\fP
+error results) so that the X server can correctly byte-swap 
+the contents as necessary.  
+The contents of the event are
+otherwise unaltered and unchecked by the X server except to force send_event to
+\fITrue\fP
+in the forwarded event and to set the serial number in the event correctly.
+.P
+\fIXSendExtensionEvent\fP
+returns zero if the conversion to wire protocol format failed
+and returns nonzero otherwise.
+\fIXSendExtensionEvent\fP
+can generate
+\fIBadClass\fP,
+\fIBadDevice\fP,
+\fIBadValue\fP,
+and
+\fIBadWindow\fP 
+errors.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.TP 12
+\fIBadWindow\fP
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

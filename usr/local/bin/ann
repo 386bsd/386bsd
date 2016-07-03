@@ -1,0 +1,11 @@
+#!/bin/csh
+set DIRS=(. /usr/src/kernel/*/. /usr/src/kernel/*/`machine`/. /usr/src/kernel/kern/*/. )
+if (x$1 != x) then
+foreach m ($DIRS)
+	if (-r $m/ann/$1.ann) then
+		am4 <$m/ann/$1.ann | nroff -me | more
+	endif
+end
+else
+	echo "usage: ann sourcefile" 
+endif

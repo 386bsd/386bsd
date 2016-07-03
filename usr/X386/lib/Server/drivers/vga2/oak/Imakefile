@@ -1,0 +1,35 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/oak/Imakefile,v 2.1 1993/09/22 15:46:52 dawes Exp $
+XCOMM
+XCOMM This is an Imakefile for the oak driver.  
+XCOMM 
+#include <Server.tmpl>
+
+#if i386Mach
+SRCS = oak_driver.c
+#else
+SRCS = oak_driver.c oak_bank.s
+#endif
+
+OBJS = oak_driver.o oak_bank.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+VGA256DIR = ../../../vga256/drivers
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+DEFINES=-DMONOVGA
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(oak, $(OBJS))
+
+ObjectFromSpecialSource(oak_driver,$(VGA256DIR)/oak/oak_driver,/**/)
+ObjectFromSpecialAsmSource(oak_bank,$(VGA256DIR)/oak/oak_bank,/**/)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/oak)
+
+DependTarget()

@@ -1,0 +1,63 @@
+.Dd February 14, 1994
+.Dt SHM 2
+.Os 386BSD
+.Sh NAME
+.Nm shmat ,
+.Nm shmctl ,
+.Nm shmdt ,
+.Nm shmget
+.Nd shared memory operations
+.Sh SYNOPSIS
+.Fd #include <sys/types.h>
+.Fd #include <sys/ipc.h>
+.Fd #include <sys/shm.h>
+.Ft void *
+.Fn shmat "int shmid" "void *shmaddr" "int shmflg"
+.Ft int
+.Fn shmctl "int shmid" "int cmd" "void *buf"
+.Ft int
+.Fn shmdt "void *shmaddr"
+.Ft int
+.Fn shmget "key_t key" "int size" "int shmflg"
+.Sh DESCRIPTION
+System V defines a set of operations for shared memory that is
+a manditory part of the iBCS2 standard for Intel X86 processors.
+The segments are either part of a global table accessible
+via appropriate permissions by all processes, or private(IPC_PRIVATE)
+segments known only to the process group. The segments are identified
+by a shared memory identifier
+.Fa shmid,
+a unique integer value returned on
+creation.
+This interface is made up of the following four functions:
+.Pp
+The
+.Fn shmget
+function
+creates a shared memory segment, entering it into the systems
+global pool of shared memory segments. If successful, a
+shared memory identifier is returned.
+.Pp
+The
+.Fn shmctl
+function provides control and status operations for existing
+shared memory segments, as specified by
+.Fa cmd.
+Among them, the segments can be removed(IPC_RMID), protection
+and permissions (re)assigned(IPC_SET), and the details of the
+segment can be extracted from the system(IPC_STAT).
+.Pp
+The
+.Fn shmat
+function attaches a shared memory segment to an address in the
+user's address space (specified by
+.Fa shmaddr
+) to allow the segment to be accessed by the
+program as ordinary memory.
+.Pp
+The
+.Fn shmdt
+function detaches a shared memory segment at the address in the
+user's address space (specified by
+.Fa shmaddr
+).

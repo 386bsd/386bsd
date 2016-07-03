@@ -1,0 +1,179 @@
+.\" $XConsortium: xedit.man,v 1.20 91/07/30 18:29:17 gildea Exp $
+.TH XEDIT 1 "Release 5" "X Version 11"
+.SH NAME
+xedit \- simple text editor for X
+.SH SYNTAX
+.B xedit
+[
+.I \-toolkitoption
+\&.\|.\|. ] [
+.I filename
+]
+.SH DESCRIPTION
+.I Xedit
+provides a window consisting of the following four areas:
+.IP "Commands Section" 25
+A set of commands that allow you to exit \fIxedit\fP, save the file, or
+load a new file into the edit window.
+.IP "Message Window" 25
+Displays \fIxedit\fP messages. In addition, this window can be used as
+a scratch pad. 
+.IP "Filename Display"
+Displays the name of the file currently being edited, and whether this file
+is \fIRead-Write\fP or \fIRead Only\fP.
+.IP "Edit Window" 25
+Displays the text of the file that you are editing or creating.  
+.SH OPTIONS
+.I Xedit
+accepts all of the standard X Toolkit command line
+options (see
+.IR X (1)).
+The order of the command line options is not important.
+.TP 8
+.I filename
+Specifies the file that is to be loaded during start-up. This is the
+file which will be edited. If a file is not specified,
+.I xedit
+lets you load a file or create a new file after it has started up.
+.SH EDITING
+The Athena Text widget is used for the three sections of this
+application that allow text input.  The characters typed will go to
+the Text widget that the pointer cursor is currently over.  If the
+pointer cursor is not over a text widget then the keypresses will have
+no effect on the application.  This is also true for the special key
+sequences that popup dialog widgets, so typing Control-S in the filename
+widget will enable searching in that widget, not the edit widget.
+.PP
+Both the message window and the edit window will create a scrollbar if
+the text to display is too large to fit in that window.  Horizontal scrolling
+is not allowed by default, but can be turned on through the Text
+widget's resources, see \fIAthena Widget Set\fP for the exact
+resource definition.
+.PP
+
+The following keystroke combinations are defined:
+.sp
+.nf
+.ta 1.0i 3.0i 4.5i
+Ctrl-a	Beginning Of Line	Meta-b	Backward Word
+Ctrl-b	Backward Character	Meta-f	Forward Word
+Ctrl-d	Delete Next Character	Meta-i	Insert File
+Ctrl-e	End Of Line	Meta-k	Kill To End Of Paragraph
+Ctrl-f	Forward Character	Meta-q	Form Paragraph
+Ctrl-g	Multiply Reset	Meta-v	Previous Page
+Ctrl-h	Delete Previous Character	Meta-y	Insert Current Selection
+Ctrl-j	Newline And Indent	Meta-z	Scroll One Line Down
+Ctrl-k	Kill To End Of Line	Meta-d	Delete Next Word
+Ctrl-l	Redraw Display	Meta-D	Kill Word
+Ctrl-m	Newline	Meta-h	Delete Previous Word
+Ctrl-n	Next Line	Meta-H	Backward Kill Word
+Ctrl-o	Newline And Backup	Meta-<	Beginning Of File
+Ctrl-p	Previous Line	Meta->	End Of File
+Ctrl-r	Search/Replace Backward	Meta-]	Forward Paragraph
+Ctrl-s	Search/Replace Forward	Meta-[	Backward Paragraph
+Ctrl-t	Transpose Characters
+Ctrl-u	Multiply by 4	Meta-Delete	Delete Previous Word
+Ctrl-v	Next Page	Meta-Shift Delete	Kill Previous Word
+Ctrl-w	Kill Selection	Meta-Backspace	Delete Previous Word
+Ctrl-y	Unkill	Meta-Shift Backspace	Kill Previous Word
+Ctrl-z	Scroll One Line Up
+.sp
+In addition, the pointer may be used to cut and paste text:
+.ta .5i 2.0i
+	Button 1 Down	Start Selection
+	Button 1 Motion	Adjust Selection
+	Button 1 Up	End Selection (cut)
+
+	Button 2 Down	Insert Current Selection (paste)
+
+	Button 3 Down	Extend Current Selection
+	Button 3 Motion	Adjust Selection
+	Button 3 Up	End Selection (cut)
+.fi
+.sp
+.SH COMMANDS
+.IP Quit 8
+Quits the current editing session. If any changes have not been saved,
+.I xedit 
+displays a warning message, allowing the user to save the file.
+.IP Save 
+If file backups are enabled (see RESOURCES, below)
+.I xedit
+stores a copy of the
+original, unedited file in <prefix>\fIfile\fP<suffix>,
+then overwrites the \fIfile\fP with the contents of the edit window.  The
+filename is retrieved from the Text widget directly to the right of
+the \fILoad\fP button.
+.IP Load
+Loads the file named in the text widget immediately to the right
+of the this button and displays it in the Edit window.  If the
+currently displayed file has been modified a warning message will ask
+the user to save the changes, or press \fILoad\fP again.
+.SH RESOURCES
+For \fIxedit\fP the available resources are:
+.TP 8
+.B enableBackups (\fPClass\fB EnableBackups)
+Specifies that, when edits made to an existing file are saved,
+.I xedit
+is to copy the original version of that file to <prefix>\fIfile\fP<suffix>
+before it saves the changes.  The default value for this resource is
+``off,'' stating that no backups should be created.
+.TP 8
+.B backupNamePrefix (\fPClass\fB BackupNamePrefix)
+Specifies a string that is to be prepended to the backup filename.  The
+default is that no string shall be prepended.
+.TP 8
+.B backupNameSuffix (\fPClass\fB BackupNameSuffix)
+Specifies a string that is to be appended to the backup filename.  The
+default is to use ``.BAK'' as the suffix.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxedit\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.ta .5i 1.0i 1.5i 2.0i
+Xedit  xedit
+	Paned  paned
+		Paned  buttons
+			Command  quit
+			Command  save
+			Command  load
+			Text  filename
+		Label  bc_label
+		Text  messageWindow
+		Label  labelWindow
+		Text  editWindow
+.fi
+.sp
+.SH ENVIRONMENT
+.PP
+.TP 20
+.I DISPLAY
+to get the default host and display number.
+.TP 20
+.I XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH FILES
+.TP 20
+.I /usr/lib/X11/app-defaults/Xedit
+specifies required resources
+.SH "SEE ALSO"
+.IR X (1),
+.IR xrdb (1),
+.I "Athena Widget Set"
+.SH RESTRICTIONS
+There is no \fIundo\fP function.
+.SH COPYRIGHT
+Copyright 1988, Digital Equipment Corporation.
+.br
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See
+.IR X (1)
+for a full statement of rights and permissions.
+.SH AUTHOR
+Chris D. Peterson, MIT X Consortium
+

@@ -1,0 +1,56 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(tar.h)
+PROGS="tar"
+AC_SUBST(PROGS)dnl
+AC_PROG_CC
+AC_PROG_CPP
+AC_GCC_TRADITIONAL
+AC_PROG_INSTALL
+AC_PROG_YACC
+AC_AIX
+AC_MINIX
+AC_ISC_POSIX
+AC_RETSIGTYPE
+AC_SIZE_T
+AC_MAJOR_HEADER
+AC_DIR_HEADER
+# The 3-argument open happens to go along with the O_* defines,
+# which are easier to check for.
+AC_HEADER_CHECK(fcntl.h, open_header=fcntl.h, open_header=sys/file.h)
+AC_COMPILE_CHECK(3-argument open,
+[#include <$open_header>], [int x = O_RDONLY;], , AC_DEFINE(EMUL_OPEN3))
+AC_REMOTE_TAPE
+AC_RSH
+AC_STDC_HEADERS
+AC_UNISTD_H
+echo checking for getgrgid declaration
+AC_HEADER_EGREP(getgrgid, grp.h, AC_DEFINE(HAVE_GETGRGID))
+echo checking for getpwuid declaration
+AC_HEADER_EGREP(getpwuid, pwd.h, AC_DEFINE(HAVE_GETPWUID))
+AC_HAVE_HEADERS(string.h limits.h)
+echo checking default archive
+# This might guess wrong, but it's not very important.
+for dev in rmt8 rmt0 rmt0h rct0 rst0 tape rct/c7d0s2
+do
+  if test -n "`ls /dev/$dev 2>/dev/null`"; then
+    DEF_AR_FILE=/dev/$dev
+    break
+  fi
+done
+if test -z "$DEF_AR_FILE"; then
+  DEF_AR_FILE=-
+fi
+
+AC_SUBST(DEF_AR_FILE)dnl
+AC_HAVE_FUNCS(strstr valloc mkdir mknod rename ftruncate ftime getcwd)
+AC_VPRINTF
+AC_ALLOCA
+echo checking for BSD
+( test -f /vmunix || test -f /sdmach || test -f /../../mach ) && AC_DEFINE(BSD42)
+echo checking for HP-UX
+test -f /hp-ux && test ! -f /vmunix && MALLOC=malloc.o
+AC_SUBST(MALLOC)
+AC_XENIX_DIR
+AC_HAVE_LIBRARY(socket, [LIBS="$LIBS -lsocket"])
+AC_HAVE_LIBRARY(nsl, [LIBS="$LIBS -lnsl"])
+AC_OUTPUT(Makefile)

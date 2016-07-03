@@ -1,0 +1,132 @@
+FCNTL(2)                  386BSD Programmer's Manual                  FCNTL(2)
+
+NNAAMMEE
+     ffccnnttll - file control
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssyyss//ffccnnttll..hh>>
+
+     _i_n_t
+     ffccnnttll(_i_n_t _f_d, _i_n_t _c_m_d, _i_n_t _a_r_g)
+
+DDEESSCCRRIIPPTTIIOONN
+     FFccnnttll() provides for control over descriptors.  The argument _f_d is a
+     descriptor to be operated on by _c_m_d as follows:
+
+     F_DUPFD    Return a new descriptor as follows:
+
+                    oo   Lowest numbered available descriptor greater than or
+                        equal to _a_r_g.
+                    oo   Same object references as the original descriptor.
+                    oo   New descriptor shares the same file offset if the
+                        object was a file.
+                    oo   Same access mode (read, write or read/write).
+                    oo   Same file status flags (i.e., both file descriptors
+                        share the same file status flags).
+                    oo   The close-on-exec flag associated with the new file
+                        descriptor is set to remain open across execv(2)
+                        system calls.
+
+     F_GETFD    Get the close-on-exec flag associated with the file descriptor
+                _f_d. If the low-order bit of the returned value is 0, the file
+                will remain open across eexxeecc(), otherwise the file will be
+                closed upon execution of eexxeecc() (_a_r_g is ignored).
+
+     F_SETFD    Set the close-on-exec flag associated with _f_d to the low order
+                bit of _a_r_g (0 or 1 as above).
+
+     F_GETFL    Get descriptor status flags, as described below (_a_r_g is
+                ignored).
+
+     F_SETFL    Set descriptor status flags to _a_r_g.
+
+     F_GETOWN   Get the process ID or process group currently receiving SIGIO
+                and SIGURG signals; process groups are returned as negative
+                values (_a_r_g is ignored).
+
+     F_SETOWN   Set the process or process group to receive SIGIO and SIGURG
+                signals; process groups are specified by supplying _a_r_g as
+                negative, otherwise _a_r_g is interpreted as a process ID.
+
+     The flags for the F_GETFL and F_SETFL flags are as follows:
+
+     O_NDELAY   Non-blocking I/O; if no data is available to a read call, or
+                if a write operation would block, the read or write call
+                returns -1 with the error EWOULDBLOCK.
+
+     O_APPEND   Force each write to append at the end of file; corresponds to
+                the O_APPEND flag of open(2).
+
+     O_ASYNC    Enable the SIGIO signal to be sent to the process group when
+                I/O is possible, e.g., upon availability of data to be read.
+
+RREETTUURRNN VVAALLUUEESS
+     Upon successful completion, the value returned depends on _c_m_d as follows:
+
+
+           F_DUPFD    A new file descriptor.
+
+           F_GETFD    Value of flag (only the low-order bit is defined).
+
+           F_GETFL    Value of flags.
+
+           F_GETOWN   Value of file descriptor owner.
+
+           other      Value other than -1.
+
+     Otherwise, a value of -1 is returned and _e_r_r_n_o is set to indicate the
+     error.
+
+EERRRROORRSS
+     FFccnnttll() will fail if:
+
+     [EBADF]       _F_i_l_d_e_s is not a valid open file descriptor.
+
+     [EMFILE]      _C_m_d is F_DUPFD and the maximum allowed number of file
+                   descriptors are currently open.
+
+     [EINVAL]      _C_m_d is F_DUPFD and _a_r_g is negative or greater than the
+                   maximum allowable number (see getdtablesize(2)).
+
+     [ESRCH]       _C_m_d is F_SETOWN and the process ID given as argument is not
+                   in use.
+
+SSEEEE AALLSSOO
+     close(2),  execve(2),  getdtablesize(2),  open(2),  sigvec(2)
+
+BBUUGGSS
+     The asynchronous I/O facilities of FNDELAY and FASYNC are currently
+     available only for tty and socket operations.
+
+HHIISSTTOORRYY
+     The ffccnnttll function call appeared in 4.2BSD.
+
+4.2 Berkeley Distribution       March 10, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+.ds xL Programming with Xlib
+.TH XOpenDevice 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XOpenDevice, XCloseDevice \- open or close an extension input device
+.SH SYNTAX
+\fB
+.nf
+XDevice *XOpenDevice\^(\^\fIdisplay\fP, \fIdevice_id\fP\^)
+      Display *\fIdisplay\fP\^;
+      XID \fIdevice_id\fP\^; 
+
+XCloseDevice\^(\^\fIdisplay\fP, \fIdevice\fP\^)
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^; 
+.fi
+\fP
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device_id
+Specifies the id of the device to be opened
+.TP 12
+.I device
+Specifies the device to be closed
+.SH DESCRIPTION
+The \fIXOpenDevice\fP
+request makes an input device accessible to a client through input extension
+protocol requests.  If successful, it returns a pointer to an \fBXDevice\fP
+structure.
+.P
+The \fIXCloseDevice\fP request makes an input device inaccessible to a 
+client through input extension protocol requests.  Before terminating,
+and client that has opened input devices through the input extension
+should close them via \fICloseDevice\fP.
+.P
+When a client makes an \fIXCloseDevice\fP request,
+any active grabs that the client has on the device are 
+released.  Any event selections that the client has are deleted, as well as
+any passive grabs.  If the requesting client is the last client accessing
+the device, the server may disable all access by X to the device.
+.P
+\fIXOpenDevice\fP and \fIXCloseDevice\fP can generate a \fIBadDevice\fP 
+error.
+.SH STRUCTURES
+The
+\fIXDevice\fP structure returned by \fIXOpenDevice\fP contains:
+.nf
+typedef struct {
+	XID device_id;
+	int num_classes;
+	XInputClassInfo *classes;
+} XDevice;
+.fi
+.P
+The classes field is a pointer to an array of XInputClassInfo structures.
+Each element of this array contains an event type base for a class of input
+supported by the specified device.  The num_classes field indicates the
+number of elements in the classes array.
+.P
+The
+\fIXInputClassInfo\fP
+structure contains:
+.P
+.nf
+typedef struct {
+	unsigned char input_class;
+	unsigned char event_type_base;
+} XInputClassInfo;
+.fi
+.P
+The input_class field identifies one class of input
+supported by the device.  Defined types include \fIKeyClass\fP,
+\fIButtonClass\fP, \fIValuatorClass\fP, \fIProximityClass\fP,
+\fIFeedbackClass\fP, \fIFocusClass\fP, and \fIOtherClass\fP.
+The event_type_base identifies the event type of the first event in that class.
+.P
+The information contained in the \fIXInputClassInfo\fP structure is used
+by macros to obtain the event classes that clients use in making
+\fIXSelectExtensionEvent\fP requests.  Currently defined macros include
+\fIDeviceKeyPress\fP, \fIDeviceKeyRelease\fP, \fIDeviceButtonPress\fP, 
+\fIDeviceButtonRelese\fP, \fIDeviceMotionNotify\fP, \fIDeviceFocusIn\fP, 
+\fIDeviceFocusOut\fP, \fIProximityIn\fP, \fIProximityOut\fP, 
+\fIDeviceStateNotify\fP, \fIDeviceMappiingNotify\fP, 
+\fIChangeDeviceNotify\fP, \fIDevicePointerMotionHint\fP, 
+\fIDeviceButton1Motion\fP, \fIDeviceButton2Motion\fP, \fIDeviceButton3Motion\fP,
+\fIDeviceButton4Motion\fP, \fIDeviceButton5Motion\fP, \fIDeviceButtonMotion\fP,
+\fIDeviceOwnerGrabButton\fP, \fIDeviceButtonPressGrab\fP, and
+\fINoExtensionEvent\fP.
+.P
+To obtain the proper event class for a particular device, one of the above
+macros is invoked using the \fIXDevice\fP structure for that device.  For
+example, 
+.P
+.nf
+DeviceKeyPress (*device, type, eventclass);
+.fi
+.P
+returns the \fIDeviceKeyPress\fP event type and the eventclass for 
+\fIDeviceKeyPress\fP events from the specified device.
+.P
+This \fIeventclass\fP can then be used in an \fIXSelectExtensionEvent\fP 
+request to ask the server to send \fIDeviceKeyPress\fP events from this device. 
+When a selected event is received via \fIXNextEvent\fP, the \fItype\fP can be 
+used for comparison with the type in the event.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist,
+or is the X keyboard or X pointer.  This error may
+also occur if some other client has caused the specified device to become
+the X keyboard or X pointer device via the \fIXChangeKeyboardDevice\fP or
+\fIXChangePointerDevice\fP requests.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

@@ -1,0 +1,244 @@
+.TH UNZIP 1 "22 Aug 92 (v5.0)"
+.SH NAME
+unzip \- list/test/extract from a ZIP archive file
+.SH SYNOPSIS
+\fBunzip\fP [ \-\fBcflptuvxz\fP[\fBajnoqUV\fP] ] \fIfile\fP[\fI.zip\fP] [\fIfilespec\fP\ ...]
+.SH ARGUMENTS
+.IP \fIfile\fP[\fI.zip\fP] \w'[\fIfilespec\fP]'u+2m
+Path of the ZIP archive.  The suffix
+``\fI.zip\fP'' is applied if the \fIfile\fP specified does not exist.
+Note that self-extracting ZIP files are supported; just specify the
+``\fI.exe\fP'' suffix yourself.
+.IP [\fIfilespec\fP]
+An optional list of archive members to be processed.
+Expressions may be used to match multiple members; be sure to quote
+expressions that contain characters interpreted by the operating
+system. See DESCRIPTION (below) for more details.
+.SH OPTIONS
+.PD 0
+.IP \-c \w'\-c'u+2m
+extract files to stdout/screen (``CRT'')
+.IP \-f
+freshen existing files (replace if newer); create none
+.IP \-l
+list archive files (short format)
+.IP \-p
+extract files to pipe; no informational messages
+.IP \-t
+test archive files
+.IP \-u
+update existing files; create new ones if needed
+.IP \-v
+list archive files (verbose format)
+.IP \-x
+extract files in archive (default)
+.IP \-z
+display only the archive comment
+.PD
+.SH MODIFIERS
+.PD 0
+.IP \-a \w'\-a'u+2m
+convert to MS-DOS textfile format (CR LF), Mac format (CR), Unix/VMS
+format (LF), OR from ASCII to EBCDIC, depending on your system (only
+use for TEXT files!)
+.IP \-j
+junk paths (don't recreate archive's directory structure)
+.IP \-n
+never overwrite existing files; don't prompt
+.IP \-o
+OK to overwrite files without prompting
+.IP \-q
+perform operations quietly (\-qq \(rh even quieter)
+.IP \-s
+[OS/2, MS-DOS] allow spaces in filenames (e.g., ``EA\ DATA.\ SF'')
+.IP \-U
+leave filenames uppercase if created under MS-DOS, VMS, etc.
+.IP \-V
+retain (VMS) file version numbers
+.IP \-X
+[VMS] restore owner/protection info (may require privileges)
+.PD
+.SH DESCRIPTION
+.I UnZip
+will list, test, or extract from a ZIP archive, commonly found on MSDOS
+systems.
+Archive member extraction is implied by the absence of the \-c, \-p,
+\-t, \-l, \-v or \-z options.  All archive members are processed unless a
+.I filespec
+is provided to specify a subset of the archive members.  The
+.I filespec
+is similar to an egrep expression, and may contain:
+.sp 1
+.ta \w'[...]'u+2m
+*	matches a sequence of 0 or more characters
+.br
+?	matches exactly 1 character
+.br
+\\nnn	matches the character having octal code nnn
+.PD 0
+.IP [...] \w'[...]'u+2m
+matches any single character found inside the brackets; ranges
+are specified by a beginning character, a hyphen, and an ending
+character.  If an exclamation point or a carat (`!' or `^') follows
+the left bracket, then the range of characters matched is complemented
+with respect to the ASCII character set (that is, anything except the
+characters inside the brackets is considered a match).
+.PD
+.SH ENVIRONMENT OPTIONS
+\fIUnZip\fP's default behavior may be modified via options placed in
+an environment variable.  This can be done with any option, but it
+is probably most useful with the
+\-q, \-o, or \-n modifiers:  in order to make \fIUnZip\fP quieter by 
+default, or to make it always overwrite or never overwrite files as it
+extracts them.  For example, to
+make \fIUnZip\fP act as quietly as possible, only reporting errors, one would
+use one of the following commands:
+.ta \w'tabset'u +\w'UNZIP=-qq; export UNZIP'u+4m
+.PP
+.IP "\tsetenv UNZIP -qq\tUnix C shell"
+.br
+.IP "\tUNZIP=-qq; export UNZIP\tUnix Bourne shell"
+.PP
+.IP "\tset UNZIP=-qq\tOS/2 or MS-DOS"
+.PP
+.IP "\tdefine UNZIP_OPTS ""-qq""\tVMS (quotes for LOWERCASE)"
+.PP
+Environment options are, in effect, considered to be just like any other
+command-line options, except that they are effectively the first options
+on the command line.  To override
+an environment option, one may use the ``minus operator'' to remove it.  For
+instance, to override one of the quiet-flags in the example above, use the
+command
+.PP
+.IP "\t\fIunzip\fP \-\-q[other options] zipfile"
+.PP
+The first hyphen is the normal
+switch character, and the second is a minus sign, acting on the q option.
+Thus the effect here is to cancel a single quantum of quietness.  To cancel
+both quiet flags, two (or more) minuses may be used:
+.PP
+.IP "\t\fIunzip\fP \-x\-\-q zipfile"
+.PP
+or
+.PP
+.IP "\t\fIunzip\fP \-\-\-qx zipfile"
+.PP
+(the two are equivalent).  This may seem awkward
+or confusing, but it is reasonably intuitive:  just ignore the first
+hyphen and go from there.  It is also consistent with the behavior of Unix
+nice(1).
+.PD
+.SH EXAMPLES
+To use \fIUnZip\fP to extract all members of the archive letters.zip,
+creating any directories as necessary:
+.PP
+.IP "\t\fIunzip\fP letters"
+.PP
+To extract all members of letters.zip to the current directory:
+.PP
+.IP "\t\fIunzip\fP -j letters"
+.PP
+To test letters.zip, printing only a summary message indicating
+whether the archive is OK or not:
+.PP
+.IP "\t\fIunzip\fP -tq letters"
+.PP
+To extract to standard output all members of letters.zip whose names end
+in ``.tex'', converting to the local end-of-line convention and piping the
+output into more(1):
+.PP
+.IP "\t\fIunzip\fP \-ca letters \e*.tex | more"
+.PP
+(The backslash before the asterisk is only required if the shell expands
+wildcards, as in Unix; double quotes could have been used instead, as in
+the source example below.)\ \ To extract the binary file paper1.dvi to 
+standard output and pipe it to a printing program:
+.PP
+.IP "\t\fIunzip\fP \-p articles paper1.dvi | dvips"
+.PP
+To extract all FORTRAN and C source files--*.f, *.c, *.h, Makefile (the
+double quotes are necessary only in Unix and only if globbing is turned on):
+.PP
+.IP "\t\fIunzip\fP source.zip ""*.[fch]"" Makefile"
+.PP
+To extract only newer versions of the files already in the current directory,
+without querying (NOTE:  be careful of unzipping in one timezone a zipfile 
+created in another--ZIP archives contain no timezone information, and a 
+``newer'' file from an eastern timezone may, in fact, be older):
+.PP
+.IP "\t\fIunzip\fP \-fo sources"
+.PP
+To extract newer versions of the files already in the current directory and
+to create any files not already there (same caveat as previous example):
+.PP
+.IP "\t\fIunzip\fP \-uo sources"
+.PP
+.PP
+In the last five examples, assume that UNZIP or UNZIP_OPTS is set to -q.
+To do a singly quiet listing:
+.PP
+.IP "\t\fIunzip\fP \-\fIl\fP \fIfile\fP"
+.PP
+To do a doubly quiet listing:
+.PP
+.IP "\t\fIunzip\fP \-\fIql\fP \fIfile\fP"
+.PP
+To do a standard listing:
+.PP
+.IP "\t\fIunzip\fP \-\-\fIql\fP \fIfile\fP"
+.PP
+or
+.PP
+.IP "\t\fIunzip\fP \-\fIl\fP\-\fIq\fP \fIfile\fP"
+.PP
+or
+.PP
+.IP "\t\fIunzip\fP \-\fIl\fP\-\-\fIq\fP \fIfile\fP"
+.PP
+(extra minuses don't hurt).
+.PD
+.SH TIPS
+The current maintainer, being a lazy sort, finds it very useful to define
+an alias ``tt'' for ``unzip -tq''.  One may then simply type ``tt zipfile''
+to test the archive, something which one ought make a habit of doing.
+With luck \fIUnZip\fP will report ``No errors detected in zipfile.zip,''
+after which one may breathe a sigh of relief.
+.PD
+.SH SEE ALSO
+funzip(1), zip(1), zipcloak(1), zipinfo(1), zipnote(1), zipsplit(1)
+.PD
+.SH AUTHORS
+Samuel H. Smith, Carl Mascott, David P. Kirschbaum, Greg R. Roelofs, Mark
+Adler, Kai Uwe Rommel, Igor Mandrichenko, Johnny Lee, Jean-loup Gailly; Glenn
+Andrews, Joel Aycock, Allan Bjorklund, James Birdsall, Wim Bonner, John Cowan,
+Frank da Cruz, Bill Davidsen, Arjan de Vet, James Dugal, Jim Dumser, Mark
+Edwards, David Feinleib, Mike Freeman, Hunter Goatley, Robert Heath, Dave
+Heiland, Larry Jones, Kjetil J(o)rgenson, Bob Kemp, J. Kercheval, Alvin Koh,
+Bo Kullmar, Johnny Lee, Warner Losh, Fulvio Marino, Gene McManus, Joe Meadows,
+Mike O'Carroll, Humberto Ortiz-Zuazaga, Piet W. Plomp, Antonio Querubin Jr.,
+Steve Salisbury, Georg Sassen, Jon Saxton, Hugh Schmidt, Martin Schulz, Charles
+Scripter, Chris Seaman, Richard Seay, Alex Sergejew, Cliff Stanford, Onno van
+der Linden, Jim Van Zandt, Antoine Verheijen, Paul Wells.
+.PD
+.SH VERSIONS
+.ta \w'vx.x\ \ 'u +\w'fall 1989\ \ 'u
+.PD 0
+.IP "v1.2\t15 Mar 89" \w'\t\t'u
+Samuel H. Smith
+.IP "v2.0\t\ 9 Sep 89"
+Samuel H. Smith
+.IP "v2.x\tfall 1989"
+many Usenet contributors
+.IP "v3.0\t\ 1 May 90"
+Info-ZIP (DPK, consolidator)
+.IP "v3.1\t15 Aug 90"
+Info-ZIP (DPK, consolidator)
+.IP "v4.0\t\ 1 Dec 90"
+Info-ZIP (GRR, maintainer)
+.IP "v4.1\t12 May 91"
+Info-ZIP
+.IP "v4.2\t20 Mar 92"
+Info-ZIP (zip-bugs subgroup; GRR, maint.)
+.IP "v5.0\t21 Aug 92"
+Info-ZIP (zip-bugs subgroup; GRR, maint.)
+.PD

@@ -1,0 +1,264 @@
+
+
+
+
+
+
+
+                            Tiny 386BSD Release 1.0
+                                  Information
+
+
+               We  are  pleased  to  announce  the  release  of 386BSD
+          Release 1.0,  the  first  official  edition  of  the  386BSD
+          operating  system created and developed by William and Lynne
+          Jolitz  and  the  seventh  in  a  series  of  releases.   To
+          encourage  innovation  in  design,  the  complete source and
+          binary software is made available to other official Internet
+          archive  sites  for  distribution  to students, faculty, and
+          other interested users for educational and research use from
+          the   Internet  site  _b_s_d_s_e_r_v_e_r._u_c_s_f._e_d_u.   If  you  are  an
+          official Internet site and wish to  mirror  386BSD  releases
+          and updates, please contact the administrator.
+
+               The  386BSD  Release  1.0 system sources and executable
+          binaries are available for research and educational use.  To
+          make  it  simple to install and load by the student, we have
+          included a bootable _T_i_n_y _3_8_6_B_S_D floppy containing a  minimal
+          386BSD  Release  1.0  system  from  which  the  rest  of the
+          distribution can be loaded from the network.
+
+               If you cannot obtain or download  the  bootable  floppy
+          and  would like one, send a SASE floppy mailer and formatted
+          error-free 3.5-inch floppy to: Dr.  Dobbs  Journal  Careware
+          Program,  Tiny  386BSD  Release  1.0,  411 Borel Avenue, San
+          Mateo, CA. 94402 USA. There is no charge  for  the  service,
+          but  if  you would like to send a dollar or more to help the
+          kids helped by the "Childrens Support  League  of  the  East
+          Bay", it would be most kind.
+
+               The  _3_8_6_B_S_D  _R_e_f_e_r_e_n_c_e  _C_D-_R_O_M  is  a  bootable  CD-ROM
+          containing not only the complete Release 1.0 system software
+          but also the complete 386BSD article series appearing in _D_r.
+          _D_o_b_b_s _J_o_u_r_n_a_l,  along  with  completely  new  select  kernel
+          source  annotation  discussions  and  other  writings  about
+          386BSD  on  modularity,  386BSD  history  and  new  research
+          directions.  It  even  contains the original 386BSD software
+          specification written in 1989: _3_8_6_B_S_D:  _A  _M_o_d_e_s_t  _P_r_o_p_o_s_a_l.
+          In  addition, sections from the pending book _3_8_6_B_S_D _F_r_o_m _t_h_e
+          _I_n_s_i_d_e-_O_u_t are included to illustrate key concepts discussed
+          in  the  annotations, articles, and other writings.  Most of
+          these writings have never before appeared in print  and  are
+          intended  to  assist  the student, developer, or designer in
+          learning more about the  internals  of  a  modern  operating
+          system.
+
+               To  obtain  a  copy  of  the  _3_8_6_B_S_D  _R_e_f_e_r_e_n_c_e  _C_D-_R_O_M
+          contact:
+
+              386BSD Reference CD-ROM
+              PO Box 10270
+
+
+          338866BBSSDD IINNFFOO                   11                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+              Des Moines, IA. 50336-0270 USA
+
+              1-800-872-7467
+              1-415-358-9500 (outside USA)
+              1-415-358-9749 FAX
+
+
+          _T_h_e _S_p_i_r_i_t _o_f _3_8_6_B_S_D _R_e_l_e_a_s_e_s
+
+               386BSD releases are done in the spirit  of  opening  up
+          discussion  on  the  many  new  ideas  brought forth by many
+          bright programmers. 386BSD is also meant to encourage people
+          to take a risk and try out some of these new ideas.
+
+               The  authors/editors  of  the  386BSD  releases make no
+          concessions as to the content or  style  of  these  releases
+          where  it  affects  innovation and new ideas, and we make no
+          apologies for abandoning the past -- even  when  it  affects
+          our  own  prior work.  As with all of our previous works, we
+          take full responsibility for the content and code  contained
+          within.  We  hope  that  this _l_i_v_i_n_g _e_x_a_m_p_l_e of an operating
+          system lives  up  to  its  mission  as  an  educational  and
+          research platform for new ideas.
+
+               However, thoughtful "Letters to the Editors" are always
+          welcome and always read.
+
+          _3_8_6_B_S_D _R_e_l_e_a_s_e_s _a_s _A_n_t_h_o_l_o_g_y
+
+               Organized in the style of an anthology, 386BSD releases
+          are  a  compendium  of our own years of effort, coupled with
+          work done by other programmers which has  been  released  to
+          the   public  or  submitted  directly  to  us  for  possible
+          inclusion into 386BSD releases. This disparate set of  works
+          is  then  shaped  and  edited  by the authors into the final
+          operational and high-performance  system  known  as  _3_8_6_B_S_D.
+          Like  short  stories  in a book, individual contributions by
+          the original author are cited within the actual source  code
+          files.   The  only difference is that this operating systems
+          "anthology" also runs on your PC!
+
+               To avoid "kernel bloat"  --  the  massive  stuffing  of
+          useless,  arcane  and  incorrect  code into the kernel -- we
+          spend much of our time critically examining the kernel  code
+          and paring the system down to a modern efficient form.  This
+          allows us to be able to  more  fully  document  and  discuss
+          every  element  of  the  kernel  and  better  focus  on  its
+          educational and research aspects.
+
+               A   complete   discussion    on    design    decisions,
+          implementation, and future directions of select kernel files
+          is contained in the "386BSD Annotations"  Windows  group  as
+          part   of   the   _3_8_6_B_S_D  _R_e_f_e_r_e_n_c_e  _C_D-_R_O_M.   In  addition,
+
+
+          338866BBSSDD IINNFFOO                   22                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          additional discussions on  methodology,  research  criteria,
+          and  research  directions are contained in the "Introduction
+          to 386BSD" Windows group on this same CD-ROM.
+
+          _I_n_s_t_a_l_l_i_n_g _a _T_i_n_y _3_8_6_B_S_D _R_e_l_e_a_s_e _1._0 _S_y_s_t_e_m _o_n _H_a_r_d _D_i_s_k
+
+               The Tiny 386BSD  careware  floppy  contains  a  minimal
+          386BSD  system  which can be booted, examined, and installed
+          on a PC. Simply insert the floppy and  reboot  the  PC.   To
+          install  the  Tiny  386BSD  system  on  a  hard  disk,  type
+          "install".  Information on the 386BSD installation procedure
+          is  now  interactive  as  part  of  the install process. The
+          current minimal system configuration  required  to  run  the
+          binaries  without  X-windows  is  40  MBytes. We recommend a
+          minimum of 200  MBytes  when  using  386BSD  as  a  standard
+          development   system.   Significantly  more  disk  space  is
+          required when using applications packages such as  WAIS  and
+          should be planned for accordingly.
+
+               If  you  use  are  using an older version of the system
+          (Release  0.2  or  older),  and  have  customized  it   with
+          nonstandard  drivers not supported in the main release, make
+          sure  you  keep  a  backup  of  your  older  patched  system
+          available   for  use  as  needed  until  you  upgrade  these
+          nonstandard   drivers   to   Release   1.0.    The    driver
+          qualification  process  has been extremely simplified due to
+          the new modular kernel arrangement (see  the  online  manual
+          references  on  _k_e_r_n(_7)  and _h_i_e_r(_7) for more information on
+          the 386BSD modular kernel and system  filesystem  hierarchy,
+          respectively).   Please  read  the  detailed  discussion  on
+          modular kernel organization in the "Introduction to  386BSD"
+          Windows  group on the _3_8_6_B_S_D _R_e_f_e_r_e_n_c_e _C_D-_R_O_M if you require
+          additional information.
+
+          _O_t_h_e_r _3_8_6_B_S_D _S_o_u_r_c_e_s _o_f _I_n_f_o_r_m_a_t_i_o_n
+
+               New technical  information  on  _3_8_6_B_S_D  _I_n_n_o_v_a_t_i_o_n_s  _i_n
+          _D_e_s_i_g_n   appear   periodically   in   _D_r.   _D_o_b_b_s   _J_o_u_r_n_a_l.
+          Information on "Careware"  updates,  available  and  pending
+          386BSD articles and books including the long-awaited anatomy
+          of the 386BSD Release 1.0 kernel entitled  _3_8_6_B_S_D  _F_r_o_m  _t_h_e
+          _I_n_s_i_d_e-_O_u_t,  and scheduled technical talks are available via
+          the  _3_8_6_B_S_D  _H_o_t_l_i_n_e  at  +1-510-420-0174.  The  hotline  is
+          updated as new information becomes available.
+
+               If you have any comments or interesting ideas regarding
+          386BSD, we'd like to hear from you.  Please send  a  "Letter
+          to  the Editors": Lynne and Bill Jolitz, 386BSD Release 1.0,
+          C/O Dr. Dobbs Journal, 411  Borel  Avenue,  San  Mateo,  CA.
+          94402. USA.  Due to the volume of mail, we cannot personally
+          respond to all messages sent, but we do want  to  hear  from
+          you.
+
+
+
+          338866BBSSDD IINNFFOO                   33                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          _T_h_a_n_k _Y_o_u _A_g_a_i_n
+
+               We'd  both  like  to thank you again for supporting the
+          Careware Program, and for  your  patience,  enthusiasm,  and
+          encouragement  over  the  last five years of 386BSD releases
+          and writings.  We hope that you find  this  new  release  of
+          386BSD  a  positive  experience  while  exploring  operating
+          systems and networking innovations in design, and will  find
+          the ideas contained within 386BSD of use in your personal or
+          professional endeavors.
+
+               Cordially,
+
+          Bill and Lynne Jolitz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          338866BBSSDD IINNFFOO                   44                  AAuugguusstt 11999944
+
+
+

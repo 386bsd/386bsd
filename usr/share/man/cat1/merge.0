@@ -1,0 +1,66 @@
+
+
+
+MERGE(1L)                                               MERGE(1L)
+
+
+NNAAMMEE
+       merge - three-way file merge
+
+SSYYNNOOPPSSIISS
+       mmeerrggee [ --pp ] file1 file2 file3
+
+DDEESSCCRRIIPPTTIIOONN
+       _M_e_r_g_e  incorporates  all  changes  that lead form _f_i_l_e_2 to
+       _f_i_l_e_3 into _f_i_l_e_1. The result goes to std. output if --pp  is
+       present,   into  _f_i_l_e_1  otherwise.  _M_e_r_g_e  is  useful  for
+       combining separate changes to an original.  Suppose  _f_i_l_e_2
+       is   the   original,   and   both   _f_i_l_e_1  and  _f_i_l_e_3  are
+       modifications of _f_i_l_e_2. Then _m_e_r_g_e combines both  changes.
+
+       An  overlap occurs if both _f_i_l_e_1 and _f_i_l_e_3 have changes in
+       a common segment of lines.  _M_e_r_g_e prints how many overlaps
+       occurred,  and  includes  both alternatives in the result.
+       The alternatives are delimited as follows:
+
+               <<<<<<< file1
+               lines in file1
+               =======
+               lines in file3
+               >>>>>>> file3
+
+       If there are overlaps, the user should edit the result and
+       delete one of the alternatives.
+
+IIDDEENNTTIIFFIICCAATTIIOONN
+       Author:   Walter   F.   Tichy,   Purdue  University,  West
+       Lafayette, IN, 47907.
+       Revision Number: 1.2 ; Release Date: 89/05/02 .
+       Copyright (C) 1982, 1988, 1989 by Walter F. Tichy.
+
+SSEEEE AALLSSOO
+       diff3 (1), diff (1), rcsmerge (1L), co (1L).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+University                    Purdue                            1
+
+

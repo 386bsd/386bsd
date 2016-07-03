@@ -1,0 +1,53 @@
+===> libgroff
+cc -c ../iftoa.c
+cc -c ../itoa.c
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../assert.cc
+../assert.cc: In function `void  assertion_failed (int, const char *)':
+../assert.cc:37: warning: `volatile' function does return
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../change_lf.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../cmap.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../cset.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../device.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../errarg.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../error.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../fatal.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../filename.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../font.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../fontfile.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../illegal.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../lf.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../lineno.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../macropath.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../nametoindex.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../new.cc
+../new.cc: In function `void * operator new (unsigned int)':
+../new.cc:55: warning: control reaches end of non-void function
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../progname.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../ptable.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../searchpath.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../string.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../strsave.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../tmpfile.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include  -DDEVICE=\"ps\"  -DFONTPATH=\"/usr/share/groff_font\"  -DMACROPATH=\"/usr/share/tmac\" -c ../version.cc
+building standard groff library
+ranlib libgroff.a
+===> libdriver
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include -c ../input.cc
+g++ -O -I../include -I.. -I../../include  -I../../../../lib/libg++/g++-include -c ../printer.cc
+building standard driver library
+ranlib libdriver.a
+===> groff
+cc -c ../pipeline.c
+g++ -O -I../include -DPROG_PREFIX="'g'" -I../../include  -I../../../../lib/libg++/g++-include -c ../groff.cc
+../groff.cc: In function `int  main (int, char **)':
+../groff.cc:113: warning: assignment of pointer from integer lacks a cast
+g++  -o groff pipeline.o groff.o ../../libgroff/obj/libgroff.a -lm
+nroff -mandoc ../groff.1 > groff.0
+groff: can't find `DESC' file
+groff:fatal error: invalid device `ascii'
+*** Error code 3
+
+Stop.
+*** Error code 1
+
+Stop.

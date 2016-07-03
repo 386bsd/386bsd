@@ -1,0 +1,78 @@
+.TH XFD 1 "Release 5" "X Version 11"
+.SH NAME
+xfd \- display all the characters in an X font
+.SH SYNOPSIS
+.B xfd
+[\-options ...] \-fn \fIfontname\fP
+.SH DESCRIPTION
+The \fIxfd\fP utility creates a window containing the name of the font being
+displayed, a row of command buttons, several lines of text for displaying
+character metrics, and a grid containing one glyph per cell.  The
+characters are shown in increasing order from left to right, top to
+bottom.  The first character displayed at the top left will be character
+number 0 unless the \fB\-start\fP option has been supplied in which case the
+character with the number given in the \fB\-start\fP option will be used.
+.PP
+The characters are displayed in a grid of boxes, each large enough to hold 
+any single character in the font.  Each character glyph is drawn using
+the PolyText16 request (used by the \fIXlib\fP routine \fBXDrawString16\fP).
+If the \fB\-box\fP option is given, a rectangle will be drawn around each
+character, showing where an ImageText16 request (used by the \fIXlib\fP
+routine \fBXDrawImageString16\fP) would cause background color to be displayed.
+.PP
+The origin of each glyph is normally set so that the character is drawn in
+the upper left hand corner of the grid cell.  However, if a glyph has a 
+negative left bearing or an unusually large ascent, descent, or right bearing 
+(as is the case with \fIcursor\fP font), some character may not appear in their
+own grid cells.  The \fB\-center\fP option may be used to force all glyphs to 
+be centered in their respective cells.
+.PP
+All the characters in the font may not fit in the window at once.
+To see the next page of glyphs, press the \fINext\fP button at the top 
+of the window.  To see the previous page, press \fIPrev\fP.  To exit \fIxfd\fP,
+press \fIQuit\fP.
+.PP
+Individual character metrics (index, width, bearings, ascent and descent) can
+be displayed at the top of the window by pressing on the desired character.
+.PP
+The font name displayed at the top of the window is the full name of the 
+font, as determined by the server.  See \fIxlsfonts\fP for ways to generate
+lists of fonts, as well as more detailed summaries of their metrics and
+properties.
+.SH "OPTIONS"
+.PP
+.I xfd
+accepts all of the standard toolkit command line options along with
+the additional options listed below:
+.TP 8
+.B \-fn \fIfont\fP
+This option specifies the font to be displayed.
+.TP 8
+.B \-box
+This option indicates that a box should be displayed outlining the area
+that would be filled with background color by an ImageText request.
+.TP 8
+.B \-center
+This option indicates that each glyph should be centered in its grid.
+.TP 8
+.B \-start \fInumber\fP
+This option specifies the glyph index of the upper left hand corner of the
+grid.  This is used to view characters at arbitrary locations in the font.
+The default is 0.
+.TP 8
+.B \-bc \fIcolor\fP
+This option specifies the color to be used if ImageText boxes are drawn.
+.SH "X DEFAULTS"
+To be written.
+.SH "SEE ALSO"
+X(1), xlsfonts(1), xrdb(1), xfontsel(1)
+.SH "BUGS"
+The program should skip over pages full of non-existent characters.
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium; previous program of the same name by 
+Mark Lillibridge, MIT Project Athena.
+

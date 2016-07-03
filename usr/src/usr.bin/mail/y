@@ -1,0 +1,122 @@
+forward(ms, fp, f)
+	char ms[];
+	FILE *fp;
+{
+	register int *msgvec;
+	extern char tempMail[];
+	struct ignoretab *ig;
+	char *tabst;
+
+	msgvec = (int *) salloc((msgCount+1) * sizeof *msgvec);
+	if (msgvec == (int *) 	((char *) 0)	)
+		return(0);
+	if (getmsglist(ms, msgvec, 0) < 0)
+		return(0);
+	if (*msgvec == 0) {
+		*msgvec = first(0, 	((1<<1)		|	(1<<2)		) );
+		if (*msgvec == 0 ) {
+			printf("No appropriate messages\n");
+			return(0);
+		}
+		msgvec[1] = 0 ;
+	}
+	if (f == 'f' || f == 'F')
+		tabst = 	((char *) 0)	;
+	else if ((tabst = value("indentprefix")) == 	((char *) 0)	)
+		tabst = "\t";
+	ig = ((_ctype_ + 1)[f] & 0x01 )  ? 0  : ignore;
+	printf("Interpolating:");
+	for (; *msgvec != 0; msgvec++) {
+		struct message *mp = message + *msgvec - 1;
+
+		touch(mp);
+		printf(" %d", *msgvec);
+		if (send(mp, fp, ig, tabst) < 0) {
+			perror(tempMail);
+			return(-1);
+		}
+	}
+	printf("\n");
+	return(0);
+}
+
+ 
+
+
+ 
+void
+collstop(s)
+{
+	sig_t old_action = signal(s, 	((__sighandler_t) 0) );
+
+	sigsetmask(sigblock(0) & ~(1 << ((s)-1)) );
+	kill(0, s);
+	sigblock((1 << ((s)-1)) );
+	signal(s, old_action);
+	if (colljmp_p) {
+		colljmp_p = 0;
+		hadintr = 0;
+		longjmp(colljmp, 1);
+	}
+}
+
+ 
+
+
+
+ 
+void
+collint(s)
+{
+	 
+
+
+	if (!hadintr) {
+		if (value("ignore") != 	((char *) 0)	) {
+			puts("@");
+			fflush((&__sF[1]) );
+			((void)(((&__sF[0]) )->_flags &= ~(0x0040		|0x0020		)))  ;
+			return;
+		}
+		hadintr = 1;
+		longjmp(colljmp, 1);
+	}
+	rewind(collf);
+	if (value("nosave") == 	((char *) 0)	)
+		savedeadletter(collf);
+	longjmp(collabort, 1);
+}
+
+ 
+void
+collhup(s)
+{
+	rewind(collf);
+	savedeadletter(collf);
+	 
+
+
+
+	exit(1);
+}
+
+savedeadletter(fp)
+	register FILE *fp;
+{
+	register FILE *dbuf;
+	register int c;
+	char *cp;
+
+	if (fsize(fp) == 0)
+		return;
+	cp = getdeadletter();
+	c = umask(077);
+	dbuf = Fopen(cp, "a");
+	(void) umask(c);
+	if (dbuf == 0 )
+		return;
+	while ((c = (--(fp)->_r < 0 ? __srget(fp) : (int)(*(fp)->_p++))  ) != (-1) )
+		(void) __sputc(c,  dbuf) ;
+	Fclose(dbuf);
+	rewind(fp);
+}

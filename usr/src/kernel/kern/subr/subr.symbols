@@ -1,0 +1,11 @@
+#	$Id: subr.symbols,v 1.1 94/10/19 18:33:48 bill Exp $
+
+#gdb
+	_panicstr
+
+#dmesg
+	_msgbufp
+#	_msgbuf
+
+#savecore
+	_panicstr

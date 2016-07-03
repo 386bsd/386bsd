@@ -1,0 +1,249 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XMapWindow 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XMapWindow, XMapRaised, XMapSubwindows \- map windows
+.SH SYNTAX
+.\" $Header: XMapWindow.f,v 1.1 88/02/26 10:01:30 mento Exp $
+XMapWindow\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+XMapRaised\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.LP
+.\" $Header: XMapSubs.f,v 1.1 88/02/26 10:01:30 mento Exp $
+XMapSubwindows\^(\^\fIdisplay\fP, \fIw\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.SH DESCRIPTION
+.\" $Header: XMapWindow.d,v 1.3 88/06/11 07:51:58 mento Exp $
+The
+.ZN XMapWindow
+function
+maps the window and all of its
+subwindows that have had map requests.
+Mapping a window that has an unmapped ancestor does not display the
+window but marks it as eligible for display when the ancestor becomes
+mapped.
+Such a window is called unviewable.
+When all its ancestors are mapped,
+the window becomes viewable
+and will be visible on the screen if it is not obscured by another window.
+This function has no effect if the window is already mapped.
+.LP
+If the override-redirect of the window is
+.ZN False 
+and if some other client has selected
+.ZN SubstructureRedirectMask
+on the parent window, then the X server generates a
+.ZN MapRequest
+event, and the
+.ZN XMapWindow
+function does not map the window.
+Otherwise, the window is mapped, and the X server generates a
+.ZN MapNotify
+event.
+.LP
+If the window becomes viewable and no earlier contents for it are remembered,
+the X server tiles the window with its background.
+If the window's background is undefined,
+the existing screen contents are not
+altered, and the X server generates zero or more 
+.ZN Expose
+events.
+If backing-store was maintained while the window was unmapped, no 
+.ZN Expose
+events
+are generated.
+If backing-store will now be maintained, 
+a full-window exposure is always generated.
+Otherwise, only visible regions may be reported.
+Similar tiling and exposure take place for any newly viewable inferiors.
+.LP
+.IN "XMapWindow"
+If the window is an
+.ZN InputOutput 
+window,
+.ZN XMapWindow
+generates 
+.ZN Expose 
+events on each 
+.ZN InputOutput
+window that it causes to be displayed.
+If the client maps and paints the window 
+and if the client begins processing events, 
+the window is painted twice.
+To avoid this,
+first ask for 
+.ZN Expose 
+events and then map the window,
+so the client processes input events as usual.
+The event list will include 
+.ZN Expose 
+for each
+window that has appeared on the screen. 
+The client's normal response to
+an 
+.ZN Expose 
+event should be to repaint the window.
+This method usually leads to simpler programs and to proper interaction
+with window managers.
+.LP
+.ZN XMapWindow
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XMapRaised.d,v 1.2 88/05/07 12:22:21 mento Exp $
+The
+.ZN XMapRaised
+function
+essentially is similar to
+.ZN XMapWindow
+in that it maps the window and all of its
+subwindows that have had map requests.
+However, it also raises the specified window to the top of the stack.
+.LP
+.ZN XMapRaised
+can generate a
+.ZN BadWindow 
+error.
+.LP
+.\" $Header: XMapSubs.d,v 1.3 88/06/11 07:51:57 mento Exp $
+The
+.ZN XMapSubwindows
+.IN "XMapSubwindows"
+function maps all subwindows for a specified window in top-to-bottom stacking 
+order.
+The X server generates
+.ZN Expose
+events on each newly displayed window.
+This may be much more efficient than mapping many windows
+one at a time because the server needs to perform much of the work
+only once, for all of the windows, rather than for each window.
+.LP
+.ZN XMapSubwindows
+can generate a
+.ZN BadWindow 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XChangeWindowAttributes(3X11),
+XConfigureWindow(3X11),
+XCreateWindow(3X11),
+XDestroyWindow(3X11),
+XRaiseWindow(3X11),
+XUnmapWindow(3X11)
+.br
+\fI\*(xL\fP

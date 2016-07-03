@@ -1,0 +1,26 @@
+$XFree86: mit/server/ddx/x386/etc/stdlib.diff,v 1.4 1993/03/27 09:31:37 dawes Exp $
+
+ This patch is required for /usr/include/stdlib.h when building X386
+ on 386BSD version 0.1.  It is NOT required for later versions.
+
+*** stdlib.h.dist	Mon Jul 13 08:24:09 1992
+--- stdlib.h	Thu Dec 31 14:05:51 1992
+***************
+*** 102,108 ****
+  #endif /* not ANSI */
+  
+  #if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
+! void	*alloca __P((size_t));	/* built-in for gcc */
+  extern	 char *optarg;			/* getopt(3) external variables */
+  extern	 int optind;
+  extern	 int opterr;
+--- 102,110 ----
+  #endif /* not ANSI */
+  
+  #if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
+! #ifndef alloca
+! void	*alloca __P((size_t));
+! #endif
+  extern	 char *optarg;			/* getopt(3) external variables */
+  extern	 int optind;
+  extern	 int opterr;

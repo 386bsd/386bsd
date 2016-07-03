@@ -1,0 +1,34 @@
+.TH CHGRP 1L "GNU File Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+chgrp \- change the group ownership of files
+.SH SYNOPSIS
+.B chgrp
+[\-Rcfv] [\-\-recursive] [\-\-changes]
+[\-\-silent] [\-\-quiet] [\-\-verbose] [\-\-help] [\-\-version] group file...
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR chgrp .
+.B chgrp
+changes the group ownership of each given file to the named group,
+which can be either a group name or a numeric group ID.
+.SS OPTIONS
+.TP
+.I "\-c, \-\-changes"
+Verbosely describe only files whose ownership actually changes.
+.TP
+.I "\-f, \-\-silent, \-\-quiet"
+Do not print error messages about files whose ownership cannot be
+changed.
+.TP
+.I "\-v, \-\-verbose"
+Verbosely describe ownership changes.
+.TP
+.I "\-R, \-\-recursive"
+Recursively change ownership of directories and their contents.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

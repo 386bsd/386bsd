@@ -1,0 +1,131 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH FRM 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+frm,nfrm \- list from and subject of selected messages in mailbox or folder
+.SH SYNOPSIS
+.B frm
+.RB [ \-hnQqStv ]
+.RB [ \-s\ \fIstatus\fP ]
+[folder | username] ...
+.br
+.B nfrm
+.RB [ \-hnQqStv ]
+.RB [ \-s\ \fIstatus\fP ]
+[folder | username] ...
+.SH DESCRIPTION
+.I Frm
+outputs one line per message of the form:
+.PP
+.I from [subject]
+.PP
+where \fIfrom\fP is the name of the person the message is from, and
+\fIsubject\fP is the subject of the message, if present.  If the message is
+from you, the \fIfrom\fP portion will read ``To user'', where `user' is the
+user the message was sent to.  This happens when you receive a copy of a
+letter you sent.
+.PP
+If a folder is specified, the program reads that folder
+rather than the default mailbox.  If the argument is a
+username then \fIfrm\fP looks in that user's mailbox, provided you
+have permission to read it.
+.PP
+A folder can be specified with the same notation as
+when invoking the \fBElm\fR mailer (e.g., =folder).
+.PP
+\fIFrm\fP invoked as \fInfrm\fP is identical to invoking ``frm -s new''.
+.SH OPTIONS
+The \fIfrm\fP program has the following options:
+.TP
+.B \-h
+Print a brief help message summarizing the options.
+.TP
+.B \-n
+Number the messages using the same numbering scheme that, for
+example, \fIreadmsg\fR will understand.
+.TP
+.B \-Q
+Very quiet mode.  Only error messages are produced.  This option is useful
+in shell scripts, where only the success or failure of the program is
+important, and output is not desired.
+.TP
+.B \-q
+Quiet mode.  Output only a one-line summary for each mailbox or folder
+specified.
+.TP
+.B \-S
+Summarize the number of messages by message status in each mailbox or
+folder.  If you want just a summary line, use this in conjunction with the
+\fB\-q\fR option.
+.TP
+.B \-s \fIstatus
+Only display headers from messages with the given status.  `status' is one
+of "new", "unread", "old" (same as "unread"), or "read".  The \fB\-s\fP
+option can be specified multiple times to print header information from,
+for example, only new and unread messages.  It is sufficient to specify
+only the first letter of the status.
+.TP
+.B \-t
+Tidy mode. If the \fIfrom\fP field is long enough to displace the
+subject field from its natural start column, move the subject
+down onto the next line.
+.TP
+.B \-v
+Verbose mode.  Print a descriptive header before listing the contents of
+each mailbox or folder.
+.SH EXIT STATUS
+.I Frm
+returns a zero status ("true") if messages matching `status' are present.
+.I Frm
+returns 1 if no messages matching `status' are present, but there are some
+messages, returns 2 if there are no messages at all, or returns 3 if an
+error occurred.  If multiple mailboxes or folders are specified, the exit
+status only applies to the last one examined.  This can be used in scripts
+to determine what kind of mail a user has.
+.SH EXAMPLES
+Some example uses:
+.nf
+
+	$ \fBfrm\fR
+
+.fi
+will display header information from all the messages in your mailbox, or
+``You have no mail.'' if there are no messages in your incoming mailbox.
+.nf
+
+	$ \fBfrm -s new\fR
+
+.fi
+will display header information from all new messages in your mailbox, or
+``You have no new mail.''  Note the slightly different diagnostic.
+.nf
+
+	$ \fBfrm -s new -s unread guest\fR
+
+.fi
+assuming you have the proper file permissions to read guest's mail, will
+print out header information from all new and unread messages in guest's
+incoming mailbox.  If there are no messages, \fIfrm\fR will print ``guest
+has no mail.''
+.nf
+
+	$ \fBfrm -q -S\fR
+
+.fi
+will print only a one line summary of how many read, unread, and read
+messages are in your incoming mailbox.  For example, ``You have 2 new
+messages, 3 unread messages, 23 read messages.''
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+readmsg(1L), elm(1L), mail(1), mailx(1)
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

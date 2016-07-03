@@ -1,0 +1,82 @@
+.TH ICO 1 "Release 5" "X Version 11"
+.SH NAME
+ico \- animate an icosahedron or other polyhedron
+.SH SYNOPSIS
+.B ico
+[-display display] [-geometry geometry]
+[-r] [-d pattern] [-i] [-dbl] [-faces] [-noedges]
+[-sleep n] [-obj object] [-objhelp] [-colors color-list]
+.SH DESCRIPTION
+.I Ico
+displays a wire-frame rotating polyhedron, with hidden lines removed,
+or a solid-fill polyhedron with hidden faces removed.
+There are a number of different polyhedra available;
+adding a new polyhedron to the program is quite simple.
+.SH OPTIONS
+.TP
+.B -r
+Display on the root window instead of creating a new window.
+.TP
+.B -d pattern
+Specify a bit pattern for drawing dashed lines for wire frames.
+.TP
+.B -i
+Use inverted colors for wire frames.
+.TP
+.B -dbl
+Use double buffering on the display.
+This works for either wire frame or solid fill drawings.
+For solid fill drawings, using this switch results in substantially
+smoother movement.
+Note that this requires twice as many bit planes as without double buffering.
+Since some colors are typically allocated by other programs,
+most eight-bit-plane displays will probably be limited to eight colors
+when using double buffering.
+.TP
+.B -faces
+Draw filled faces instead of wire frames.
+.TP
+.B -noedges
+Don't draw the wire frames.
+Typically used only when -faces is used.
+.TP
+.B -sleep \fIn\fP
+Sleep n seconds between each move of the object.
+.TP
+.B -obj \fIobject\fP
+Specify what object to draw.
+If no object is specified, an icosahedron is drawn.
+.TP
+.B -objhelp
+Print out a list of the available objects, along with information
+about each object.
+.TP
+.B -colors \fIcolor color ...\fP
+Specify what colors should be used to draw the filled faces of the object.
+If less colors than faces are given, the colors are reused.
+.SH ADDING POLYHEDRA
+.LP
+If you have the source to ico, it is very easy to add more polyhedra.
+Each polyhedron is defined in an include file by the name of objXXX.h,
+where XXX is something related to the name of the polyhedron.
+The format of the include file is defined in the file polyinfo.h.
+Look at the file objcube.h to see what the exact format of an objXXX.h
+file should be, then create your objXXX.h file in that format.
+.LP
+After making the new objXXX.h file (or copying in a new one from elsewhere),
+simply do a 'make depend'.
+This will recreate the file allobjs.h, which lists all of the objXXX.h
+files.
+Doing a 'make' after this will rebuild ico with the new object information.
+.SH "SEE ALSO"
+X(1)
+.SH BUGS
+.LP
+Pyramids and tetrahedrons with filled faces do not display correctly.
+.LP
+A separate color cell is allocated for each name in the -colors list,
+even when the same name may be specified twice.
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.

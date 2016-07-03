@@ -1,0 +1,217 @@
+.TH OD 1L "GNU Text Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+od \- dump files in octal and other formats
+.SH SYNOPSIS
+.B od
+[\-abcdfhiloxv] [\-s[bytes]] [\-w[bytes]] [\-A radix] [\-j bytes]
+[\-N bytes] [\-t type] [\-\-skip\-bytes=bytes] [\-\-address\-radix=radix]
+[\-\-read\-bytes=bytes] [\-\-format=type] [\-\-output\-duplicates]
+[\-\-strings[=bytes]] [\-\-width[=bytes]] [\-\-traditional]
+[\-\-help] [\-\-version] [file...]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR od .
+.B od
+writes to the standard output the contents of the given files, or of
+the standard input if the name `\-' is given.  Each line of the output
+consists of the offset in the input file in the leftmost column of
+each line, followed by one or more columns of data from the file, in a
+format controlled by the options.  By default,
+.B od
+prints the file offsets in octal and the file data as two-byte octal
+numbers.
+.LP
+.SS OPTIONS
+.TP
+.I "\-A, \-\-address\-radix=radix"
+Select the base in which file offsets are printed.
+.I radix
+can be one of the following:
+.RS
+.IP d
+decimal
+.IP o
+octal
+.IP x
+hexadecimal
+.IP n
+none (do not print offsets)
+.RE
+.sp
+The default is octal.
+.TP
+.I "\-j, \-\-skip\-bytes=bytes"
+Skip
+.I bytes
+input bytes before formatting and writing.  If
+.B bytes
+begins with `0x' or `0X', it is interpreted in hexadecimal; otherwise,
+if it begins with `0', in octal; otherwise, in decimal.  Appending `b'
+multiplies it by 512, `k' by 1024, and `m' by 1048576.
+.TP
+.I "\-N, \-\-read\-bytes=bytes"
+Only output up to
+.I bytes
+bytes of each input file.  Any prefixes and suffixes on
+.B bytes
+are interpreted as for the
+.I \-j
+option.
+.TP
+.I "\-t, \-\-format=type"
+Select the format in which to output the file data.
+.I type
+is a string of one or more of the below type indicator characters.
+If you include more than one type indicator character in a single
+.I type
+string or use this option more than once,
+.B od
+writes one copy of each output line using each of the data types that
+you specified, in the order that you specified.
+.RS
+.IP a
+named character
+.IP c
+ASCII character or backslash escape
+.IP d
+signed decimal
+.IP f
+floating point
+.IP o
+octal
+.IP u
+unsigned decimal
+.IP x
+hexadecimal
+.RE
+.sp
+Except for types `a' and `c', you can specify the number of bytes to
+use in interpreting each number in the given data type by following
+the type indicator character with a decimal integer.  Alternately, you
+can specify the size of one of the C compiler's built-in data types by
+following the type indicator character with one of the following
+characters.  For integers (d, o, u, x):
+.RS
+.IP C
+char
+.IP S
+short
+.IP I
+int
+.IP L
+long
+.RE
+.sp
+For floating point (f):
+.RS
+.IP F
+float
+.IP D
+double
+.IP L
+long double
+.RE
+.TP
+.I "\-v, \-\-output\-duplicates"
+Output consecutive lines that are identical.  By default,
+when two or more consecutive output lines would be equal,
+.B od
+outputs only the first line, and puts just an asterisk on the
+following line to indicate that identical lines have been elided.
+.TP
+.I "\-s, \-\-strings[=bytes]"
+Instead of the normal output, output only
+string constants in the input, which are a run of at least
+.I bytes
+ASCII graphic (or formatting) characters, terminated by a NUL.  If
+.I bytes
+is omitted, it defaults to 3.
+.TP
+.I "\-w, \-\-width[=bytes]"
+The number of input bytes to format per output line.  It must be a
+multiple of the least common multiple of the sizes associated with the
+specified output types.  If
+.I bytes
+is omitted, it defaults to 32.  If this option is not given, it
+defaults to 16.
+.TP
+.I "\-\-help"
+Print a usage message and exit with a non-zero status.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit.
+.PP
+The next several options map the old, pre-POSIX format
+specification options to the corresponding POSIX format
+specs.  GNU
+.B od
+accepts any combination of old- and new-style options.  Format
+specification options accumulate.
+.TP
+.I "\-a"
+Output as named characters.  Equivalent to
+.IR "\-t a" .
+.TP
+.I "\-b"
+Output as octal bytes.  Equivalent to
+.IR "\-t oC" .
+.TP
+.I "\-c"
+Output as ASCII characters or backslash escapes.  Equivalent to
+.IR "\-t c" .
+.TP
+.I "\-d"
+Output as unsigned decimal shorts.  Equivalent to
+.IR "\-t u2" .
+.TP
+.I "\-f"
+Output as floats.  Equivalent to
+.IR "\-t fF" .
+.TP
+.I "\-h"
+Output as hexadecimal shorts.  Equivalent to
+.IR "\-t x2" .
+.TP
+.I "\-i"
+Output as decimal shorts.  Equivalent to
+.IR "\-t d2" .
+.TP
+.I "\-l"
+Output as decimal longs.  Equivalent to
+.IR "\-t d4" .
+.TP
+.I "\-o"
+Output as octal shorts.  Equivalent to
+.IR "\-t o2" .
+.TP
+.I "\-x"
+Output as hexadecimal shorts.  Equivalent to
+.IR "\-t x2" .
+.TP
+.I "\-\-traditional"
+Recognize the pre-POSIX non-option arguments that some older versions of
+od accepted.  The following syntax
+.br
+.B od
+\-\-traditional [file] [[+]offset[.][b] [[+]label[.][b]]]
+.br
+can be used
+to specify at most one file and optional arguments specifying
+an offset and a pseudo-start address,
+.IR "label."
+By default,
+.IR "offset"
+is interpreted as an octal number specifying how many input bytes to
+skip before formatting and writing.  The optional trailing decimal point
+forces the interpretation of
+.IR "offset"
+as a decimal number.
+If no decimal is specified and the offset begins with `0x' or `0x' it is
+interpreted as a hexadecimal number.  If there is a trailing `b',
+the number of bytes skipped will be
+.IR "offset"
+multiplied by 512.
+The label argument is interpreted just like offset, but it specifies
+an initial pseudo-address.  The pseudo addresses are displayed in
+parentheses following any normal address.

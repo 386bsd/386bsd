@@ -1,0 +1,223 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetTile 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetTile, XSetStipple, XSetTSOrigin \- GC convenience routines
+.SH SYNTAX
+.\" $Header: XSetTile.f,v 1.1 88/02/26 10:03:42 mento Exp $
+XSetTile\^(\^\fIdisplay\fP, \fIgc\fP\^, \fItile\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      Pixmap \fItile\fP\^;
+.LP
+.\" $Header: XSetStipple.f,v 1.1 88/02/26 10:03:40 mento Exp $
+XSetStipple\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIstipple\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      Pixmap \fIstipple\fP\^;
+.LP
+.\" $Header: XSetTSOrig.f,v 1.1 88/02/26 10:03:41 mento Exp $
+XSetTSOrigin\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIts_x_origin\fP\^, \fIts_y_origin\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIts_x_origin\fP\^, \fIts_y_origin\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: stipple.a,v 1.2 88/05/09 12:03:58 mento Exp $
+.IP \fIstipple\fP 1i
+Specifies the stipple you want to set for the specified GC.
+.\" $Header: tile1.a,v 1.2 88/05/09 12:02:14 mento Exp $
+.IP \fItile\fP 1i
+Specifies the fill tile you want to set for the specified GC. 
+.\" $Header: tsxy.a,v 1.2 88/04/06 09:57:10 mento Exp $
+.IP \fIts_x_origin\fP 1i
+.br
+.ns
+.IP \fIts_y_origin\fP 1i
+Specify the x and y coordinates of the tile and stipple origin.
+.SH DESCRIPTION
+.\" $Header: XSetTile.d,v 1.2 88/06/11 07:53:37 mento Exp $
+The
+.ZN XSetTile
+function sets the fill tile in the specified GC.
+The tile and GC must have the same depth,
+or a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetTile
+can generate
+.ZN BadAlloc ,
+.ZN BadGC ,
+.ZN BadMatch ,
+and
+.ZN BadPixmap 
+errors.
+.LP
+.\" $Header: XSetStipple.d,v 1.2 88/06/11 07:53:35 mento Exp $
+The
+.ZN XSetStipple
+function sets the stipple in the specified GC.
+The stipple must have a depth of one,
+or a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetStipple
+can generate
+.ZN BadAlloc ,
+.ZN BadGC ,
+.ZN BadMatch ,
+and
+.ZN BadPixmap 
+errors.
+.LP
+.\" $Header: XSetTSOrig.d,v 1.2 88/06/11 07:53:36 mento Exp $
+The
+.ZN XSetTSOrigin
+function sets the tile/stipple origin in the specified GC.
+When graphics requests call for tiling or stippling,
+the parent's origin will be interpreted relative to whatever destination
+drawable is specified in the graphics request.
+.LP
+.ZN XSetTSOrigin
+can generate
+.ZN BadAlloc
+and
+.ZN BadGC 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badgc.e,v 1.1 87/09/04 08:23:02 mento Locked $
+.TP 1i
+.ZN BadGC
+A value for a GContext argument does not name a defined GContext.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badpixmap.e,v 1.1 87/09/04 08:23:16 mento Exp $
+.TP 1i
+.ZN BadPixmap
+A value for a Pixmap argument does not name a defined Pixmap.
+.SH "SEE ALSO"
+XCreateGC(3X11),
+XQueryBestSize(3X11),
+XSetArcMode(3X11),
+XSetClipOrigin(3X11),
+XSetFillStyle(3X11),
+XSetFont(3X11),
+XSetLineAttributes(3X11),
+XSetState(3X11)
+.br
+\fI\*(xL\fP

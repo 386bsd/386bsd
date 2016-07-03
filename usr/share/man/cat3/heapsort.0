@@ -1,0 +1,132 @@
+QSORT(3)                  386BSD Programmer's Manual                  QSORT(3)
+
+NNAAMMEE
+     qqssoorrtt,, hheeaappssoorrtt - sort functions
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssttddlliibb..hh>>
+
+     _v_o_i_d
+     qqssoorrtt(_v_o_i_d *_b_a_s_e, _s_i_z_e__t _n_m_e_m_b, _s_i_z_e__t _s_i_z_e,
+             _i_n_t (*_c_o_m_p_a_r)(_c_o_n_s_t _v_o_i_d *, _c_o_n_s_t _v_o_i_d *))
+
+     _i_n_t
+     hheeaappssoorrtt(_v_o_i_d *_b_a_s_e, _s_i_z_e__t _n_m_e_m_b, _s_i_z_e__t _s_i_z_e,
+             _i_n_t (*_c_o_m_p_a_r)(_c_o_n_s_t _v_o_i_d *, _c_o_n_s_t _v_o_i_d *))
+
+DDEESSCCRRIIPPTTIIOONN
+     The qqssoorrtt() function is a modified partition-exchange sort, or quicksort.
+     The hheeaappssoorrtt() function is a modified selection sort.
+
+     The qqssoorrtt() and hheeaappssoorrtt() functions sort an array of _n_m_e_m_b objects, the
+     initial member of which is pointed to by _b_a_s_e. The size of each object is
+     specified by _s_i_z_e.
+
+     The contents of the array are sorted in ascending order according to a
+     comparison function pointed to by _c_o_m_p_a_r, which is called with two
+     arguments that point to the objects being compared.
+
+     The comparison function must return an integer less than, equal to, or
+     greater than zero if the first argument is considered to be respectively
+     less than, equal to, or greater than the second.
+
+     The functions qqssoorrtt() and hheeaappssoorrtt() are _n_o_t stable, that is, if two
+     members compare as equal, their order in the sorted array is undefined.
+
+     The qqssoorrtt() function is an implementation of C.A.R. Hoare's ``quicksort''
+     algorithm, a variant of partition-exchange sorting; in particular, see
+     D.E. Knuth's Algorithm Q.  QQssoorrtt() takes O N lg N average time.  This
+     implementation uses median selection to avoid the traditional O N**2
+     worst-case behavior.
+
+     The hheeaappssoorrtt() function is an implementation of J.W.J. William's
+     ``heapsort'' algorithm, a variant of selection sorting; in particular,
+     see D.E. Knuth's Algorithm H.  HHeeaappssoorrtt() takes O N lg N worst-case time.
+     Its _o_n_l_y advantage over qqssoorrtt() is that it uses no additional memory.
+
+RREETTUURRNN VVAALLUUEESS
+     The qqssoorrtt() function returns no value.
+
+     Upon successful completion, hheeaappssoorrtt() returns 0.  Otherwise, it returns
+     -1 and the global variable _e_r_r_n_o is set to indicate the error.
+
+EERRRROORRSS
+     The hheeaappssoorrtt() function succeeds unless:
+
+     [EINVAL]      The _s_i_z_e argument is zero.
+
+CCOOMMPPAATTIIBBIILLIITTYY
+     Previous versions of qqssoorrtt() did not permit the comparison routine to
+     itself call qqssoorrtt(_3).  This is no longer true.
+
+SSEEEE AALLSSOO
+     sort(1),  radixsort(3)
+
+
+     Hoare, C.A.R., "Quicksort", _T_h_e _C_o_m_p_u_t_e_r _J_o_u_r_n_a_l, 5:1, pp. 10-15, 1962.
+
+     Williams, J.W.J, "Heapsort", _C_o_m_m_u_n_i_c_a_t_i_o_n_s _o_f _t_h_e _A_C_M, 7:1, pp. 347-348,
+     1964.
+
+     Knuth, D.E., "Sorting and Searching", _T_h_e _A_r_t _o_f _C_o_m_p_u_t_e_r _P_r_o_g_r_a_m_m_i_n_g,
+     Vol. 3, pp. 114-123, 145-149, 1968.
+
+SSTTAANNDDAARRDDSS
+     The qqssoorrtt() function conforms to ANSI C3.159-1989 (``ANSI C'').
+
+BSD Experimental                 June 29, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

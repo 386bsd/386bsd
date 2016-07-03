@@ -1,0 +1,98 @@
+@(#) $Header: INSTALL,v 1.11 91/01/09 14:45:52 mccanne Exp $ (LBL)
+
+To build tcpdump, edit the Makefile to make appropriate changes for
+your site.  Things you may have to change are:
+ - Define "CC = cc" if you don't have gcc.
+ - Define "YACC = yacc" if you don't have bison.
+   Bison is available via anonymous ftp from prep.ai.mit.edu (18.71.0.38),
+   in the directory pub/gnu.  Set binary mode and retrieve the compressed 
+   tarchive pub/gnu/bison-1.11.tar.Z (or whatever the highest version is).
+ - Define "LEX = lex" if you don't have flex.  If your version of
+   flex is older than 2.1, you must add -DFLEX_SCANNER to DEFINES.
+   Flex is available via anonymous ftp from ftp.ee.lbl.gov (128.3.254.68).
+   Set binary mode and retrieve the compressed tarchive flex-2.3.tar.Z
+   (or whatever the highest version is).
+ - Redefine BINDEST and/or MANDEST if you want the binary or manual
+   entry installed somewhere else.
+ - Remove -DCSLIP from DEFINES unless you have BPF and SLIP in your kernel,
+   and net/if_sl.c has been modified to interact with BPF (or you have
+   installed our SLIP software).
+ - Remove -DPPP from DEFINES unless you have BPF in your kernel, and any
+   point-to-point drivers have been modified to interact with BPF.
+ - On IBM RTs running 4.3BSD and enet, these defines have been known to work:
+	DEFINES = -DNOVFPRINTF -DIBMRTPC
+	CFLAGS = $(STANDARD_CFLAGS) -U__STDC__
+	MD = echo rt
+ - Define GROUP to the group name that tcpdump should be installed under.
+   For security reasons, we have found it convenient to create a group
+   associated with raw network access.
+
+Since tcpdump now uses the BPF packet filtering machinery, it includes
+some files that may not be present your system (i.e., <net/bpf.h>).
+To get around this, we have placed copies of the required files in 
+tcpdump/net, and added '-I..' to the Makefile INCLUDES so 'cc' can 
+find them.
+
+Once the Makefile is right, just type "make".  This will create
+a subdirectory appropriate for the architecture and OS you're building
+on (i.e., "sun3-sunos3", "sun4-sunos4", "hp300-bsd", etc.) by
+setting up appropriate links.  If the file /dev/bpf0 exists, the make
+procedure assumes you want to use BPF.  If /usr/include/net/enet.h exists,
+then enet is assumed.  Otherwise, the packet capture
+interface is deduced from the OS as follows:
+
+		BSD - BPF
+		SunOS 3 - NIT
+		SunOS 4 - STREAMS NIT
+		Ultrix - DEC Packetfilter
+
+We use separate subdirectories so we can support multiple platforms from
+one copy of the source.  DON'T say "make tcpdump" in the top level
+directory -- it won't work and it will leave a lot of useless .o's around.
+
+If linking tcpdump fails with "Undefined: _alloca" when using bison
+on a Sun4, your version of bison is broken. To fix it, insert the
+lines:
+
+	#ifdef __GNUC__
+	#define alloca __builtin_alloca
+	#else
+	#ifdef sparc
+	#include <alloca.h>
+	#else
+	char *alloca ();
+	#endif
+	#endif
+
+right after the (100 line!) GNU license comment in bison.simple,
+remove sun4-sunos4/tcpgram.[co], and fire up make again.
+
+If you are running a version of SunOS earlier than 4.1, you will
+need to replace the Sun supplied /sys/sun{3,4,4c}/OBJ/nit_if.o
+with the appropriate version from this distribution's SUNOS4
+subdirectory and build a new kernel:
+
+       nit_if.o.sun3-sunos4		(any flavor of sun3)
+       nit_if.o.sun4c-sunos4.0.3c	(SS1, SS1+, IPC, SLC, etc.)
+       nit_if.o.sun4-sunos4		(Sun4's not covered by
+					    nit_if.o.sun4c-sunos4.0.3c)
+
+These nit replacements fix a bug that makes nit essentially unusable in
+pre-SunOS 4.1.  In addition, our sun4c-sunos4.0.3c nit gives you
+timestamps to the resolution of the SS-1 clock (1 us) rather than the
+lousy 20ms timestamps Sun gives you  (tcpdump will print out the full
+timestamp resolution if it finds it's running on a SS-1).
+
+If everything builds ok, su and type "make install".  This will
+install the tcpdump and its manual entry.  Note that since NIT
+can only be used by root, tcpdump is installed setuid to root.  
+As a security measure, we install it exectuable only by group wheel.
+On the other hand, BPF packet access is controlled by permissions
+to /dev/bpf0 etc., and in this case, tcpdump does not have to be setuid.
+
+If you're running a BSD system or would like to replace Sun's NIT interface,
+you need to install our packet filter in your kernel.  See bpf/README for 
+more details.
+
+
+

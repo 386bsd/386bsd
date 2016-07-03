@@ -1,0 +1,132 @@
+
+
+
+GTBL(@MAN1EXT@)                1990               GTBL(@MAN1EXT@)
+
+
+NNAAMMEE
+       gtbl - table formatter for groff
+
+SSYYNNOOPPSSIISS
+       ggttbbll [ --CCvv ] [ _f_i_l_e_s...  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       ggttbbll  is  a  preprocessor for ggrrooffff for formatting tables.
+       Normally, it should be invoked  using  the  --tt  option  of
+       ggrrooffff..  It is highly compatible with ttbbll.  The output gen-
+       erated by ggttbbll cannot be processed with ddiittrrooffff;  it  must
+       be  processed  with  ggttrrooffff.  If no files are given on the
+       command line, the standard input will be read.  A filename
+       of -- will cause the standard input to be read.
+
+OOPPTTIIOONNSS
+       --CC     Recognize ..TTSS and ..TTEE even when followed by a char-
+              acter other than space or newline.
+
+       --vv     Print the version number.
+
+UUSSAAGGEE
+       Only the differences between ggttbbll and  ttbbll  are  described
+       here.
+
+       The  ff  format  modifier  can  be followed by an arbitrary
+       length font name in parentheses.
+
+       There is a dd format modifier which means that a vertically
+       spanning  entry  should  be  aligned  at the bottom of its
+       range.
+
+       There is no limit on the number of columns in a table, nor
+       any  limit on the number of text blocks.  All the lines of
+       a table are considered in deciding column widths, not just
+       the  first  200.   Table  continuation (..TT&&) lines are not
+       restricted to the first 200 lines.
+
+       Numeric and alphabetic items may appear in the  same  col-
+       umn.
+
+       Numeric and alphabetic items may span horizontally.
+
+       ggttbbll  uses  register,  string,  macro  and diversion names
+       beginning with 33.  When using ggttbbll you should avoid  using
+       any names beginning with a 33.
+
+BBUUGGSS
+       You  should use ..TTSS HH/..TTHH for _a_l_l multi-page boxed tables.
+       If there is no header that you wish to appear at  the  top
+       of  each page of the table, place the ..TTHH line immediately
+       after the format section.  Do  not  enclose  a  multi-page
+       table  within  keep/release  macros,  or  divert it in any
+       other way.
+
+
+
+July                            21                              1
+
+
+
+
+
+GTBL(@MAN1EXT@)                1990               GTBL(@MAN1EXT@)
+
+
+       A text block within a table must be able  to  fit  on  one
+       page.
+
+SSEEEE AALLSSOO
+       ggrrooffff(@MAN1EXT@), ggttrrooffff(@MAN1EXT@)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+July                            21                              2
+
+

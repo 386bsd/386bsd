@@ -1,0 +1,1092 @@
+This is Info file ../info/sc, produced by Makeinfo-1.55 from the input
+file sc.texi.
+
+   This document describes the Supercite Version 3.1 package for citing
+and attributing the replies for various GNU Emacs mail and news reading
+subsystems.
+
+   Copyright (C) 1993 Barry A. Warsaw
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+
+File: sc,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
+
+   This document describes the Supercite Version 3.1 package for citing
+and attributing the replies for various GNU Emacs mail and news reading
+subsystems.  The manual is divided into the following chapters.
+
+* Menu:
+
+* Introduction::
+* Citations::
+* Getting Connected::
+* Replying and Yanking::
+* Selecting an Attribution::
+* Configuring the Citation Engine::
+* Post-yank Formatting Commands::
+* Information Keys and the Info Alist::
+* Reference Headers::
+* Hints to MUA Authors::
+* Version 3 Changes::
+* Thanks and History::
+* The Supercite Mailing List::
+
+* Concept Index::
+* Command Index::
+* Key Index::
+* Variable Index::
+
+
+File: sc,  Node: Introduction,  Next: Usage Overview,  Prev: Top,  Up: Top
+
+Introduction
+************
+
+   Supercite version 3.1 is a GNU Emacs package written entirely in
+Emacs Lisp. It interfaces to most of the commonly used Emacs mail user
+agents ("MUAs") and news user agents ("NUAs"), and provides
+sophisticated facilities for the citing and attributing of message
+replies.  Supercite has a very specific and limited role in the process
+of composing replies to both USENET network news and electronic mail.
+
+   The preferred way to spell Supercite is with a capital `S',
+lowercase `upercite'.  There are a few alternate spellings out there
+and I won't be terribly offended if you use them.  People often ask
+though...
+
+* Menu:
+
+* Usage Overview::
+* What Supercite Does Not Do::
+* What Supercite Does::
+
+   Supercite is only useful in conjunction with MUAs and NUAs such as
+VM, GNUS, RMAIL, etc. (hereafter referred to collectively as MUAs).
+Supercite is typically called by the MUA after a reply buffer has been
+setup.  Thereafter, Supercite's many commands and formatting styles are
+available in that reply buffer until the reply is sent.  Supercite is
+re-initialized in each new reply buffer.
+
+   Supercite is currently at major revision 3.1, and is known to work
+in the following environments:
+
+Emacsen:
+     	GNU Emacs 18.57 through 18.59, all current FSF Emacs 19,
+     all current Lucid Emacs 19, and Epoch 4.
+
+MUAs:
+     	VM 4.37 and beyond (including VM version 5), RMAIL, MH-E 3.7 and
+     beyond, PCMAIL.
+
+NUAs:
+     	RNEWS, GNUS 3.12 and beyond, GNEWS.
+
+   For systems with version numbers, all known subsequent versions also
+work with Supercite.  For those systems without version numbers,
+Supercite probably works with any recently released version.  Note that
+only some of these systems will work with Supercite "out of the box."
+All others must overload interfacing routines to supply the necessary
+glue.  *Note Getting Connected:: for more details.
+
+
+File: sc,  Node: Usage Overview,  Next: What Supercite Does Not Do,  Prev: Introduction,  Up: Introduction
+
+Usage Overview
+==============
+
+   Typical usage is as follows. You want to reply or followup to a
+message in your MUA. You will probably hit `r' (i.e., "reply") or `f'
+(i.e., "forward") to begin composing the reply.  In response, the MUA
+will create a reply buffer and initialize the outgoing mail headers
+appropriately.  The body of the reply will usually be empty at this
+point.  You now decide that you would like to include part of the
+original message in your reply. To do this, you "yank" the original
+message into the reply buffer, typically with a key stroke such as `C-c
+C-y'.  This sequence will invoke an MUA-specific function which fills
+the body of the reply with the original message and then "attributes"
+this text to its author.  This is called "citing" and its effect is to
+prefix every line from the original message with a special text tag.
+Most MUAs provide some default style of citing; by using Supercite you
+gain a wider flexibility in the look and style of citations.
+Supercite's only job is to cite the original message.
+
+
+File: sc,  Node: What Supercite Does Not Do,  Next: What Supercite Does,  Prev: Usage Overview,  Up: Introduction
+
+What Supercite Doesn't Do
+=========================
+
+   Because of this clear division of labor, there are useful features
+which are the sole responsibility of the MUA, even though it might seem
+that Supercite should provide them.  For example, many people would
+like to be able to yank (and cite) only a portion of the original
+message.  Since Supercite only modifies the text it finds in the reply
+buffer as set up by the MUA, it is the MUA's responsibility to do
+partial yanking.  *Note Reply Buffer Initialization::.
+
+   Another potentially useful thing would be for Supercite to set up the
+outgoing mail headers with information it gleans from the reply buffer.
+But by previously agreed upon convention, any text above the
+`mail-header-separator' which separates mail headers from message
+bodies cannot be modified by Supercite.  Supercite, in fact, doesn't
+know anything about the meaning of these headers, and never ventures
+outside the designated region. *Note Hints to MUA Authors:: for more
+details.
+
+
+File: sc,  Node: What Supercite Does,  Next: Citations,  Prev: What Supercite Does Not Do,  Up: Introduction
+
+What Supercite Does
+===================
+
+   Supercite is invoked for the first time on a reply buffer via your
+MUA's reply or forward command.  This command will actually perform
+citations by calling a hook variable to which Supercite's top-level
+function `sc-cite-original' has been added.  When `sc-cite-original' is
+executed, the original message must be set up in a very specific way,
+but this is handled automatically by the MUA.  *Note Hints to MUA
+Authors::.
+
+   The first thing Supercite does, via `sc-cite-original', is to parse
+through the original message's mail headers.  It saves this data in an
+"information association list", or "info alist".  The information in
+this list is used in a number of places throughout Supercite.  *Note
+Information Keys and the Info Alist::.
+
+   After the mail header info is extracted, the headers are optionally
+removed ("nuked") from the reply.  Supercite then writes a "reference
+header" into the buffer.  This reference header is a string carrying
+details about the citation it is about to perform.
+
+   Next, Supercite visits each line in the reply, transforming the line
+according to a customizable "script".  Lines which were not previously
+cited in the original message are given a citation, while already cited
+lines remain untouched, or are coerced to your preferred style.
+Finally, Supercite installs a keymap into the reply buffer so that you
+have access to Supercite's post-yank formatting and reciting commands as
+you subsequently edit your reply.  You can tell that Supercite has been
+installed into the reply buffer because that buffer's modeline will
+display the minor mode string `SC'.
+
+   When the original message is cited by `sc-cite-original', it will
+(optionally) be filled by Supercite.  However, if you manually edit the
+cited text and want to re-fill it, you must use an add-on package such
+as `filladapt' or `gin-mode'.  These packages can recognize Supercited
+text and will fill them appropriately.  Emacs' built-in filling
+routines, e.g. `fill-paragraph', do not recognize cited text and will
+not re-fill them properly because it cannot guess the `fill-prefix'
+being used.  *Note Post-yank Formatting Commands:: for details.
+
+   As mentioned above, Supercite provides commands to recite or uncite
+regions of text in the reply buffer, and commands to perform other
+beautifications on the cited original text, maintaining consistent and
+informative citations throughout.  Supercite tries to be as configurable
+as possible to allow for a wide range of personalized citation styles,
+but it is also immediately useful with the default configuration, once
+it has been properly connected to your MUA.  *Note Getting Connected::
+for more details.
+
+
+File: sc,  Node: Citations,  Next: Citation Elements,  Prev: What Supercite Does,  Up: Top
+
+Citations
+*********
+
+   A "citation" is the acknowledgement of the original author of a mail
+message in the body of the reply.  There are two basic citation styles
+which Supercite supports.  The first, called "nested citations" is an
+anonymous form of citation; in other words, an indication is made that
+the cited line was written by someone *other* that the current message
+author (i.e., other than you, the person composing the reply), but no
+reference is made as to the identity of the original author.  This
+style should look familiar since its use on the net is widespread.
+Here's an example of what a message buffer would look like using nested
+citations after multiple replies:
+
+     >> John originally wrote this
+     >> and this as well
+     > Jane said that John didn't know
+     > what he was talking about
+     And that's what I think too.
+
+* Menu:
+
+* Citation Elements::
+* Recognizing Citations::
+
+   Note that multiple inclusions of the original messages result in a
+nesting of the ``>'' characters.  This can sometimes be quite confusing
+when many levels of citations are included since it may be difficult or
+impossible to figure out who actually participated in the thread, and
+multiple nesting of ``>'' characters can sometimes make the message
+very difficult for the eye to scan.
+
+   In "non-nested citations", each cited line begins with an
+informative string attributing that line to the original author. Only
+the first level of attribution will be shown; subsequent citations don't
+nest the citation strings. The above dialog might look like this when
+non-nested citations are used:
+
+     John> John originally wrote this
+     John> and this as well
+     Jane> Jane said that John didn't know
+     Jane> what he was talking about
+     And that's what I think too.
+
+   Notice here that my inclusion of Jane's inclusion of John's original
+message did not result in a line cited with `Jane>John>'.
+
+   Supercite supports both styles of citation, and the variable
+`sc-nested-citation-p' controls which style it will use when citing
+previously uncited text. When this variable is `nil' (the default),
+non-nested citations are used.  When non-`nil', nested citations are
+used.
+
+
+File: sc,  Node: Citation Elements,  Next: Recognizing Citations,  Prev: Citations,  Up: Citations
+
+Citation Elements
+=================
+
+   "Citation strings" are composed of one or more elements. Non-nested
+citations are composed of four elements, three of which are directly
+user definable.  The elements are concatenated together, in this order:
+
+  1. The "citation leader".  The citation leader is contained in the
+     variable `sc-citation-leader', and has the default value of a
+     string containing four spaces.
+
+  2. The "attribution string".  This element is supplied automatically
+     by Supercite, based on your preferences and the original message's
+     mail headers, though you may be asked to confirm Supercite's
+     choice.  *Note Selecting an Attribution:: for more details.
+
+  3. The "citation delimiter".  This string, contained in the variable
+     `sc-citation-delimiter' visually separates the citation from the
+     text of the line.  This variable has a default value of `">"' and
+     for best results, the string should consist of only a single
+     character.
+
+  4. The "citation separator".  The citation separator is contained in
+     the variable `sc-citation-separator', and has the default value of
+     a string containing a single space.
+
+   For example, suppose you were using the default values for the above
+variables, and Supercite provided the attribution string `Jane'.  In
+this case, the composed, non-nested citation string used might be
+something like `"    Jane> "'.  This citation string will be inserted
+in front of every line in the original message that is not already
+cited.
+
+   Nested citations, being simpler than non-nested citations, are
+composed of the same elements, sans the attribution string.  Supercite
+is smart enough to not put additional spaces between citation
+delimiters for multi-level nested citations.
+
+
+File: sc,  Node: Recognizing Citations,  Next: Getting Connected,  Prev: Citation Elements,  Up: Citations
+
+Recognizing Citations
+=====================
+
+   Supercite also recognizes citations in the original article, and can
+transform these already cited lines in a number of ways. This is how
+Supercite suppresses the multiple citing of non-nested citations.
+Recognition of cited lines is controlled by variables analogous to those
+that make up the citation string as mentioned previously.
+
+   The variable `sc-citation-leader-regexp' describes how citation
+leaders can look, by default it matches any number of spaces or tabs.
+Note that since the lisp function `looking-at' is used to do the
+matching, if you change this variable it need not start with a leading
+`"^"'.
+
+   Similarly, the variables `sc-citation-delimiter-regexp' and
+`sc-citation-separator-regexp' respectively describe how citation
+delimiters and separators can look.  They follow the same rule as
+`sc-citation-leader-regexp' above.
+
+   When Supercite composes a citation string, it provides the
+attribution automatically.  The analogous variable which handles
+recognition of the attribution part of citation strings is
+`sc-citation-root-regexp'.  This variable describes the attribution
+root for both nested and non-nested citations.  By default it can match
+zero-to-many alphanumeric characters (also ".", "-", and "_").  But in
+some situations, Supercite has to determine whether it is looking at a
+nested or non-nested citation.  Thus the variable
+`sc-citation-nonnested-root-regexp' is used to describe only non-nested
+citation roots.  It is important to remember that if you change
+`sc-citation-root-regexp' you should always also change
+`sc-citation-nonnested-root-regexp'.
+
+   Nemacs users: For best results, try setting
+`sc-citation-root-regexp' to:
+
+     "\\([-._a-zA-Z0-9]\\|\\cc\\|\\cC\\|\\ch\\|\\cH\\|\\ck\\|\\cK\\|\\ca\\|\\cg\\|\\cr\\|\\cu\\)*"
+
+   Mule users: For best results, try setting `sc-citation-root-regexp'
+to:
+
+     "\\([-._a-zA-Z0-9]\\|\\cj\\)*"
+
+
+File: sc,  Node: Information Keys and the Info Alist,  Next: Reference Headers,  Prev: Miscellaneous Commands,  Up: Top
+
+Information Keys and the Info Alist
+***********************************
+
+   "Mail header information keys" are nuggets of information that
+Supercite extracts from the various mail headers of the original
+message, placed in the reply buffer by the MUA.  Information is kept in
+the "Info Alist" as key-value pairs, and can be retrieved for use in
+various places within Supercite, such as in header rewrite functions and
+attribution selection.  Other bits of data, composed and created by
+Supercite, are also kept as key-value pairs in this alist. In the case
+of mail fields, the key is the name of the field, omitting the trailing
+colon.  Info keys are always case insensitive (as are mail headers), and
+the value for a corresponding key can be retrieved from the alist with
+the `sc-mail-field' function.  Thus, if the following fields were
+present in the original article:
+
+     Date: 08 April 1991, 17:32:09 EST
+     Subject: Better get out your asbestos suit
+
+then, the following lisp constructs return:
+
+     (sc-mail-field "date")
+     ==> "08 April 1991, 17:32:09 EST"
+     
+     (sc-mail-field "subject")
+     ==> "Better get out your asbestos suit"
+
+   Since the argument to `sc-mail-field' can be any string, it is
+possible that the mail field will not be present on the info alist
+(possibly because the mail header was not present in the original
+message). In this case, `sc-mail-field' will return the value of the
+variable `sc-mumble'.
+
+   Supercite always places all mail fields found in the yanked original
+article into the info alist.  If possible, Supercite will also places
+the following keys into the info alist:
+
+`"sc-attribution"'
+     the selected attribution string.
+
+`"sc-citation"'
+     the non-nested citation string.
+
+`"sc-from-address"'
+     email address extracted from the `From:' field.
+
+`"sc-reply-address"'
+     email address extracted from the `Reply-To:' field.
+
+`"sc-sender-address"'
+     email address extracted from the `Sender:' field.
+
+`"sc-emailname"'
+     email terminus extracted from the `From:' field.
+
+`"sc-initials"'
+     the author's initials.
+
+`"sc-author"'
+     the author's full name.
+
+`"sc-firstname"'
+     the author's first name.
+
+`"sc-lastname"'
+     the author's last name.
+
+`"sc-middlename-1"'
+     the author's first middle name.
+
+   If the author's name has more than one middle name, they will appear
+as info keys with the appropriate index (e.g., `"sc-middlename-2"',
+...).  *Note Selecting an Attribution::.
+
+
+File: sc,  Node: Reference Headers,  Next: The Built-in Header Rewrite Functions,  Prev: Information Keys and the Info Alist,  Up: Top
+
+Reference Headers
+*****************
+
+   Supercite will insert an informative "reference header" at the
+beginning of the cited body of text, which display more detail about the
+original article and provides the mapping between the attribution and
+the original author in non-nested citations.  Whereas the citation
+string usually only contains a portion of the original author's name,
+the reference header can contain such information as the author's full
+name, email address, the original article's subject, etc.  In fact any
+information contained in the info alist can be inserted into a reference
+header.
+
+* Menu:
+
+* The Built-in Header Rewrite Functions::
+* Electric References::
+
+   There are a number of built-in "header rewrite functions" supplied
+by Supercite, but you can write your own custom header rewrite functions
+(perhaps using the built-in ones as examples). The variable
+`sc-rewrite-header-list' contains the list of such header rewrite
+functions.  This list is consulted both when inserting the initial
+reference header, and when displaying "electric references".  *Note
+Electric References::.
+
+   When Supercite is initially run on a reply buffer (via
+`sc-cite-original'), it will automatically call one of these functions.
+The one it uses is defined in the variable `sc-preferred-header-style'.
+The value of this variable is an integer which is an index into the
+`sc-rewrite-header-list', beginning at zero.
+
+
+File: sc,  Node: The Built-in Header Rewrite Functions,  Next: Electric References,  Prev: Reference Headers,  Up: Reference Headers
+
+The Built-in Header Rewrite Functions
+=====================================
+
+   Below are examples of the various built-in header rewrite functions.
+Please note the following: first, the text which appears in the
+examples below as INFOKEY indicates that the corresponding value of the
+info key from the info alist will be inserted there.  (*Note
+Information Keys and the Info Alist::).  For example, in
+`sc-header-on-said' below, DATE and FROM correspond to the values of the
+`Date:' and `From:' mail headers respectively.
+
+   Also, the string `">>>>>"' below is really the value of the variable
+`sc-reference-tag-string'.  This variable is used in all built-in
+header rewrite functions, and you can customize its value to change the
+tag string globally.
+
+   Finally, the references headers actually written may omit certain
+parts of the header if the info key associated with INFOKEY is not
+present in the info alist.  In fact, for all built-in headers, if the
+`From:' field is not present in the mail headers, the entire reference
+header will be omitted (but this usually signals a serious problem
+either in your MUA or in Supercite's installation).
+
+`sc-no-header'
+     This function produces no header. It should be used instead of
+     `nil' to produce a blank header.  This header can possibly contain
+     a blank line after the `mail-header-separator' line.
+
+`sc-no-blank-line-or-header'
+     This function is similar to `sc-no-header' except that any blank
+     line after the `mail-header-separator' line will be removed.
+
+`sc-header-on-said'
+     `>>>>> On DATE, FROM said:'
+
+`sc-header-inarticle-writes'
+     `>>>>> In article MESSAGE-ID, FROM writes:'
+
+`sc-header-regarding-adds'
+     `>>>>> Regarding SUBJECT; FROM adds:'
+
+`sc-header-attributed-writes'
+     `>>>>> "SC-ATTRIBUTION" == SC-AUTHOR <SC-REPLY-ADDRESS> writes:'
+
+`sc-header-author-writes'
+     `>>>>> SC-AUTHOR writes:'
+
+`sc-header-verbose'
+     `>>>>> On DATE,'
+     `>>>>> SC-AUTHOR'
+     `>>>>> from the organization of ORGANIZATION'
+     `>>>>> who can be reached at: SC-REPLY-ADDRESS'
+     `>>>>> (whose comments are cited below with: "SC-CITE")'
+     `>>>>> had this to say in article MESSAGE-ID'
+     `>>>>> in newsgroups NEWSGROUPS'
+     `>>>>> concerning the subject of SUBJECT'
+     `>>>>> see REFERENCES for more details'
+
+
+File: sc,  Node: Electric References,  Next: Hints to MUA Authors,  Prev: The Built-in Header Rewrite Functions,  Up: Reference Headers
+
+Electric References
+===================
+
+   By default, when Supercite cites the original message for the first
+time, it just goes ahead and inserts the reference header indexed by
+`sc-preferred-header-style'.  However, you may want to select different
+reference headers based on the type of reply or forwarding you are
+doing. You may also want to preview the reference header before
+deciding whether to insert it into the reply buffer or not. Supercite
+provides an optional "electric reference" mode which you can drop into
+to give you this functionality.
+
+   If the variable `sc-electric-references-p' is non-`nil', Supercite
+will bring up an electric reference mode buffer and place you into a
+recursive edit.  The electric reference buffer is read-only, so you
+cannot directly modify the reference text until you exit electric
+references and insert the text into the reply buffer.  But you can cycle
+through all the reference header rewrite functions in your
+`sc-rewrite-header-list'.
+
+   You can also set a new preferred header style, jump to any header, or
+jump to the preferred header. The header will be shown in the electric
+reference buffer and the header index and function name will appear in
+the echo area.
+
+   The following commands are available while in electric reference mode
+(shown here with their default key bindings):
+
+`sc-eref-next' (`n')
+     Displays the next reference header in the electric reference
+     buffer. If the variable `sc-electric-circular-p' is non-`nil',
+     invoking `sc-eref-next' while viewing the last reference header in
+     the list will wrap around to the first header.
+
+`sc-eref-prev' (`p')
+     Displays the previous reference header in the electric reference
+     buffer.  If the variable `sc-electric-circular-p' is non-`nil',
+     invoking `sc-eref-prev' will wrap around to the last header.
+
+`sc-eref-goto' (`g')
+     Goes to a specified reference header.  The index (into the
+     `sc-rewrite-header-list') can be specified as a numeric argument to
+     the command.  Otherwise, Supercite will query you for the index in
+     the minibuffer.
+
+`sc-eref-jump' (`j')
+     Display the preferred reference header, i.e., the one indexed by
+     the current value of `sc-preferred-header-style'.
+
+`sc-eref-setn' (`s')
+     Set the preferred reference header (i.e.,
+     `sc-preferred-header-style') to the currently displayed header.
+
+`sc-eref-exit' (LFD, RET, and ESC C-c)
+     Exit from electric reference mode and insert the current header
+     into the reply buffer.
+
+`sc-eref-abort' (`q', `x')
+     Exit from electric reference mode without inserting the current
+     header.
+
+Supercite will execute the hook `sc-electric-mode-hook' before entering
+electric reference mode.
+
+
+File: sc,  Node: Getting Connected,  Next: Emacs 19 MUAs,  Prev: Recognizing Citations,  Up: Top
+
+Getting Connected
+*****************
+
+   Hitting `C-c C-y' in your MUA's reply buffer yanks and cites the
+original message into the reply buffer.  In reality, the citation of the
+original message is performed via a call through a configurable hook
+variable.  The name of this variable has been agreed to in advance as
+part of the "citation interface specification".  By default this hook
+variable has a `nil' value, which the MUA recognizes to mean, "use your
+default citation function".  When you add Supercite's citation function
+to the hook, thereby giving the variable a non-`nil' value, it tells
+the MUA to run the hook via `run-hooks' instead of using the default
+citation.
+
+* Menu:
+
+* Emacs 19 MUAs::
+* Emacs 18 MUAs::
+* MH-E with any Emacsen::
+* VM with any Emacsen::
+* GNEWS with any Emacsen::
+* Overloading for Non-conforming MUAs::
+
+   Early in Supercite's development, the Supercite author, a few MUA
+authors, and some early Supercite users got together and agreed upon a
+standard interface between MUAs and citation packages (of which
+Supercite is currently the only known add-on :-).  With the recent
+release of the Free Software Foundation's GNU Emacs 19, the interface
+has undergone some modification and it is possible that not all MUAs
+support the new interface yet.  Some support only the old interface and
+some do not support the interface at all.  Still, it is possible for all
+known MUAs to use Supercite, and the following sections will outline the
+procedures you need to follow.
+
+   To learn exactly how to connect Supercite to the software systems you
+are using, read the appropriate following sections.  For details on the
+interface specifications, or if you are writing or maintaining an MUA,
+*note Hints to MUA Authors::..
+
+   The first thing that everyone should do, regardless of the MUA you
+are using is to set up Emacs so it will load Supercite at the
+appropriate time.  You can either dump Supercite into your Emacs binary
+(ask your local Emacs guru how to do this if you don't know), or you
+can set up an "autoload" for Supercite.  To do the latter, put the
+following in your `.emacs' file:
+
+     (autoload 'sc-cite-original     "supercite" "Supercite 3.1" t)
+     (autoload 'sc-submit-bug-report "supercite" "Supercite 3.1" t)
+
+   The function `sc-cite-original' is the top-level Supercite function
+designed to be run from the citation hook.  It expects `point' and
+`mark' to be set around the region to cite, and it expects the original
+article's mail headers to be present within this region.  Note that
+Supercite *never* touches any text outside this region.  Note further
+that for Emacs 19, the region need not be active for `sc-cite-original'
+to do its job.  *Note Hints to MUA Authors::.
+
+   The other step in the getting connected process is to make sure your
+MUA calls `sc-cite-original' at the right time.  As mentioned above,
+some MUAs handle this differently.  Read the sections that follow
+pertaining to the MUAs you are using.
+
+   One final note.  After Supercite is loaded into your Emacs session,
+it runs the hook `sc-load-hook'.  You can put any customizations into
+this hook since it is only run once.  This will not work, however, if
+your Emacs maintainer has put Supercite into your dumped Emacs' image.
+In that case, you can use the `sc-pre-hook' variable, but this will get
+executed every time `sc-cite-original' is called.  *Note Reply Buffer
+Initialization::.
+
+
+File: sc,  Node: Emacs 19 MUAs,  Next: Emacs 18 MUAs,  Prev: Getting Connected,  Up: Getting Connected
+
+GNUS, RMAIL, or RNEWS with any Emacs 19
+=======================================
+
+   These MUAs, distributed with both FSF and Lucid GNU Emacs 19, use
+Emacs' built-in yanking facility, which provides the citing hook
+variable `mail-citation-hook'.  By default, this hook's value is `nil',
+but by adding the following to your `.emacs' file, you can tell these
+MUAs to use Supercite to perform the citing of the original message:
+
+     (add-hook 'mail-citation-hook 'sc-cite-original)
+
+   GNUS users may also want to add the following bit of lisp as well.
+This prevents GNUS from inserting its default attribution header.
+Otherwise, both GNUS and Supercite will insert an attribution header:
+
+     (setq news-reply-header-hook nil)
+
+   Note that the `mail-citation-hook' interface described above was not
+supported in FSF Emacs 19 until version 19.16 and in Lucid Emacs 19
+until version 19.8.  If you are running an earlier version of one of
+these Emacsen, you will need to either upgrade to the latest version, or
+use the unsupported "overloading" feature provided with Supercite.
+*Note Overloading for Non-conforming MUAs::.
+
+
+File: sc,  Node: Emacs 18 MUAs,  Next: MH-E with any Emacsen,  Prev: Emacs 19 MUAs,  Up: Getting Connected
+
+GNUS, RMAIL, PCMAIL, RNEWS with Emacs 18 or Epoch 4
+===================================================
+
+   These MUAs use Emacs' built-in yanking and citing routines,
+contained in the `sendmail.el' file.  `sendmail.el' for Emacs 18, and
+its derivative Epoch 4, do not know anything about the citation
+interface required by Supercite.  To connect Supercite to any of these
+MUAs under Emacs 18 or Epoch 4, you should first *note Overloading for
+Non-conforming MUAs::..  Then follow the directions for using these
+MUAs under Emacs 19.  *Note Emacs 19 MUAs::.
+
+   Note that those instructions will tell you to use the function
+`add-hook'. This function is new with Emacs 19 and you will not have it
+by default if you are running Emacs 18 or Epoch 4.  You can either
+substitute the appropriate call to `setq', or you can use the
+`add-hook' function that is provided in the `sc-unsupp.el' file of
+unsupported Supercite hacks and ideas.  Or you can upgrade to some
+Emacs 19 variant!  :-)
+
+   To use `setq' instead of `add-hook', you would, for example, change
+this:
+
+     (add-hook 'mail-citation-hook 'sc-cite-original)
+
+   to:
+
+     (setq mail-citation-hook 'sc-cite-original)
+
+   Note the lack of of a single quote on the first argument to `setq'.
+
+
+File: sc,  Node: MH-E with any Emacsen,  Next: VM with any Emacsen,  Prev: Emacs 18 MUAs,  Up: Getting Connected
+
+MH-E with any Emacsen
+=====================
+
+   MH-E 4.x conforms to the `mail-citation-hook' interface supported by
+other MUAs.  At the time of this writing, MH-E 4.0 has not been
+released, but if you have it, put this in your `.emacs' file to connect
+Supercite and MH-E 4.x:
+
+     (add-hook 'mail-citation-hook 'sc-cite-original)
+
+   Note that if you are using Emacs 18 or Epoch 4, you will not have the
+`add-hook' function.  *Note Emacs 18 MUAs:: for details on how to
+proceed without `add-hook'.
+
+   MH-E version 3.x uses a slightly different interface than other MUAs.
+MH-E provides a hook variable `mh-yank-hooks', but it doesn't act like
+a hook, and doing an `add-hook' will not work.
+
+   To connect Supercite to MH-E 3.x, you should instead add the
+following to your `.emacs' file:
+
+     (add-hook 'mh-yank-hooks 'sc-cite-original)
+
+   You also need to make sure that MH-E includes all the original mail
+headers in the yanked message.  The variable that controls this is
+`mh-yank-from-start-of-msg'.  By default, this variable has the value
+`t', which tells MH-E to include all the mail headers when yanking the
+original message.  Before you switched to using Supercite, you may have
+set this variable to other values so as not to include the mail headers
+in the yanked message.  Since Supercite requires these headers (and
+cleans them out for you), you need to make sure the value is `t'.  This
+lisp, in your `.emacs' file will do the trick:
+
+     (setq mh-yank-from-start-of-msg t)
+
+   Note that versions of MH-E before 3.7 did not provide the
+`mh-yank-hooks' variable.  Your only option is to upgrade to MH-E
+version 3.7 or later.
+
+
+File: sc,  Node: VM with any Emacsen,  Next: GNEWS with any Emacsen,  Prev: MH-E with any Emacsen,  Up: Getting Connected
+
+VM with any Emacsen
+===================
+
+   Since release 4.40, VM has supported the citation interface required
+by Supercite.  But since the interface has changed recently the details
+of getting connected differ with the version of VM you are using.
+
+   If you are running any release of VM after 4.40, you can add the
+following to your `.emacs' to connect Supercite with VM:
+
+     (add-hook 'mail-yank-hooks 'sc-cite-original)
+
+   Note that if you are using Emacs 18 or Epoch 4, you will not have the
+`add-hook' function.  *Note Emacs 18 MUAs:: for details on how to
+proceed without `add-hook'.
+
+   Since version 5.34, VM has supported the newer `mail-citation-hook'
+interface, but `mail-yank-hooks' is still being supported for backward
+compatibility.  If you are running a newer version of VM and you want
+to maintain consistency with other MUAs, use this bit of code instead:
+
+     (add-hook 'mail-citation-hook 'sc-cite-original)
+
+
+File: sc,  Node: GNEWS with any Emacsen,  Next: Overloading for Non-conforming MUAs,  Prev: VM with any Emacsen,  Up: Getting Connected
+
+GNEWS with any Emacsen
+======================
+
+   As far as I know, no version of GNEWS supports the citation interface
+required by Supercite.  To connect Supercite with GNEWS, please first
+*note Overloading for Non-conforming MUAs::..
+
+   After you have followed the directions in that section.  You should
+add the following lisp code to your `.emacs' file:
+
+     (add-hook 'mail-citation-hook 'sc-cite-original)
+
+   Note that if you are using Emacs 18 or Epoch 4, you will not have the
+`add-hook' function.  *Note Emacs 18 MUAs:: for details on how to
+proceed without `add-hook'.
+
+
+File: sc,  Node: Overloading for Non-conforming MUAs,  Next: Replying and Yanking,  Prev: GNEWS with any Emacsen,  Up: Getting Connected
+
+Overloading for Non-conforming MUAs
+===================================
+
+   As mentioned elsewhere, some MUAs do not provide the necessary hooks
+to connect with Supercite.  Supercite version 3.1 provides an
+unsupported mechanism, called "overloading" which redefines certain key
+functions in the MUA, so that it will call the `mail-citation-hook'
+variable instead of the MUA's default hard-coded citing routines.  Since
+most newer versions of the known MUAs support the `mail-citation-hook'
+variable, it is recommended that you upgrade if at all possible.  But
+if you can't upgrade, at least you're not out of luck!  Once you set up
+overloading properly, you should follow the directions for connecting
+Supercite to the Emacs 19 MUAs.  *Note Emacs 19 MUAs::.
+
+   Users of Bob Weiner's Hyperbole package take note.  Hyperbole
+provides the necessary overloads (and a whole lot more!) and you can
+potentially clobber it if you were to load Supercite's overloading after
+Hyperbole's.  For this reason, Supercite will *not* perform any
+overloading if it finds the variable `hyperb:version' is `boundp' (i.e.
+it exists because Hyperbole has been loaded into your Emacs session).
+If this is the case, Supercite will display a warning message in the
+minibuffer.  You should consult the Hyperbole manual for further
+details.
+
+   Overloading involves the re-definition of the citing function with
+the new, `mail-citation-hook' savvy version.  The function in
+`sc-oloads.el' that does this is `sc-perform-overloads'.  This function
+is smart enough to only overload the MUA functions when it is
+absolutely necessary, based on the version numbers it can figure out.
+Also, `sc-perform-overloads' will only install the new functions once.
+It is also smart enough to do nothing if the MUA is not yet loaded.
+
+   The tricky part is finding the right time and place to perform the
+overloading.  It must be done after the MUA has been loaded into your
+Emacs session, but before the first time you try to yank in a message.
+Fortunately, this has been figured out for you.
+
+   If you must overload, you should put the following lisp code in your
+`.emacs' file, to make sure the `sc-oloads.el' file gets loaded at the
+right time:
+
+     (autoload 'sc-perform-overloads "sc-oloads" "Supercite 3.1" t)
+
+   Then you must make sure that the function `sc-perform-overloads'
+gets run at the right time.  For GNUS, put this in your `.emacs' file:
+
+     (setq news-reply-mode-hook 'sc-perform-overloads)
+     (setq mail-setup-hook 'sc-perform-overloads)
+
+   If you are using RNEWS, put this in your `.emacs' file:
+
+     (setq news-reply-mode-hook 'sc-perform-overloads)
+
+   If you are using RMAIL or PCMAIL, put this in your `.emacs' file:
+
+     (setq mail-setup-hook 'sc-perform-overloads)
+
+   If you are using GNEWS, put this in your `.emacs' file:
+
+     (setq news-reply-mode-hook 'sc-perform-overloads)
+     (setq gnews-ready-hook 'sc-perform-overloads)
+
+   Now go back and follow the directions for getting the Emacs 19 MUAs
+connected to Supercite.  Be sure to *note Emacs 18 MUAs::. on
+substitutes for Emacs 19's `add-hook' function.
+
+
+File: sc,  Node: Replying and Yanking,  Next: Reply Buffer Initialization,  Prev: Overloading for Non-conforming MUAs,  Up: Top
+
+Replying and Yanking
+********************
+
+   This chapter explains what happens when you reply and yank an
+original message from an MUA.
+
+* Menu:
+
+* Reply Buffer Initialization::
+* Filling Cited Text::
+
+
+File: sc,  Node: Reply Buffer Initialization,  Next: Filling Cited Text,  Prev: Replying and Yanking,  Up: Replying and Yanking
+
+Reply Buffer Initialization
+===========================
+
+   Executing `sc-cite-original' performs the following steps as it
+initializes the reply buffer:
+
+  1. *Runs `sc-pre-hook'.* This hook variable is run before
+     `sc-cite-original' does any other work.  You could conceivably use
+     this hook to set certain Supercite variables based on the reply
+     buffer's mode or name (i.e., to do something different based on
+     whether you are replying or following up to an article).
+
+  2. *Inserts Supercite's keymap.* Supercite provides a number of
+     commands for performing post-yank modifications to the reply
+     buffer.  These commands are installed on Supercite's top-level
+     keymap.  Since Supercite has to interface with a wide variety of
+     MUAs, it does not install all of its commands directly into the
+     reply buffer's keymap.  Instead, it puts its commands on a keymap
+     prefix, then installs this prefix onto the buffer's keymap.  What
+     this means is that you typically have to type more characters to
+     invoke a Supercite command, but Supercite's keybindings can be
+     made much more consistent across MUAs.
+
+     You can control what key Supercite uses as its keymap prefix by
+     changing the variable `sc-mode-map-prefix'.  By default, this
+     variable is set to `C-c C-p'; a finger twister perhaps, but
+     unfortunately the best default due to the scarcity of available
+     keybindings in many MUAs.
+
+  3. *Turns on Supercite minor mode.* The modeline of the reply buffer
+     should indicate that Supercite is active in that buffer by
+     displaying the string `SC'.
+
+  4. *Sets the "Undo Boundary".* Supercite sets an undo boundary before
+     it begins to modify the original yanked text.  This allows you to
+     easily undo Supercite's changes to affect alternative citing
+     styles.
+
+  5. *Processes the the mail headers.* All previously retrieved info
+     key-value pairs are deleted from the info alist, then the mail
+     headers in the body of the yanked message are scanned. Info
+     key-value pairs are created for each header found. Also, such
+     useful information as the author's name and email address are
+     extracted.  If the variable `sc-mail-warn-if-non-rfc822-p' is
+     non-`nil', then Supercite will warn you if it finds a mail header
+     that does not conform to RFC822.  This is rare and indicates a
+     problem either with your MUA or the original author's MUA, or some
+     MTA (mail transport agent) along the way.
+
+     Once the info keys have been extracted from the mail headers, the
+     headers are nuked from the reply buffer.  You can control exactly
+     which headers are removed or kept, but by default, all headers are
+     removed.
+
+     There are two variables which control mail header nuking.  The
+     variable `sc-nuke-mail-headers' controls the overall behavior of
+     the header nuking routines.  By setting this variable to `'all',
+     you automatically nuke all mail headers.  Likewise, setting this
+     variable to `'none' inhibits nuking of any mail headers.  In
+     between these extremes, you can tell Supercite to nuke only a
+     specified list of mail headers by setting this variable to
+     `'specified', or to keep only a specified list of headers by
+     setting it to `'keep'.
+
+     If `sc-nuke-mail-headers' is set to `'specified' or `'keep', then
+     the variable `sc-nuke-mail-header-list' is consulted for the list
+     of headers to nuke or keep.  This variable contains a list of
+     regular expressions.  If the mail header line matches a regular
+     expression in this list, the header will be nuked or kept.  The
+     line is matched against the regexp using `looking-at' rooted at
+     the beginning of the line.
+
+     If the variable `sc-blank-lines-after-headers' is non-`nil', it
+     contains the number of blank lines remaining in the buffer after
+     mail headers are nuked.  By default, only one blank line is left
+     in the buffer.
+
+  6. *Selects the attribution and citation strings.* Once the mail
+     headers have been processed, Supercite selects a attribution
+     string and a citation string which it will use to cite the
+     original message.  *Note Selecting an Attribution:: for details.
+
+  7. *Cites the message body.* After the selection of the attribution
+     and citation strings, Supercite cites the original message by
+     inserting the citation string prefix in front of every uncited
+     line.  You may not want Supercite to automatically cite very long
+     messages however.  For example, some email could contain a smaller
+     header section followed by a huge uuencoded message.  It wouldn't
+     make sense to cite the uuencoded message part when responding to
+     the original author's short preface.  For this reason, Supercite
+     provides a variable which limits the automatic citation of long
+     messages to a certain maximum number of lines.  The variable is
+     called `sc-cite-region-limit'.  If this variable contains an
+     integer, messages with more lines that this will not be cited at
+     all, and a warning message will be displayed.  Supercite has
+     performed everything necessary, though, for you to manually cite
+     only the small portion of the original message that you want to
+     use.
+
+     If `sc-cite-region-limit' contains a non-`nil' value, the original
+     message will always be cited, regardless of its size.  If the
+     variable contains the value `nil', the region will never be cited
+     automatically.  Use this if you always want to be able to edit and
+     cite the message manually.
+
+     The variable `sc-cite-blank-lines-p' controls whether blank lines
+     in the original message should be cited or not.  If this variable
+     is non-`nil', blank lines will be cited just like non-blank lines.
+     Otherwise, blank lines will be treated as paragraph separators.
+
+     Citing of the original message is highly configurable. Supercite's
+     default setup does a pretty good job of citing many common forms of
+     previously cited messages.  But there are as many citation styles
+     out there as people on the net, or just about!  It would be
+     impossible for Supercite to anticipate every style in existence,
+     and you probably wouldn't encounter them all anyway.  But you can
+     configure Supercite to recognize those styles you see often.
+     *Note Configuring the Citation Engine:: for details.
+
+  8. *Runs `sc-post-hook'.* This variable is very similar to
+     `sc-pre-hook', except that it runs after `sc-cite-original' is
+     finished. This hook is provided mostly for completeness and
+     backward compatibility. Perhaps it could be used to reset certain
+     variables set in `sc-pre-hook'.
+
+
+File: sc,  Node: Filling Cited Text,  Next: Selecting an Attribution,  Prev: Reply Buffer Initialization,  Up: Replying and Yanking
+
+Filling Cited Text
+==================
+
+   Supercite will automatically fill newly cited text from the original
+message unless the variable `sc-auto-fill-region-p' has a `nil' value.
+Supercite will also re-fill paragraphs when you manually cite or
+re-cite text.
+
+   However, during normal editing, Supercite itself cannot be used to
+fill paragraphs.  This is a change from version 2.  There are other
+add-on lisp packages which do filling much better than Supercite ever
+did.  The two best known are "filladapt" and "gin-mode".  Both work well
+with Supercite and both are available at the normal Emacs Lisp archive
+sites.  "gin-mode" works pretty well out of the box, but if you use
+"filladapt", you may want to run the function `sc-setup-filladapt' from
+your `sc-load-hook'.  This simply makes "filladapt" a little more
+Supercite savvy than its default setup.
+
+   Also, Supercite will collapse leading whitespace between the citation
+string and the text on a line when the variable `sc-fixup-whitespace-p'
+is non-`nil'.  The default value for this variable is `nil'.
+
+   Its important to understand that Supercite's automatic filling
+(during the initial citation of the reply) is very fragile.  That is
+because figuring out the `fill-prefix' for a particular paragraph is a
+really hard thing to do automatically.  This is especially the case when
+the original message contains code or some other text where leading
+whitespace is important to preserve.  For this reason, many Supercite
+users typically run with `sc-auto-fill-region-p' (and possibly also
+`sc-fixup-whitespace-p') set to `nil'.  They then manually fill each
+cited paragraph in the reply buffer.
+
+   I usually run with both these variables containing their default
+values.  When Supercite's automatic filling breaks on a particular
+message, I will use Emacs' undo feature to undo back before the
+citation was applied to the original message.  Then I'll toggle the
+variables and manually cite those paragraphs that I don't want to fill
+or collapse whitespace on.  *Note Variable Toggling Shortcuts::.
+
+   If you find that Supercite's automatic filling is just too fragile
+for your tastes, you might consider one of these alternate approaches.
+Also, to make life easier, a shortcut function to toggle the state of
+both of these variables is provided on the key binding `C-c C-p C-p'
+(with the default value of `sc-mode-map-prefix'; *note Post-yank
+Formatting Commands::.).
+
+   You will noticed that the minor mode string will show the state of
+these variables as qualifier characters. When both variables are `nil',
+the Supercite minor mode string will display `SC'.  When just
+`sc-auto-fill-region-p' is non-`nil', the string will display `SC:f',
+and when just `sc-fixup-whitespace-p' is non-`nil', the string will
+display `SC:w'.  When both variables are non-`nil', the string will
+display `SC:fw'.  Note that the qualifiers chosen are mnemonics for the
+default bindings of the toggling function for each respective variable.
+*Note Variable Toggling Shortcuts::.
+
+   Why are these variables not set to `nil' by default?  It is because
+many users won't manually fill paragraphs that are Supercited, and there
+have been widespread complaints on the net about mail and news messages
+containing lines greater than about 72 characters.  So the default is to
+fill cited text.
+
+
+File: sc,  Node: Selecting an Attribution,  Next: Attribution Preferences,  Prev: Filling Cited Text,  Up: Top
+
+Selecting an Attribution
+************************
+
+   As you know, the attribution string is the part of the author's name
+that will be used to composed a non-nested citation string. Supercite
+scans the various mail headers present in the original article and uses
+a number of heuristics to extract strings which it puts into the
+"attribution association list" or "attribution alist". This is
+analogous, but different than, the info alist previously mentioned. Each
+element in the attribution alist is a key-value pair containing such
+information as the author's first name, middle names, and last name, the
+author's initials, and the author's email terminus.
+
+* Menu:
+
+* Attribution Preferences::
+* Anonymous Attributions::
+* Author Names::
+

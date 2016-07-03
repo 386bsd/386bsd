@@ -1,0 +1,242 @@
+.\" $XFree86: mit/server/ddx/x386/XF86_Mono.man,v 2.9 1993/10/18 12:16:10 dawes Exp $
+.\" $XConsortium: X386.man,v 1.3 91/08/26 15:31:19 gildea Exp $
+.TH XF86_Mono 1 "Version 2.0"  "XFree86"
+.SH NAME
+XF86_Mono - 1 bit non-accelerated X Window System servers for UNIX on
+x86 platforms
+.SH SYNOPSIS
+.B XF86_Mono
+[:displaynumber] [ option ] ...
+.SH DESCRIPTION
+.I XFree86
+is a package of bug-fixes, enhancements, and ports of X11R5 to new OSs,
+for Intel Unix-like OSs. See the XFree86(1) manpage for details.
+.I XF86_Mono
+is a 1-bit StaticGrey server for VGA, Super-VGA, and Hercules, and some
+other monochrome cards.
+.PP
+The
+.I XFree86
+servers support all MIT-supplied extensions except the X Input Extension.
+.I PEX
+is not supported on 1-bit hardware.
+.SH CONFIGURATIONS
+.PP
+The
+.I XF86_Mono
+server supports the following popular SuperVGA chipsets in monochrome mode.
+.RS .5i
+.TP 4
+Tseng:
+ET3000, ET4000, ET4000/W32
+.TP 4
+Western Digital:
+PVGA1, WD90C00, WD90C10, WD90C11, WD90C30, WD90C31
+.TP 4
+Genoa:
+GVGA
+.TP 4
+Trident:
+TVGA8800CS, TVGA8900B, TVGA8900C, TVGA8900CL, TVGA9000
+.TP 4
+NCR:
+77C22, 77C22E
+.TP 4
+Compaq:
+AVGA
+.TP 4
+Oak:
+OTI067, OTI077
+.RE
+.PP
+Additionally it
+supports generic VGA cards, Hercules monochrome graphics cards, and the Hyundai
+HGC1280 card.
+.PP
+On supported SVGA chipsets, 
+.I XF86_Mono
+will use up to 256Kb of display memory (the memory available to the mono 
+server is one quarter of the total for SVGA chipsets), which yields a
+maximum virtual resolution of (approximately) 1600x1200.  On unsupported 
+SVGA chipsets, and generic VGA cards, this server uses only 64Kb of display
+memory, which yields a maximum virtual resolution of (approximately) 800x650.
+For a Hercules card, the standard resolution of 720x348 is supported.  On 
+systems with both a VGA and Hercules card installed, the monochrome server 
+can drive both in a double-headed configuration.
+.I XF86_Mono
+does not support the accelerated functions of the supported chipsets.
+.SH OPTIONS
+In addition to the normal server options described in the \fIXserver(1)\fP
+manual page, \fIXF86_Mono\fP accepts some more command line switches,
+as described in the 
+.I XFree86(1) 
+manpage.
+.SH "KEYBOARD"
+\fIXFree86\fP provides several capabilities for easing the use of international
+keyboards, and generating non-ASCII Latin-1 keysyms.  Refer to the
+.I XFree86kbd(1)
+manual page for more information.
+.SH SETUP
+.I XFree86
+uses a configuration file called \fBXconfig\fP for its initial setup.  
+See the 
+.I Xconfig(4/5) 
+manpage for general details. Here only the
+.I XF86_Mono
+specific parts are explained.
+.PP
+The \fBGRAPHICS DRIVER SETUP\fP section for the monochrome server starts
+with the keyword \fBvga2\fP, and the section for the mono hga driver starts
+with the keyword \fBhga2\fP.  The section for the "banked dumb mono" driver
+starts with the keyword \fBbdm2\fP.
+For servers with multiple screens supported,
+only those with entries will be enabled.
+After this keyword a variety of options may be specified (most
+are not relevant to the \fBhga2\fP driver because it only supports a single
+resolution):
+.br
+.ne 3i
+.TP 8
+.B chipset \fI"name"\fP
+specifies a chipset so the correct driver can be used.  Possible chipsets
+are:
+.sp
+VGA2:
+.RS 1.5i
+.TP 4
+Tseng:
+et3000, et4000
+.TP 4
+Western Digital:
+pvga1, wd90c00, wd90c10, wd90c30
+.TP 4
+Genoa:
+gvga
+.TP 4
+Trident:
+tvga8800cs, tvga8900b, tvga8900c, tvga8900cl, tvga9000 
+.TP 4
+NCR:
+ncr77c22, ncr77c22e
+.TP 4
+Compaq:
+cpq_avga
+.TP 4
+OAK:
+oti067, oti077
+.TP 4
+Generic VGA:
+generic 
+.RE
+.RS 8
+.PP
+HGA2:
+.RE
+.RS 1.5i
+.TP 4
+Hercules:
+hga6845
+.RE
+.RS 8
+.PP
+BDM2:
+.RE
+.RS 1.5i
+.TP 4
+Hyundai:
+hgc1280
+.RE
+.TP 8
+.B clocks \fIclock\fP  ...
+specifies the dotclocks that are on your graphics board.  The clocks are
+in MHz, and may be specified as a floating point number.  The value is
+stored internally to the nearest kHz.  The ordering of the clocks
+is important.  It must match the order in which they are selected on the
+graphics board.  Multiple \fBclocks\fP lines may be specified.
+.TP 8
+.B black \fIred green blue\fP
+sets the ``black'' colour to the rgb values specified.  These values must be
+given as integers in the range 0\-63.  The default is \fI0\ 0\ 0\fP.  This
+option is only valid for the \fBvga2\fP screen type.
+.TP 8
+.B white \fIred green blue\fP
+sets the ``white'' colour to the rgb values specified.  These values must be
+given as integers in the range 0\-63.  The default is \fI63\ 63\ 63\fP.  This
+option is only valid for the \fBvga2\fP screen type.
+.TP 8
+.B option \fI"optionstring"\fP
+allows the user to select certain options provided by the drivers.  Currently 
+the following strings are recognized:
+.sp
+\fBlegend\fP - for Sigma Legend ET4000-based boards.  This option enables
+a special clock-selection algorithm used on Legend boards, and MUST be
+specified for these boards to function correctly.
+.sp
+\fBswap_hibit\fP - for Western Digital/PVGA1 chipsets.  Some Western Digital
+based boards require the high-order clock-select lead to be inverted.  It
+is not possible for the server to determine this information at run-time.
+If the 9th clock in the list of clocks detected by the server is less than
+30Mhz, this option likely needs to be set.
+.sp
+\fBhibit_low\fP, \fBhibit_high\fP - for Tseng ET4000 chipsets.  With
+some ET4000 cards, the server has difficulty getting the state of the
+high-order clocks select bit right when started from a high-resolution text
+mode.  These options allow the correct initial state of that bit to be
+specified.  To find out what the correct initial state is, start the server
+from an 80x25 text mode.  This option is only needed if the clocks reported
+by the server when started from a high-resolution text mode differ from
+those reported when it is started from an 80x25 text mode.
+.sp
+\fB8clocks\fP - for the PVGA1 chipset the default is 4 clocks.  Some
+cards with this chipset may support 8 clocks.  Specifying this option
+will allow the driver to detect and use the extra clocks.
+.sp
+\fB16clocks\fP - for Trident TVGA8900B and 8900C chipsets.  Some newer boards
+using 8900B and 8900C chipsets actually support 16 clocks rather than the
+standard 8 clocks.  Such boards will have a "TCK9002" or "TCK9004" chip
+on them.  Specifying this option will allow the driver to detect and use
+the extra 8 clocks.
+.ig
+intern_disp (use internal display for laptops -- WD90C2x)
+extern_disp (use external display for laptops -- WD90C2x)
+..
+.PP
+Note that \fIXFree86\fP has some internal capabilities to determine
+what hardware
+it is running on. Thus normally the keywords \fIchipset\fP, \fIclocks\fP,
+and \fIvideoram\fP don't have to be specified.  But there
+may be occasions when this autodetection mechanism fails, (for example, too
+high of load on the machine when you start the server).  For cases like this,
+one should first run \fIXF86_Mono\fP on an unloaded machine, look at the
+results of the autodetection (that are printed out during server startup)
+and then explicitly specify these parameters in the configuration file.
+\fBIt is recommended that all parameters, especially Clock values,
+be specified in the Xconfig file.\fP
+.PP
+The last section is the \fBTABLE OF VIDEO MODES\fP which starts with the
+keyword \fBmodedb\fP.  This is covered in the
+.I Xconfig(4/5) 
+manpage. For details on how to build your own video modes please refer
+to the tutorial written by Eric Raymond.
+.SH FILES
+.TP 30
+/usr/X386/bin/XF86_Mono
+The monochrome X server
+.TP 30
+/usr/X386/lib/X11/Xconfig
+Server configuration file
+.SH "SEE ALSO"
+X(1), Xserver(1), XFree86kbd(1), XFree86(1), Xconfig(4/5), xdm(1), xinit(1)
+.SH BUGS
+.PP
+There are no known bugs at this time, although we welcome reports emailed
+to the address listed below.
+.SH CONTACT INFO
+\fIXFree86\fP source is available from the FTP servers 
+\fIftp.physics.su.oz.au\fP and \fIftp.x.org\fP.  Send email to
+\fIXFree86@physics.su.oz.au\fP for details.
+.SH AUTHORS
+.PP
+Refer to the
+.I XFree86(1)
+manual page.

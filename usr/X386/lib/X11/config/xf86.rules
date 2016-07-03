@@ -1,0 +1,195 @@
+XCOMM -------------------------------------------------------------------------
+XCOMM
+XCOMM xf86.rules: rules for XF86_ servers
+XCOMM
+XCOMM $XFree86: mit/config/xf86.rules,v 2.9 1993/10/02 07:12:07 dawes Exp $
+
+/*
+ * XFree86Server(name,fbdirs,fblibs,specialobjs,drivobjs,drivdirs,
+ *		 confobjs,confdirs)
+ *
+ * XFree86ServerNoDrv(name,fbdirs,fblibs,specialobjs)
+ *
+ * Note: name is the full server name.
+ */
+
+/*
+ * The following are assumed to be setup in the Imakefile
+ *
+ * SUBDIRS0       -- subdirs in common for all XFree86 servers
+ * XF86SYSLIBS    -- OS-dependent libs (that are within the X tree)
+ * XF86COMMONLIB  -- libx386.a
+ * XF86OSLIB      -- libxf86_os.a
+ * XF86HWLIB      -- libxf86_hw.a
+ * XF86COMMONOBJ  -- xf86_Option.o
+ *
+ */
+
+#if !X386LinkKit
+#define XFree86Server(name,fbdirs,fblibs,specialobjs,drivobjs,drivdirs,confobjs,confdirs)			    @@\
+Concat(name,SERVERNAME) = name						    @@\
+Concat(name,FBDIRS) = fbdirs						    @@\
+Concat(name,SUBDIRS) = $(SUBDIRS0) $(Concat(name,FBDIRS))		    @@\
+Concat(name,DIRS) = $(Concat(name,SUBDIRS)) $(DEPDIRS)			    @@\
+Concat(name,CONFOBJ) = Concat3(ddx/x386/common/,name,.o)		    @@\
+Concat(name,OBJS) =  $(Concat(name,CONFOBJ)) $(XF86COMMONOBJ) \		    @@\
+		     specialobjs confobjs drivobjs			    @@\
+Concat(name,LIBS) = $(XF86COMMONLIB) fblibs \				    @@\
+		    $(XF86HWLIB) $(XF86OSLIB) \				    @@\
+		    $(XF86SYSLIBS)					    @@\
+        								    @@\
+xf86all:: $(Concat(name,SERVERNAME))					    @@\
+        								    @@\
+Concat(reload,$(Concat(name,SERVERNAME))): $(CONFIGSRC)/X386Conf.tmpl	    @@\
+	@$(MAKE) $(MFLAGS) Makefile					    @@\
+	@$(MAKE) $(MFLAGS) Concat(DoReload,$(Concat(name,SERVERNAME)))	    @@\
+        								    @@\
+Concat(DoReload,$(Concat(name,SERVERNAME))): $(Concat(name,CONFOBJ)) \	    @@\
+		$(XF86COMMONOBJ) confobjs drivobjs $(RENDERERLIBS) \	    @@\
+		Concat(load,$(Concat(name,SERVERNAME)))			    @@\
+        								    @@\
+$(Concat(name,CONFOBJ)): $(ICONFIGFILES)				    @@\
+	@(echo Checking in ddx/x386/common...; \			    @@\
+	cd ddx/x386/common; set -x; \					    @@\
+	$(MAKE) $(MFLAGS) Makefile; \					    @@\
+	$(MAKE) $(MFLAGS) Depend; \					    @@\
+	$(MAKE) $(MFLAGS))						    @@\
+        								    @@\
+confobjs:: $(ICONFIGFILES)						    @@\
+	@for i in confdirs; do \					    @@\
+	(echo Checking in $$i...; cd $$i; set -x; \			    @@\
+	$(MAKE) $(MFLAGS) Configure); done				    @@\
+        								    @@\
+drivobjs: $(ICONFIGFILES)						    @@\
+	@for i in drivdirs; do \					    @@\
+	(echo Checking in $$i...; cd $$i; set -x; \			    @@\
+	$(MAKE) $(MFLAGS) Makefile; \					    @@\
+	$(MAKE) $(MFLAGS) Makefiles; \					    @@\
+	$(MAKE) $(MFLAGS) Depend; \					    @@\
+	$(MAKE) $(MFLAGS)); done 					    @@\
+	touch drivobjs							    @@\
+        								    @@\
+ServerTarget($(Concat(name,SERVERNAME)),$(Concat(name,DIRS)),\		    @@\
+	     $(Concat(name,OBJS)),$(Concat(name,LIBS)),$(SYSLIBS))	    @@\
+        								    @@\
+InstallMultipleFlags($(Concat(name,SERVERNAME)),$(BINDIR),$(INSTPGMFLAGS))  @@\
+        								    @@\
+clean::									    @@\
+	$(RM) $(Concat(name,SERVERNAME))
+
+
+#define XFree86ServerNoDrv(name,fbdirs,fblibs,specialobjs)		    @@\
+Concat(name,SERVERNAME) = name						    @@\
+Concat(name,FBDIRS) = fbdirs						    @@\
+Concat(name,SUBDIRS) = $(SUBDIRS0) $(Concat(name,FBDIRS))		    @@\
+Concat(name,DIRS) = $(Concat(name,SUBDIRS)) $(DEPDIRS)			    @@\
+Concat(name,CONFOBJ) = Concat3(ddx/x386/common/,name,.o)		    @@\
+Concat(name,OBJS) = $(Concat(name,CONFOBJ)) specialobjs $(XF86COMMONOBJ)    @@\
+Concat(name,LIBS) = $(XF86COMMONLIB) fblibs \				    @@\
+		    $(XF86HWLIB) $(XF86OSLIB) \				    @@\
+		    $(XF86SYSLIBS)					    @@\
+        								    @@\
+xf86all:: $(Concat(name,SERVERNAME))					    @@\
+        								    @@\
+Concat(reload,$(Concat(name,SERVERNAME))): $(CONFIGSRC)/X386Conf.tmpl	    @@\
+	@$(MAKE) $(MFLAGS) Makefile					    @@\
+	@$(MAKE) $(MFLAGS) Concat(DoReload,$(Concat(name,SERVERNAME)))	    @@\
+        								    @@\
+Concat(DoReload,$(Concat(name,SERVERNAME))): $(Concat(name,CONFOBJ)) \	    @@\
+		$(XF86COMMONOBJ) $(RENDERERLIBS) \			    @@\
+		Concat(load,$(Concat(name,SERVERNAME)))			    @@\
+        								    @@\
+$(Concat(name,CONFOBJ)): $(ICONFIGFILES)				    @@\
+	@(echo Checking in ddx/x386/common...; \			    @@\
+	cd ddx/x386/common; set -x; \					    @@\
+	$(MAKE) $(MFLAGS) Makefile; \					    @@\
+	$(MAKE) $(MFLAGS) Depend; \					    @@\
+	$(MAKE) $(MFLAGS))						    @@\
+        								    @@\
+ServerTarget($(Concat(name,SERVERNAME)),$(Concat(name,DIRS)),\		    @@\
+	     $(Concat(name,OBJS)),$(Concat(name,LIBS)),$(SYSLIBS))	    @@\
+        								    @@\
+InstallMultipleFlags($(Concat(name,SERVERNAME)),$(BINDIR),$(INSTPGMFLAGS))  @@\
+        								    @@\
+clean::									    @@\
+	$(RM) $(Concat(name,SERVERNAME))
+
+
+#else /* LinkKit versions */
+
+
+#define XFree86Server(name,fbdirs,fblibs,specialobjs,drivobjs,drivdirs,confobjs,confdirs)			    @@\
+Concat(name,SERVERNAME) = name						    @@\
+Concat(name,DIRS) = fbdirs						    @@\
+Concat(name,CONFOBJ) = Concat(name,.o)					    @@\
+Concat(name,OBJS) = $(Concat(name,CONFOBJ)) $(XF86COMMONOBJ) specialobjs \  @@\
+		    confobjs drivobjs					    @@\
+Concat(name,LIBS) = $(XF86COMMONLIB) fblibs \				    @@\
+		    $(XF86HWLIB) $(XF86OSLIB) \				    @@\
+		    $(XF86SYSLIBS)					    @@\
+        								    @@\
+xf86all:: $(Concat(name,SERVERNAME))					    @@\
+        								    @@\
+SpecialObjectRule($(Concat(name,CONFOBJ)),$(ICONFIGFILES), \		    @@\
+ 		  $(Concat(name,CONFDEFS)))				    @@\
+        								    @@\
+Concat(reload,$(Concat(name,SERVERNAME))): X386Conf.tmpl		    @@\
+	@$(MAKE) $(MFLAGS) Makefile					    @@\
+	@$(MAKE) $(MFLAGS) Concat(DoReload,$(Concat(name,SERVERNAME)))	    @@\
+        								    @@\
+Concat(DoReload,$(Concat(name,SERVERNAME))): $(Concat(name,CONFOBJ)) \	    @@\
+		$(XF86COMMONOBJ) confobjs drivobjs $(RENDERERLIBS) \	    @@\
+		Concat(load,$(Concat(name,SERVERNAME)))			    @@\
+        								    @@\
+drivobjs: $(ICONFIGFILES)						    @@\
+	@for i in drivdirs; do \					    @@\
+	(echo Checking in $$i...; cd $$i; set -x; \			    @@\
+	$(MAKE) $(MFLAGS) Makefile; \					    @@\
+	$(MAKE) $(MFLAGS) Makefiles; \					    @@\
+	$(MAKE) $(MFLAGS) Depend; \					    @@\
+	$(MAKE) $(MFLAGS)); done 					    @@\
+	touch drivobjs							    @@\
+        								    @@\
+ServerTarget($(Concat(name,SERVERNAME)),$(Concat(name,DIRS)),\		    @@\
+	     $(Concat(name,OBJS)),$(Concat(name,LIBS)),$(SYSLIBS))	    @@\
+        								    @@\
+InstallMultipleFlags($(Concat(name,SERVERNAME)),$(BINDIR),$(INSTPGMFLAGS))  @@\
+        								    @@\
+clean::									    @@\
+	$(RM) $(Concat(name,SERVERNAME))
+
+
+#define XFree86ServerNoDrv(name,fbdirs,fblibs,specialobjs)		    @@\
+Concat(name,SERVERNAME) = name						    @@\
+Concat(name,DIRS) = fbdirs						    @@\
+Concat(name,CONFOBJ) = Concat(name,.o)					    @@\
+Concat(name,OBJS) = $(Concat(name,CONFOBJ)) $(XF86COMMONOBJ) specialobjs    @@\
+Concat(name,LIBS) = $(XF86COMMONLIB) fblibs \				    @@\
+		    $(XF86HWLIB) $(XF86OSLIB) \				    @@\
+		    $(XF86SYSLIBS)					    @@\
+        								    @@\
+xf86all:: $(Concat(name,SERVERNAME))					    @@\
+        								    @@\
+SpecialObjectRule($(Concat(name,CONFOBJ)),$(ICONFIGFILES), \		    @@\
+ 		  $(Concat(name,CONFDEFS)))				    @@\
+        								    @@\
+Concat(reload,$(Concat(name,SERVERNAME))): X386Conf.tmpl		    @@\
+	@$(MAKE) $(MFLAGS) Makefile					    @@\
+	@$(MAKE) $(MFLAGS) Concat(DoReload,$(Concat(name,SERVERNAME)))	    @@\
+        								    @@\
+Concat(DoReload,$(Concat(name,SERVERNAME))): $(Concat(name,CONFOBJ)) \	    @@\
+		$(XF86COMMONOBJ) $(RENDERERLIBS) \			    @@\
+		Concat(load,$(Concat(name,SERVERNAME)))			    @@\
+        								    @@\
+ServerTarget($(Concat(name,SERVERNAME)),$(Concat(name,DIRS)),\		    @@\
+	     $(Concat(name,OBJS)),$(Concat(name,LIBS)),$(SYSLIBS))	    @@\
+        								    @@\
+InstallMultipleFlags($(Concat(name,SERVERNAME)),$(BINDIR),$(INSTPGMFLAGS))  @@\
+        								    @@\
+clean::									    @@\
+	$(RM) $(Concat(name,SERVERNAME))
+
+
+#endif /* X386LinkKit */
+
+

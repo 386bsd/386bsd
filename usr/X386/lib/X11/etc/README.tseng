@@ -1,0 +1,54 @@
+		Information for Tseng Chipset Users
+		-----------------------------------
+
+Contents
+--------
+	1) Supported chipsets
+	2) Clock selection problems with some ET4000 boards
+	3) Text mode restore problems
+
+1 - Supported chipsets
+----------------------
+  The Tseng chipsets supported by XFree86 are ET3000, ET4000, and
+ET4000/W32.  At this time, the accelerated features of the ET4000/W32
+are not supported; the chipset is treated as a standard ET4000.
+
+2 - Clock selection problems with some ET4000 boards
+----------------------------------------------------
+  XFree86 has some problems getting the clock selection right with some
+ET4000 boards when the server is started from a high-resolution text mode.
+The clock selection is always correct when the server is started from a
+standard 80x25 text mode.
+
+This problem is indicated when the reported clocks are different when the
+server is started from the high-resolution text mode from what they are
+when it is started from the 80x25 text mode.  To allow the server to work
+correctly from the high-resolution text mode, there are some Option flags
+that may be set in Xconfig.  To find out which flags to set, start the
+server with the -probeonly flag from an 80x25 text mode and look at the
+information printed by the server.  If the line:
+
+  VGAXXX: ET4000: Initial hibit state: low
+
+is printed, put the following in the VGA256 and VGA2 sections of your Xconfig:
+
+  Option "hibit_low"
+
+If the line:
+
+  VGAXXX: ET4000: Initial hibit state: high
+
+is printed, put the following in the VGA256 and VGA2 sections of your Xconfig:
+
+  Option "hibit_high"
+
+
+3 - Text mode restore problems
+------------------------------
+  In XFree86 1.3, an option flag "force_bits" was provided as an experiment
+to attempt to alleviate text-restoral problems that some people experienced.
+We have now made the behavior of this option the default, hence the flag
+has been removed.  Hopefully the past text-restoral problems are alleviated 
+in XFree86 2.0.
+
+$XFree86: mit/server/ddx/x386/etc/README.tseng,v 2.0 1993/10/18 12:18:03 dawes Exp $

@@ -1,0 +1,114 @@
+*** /sys/conf/files.orig	Thu Mar  4 08:41:10 1993
+--- /sys/conf/files		Thu Mar  4 08:43:27 1993
+***************
+*** 98,103 ****
+--- 98,104 ----
+  net/if_ethersubr.c	optional ether
+  net/if_loop.c		optional loop
+  net/if_sl.c		optional sl
++ net/if_ppp.c		optional ppp
+  net/if_tun.c		optional tun device-driver
+  net/raw_cb.c		standard
+  net/raw_usrreq.c	standard
+*** /sys/sys/ioctl.h.orig	Thu Mar  4 08:48:51 1993
+--- /sys/sys/ioctl.h		Thu Mar  4 08:47:09 1993
+***************
+*** 157,162 ****
+--- 157,163 ----
+  #define TTYDISC		0		/* termios tty line discipline */
+  #define	TABLDISC	3		/* tablet discipline */
+  #define	SLIPDISC	4		/* serial IP discipline */
++ #define	PPPDISC		5		/* PPP discipline */
+  
+  
+  #define	FIOCLEX		_IO('f', 1)		/* set close on exec on fd */
+***************
+*** 204,209 ****
+--- 205,215 ----
+  #define	OSIOCGARP	_IOWR('i',31, struct arpreq)	/* get arp entry */
+  #define	SIOCGARP	_IOWR('i',38, struct arpreq)	/* get arp entry */
+  #define	SIOCDARP	_IOW('i', 32, struct arpreq)	/* delete arp entry */
++ 
++ #define	SIOCSIFMTU	_IOW('i', 127, struct ifreq)	/* set ifnet mtu */
++ #define	SIOCGIFMTU	_IOWR('i',126, struct ifreq)	/* get ifnet mtu */
++ #define	SIOCSIFASYNCMAP	_IOW('i', 125, struct ifreq)	/* set ppp asyncmap */
++ #define	SIOCGIFASYNCMAP	_IOWR('i',124, struct ifreq)	/* get ppp asyncmap */
+  
+  #ifndef KERNEL
+  
+*** /sys/net/if.c.orig	Thu Mar  4 08:41:27 1993
+--- /sys/net/if.c	Thu Mar  4 08:41:28 1993
+***************
+*** 484,489 ****
+--- 484,498 ----
+  		ifp->if_metric = ifr->ifr_metric;
+  		break;
+  
++ 	case SIOCSIFMTU:
++ 	case SIOCGIFMTU:
++ 	case SIOCSIFASYNCMAP:
++ 	case SIOCGIFASYNCMAP:
++ 		if (!ifp->if_ioctl)
++ 			return (EOPNOTSUPP);
++ 		return ((*ifp->if_ioctl)(ifp, cmd, data));
++ 		break;
++ 
+  	default:
+  		if (so->so_proto == 0)
+  			return (EOPNOTSUPP);
+*** /sys/net/if_types.h.orig	Thu Mar  4 08:53:04 1993
+--- /sys/net/if_types.h		Thu Mar  4 08:41:44 1993
+***************
+*** 62,64 ****
+--- 62,65 ----
+  #define	IFT_XETHER	0x1a		/* obsolete 3MB experimental ethernet */
+  #define	IFT_NSIP	0x1b		/* XNS over IP */
+  #define	IFT_SLIP	0x1c		/* IP over generic TTY */
++ #define	IFT_PPP		0x1d		/* PPP over generic TTY */
+*** /sys/kern/init_main.c.orig	Thu Mar  4 08:54:29 1993
+--- /sys/kern/init_main.c	Thu Mar  4 08:55:04 1993
+***************
+*** 219,224 ****
+--- 219,228 ----
+  #include "sl.h"
+  #if NSL > 0
+  	slattach();			/* XXX */
++ #endif
++ #include "ppp.h"
++ #if NPPP > 0
++ 	pppattach();			/* XXX */
+  #endif
+  #include "loop.h"
+  #if NLOOP > 0
+*** /sys/kern/tty_conf.c.orig	Thu Mar  4 08:42:10 1993
+--- /sys/kern/tty_conf.c	Thu Mar  4 08:42:10 1993
+***************
+*** 55,60 ****
+--- 55,65 ----
+  #if NSL > 0
+  int	slopen(),slclose(),slinput(),sltioctl(),slstart();
+  #endif
++ #include "ppp.h"
++ #if NPPP > 0
++ int	pppopen(),pppclose(),pppread(),pppwrite(),pppinput();
++ int	ppptioctl(),pppstart(),pppselect();
++ #endif
+  
+  
+  struct	linesw linesw[] =
+***************
+*** 77,82 ****
+--- 82,94 ----
+  #if NSL > 0
+  	slopen, slclose, enodev, enodev, sltioctl,
+  	slinput, enodev, nullop, slstart, nullmodem,	/* 4- SLIPDISC */
++ #else
++ 	enodev, enodev, enodev, enodev, enodev,
++ 	enodev, enodev, enodev, enodev, enodev,
++ #endif
++ #if NPPP > 0
++ 	pppopen, pppclose, pppread, pppwrite, ppptioctl,
++ 	pppinput, enodev, nullop, pppstart, ttymodem,	/* 5- PPPDISC */
+  #else
+  	enodev, enodev, enodev, enodev, enodev,
+  	enodev, enodev, enodev, enodev, enodev,

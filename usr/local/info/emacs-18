@@ -1,0 +1,1218 @@
+This is Info file ../info/emacs, produced by Makeinfo-1.54 from the
+input file emacs.texi.
+
+
+File: emacs,  Node: Screen Garbled,  Next: Text Garbled,  Prev: Stuck Recursive,  Up: Lossage
+
+Garbage on the Screen
+---------------------
+
+   If the data on the screen looks wrong, the first thing to do is see
+whether the text is really wrong.  Type `C-l', to redisplay the entire
+screen.  If the screen appears correct after this, the problem was
+entirely in the previous screen update.  (Otherwise, see *Note Text
+Garbled::.)
+
+   Display updating problems often result from an incorrect termcap
+entry for the terminal you are using.  The file `etc/TERMS' in the Emacs
+distribution gives the fixes for known problems of this sort.
+`INSTALL' contains general advice for these problems in one of its
+sections.  Very likely there is simply insufficient padding for certain
+display operations.  To investigate the possibility that you have this
+sort of problem, try Emacs on another terminal made by a different
+manufacturer.  If problems happen frequently on one kind of terminal
+but not another kind, it is likely to be a bad termcap entry, though it
+could also be due to a bug in Emacs that appears for terminals that
+have or that lack specific features.
+
+
+File: emacs,  Node: Text Garbled,  Next: Unasked-for Search,  Prev: Screen Garbled,  Up: Lossage
+
+Garbage in the Text
+-------------------
+
+   If `C-l' shows that the text is wrong, try undoing the changes to it
+using `C-x u' until it gets back to a state you consider correct.  Also
+try `C-h l' to find out what command you typed to produce the observed
+results.
+
+   If a large portion of text appears to be missing at the beginning or
+end of the buffer, check for the word `Narrow' in the mode line.  If it
+appears, the text is still present, but temporarily off-limits.  To
+make it accessible again, type `C-x n w'.  *Note Narrowing::.
+
+
+File: emacs,  Node: Unasked-for Search,  Next: Emergency Escape,  Prev: Text Garbled,  Up: Lossage
+
+Spontaneous Entry to Incremental Search
+---------------------------------------
+
+   If Emacs spontaneously displays `I-search:' at the bottom of the
+screen, it means that the terminal is sending `C-s' and `C-q' according
+to the poorly designed xon/xoff "flow control" protocol.
+
+   If this happens to you, your best recourse is to put the terminal in
+a mode where it will not use flow control, or give it so much padding
+that it will never send a `C-s'.  (One way to increase the amount of
+padding is to set the variable `baud-rate' to a larger value.  Its
+value is the terminal output speed, measured in the conventional units
+of baud.)
+
+   If you don't succeed in turning off flow control, the next best thing
+is to tell Emacs to cope with it.  To do this, call the function
+`enable-flow-control'.
+
+   Typically there are particular terminal types with which you must use
+flow control.  You can conveniently ask for flow control on those
+terminal types only, using `enable-flow-control-on'.  For example, if
+you find you must use flow control on VT-100 and H19 terminals, put the
+following in your `.emacs' file:
+
+     (enable-flow-control-on "vt100" "h19")
+
+   When flow control is enabled, you must type `C-\' to get the effect
+of a `C-s', and type `C-^' to get the effect of a `C-q'.  (These
+aliases work by means of keyboard translations; see *Note Keyboard
+Translations::.)
+
+
+File: emacs,  Node: Emergency Escape,  Next: Total Frustration,  Prev: Unasked-for Search,  Up: Lossage
+
+Emergency Escape
+----------------
+
+   Because at times there have been bugs causing Emacs to loop without
+checking `quit-flag', a special feature causes Emacs to be suspended
+immediately if you type a second `C-g' while the flag is already set,
+so you can always get out of GNU Emacs.  Normally Emacs recognizes and
+clears `quit-flag' (and quits!) quickly enough to prevent this from
+happening.
+
+   When you resume Emacs after a suspension caused by multiple `C-g', it
+asks two questions before going back to what it had been doing:
+
+     Auto-save? (y or n)
+     Abort (and dump core)? (y or n)
+
+Answer each one with `y' or `n' followed by RET.
+
+   Saying `y' to `Auto-save?' causes immediate auto-saving of all
+modified buffers in which auto-saving is enabled.
+
+   Saying `y' to `Abort (and dump core)?' causes an illegal instruction
+to be executed, dumping core.  This is to enable a wizard to figure out
+why Emacs was failing to quit in the first place.  Execution does not
+continue after a core dump.  If you answer `n', execution does
+continue.  With luck, GNU Emacs will ultimately check `quit-flag' and
+quit normally.  If not, and you type another `C-g', it is suspended
+again.
+
+   If Emacs is not really hung, just slow, you may invoke the double
+`C-g' feature without really meaning to.  Then just resume and answer
+`n' to both questions, and you will arrive at your former state.
+Presumably the quit you requested will happen soon.
+
+   The double-`C-g' feature is turned off when Emacs is running under
+the X Window System, since you can use the window manager to kill Emacs
+or to create another window and run another program.
+
+
+File: emacs,  Node: Total Frustration,  Prev: Emergency Escape,  Up: Lossage
+
+Help for Total Frustration
+--------------------------
+
+   If using Emacs (or something else) becomes terribly frustrating and
+none of the techniques described above solve the problem, Emacs can
+still help you.
+
+   First, if the Emacs you are using is not responding to commands, type
+`C-g C-g' to get out of it and then start a new one.
+
+   Second, type `M-x doctor RET'.
+
+   The doctor will help you feel better.  Each time you say something to
+the doctor, you must end it by typing RET RET.  This lets the doctor
+know you are finished.
+
+
+File: emacs,  Node: Bugs,  Next: Service,  Prev: Lossage,  Up: Top
+
+Reporting Bugs
+==============
+
+   Sometimes you will encounter a bug in Emacs.  Although we cannot
+promise we can or will fix the bug, and we might not even agree that it
+is a bug, we want to hear about bugs you encounter in case we do want
+to fix them.
+
+   To make it possible for us to fix a bug, you must report it.  In
+order to do so effectively, you must know when and how to do it.
+
+* Menu:
+
+* Criteria:  Bug Criteria.	 Have you really found a bug?
+* Understanding Bug Reporting::	 How to report a bug effectively.
+* Checklist::			 Steps to follow for a good bug report.
+* Sending Patches::		 How to send a patch for GNU Emacs.
+
+
+File: emacs,  Node: Bug Criteria,  Next: Understanding Bug Reporting,  Up: Bugs
+
+When Is There a Bug
+-------------------
+
+   If Emacs executes an illegal instruction, or dies with an operating
+system error message that indicates a problem in the program (as
+opposed to something like "disk full"), then it is certainly a bug.
+
+   If Emacs updates the display in a way that does not correspond to
+what is in the buffer, then it is certainly a bug.  If a command seems
+to do the wrong thing but the problem corrects itself if you type
+`C-l', it is a case of incorrect display updating.
+
+   Taking forever to complete a command can be a bug, but you must make
+certain that it was really Emacs's fault.  Some commands simply take a
+long time.  Type `C-g' and then `C-h l' to see whether the input Emacs
+received was what you intended to type; if the input was such that you
+*know* it should have been processed quickly, report a bug.  If you
+don't know whether the command should take a long time, find out by
+looking in the manual or by asking for assistance.
+
+   If a command you are familiar with causes an Emacs error message in a
+case where its usual definition ought to be reasonable, it is probably a
+bug.
+
+   If a command does the wrong thing, that is a bug.  But be sure you
+know for certain what it ought to have done.  If you aren't familiar
+with the command, or don't know for certain how the command is supposed
+to work, then it might actually be working right.  Rather than jumping
+to conclusions, show the problem to someone who knows for certain.
+
+   Finally, a command's intended definition may not be best for editing
+with.  This is a very important sort of problem, but it is also a
+matter of judgment.  Also, it is easy to come to such a conclusion out
+of ignorance of some of the existing features.  It is probably best not
+to complain about such a problem until you have checked the
+documentation in the usual ways, feel confident that you understand it,
+and know for certain that what you want is not available.  If you are
+not sure what the command is supposed to do after a careful reading of
+the manual, check the index and glossary for any terms that may be
+unclear.
+
+   If you still do not understand, that indicates a bug in the manual,
+which you should report.  The manual's job is to make everything clear
+to people who are not Emacs experts--including you.  It is just as
+important to report documentation bugs as program bugs.
+
+   If the on-line documentation string of a function or variable
+disagrees with the manual, one of them must be wrong; that is a bug.
+
+
+File: emacs,  Node: Understanding Bug Reporting,  Next: Checklist,  Prev: Bug Criteria,  Up: Bugs
+
+Understanding Bug Reporting
+---------------------------
+
+   When you decide that there is a bug, it is important to report it
+and to report it in a way which is useful.  What is most useful is an
+exact description of what commands you type, starting with the shell
+command to run Emacs, until the problem happens.
+
+   The most important principle in reporting a bug is to report *facts*,
+not hypotheses or categorizations.  It is always easier to report the
+facts, but people seem to prefer to strain to posit explanations and
+report them instead.  If the explanations are based on guesses about
+how Emacs is implemented, they will be useless; we will have to try to
+figure out what the facts must have been to lead to such speculations.
+Sometimes this is impossible.  But in any case, it is unnecessary work
+for us.
+
+   For example, suppose that you type `C-x C-f /glorp/baz.ugh RET',
+visiting a file which (you know) happens to be rather large, and Emacs
+prints out `I feel pretty today'.  The best way to report the bug is
+with a sentence like the preceding one, because it gives all the facts
+and nothing but the facts.
+
+   Do not assume that the problem is due to the size of the file and
+say, "When I visit a large file, Emacs prints out `I feel pretty
+today'." This is what we mean by "guessing explanations".  The problem
+is just as likely to be due to the fact that there is a `z' in the file
+name.  If this is so, then when we got your report, we would try out
+the problem with some "large file", probably with no `z' in its name,
+and not find anything wrong.  There is no way in the world that we
+could guess that we should try visiting a file with a `z' in its name.
+
+   Alternatively, the problem might be due to the fact that the file
+starts with exactly 25 spaces.  For this reason, you should make sure
+that you inform us of the exact contents of any file that is needed to
+reproduce the bug.  What if the problem only occurs when you have typed
+the `C-x C-a' command previously?  This is why we ask you to give the
+exact sequence of characters you typed since starting to use Emacs.
+
+   You should not even say "visit a file" instead of `C-x C-f' unless
+you *know* that it makes no difference which visiting command is used.
+Similarly, rather than saying "if I have three characters on the line,"
+say "after I type `RET A B C RET C-p'," if that is the way you entered
+the text.
+
+
+File: emacs,  Node: Checklist,  Next: Sending Patches,  Prev: Understanding Bug Reporting,  Up: Bugs
+
+Checklist for Bug Reports
+-------------------------
+
+   The best way to send a bug report is to mail it electronically to the
+Emacs maintainers at `bug-gnu-emacs@prep.ai.mit.edu'.  (If you want to
+suggest a change as an improvement, use the same address.)
+
+   If you'd like to read the bug reports, you can find them on the
+newsgroup `gnu.emacs.bug'; keep in mind, however, that as a spectator
+you should not criticize anything about what you see there.  The
+purpose of bug reports is to give information to the Emacs maintainers.
+Spectators are welcome only as long as they do not interfere with
+this.  In particular, some bug reports contain large amounts of data;
+spectators should not complain about this.
+
+   Please do not post bug reports using netnews; mail is more reliable
+than netnews about reporting your correct address, which we may need in
+order to ask you for more information.
+
+   If you can't send electronic mail, then mail the bug report on paper
+or machine-readable media to this address:
+
+GNU Emacs Bugs
+Free Software Foundation
+675 Mass Ave
+Cambridge, MA 02139
+
+   We do not promise to fix the bug; but if the bug is serious, or
+ugly, or easy to fix, chances are we will want to.
+
+   To enable maintainers to investigate a bug, your report should
+include all these things:
+
+   * The version number of Emacs.  Without this, we won't know whether
+     there is any point in looking for the bug in the current version
+     of GNU Emacs.
+
+     You can get the version number by typing `M-x emacs-version RET'.
+     If that command does not work, you probably have something other
+     than GNU Emacs, so you will have to report the bug somewhere else.
+
+   * The type of machine you are using, and the operating system name
+     and version number.
+
+   * The operands you gave to the `configure' command when you installed
+     Emacs.
+
+   * A complete list of any modifications you have made to the Emacs
+     source.  (We may not have time to investigate the bug unless it
+     happens in an unmodified Emacs.  But if you've made modifications
+     and don't tell us, then you are sending us on a wild goose chase.)
+
+     Be precise about these changes.  A description in English is not
+     enough--send a context diff for them.
+
+     Adding files of your own (such as a machine description for a
+     machine we don't support) is a modification of the source.
+
+   * Details of any other deviations from the standard procedure for
+     installing GNU Emacs.
+
+   * The complete text of any files needed to reproduce the bug.
+
+     If you can tell us a way to cause the problem without visiting any
+     files, please do so.  This makes it much easier to debug.  If you
+     do need files, make sure you arrange for us to see their exact
+     contents.  For example, it can often matter whether there are
+     spaces at the ends of lines, or a newline after the last line in
+     the buffer (nothing ought to care whether the last line is
+     terminated, but try telling the bugs that).
+
+   * The precise commands we need to type to reproduce the bug.
+
+     The easy way to record the input to Emacs precisely is to to write
+     a dribble file.  To start the file, execute the Lisp expression
+
+          (open-dribble-file "~/dribble")
+
+     using `M-ESC' or from the `*scratch*' buffer just after starting
+     Emacs.  From then on, Emacs copies all your input to the specified
+     dribble file until the Emacs process is killed.
+
+   * For possible display bugs, the terminal type (the value of
+     environment variable `TERM'), the complete termcap entry for the
+     terminal from `/etc/termcap' (since that file is not identical on
+     all machines), and the output that Emacs actually sent to the
+     terminal.
+
+     The way to collect the terminal output is to execute the Lisp
+     expression
+
+          (open-termscript "~/termscript")
+
+     using `M-ESC' or from the `*scratch*' buffer just after starting
+     Emacs.  From then on, Emacs copies all terminal output to the
+     specified termscript file as well, until the Emacs process is
+     killed.  If the problem happens when Emacs starts up, put this
+     expression into your `.emacs' file so that the termscript file
+     will be open when Emacs displays the screen for the first time.
+
+     Be warned: it is often difficult, and sometimes impossible, to fix
+     a terminal-dependent bug without access to a terminal of the type
+     that stimulates the bug.
+
+   * A description of what behavior you observe that you believe is
+     incorrect.  For example, "The Emacs process gets a fatal signal,"
+     or, "The resulting text is as follows, which I think is wrong."
+
+     Of course, if the bug is that Emacs gets a fatal signal, then one
+     can't miss it.  But if the bug is incorrect text, the maintainer
+     might fail to notice what is wrong.  Why leave it to chance?
+
+     Even if the problem you experience is a fatal signal, you should
+     still say so explicitly.  Suppose something strange is going on,
+     such as, your copy of the source is out of sync, or you have
+     encountered a bug in the C library on your system.  (This has
+     happened!)  Your copy might crash and the copy here would not.  If
+     you *said* to expect a crash, then when Emacs here fails to crash,
+     we would know that the bug was not happening.  If you don't say to
+     expect a crash, then we would not know whether the bug was
+     happening.  We would not be able to draw any conclusion from our
+     observations.
+
+     If the manifestation of the bug is an Emacs error message, it is
+     important to report not just the text of the error message but a
+     backtrace showing how the Lisp program in Emacs arrived at the
+     error.  To make the backtrace, execute the Lisp expression `(setq
+     debug-on-error t)' before the error happens (that is to say, you
+     must execute that expression and then make the bug happen).  This
+     causes the Lisp debugger to run, showing you a backtrace.  Copy
+     the text of the debugger's backtrace into the bug report.
+
+     This use of the debugger is possible only if you know how to make
+     the bug happen again.  Do note the error message the first time
+     the bug happens, so if you can't make it happen again, you can
+     report at least the error message.
+
+   * Check whether any programs you have loaded into the Lisp world,
+     including your `.emacs' file, set any variables that may affect the
+     functioning of Emacs.  Also, see whether the problem happens in a
+     freshly started Emacs without loading your `.emacs' file (start
+     Emacs with the `-q' switch to prevent loading the init file.)  If
+     the problem does *not* occur then, you must report the precise
+     contents of any programs that you must load into the Lisp world in
+     order to cause the problem to occur.
+
+   * If the problem does depend on an init file or other Lisp programs
+     that are not part of the standard Emacs system, then you should
+     make sure it is not a bug in those programs by complaining to
+     their maintainers first.  After they verify that they are using
+     Emacs in a way that is supposed to work, they should report the
+     bug.
+
+   * If you wish to mention something in the GNU Emacs source, show the
+     line of code with a few lines of context.  Don't just give a line
+     number.
+
+     The line numbers in the development sources don't match those in
+     your sources.  It would take extra work for the maintainers to
+     determine what code is in your version at a given line number, and
+     we could not be certain.
+
+   * Additional information from a C debugger such as GDB might enable
+     someone to find a problem on a machine which he does not have
+     available.  However, you need to think when you collect this
+     information if you want it to be useful.
+
+     For example, many people send just a backtrace, but that is not
+     very useful by itself.  A simple backtrace with arguments often
+     conveys little about what is happening inside GNU Emacs, because
+     most of the arguments listed in the backtrace are pointers to Lisp
+     objects.  The numeric values of these pointers have no
+     significance whatever; all that matters is the contents of the
+     objects they point to (and most of the contents are themselves
+     pointers).
+
+     To provide useful information, you need to show the values of Lisp
+     objects in Lisp notation.  Do this for each variable which is a
+     Lisp object, in several stack frames near the bottom of the stack.
+     Look at the source to see which variables are Lisp objects,
+     because the debugger thinks of them as integers.
+
+     To show a variable's value in Lisp syntax, first print its value,
+     then use the user-defined GDB command `pr' to print the Lisp
+     object in Lisp syntax.  (If you must use another debugger, call
+     the function `debug_print' with the object as an argument.)  The
+     `pr' command is defined by the file `src/.gdbinit' in the Emacs
+     distribution, and it works only if you are debugging a running
+     process (not with a core dump).
+
+     To make Lisp errors stop Emacs and return to GDB, put a breakpoint
+     at `Fsignal'.
+
+     To find out which Lisp functions are running, using GDB, move up
+     the stack, and each time you get to a frame for the function
+     `Ffuncall', type these GDB commands:
+
+          p *args
+          pr
+
+     To print the first argument that the function received, use these
+     commands:
+
+          p args[1]
+          pr
+
+     You can print the other arguments likewise.  The argument `nargs'
+     of `Ffuncall' says how many arguments `Ffuncall' received; these
+     include the Lisp function itself and the arguments for that
+     function.
+
+   Here are some things that are not necessary:
+
+   * A description of the envelope of the bug--this is not necessary
+     for a reproducible bug.
+
+     Often people who encounter a bug spend a lot of time investigating
+     which changes to the input file will make the bug go away and which
+     changes will not affect it.
+
+     This is often time consuming and not very useful, because the way
+     we will find the bug is by running a single example under the
+     debugger with breakpoints, not by pure deduction from a series of
+     examples.  You might as well save time by not doing this.
+
+     Of course, if you can find a simpler example to report *instead* of
+     the original one, that is a convenience.  Errors in the output
+     will be easier to spot, running under the debugger will take less
+     time, etc.
+
+     However, simplification is not vital; if you don't want to do this,
+     please report the bug with your original test case.
+
+   * A system call trace of Emacs execution.
+
+     System call traces are very useful for certain special kinds of
+     debugging, but in most cases they give little useful information.
+     It is therefore strange that many people seem to think that *the*
+     way to report information about a crash is to send a system call
+     trace.
+
+     In most programs, a backtrace is normally far, far more
+     informative than a system call trace.  Even in Emacs, a simple
+     backtrace is generally more informative, though to give full
+     information you should supplement the backtrace by displaying
+     variable values and printing them as Lisp objects with `pr' (see
+     above).
+
+   * A patch for the bug.
+
+     A patch for the bug is useful if it is a good one.  But don't omit
+     the necessary information, such as the test case, on the
+     assumption that a patch is all we need.  We might see problems
+     with your patch and decide to fix the problem another way, or we
+     might not understand it at all.
+
+     And if we can't understand what bug you are trying to fix, or why
+     your patch should be an improvement, we mustn't install it.  A
+     test case will help us to understand.
+
+     *Note Sending Patches::, for guidelines on how to make it easy for
+     us to understand and install your patches.
+
+   * A guess about what the bug is or what it depends on.
+
+     Such guesses are usually wrong.  Even experts can't guess right
+     about such things without first using the debugger to find the
+     facts.
+
+
+File: emacs,  Node: Sending Patches,  Prev: Checklist,  Up: Bugs
+
+Sending Patches for GNU Emacs
+-----------------------------
+
+   If you would like to write bug fixes or improvements for GNU Emacs,
+that is very helpful.  When you send your changes, please follow these
+guidelines to make it easy for the maintainers to use them.
+
+   If you don't follow these guidelines, your information might still be
+useful, but using it will take extra work.  Maintaining GNU Emacs is a
+lot of work in the best of circumstances, and we can't keep up unless
+you do your best to help.
+
+   * Send an explanation with your changes of what problem they fix or
+     what improvement they bring about.  For a bug fix, just include a
+     copy of the bug report, and explain why the change fixes the bug.
+
+     (Referring to a bug report is not as good as including it, because
+     then we will have to look it up, and we have probably already
+     deleted it if we've already fixed the bug.)
+
+   * Always include a proper bug report for the problem you think you
+     have fixed.  We need to convince ourselves that the change is
+     right before installing it.  Even if it is correct, we might have
+     trouble understanding it if we don't have a way to reproduce the
+     problem.
+
+   * Include all the comments that are appropriate to help people
+     reading the source in the future understand why this change was
+     needed.
+
+   * Don't mix together changes made for different reasons.  Send them
+     *individually*.
+
+     If you make two changes for separate reasons, then we might not
+     want to install them both.  We might want to install just one.  If
+     you send them all jumbled together in a single set of diffs, we
+     have to do extra work to disentangle them--to figure out which
+     parts of the change serve which purpose.  If we don't have time
+     for this, we might have to ignore your changes entirely.
+
+     If you send each change as soon as you have written it, with its
+     own explanation, then two changes never get tangled up, and we can
+     consider each one properly without any extra work to disentangle
+     them.
+
+   * Send each change as soon as that change is finished.  Sometimes
+     people think they are helping us by accumulating many changes to
+     send them all together.  As explained above, this is absolutely
+     the worst thing you could do.
+
+     Since you should send each change separately, you might as well
+     send it right away.  That gives us the option of installing it
+     immediately if it is important.
+
+   * Use `diff -c' to make your diffs.  Diffs without context are hard
+     to install reliably.  More than that, they are hard to study; we
+     must always study a patch to decide whether we want to install it.
+     Unidiff format is better than contextless diffs, but not as easy
+     to read as `-c' format.
+
+     If you have GNU diff, use `diff -c -F'^[_a-zA-Z0-9$]+ *('', which
+     shows the name of the function that each change occurs in.
+
+   * Write the change log entries for your changes.  This is both to
+     save us the extra work of writing them, and to help explain your
+     changes so we can understand them.
+
+     The purpose of the change log is to show people where to find what
+     was changed.  So you need to be specific about what functions you
+     changed; in large functions, it's often helpful to indicate where
+     within the function the change was.
+
+     On the other hand, once you have shown people where to find the
+     change, you need not explain its purpose in the change log.  Thus,
+     if you add a new function, all you need to say about it is that it
+     is new.  If you feel that the purpose needs explaining, it
+     probably does--but put the explanation in comments in the code.
+     It will be more useful there.
+
+     Please read the `ChangeLog' file to see what sorts of information
+     to put in, and to learn the style that we use.  If you would like
+     your name to appear in the header line showing who made the
+     change, send us the header line.
+
+   * When you write the fix, keep in mind that we can't install a
+     change that would break other systems.  Please think about what
+     effect your change will have if compiled on another type of system.
+
+     Sometimes people send fixes that *might* be an improvement in
+     general--but it is hard to be sure of this.  It's hard to install
+     such changes because we have to study them very carefully.  Of
+     course, a good explanation of the reasoning by which you concluded
+     the change was correct can help convince us.
+
+     The safest changes are changes to the configuration files for a
+     particular machine.  These are safe because they can't create new
+     bugs on other machines.
+
+     Please help us keep up with the workload by designing the patch in
+     a form that is clearly safe to install.
+
+
+File: emacs,  Node: Service,  Next: Command Arguments,  Prev: Bugs,  Up: Top
+
+How To Get Help with GNU Emacs
+==============================
+
+   If you need help installing, using or changing GNU Emacs, there are
+two ways to find it:
+
+   * Send a message to a suitable network mailing list.  First try
+     `bug-gnu-emacs@prep.ai.mit.edu', and if that brings no response,
+     try `help-gnu-emacs@prep.ai.mit.edu'.
+
+   * Look in the service directory for someone who might help you for a
+     fee.  The service directory is found in the file named
+     `etc/SERVICE' in the Emacs distribution.
+
+
+File: emacs,  Node: Command Arguments,  Next: Antinews,  Prev: Service,  Up: Top
+
+Command Line Options and Arguments
+**********************************
+
+   GNU Emacs supports command line arguments to request various actions
+when invoking Emacs.  These are for compatibility with other editors and
+for sophisticated activities.  We don't recommend using them for
+ordinary editing.
+
+   Arguments that are not options specify files to visit.  Emacs visits
+the specified files while it starts up.  (The last file name on your
+command line is the one you see displayed, but the rest are all there in
+other buffers.)
+
+   You can use options to specify other things, such as the size and
+position of the Emacs window if you are running it under the X Window
+System.  A few arguments support advanced usage, like running Lisp
+functions on files in batch mode.
+
+   There are two kinds of options: "ordinary options" and "initial
+options".  Ordinary options can appear in any order and can be
+intermixed with file names to visit.  These and file names are called
+"ordinary arguments".  Emacs processes all of these in the order they
+are written.  Initial options must come at the beginning of the command
+line.
+
+* Menu:
+
+* Ordinary Arguments::	Arguments to visit files, load libraries,
+			  and call functions.
+* Initial Options::     Arguments that must come at the start of the command.
+* Command Example::     Examples of using command line arguments.
+* Resume Arguments::	Specifying arguments when you resume a running Emacs.
+* Environment::         Environment variables that Emacs uses.
+
+* Display X::           Changing the default display and using remote login.
+* Font X::	        Choosing a font for text, under X.
+* Colors X::	        Choosing colors, under X.
+* Window Size X::       Start-up window size, under X.
+* Borders X::	        Internal and external borders, under X.
+* Icons X::             Choosing what sort of icon to use, under X.
+* Resources X::         Advanced use of classes and resources, under X.
+
+
+File: emacs,  Node: Ordinary Arguments,  Next: Initial Options,  Up: Command Arguments
+
+Ordinary Arguments
+==================
+
+   Here is a table of the ordinary arguments and options:
+
+`FILE'
+     Visit FILE using `find-file'.  *Note Visiting::.
+
+`+LINENUM FILE'
+     Visit FILE using `find-file', then go to line number LINENUM in it.
+
+`-l FILE'
+`-load FILE'
+     Load a file FILE of Lisp code with the function `load'.  *Note
+     Lisp Libraries::.
+
+`-f FUNCTION'
+`-funcall FUNCTION'
+     Call Lisp function FUNCTION with no arguments.
+
+`-insert FILE'
+     Insert the contents of FILE into the current buffer.  This is like
+     what `M-x insert-buffer' does; *Note Misc File Ops::.
+
+`-kill'
+     Exit from Emacs without asking for confirmation.
+
+
+File: emacs,  Node: Initial Options,  Next: Command Example,  Prev: Ordinary Arguments,  Up: Command Arguments
+
+Initial Options
+===============
+
+   The initial options are recognized only at the beginning of the
+command line.  If you use more than one of them, they must appear in the
+order that they appear in this table.
+
+`-t DEVICE'
+     Use DEVICE as the device for terminal input and output.
+
+`-d DISPLAY'
+     When running with the X Window System, use the display named
+     DISPLAY to make the window that serves as Emacs's terminal.
+
+`-nw'
+     Don't communicate directly with X, disregarding the `DISPLAY'
+     environment variable even if it is set.  `-nw' stands for
+     "non-window."
+
+`-batch'
+     Run Emacs in "batch mode", which means that the text being edited
+     is not displayed and the standard Unix interrupt characters such
+     as `C-z' and `C-c' continue to have their normal effect.  Emacs in
+     batch mode outputs to `stderr' only what would normally be printed
+     in the echo area under program control.
+
+     Batch mode is used for running programs written in Emacs Lisp from
+     shell scripts, makefiles, and so on.  Normally the `-l' option or
+     `-f' option will be used as well, to invoke a Lisp program to do
+     the batch processing.
+
+     `-batch' implies `-q' (do not load an init file).  It also causes
+     Emacs to kill itself after all command options have been
+     processed.  In addition, auto-saving is not done except in buffers
+     for which it has been explicitly requested.
+
+`-q'
+`-no-init-file'
+     Do not load your Emacs init file `~/.emacs'.
+
+`-u USER'
+`-user USER'
+     Load USER's Emacs init file `~USER/.emacs' instead of your own.
+
+`-debug-init'
+     Enable the Emacs Lisp debugger for errors in the init file.
+
+   The init file can get access to the values of the command line
+arguments as the elements of a list in the variable
+`command-line-args'.  (The list contains only the arguments from the
+first table above.  Emacs processes the arguments from the second table
+before building the list.)  The init file can override the normal
+processing of the other arguments by setting this variable.
+
+
+File: emacs,  Node: Command Example,  Next: Resume Arguments,  Prev: Initial Options,  Up: Command Arguments
+
+Command Argument Example
+========================
+
+   Here is an example of using Emacs with arguments and options.  It
+assumes you have a Lisp program file called `hack-c.el' which, when
+loaded, performs some useful operation on current buffer, expected to be
+a C program.
+
+     emacs -batch foo.c -l hack-c -f save-buffer -kill > log
+
+This says to visit `foo.c', load `hack-c.el' (which makes changes in
+the visited file), save `foo.c' (note that `save-buffer' is the
+function that `C-x C-s' is bound to), and then exit to the shell that
+this command was done with.  The initial option `-batch' guarantees
+there will be no problem redirecting output to `log', because Emacs
+will not assume that it has a display terminal to work with.
+
+
+File: emacs,  Node: Resume Arguments,  Next: Environment,  Prev: Command Example,  Up: Command Arguments
+
+Resuming Emacs with Arguments
+=============================
+
+   You can specify ordinary arguments for Emacs when you resume it after
+a suspension.  To prepare for this, put the following code in your
+`.emacs' file (*note Hooks::.):
+
+     (add-hook 'suspend-hook 'resume-suspend-hook)
+
+   As further preparation, you must execute the shell script
+`emacs.csh' (if you use CSH as your shell) or `emacs.bash' (if you use
+BASH as your shell).  These scripts define an alias named `edit', which
+will resume Emacs giving it new command line arguments such as files to
+visit.
+
+   Only ordinary arguments work properly when you resume Emacs.  Initial
+arguments are not recognized.  It's too late to execute them anyway.
+
+   Note that resuming Emacs (with or without arguments) must be done
+from within the shell that is the parent of the Emacs job.  This is why
+`edit' is an alias rather than a program or a shell script.  It is not
+possible to implement a resumption command that could be run from other
+subjobs of the shell; no way to define a command that could be made the
+value of `EDITOR', for example.  Therefore, this feature does not take
+the place of the the Emacs Server feature.  *Note Emacs Server::.
+
+   The aliases use the Emacs Server feature if you appear to have a
+server Emacs running.  However, they cannot determine this with complete
+accuracy.  They may think that a server is still running when in
+actuality you have killed that Emacs, because the file `/tmp/.esrv...'
+still exists.  If this happens, find that file and delete it.
+
+
+File: emacs,  Node: Environment,  Next: Display X,  Prev: Resume Arguments,  Up: Command Arguments
+
+Environment Variables
+=====================
+
+   This appendix describes how Emacs uses environment variables.  An
+environment variable is a string passed from the operating system to
+Emacs, and the collection of environment variables is known as the
+environment.
+
+   Because environment variables come from the operating system there
+is no general way to set them; it depends on the operating system and
+especially the shell that you are using.  If, e.g., you are using the
+csh or tcsh shell and want to set the environment variable `ESHELL' to
+`/bin/tcsh' you would give the command
+
+     setenv ESHELL /bin/tcsh
+
+   Environment variables are case sensitive and it is conventional to
+use upper case letters only.
+
+   When Emacs is set-up to use the X windowing system, it inherits the
+use of a large number of environment variables from the X library.  See
+the X documentation for more information.
+
+* Menu:
+
+* General Variables::     Environment variables that all versions of Emacs use.
+* MSDOG Variables::       Variables specific to the MS-DOS operating system.
+* Misc Variables::        Certain system specific variables.
+
+
+File: emacs,  Node: General Variables,  Next: MSDOG Variables,  Up: Environment
+
+General Variables
+-----------------
+
+`AUTHORCOPY'
+     The name of a file used to archive news articles posted with the
+     `gnus' package.
+
+`CDPATH'
+     Used by the `cd' command.
+
+`DOMAINNAME'
+     The name of the internet domain that the machine running Emacs is
+     located in.  Used by the `gnus' package.
+
+`EMACSDATA'
+     Used to initialize the variable `data-directory' used to locate the
+     architecture-independent files that come with Emacs.  Setting this
+     variable overrides the setting in `paths.h' when Emacs was built.
+
+`EMACSLOADPATH'
+     A colon-separated list of directories from which to load Emacs Lisp
+     files.  Setting this variable overrides the setting in `paths.h'
+     when Emacs was built.
+
+`EMACSLOCKDIR'
+     The directory that Emacs places lock files -- files used to protect
+     users from editing the same files simultaneously.  Setting this
+     variable overrides the setting in `paths.h' when Emacs was built.
+
+`EMACSPATH'
+     The location of Emacs-specific binaries.  Setting this variable
+     overrides the setting in `paths.h' when Emacs was built.
+
+`ESHELL'
+     Used for shell-mode to override the `SHELL' environment variable.
+
+`HISTFILE'
+     The name of the file that shell commands are saved in between
+     logins.  This variable defaults to `~/.history' if you use (t)csh
+     as shell, to `~/.bash_history' if you use bash, to `~/.sh_history'
+     if you use ksh, and to `~/.history' otherwise.
+
+`HOME'
+     The location of the user's files in the directory tree; used for
+     expansion of file names starting with a tilde (`~').
+
+`HOSTNAME'
+     The name of the machine that Emacs is running on.
+
+`INCPATH'
+     A colon-separated list of directories.  Used by the `complete'
+     package to search for files.
+
+`INFOPATH'
+     A colon separated list of directories holding info files.  Setting
+     this variable overrides the setting in `paths.el' when Emacs was
+     built.
+
+`LOGNAME'
+     The user's login name.  See also `USER'.
+
+`MAIL'
+     The name of the user's system mail box.
+
+`MAILRC'
+     Name of file containing mail aliases.  Defaults to `~/.mailrc'.
+
+`MH'
+     Name of setup file for the mh system.  Defaults to `~/.mh_profile'.
+
+`NAME'
+     The real-world name of the user.
+
+`NNTPSERVER'
+     The name of the news server.  Used by the `mh' and `gnus' packages.
+
+`ORGANIZATION'
+     The name of the organization to which you belong.  Used for
+     setting the `Organization:' header in your posts from the `gnus'
+     package.
+
+`PATH'
+     A colon-separated list of directories in which executeables reside.
+     This variable is used to set the Emacs Lisp variable `exec-path'
+     which you should consider to use instead.
+
+`PWD'
+     If set, this should be the default directory when Emacs was
+     started.
+
+`SAVEDIR'
+     The name of a directory in which news articles are saved by
+     default.  Used by the `gnus' package.
+
+`SHELL'
+     The name of an interpreter used to parse and execute programs run
+     from inside Emacs.
+
+`TERM'
+     The name of the terminal that Emacs is running on.  The variable
+     must be set unless Emacs is run in batch mode.
+
+`TERMCAP'
+     The name of the termcap library file describing how to program the
+     terminal specified by the `TERM' variable.  This defaults to
+     `/etc/termcap'.
+
+`TMPDIR'
+     Used by the `emerge' package as a prefix for temporary files.
+
+`TZ'
+     This specifies the current time zone and possibly also daylight
+     savings information.
+
+`USER'
+     The user's login name.  See also `LOGNAME'.
+
+`VERSION_CONTROL'
+     Used to initialize the `version-control' variable, which see.
+
+
+File: emacs,  Node: MSDOG Variables,  Next: Misc Variables,  Prev: General Variables,  Up: Environment
+
+MS-DOS Variables
+----------------
+
+   Some of the variables that Emacs uses make little or no sense in an
+single-user setting as provided by MS-DOS machines.  Nevertheless parts
+of Emacs need those variables so many of them have defaults for MS-DOS.
+
+   The standard command interpreter ("shell") for MS-DOS disregards case
+of environment variables and only lets you set and delete variables with
+upper case names.  For this reason it is possible that some existing
+programs may disregard case of environment variables.  On the other
+hand, programs that execute other programs may choose to provide mixed
+or lower case variables though this is seldom seen.  One exception from
+this rule is the use of variables `_argc', `_argv0', `_argv1', ... to
+work around the 127 character limit on the command line imposed by
+MS-DOS.  Emacs, when built with the Gnu C compiler, understands this
+method and uses it when running other GCC compiled programs.
+
+`COMSPEC'
+     The name of the MS-DOS command interpreter in use.  This is used
+     to make a default value for the `SHELL' environment variable.
+
+`EMACSPATH'
+     Defaults to `~/bin' expanded.
+
+`HOME'
+     The variable defaults to the directory from which Emacs was
+     started, possibly with a `/bin' suffix removed.
+
+`NAME'
+     This variable default to whatever the `USER' variable is.
+
+`PATH'
+     As the current directory is always searched for commands by the
+     standard command interpreter, the current directory is added to
+     the path.  Semicolons, not colons, are used to separate elements.
+
+`TEMP'
+     Directory name of place to put temporary files.
+
+`TMP'
+     See `TEMP'
+
+`TERM'
+     The variable defaults to `internal', a very fast terminal emulation
+     built into Emacs.  When the internal terminal is used no termcap
+     file is needed.
+
+`TZ'
+     This variable defaults to an estimate derived from the MS-DOS
+     country code.  See the file `msdos.c' for details.
+
+`USER'
+     The variable defaults to `root' because all MS-DOS users have root
+     privileges on their system.
+
+
+File: emacs,  Node: Misc Variables,  Prev: MSDOG Variables,  Up: Environment
+
+Misc Variables
+--------------
+
+   These variables are used only in rare setups:
+
+`USE_DOMAIN_ACLS'
+     Used for Apollo machines to enable access control lists.
+
+`WINDOW_GFX'
+     Used when initializing the Sun windows system.
+
+
+File: emacs,  Node: Display X,  Next: Font X,  Prev: Environment,  Up: Command Arguments
+
+Specifying the Display Name
+===========================
+
+   The environment variable `DISPLAY' tells all X clients where to
+display their windows.  Its value is set up by default in ordinary
+circumstances, when you start an X server and run jobs locally.
+Occasionally you may need to specify the display yourself; for example,
+if you do a remote login and want to run a client program remotely,
+displaying on your local screen.
+
+   With Emacs, the main reason people change the default display is to
+let them log into another system, run Emacs on that system, but have the
+window displayed at their local terminal.  You might need to use login
+to another system because the files you want to edit are there, or
+because the Emacs executable file you want to run is there.
+
+   The syntax of the `DISPLAY' environment variable is:
+
+     HOST:DISPLAY.SCREEN
+
+where HOST is the host name of the X Window System server machine,
+DISPLAY is an arbitrarily-assigned number that distinguishes your
+server (X terminal) from other servers on the same machine, and SCREEN
+is a rarely-used field that allows an X server to control multiple
+terminal screens.  The period and the SCREEN field are optional.  If
+included, SCREEN is usually zero.
+
+   If your host is named `glasperle' and your server is the first (or
+perhaps the only) server listed in the configuration, your `DISPLAY' is
+`glasperle:0.0'.
+
+   You can specify the display name explicitly when you run Emacs,
+either by changing the `DISPLAY' variable, or with the option `-d
+DISPLAY' or `-display DISPLAY'.  These are initial options; they must
+come at the beginning of the command line.  *Note Initial Options::.
+Here is an example:
+
+     emacs -display glasperle:0 &
+
+   You can inhibit the direct use of X with the `-nw' option.  This is
+also an initial option.  This option tells Emacs to display using
+ordinary ASCII on its controlling terminal.
+
+   Sometimes, security arrangements prevent a program on a remote system
+from displaying on your local system.  In this case, trying to run Emacs
+produces messages like:
+
+     Xlib:  connection to "glasperle:0.0" refused by server
+
+   You might be able to overcome this problem by using the `xhost'
+command on the local system to give permission for access from your
+remote machine.
+
+
+File: emacs,  Node: Font X,  Next: Colors X,  Prev: Display X,  Up: Command Arguments
+
+Font Specification Options
+==========================
+
+   By default, Emacs displays text in the font named `9x15', which
+makes each character nine pixels wide and fifteen pixels high.  You can
+specify a different font on your command line through the option `-fn
+NAME'.
+
+`-fn NAME'
+     Use font NAME as the default font.
+
+`-font NAME'
+     `-font' is an alias for `-fn'.
+
+   Here is how to specify the font `6x13':
+
+     emacs -fn 6x13 &
+
+You can also do this in your `.Xdefaults' file:
+
+     emacs.font:      6x13
+
+   Use only fixed width fonts--that is, fonts in which all characters
+have the same width.  Emacs cannot yet handle display properly for
+variable width fonts.  Fixed width fonts include the one named `fixed',
+and fonts with names in the form NxN, such as `6x13', `8x13', and
+`9x15'.  Under the font-naming conventions in X11 Release 4 or later,
+any font with `m' or `c' in the eleventh field of the name is a fixed
+width font.
+
+   Here's how to use the `xlsfonts' program to list all the fixed width
+fonts available on your system:
+
+     xlsfonts -fn '*x*'
+     xlsfonts -fn '*-*-*-*-*-*-*-*-*-*-*-m*'
+     xlsfonts -fn '*-*-*-*-*-*-*-*-*-*-*-c*'
+
+To see what a particular font looks like, use the `xfd' command.  For
+example:
+
+     xfd -fn 6x13
+
+displays the entire font `6x13'.
+
+   While running Emacs, you can set the font of the current frame
+(*note Frame Parameters::.) or for a specific kind of text (*note
+Faces::.).
+
+
+File: emacs,  Node: Colors X,  Next: Window Size X,  Prev: Font X,  Up: Command Arguments
+
+Window Color Options
+====================
+
+   On a color display, you can specify which color to use for various
+parts of the Emacs display.  To find out what colors are available on
+your system, look at the `/usr/lib/X11/rgb.txt' file.  If you do not
+specify colors, the default for the background is white and the default
+for all other colors is black.
+
+   On a monochrome (black and white) display, the foreground is black,
+the background is white, and the border is grey.
+
+   Here is a list of the options for specifying colors:
+
+`-fg COLOR'
+     Specify the foreground color.
+
+`-bg COLOR'
+     Specify the background color.
+
+`-bd COLOR'
+     Specify the color of the border of the X window.
+
+`-cr COLOR'
+     Specify the color of the Emacs cursor which indicates where point
+     is.
+
+`-ms COLOR'
+     Specify the color for the mouse cursor when the mouse is in the
+     Emacs window.
+
+`-r'
+     Reverse video--swap the foreground and background colors.
+
+   For example, to use a coral mouse cursor and a slate blue text
+cursor, enter:
+
+     emacs -ms coral -cr 'slate blue' &
+
+   You can reverse the foreground and background colors through the
+`-r' option or with the X resource `reverseVideo'.
+

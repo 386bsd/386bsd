@@ -1,0 +1,75 @@
+XCOMM $XFree86: mit/config/lnuxLib.tmpl,v 2.0 1993/08/29 14:15:39 dawes Exp $
+/*
+ * Linux shared library template
+ */
+#ifndef SharedXlibRev
+#define SharedXlibRev 3.1.0
+#endif
+#ifndef SharedOldXRev
+#define SharedOldXRev 3.1.0
+#endif
+#ifndef SharedXtRev
+#define SharedXtRev 3.1.0
+#endif
+#ifndef SharedXawRev
+#define SharedXawRev 3.1.0
+#endif
+#ifndef SharedXmuRev
+#define SharedXmuRev 3.1.0
+#endif
+#ifndef SharedXextRev
+#define SharedXextRev 3.1.0
+#endif
+#ifndef SharedXinputRev
+#define SharedXinputRev 3.1.0
+#endif
+#ifndef SharedPexRev
+#define SharedPexRev 1.1.0
+#endif
+
+SHLIBLDFLAGS = SharedLibraryLoadFlags
+PICFLAGS = PositionIndependentCFlags
+
+/*
+ * and now a little bit of magic for using imake without source tree; if we
+ * are using shared libraries, we really do not need to depend on anything
+ */
+#if SharedLibXext
+  DEPEXTENSIONLIB = /* _UseCat($(USRLIBDIR),$(EXTENSIONSRC)/lib,/libXext.sa.$(SOXEXTREV)) */
+     EXTENSIONLIB = _Use(-lXext,-L$(EXTENSIONSRC)/lib -lXext)
+#endif
+#if SharedLibX
+          DEPXLIB = $(DEPEXTENSIONLIB) /* _UseCat($(USRLIBDIR),$(XLIBSRC),/libX11.sa.$(SOXLIBREV)) */
+             XLIB = $(EXTENSIONLIB) _Use(-lX11,-L$(XLIBSRC) -lX11)
+#endif
+#if SharedLibXmu
+        DEPXMULIB = /* _UseCat($(USRLIBDIR),$(XMUSRC),/libXmu.sa.$(SOXMUREV)) */
+           XMULIB = _Use(-lXmu,-L$(XMUSRC) -lXmu)
+#ifndef XawClientLibs
+#define XawClientLibs $(XAWLIB) $(XMULIB) $(XTOOLLIB) $(XLIB)
+#endif
+#endif
+#if SharedOldLibX
+       DEPOLDXLIB = /* _UseCat($(USRLIBDIR),$(OLDXLIBSRC),/liboldX.sa.$(SOOLDXREV)) */
+          OLDXLIB = _Use(-loldX,-L$(OLDXLIBSRC) -loldX)
+#endif
+#if SharedLibXt
+      DEPXTOOLLIB = /* _UseCat($(USRLIBDIR),$(TOOLKITSRC),/libXt.sa.$(SOXTREV)) */
+         XTOOLLIB = _Use(-lXt,-L$(TOOLKITSRC) -lXt)
+#endif
+#if SharedLibXaw
+        DEPXAWLIB = /* _UseCat($(USRLIBDIR),$(AWIDGETSRC),/libXaw.sa.$(SOXAWREV)) */
+           XAWLIB = _Use(-lXaw,-L$(AWIDGETSRC) -lXaw)
+#endif
+#if SharedLibXinput
+        DEPXILIB = /* _UseCat($(USRLIBDIR),$(XILIBSRC),/libXi.sa.$(SOXINPUTREV)) */
+           XILIB = _Use(-lXi,-L$(XILIBSRC) -lXi)
+#endif
+#if SharedLibXTest
+    DEPXTESTLIB = /* _UseCat($(USRLIBDIR),$(EXTENSIONSRC)/lib,/libXtst.sa.$(SOXEXTREV)) */
+       XTESTLIB = _Use(-lXtst,-L$(EXTENSIONSRC)/lib/xtest -lXtst)
+#endif
+#if SharedLibPex
+        DEPPEXLIB = /* _UseCat($(USRLIBDIR),$(PEXLIBSRC),/libPEX5.sa.$(SOPEXREV)) */
+         PEXLIB = _Use(-lPEX5,-L$(PEXLIBSRC) -lPEX5)
+#endif

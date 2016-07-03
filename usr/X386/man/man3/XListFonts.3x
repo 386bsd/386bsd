@@ -1,0 +1,240 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XListFonts 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XListFonts, XFreeFontNames, XListFontsWithInfo, XFreeFontInfo \- obtain or free font names and information
+.SH SYNTAX
+.\" $Header: XFontNames.f,v 1.1 88/02/26 10:00:12 mento Exp $
+char **XListFonts\^(\^\fIdisplay\fP, \fIpattern\fP\^, \fImaxnames\fP, \fIactual_count_return\fP\^)
+.br
+      Display *\^\fIdisplay\fP\^;
+.br
+      char *\^\fIpattern\fP\^;
+.br
+      int \fImaxnames\fP\^;
+.br
+      int *\^\fIactual_count_return\fP\^;
+.LP
+.\" $Header: XFrFntNames.f,v 1.1 88/02/26 10:00:15 mento Exp $
+XFreeFontNames\^(\^\fIlist\fP\^)
+.br
+      char *\fIlist\fP\^[\^]\^;
+.LP
+char **XListFontsWithInfo\^(\^\fIdisplay\fP, \fIpattern\fP, \fImaxnames\fP, \fIcount_return\fP, \fIinfo_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIpattern\fP\^;
+.br
+      int \fImaxnames\fP\^;
+.br
+      int *\fIcount_return\fP\^;
+.br
+      XFontStruct **\fIinfo_return\fP\^;
+.LP
+XFreeFontInfo(\^\fInames\fP, \fIfree_info\fP, \fIactual_count\fP\^)
+.br
+      char **\fInames\fP\^;
+.br
+      XFontStruct *\fIfree_info\fP;
+.br
+      int \fIactual_count\fP\^;
+.SH ARGUMENTS
+.IP \fIactual_count\fP 1i
+Specifies the actual number of matched font names returned by
+.ZN XListFontsWithInfo .
+.IP \fIactual_count_return\fP 1i
+Returns the actual number of font names.
+.IP \fIcount_return\fP 1i
+Returns the actual number of matched font names.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIinfo_return\fP 1i
+Returns the font information.
+.IP \fIfree_info\fP 1i
+Specifies the font information returned by
+.ZN XListFontsWithInfo .
+.\" $Header: list.a,v 1.1 88/02/26 10:28:40 mento Exp $
+.IP \fIlist\fP 1i
+Specifies the array of strings you want to free.
+.IP \fImaxnames\fP 1i
+Specifies the maximum number of names to be returned.
+.IP \fInames\fP 1i
+Specifies the list of font names returned by
+.ZN XListFontsWithInfo .
+.\" $Header: pattern.a,v 1.4 88/05/13 11:08:04 mento Exp $
+.IP \fIpattern\fP 1i
+Specifies the null-terminated pattern string that can contain wildcard 
+characters.
+.SH DESCRIPTION
+.\" $Header: XFontNames.d,v 1.2 88/06/11 07:50:36 mento Exp $
+The
+.ZN XListFonts
+function returns an array of available font names 
+(as controlled by the font search path; see
+.ZN XSetFontPath )
+that match the string you passed to the pattern argument.
+The pattern string can contain any characters,
+but each asterisk (*) is a wildcard for any number of characters,
+and each question mark (?) is a wildcard for a single character.
+If the pattern string is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+Each returned string is null-terminated.
+If the data returned by the server is in the Latin Portable Character Encoding,
+then the returned strings are in the Host Portable Character Encoding.
+Otherwise, the result is implementation dependent.
+If there are no matching font names,
+.ZN XListFonts
+returns NULL.
+The client should call
+.ZN XFreeFontNames
+when finished with the result to free the memory.
+.LP
+.\" $Header: XFrFntNames.d,v 1.2 88/04/23 09:33:05 mento Exp $
+The
+.ZN XFreeFontNames
+function frees the array and strings returned by
+.ZN XListFonts 
+or
+.ZN XListFontsWithInfo .
+.LP
+.\" $Header: XFNameInfo.d,v 1.3 88/06/11 07:50:14 mento Exp $
+The
+.ZN XListFontsWithInfo
+function returns a list of font names that match the specified pattern and their
+associated font information.
+The list of names is limited to size specified by maxnames.
+The information returned for each font is identical to what
+.ZN XLoadQueryFont
+would return except that the per-character metrics are not returned.
+The pattern string can contain any characters,
+but each asterisk (*) is a wildcard for any number of characters,
+and each question mark (?) is a wildcard for a single character.
+If the pattern string is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+Each returned string is null-terminated.
+If the data returned by the server is in the Latin Portable Character Encoding,
+then the returned strings are in the Host Portable Character Encoding.
+Otherwise, the result is implementation dependent.
+If there are no matching font names,
+.ZN XListFontsWithInfo
+returns NULL.
+.LP
+To free only the allocated name array,
+the client should call
+.ZN XFreeFontNames .
+To free both the name array and the font information array,
+or to free just the font information array,
+the client should call
+.ZN XFreeFontInfo .
+.LP
+.\" $Header: XFFontInfo.d,v 1.1 88/02/26 10:41:55 mento Exp $
+The
+.ZN XFreeFontInfo
+function frees the the font information array.
+To free an
+.ZN XFontStruct
+structure without closing the font,
+call
+.ZN XFreeFontInfo
+with the names argument specified as NULL.
+.SH "SEE ALSO"
+XLoadFont(3X11),
+XSetFontPath(3X11)
+.br
+\fI\*(xL\fP

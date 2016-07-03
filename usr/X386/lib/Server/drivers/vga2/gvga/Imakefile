@@ -1,0 +1,27 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/gvga/Imakefile,v 2.1 1993/08/12 05:42:07 dawes Exp $
+#include <Server.tmpl>
+
+SRCS = driverg.c bankg.s
+
+OBJS = driverg.o bankg.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(gvga, $(OBJS))
+
+ObjectFromSpecialSource(driverg,$(VGA256DIR)/gvga/driver,-DMONOVGA)
+ObjectFromSpecialAsmSource(bankg,$(VGA256DIR)/gvga/bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/gvga)
+
+DependTarget()
+

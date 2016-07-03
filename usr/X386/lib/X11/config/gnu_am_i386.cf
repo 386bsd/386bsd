@@ -1,0 +1,8 @@
+XCOMM $XFree86: mit/config/gnu_am_i386.cf,v 1.1 1993/03/23 12:56:38 dawes Exp $
+
+#include "x_am_i386.cf"
+
+#define	ExtraLoadFlags		-lsoft
+#define CrossConf		AmoebaConf
+
+#include "gnucross386.cf"

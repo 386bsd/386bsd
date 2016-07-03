@@ -1,0 +1,66 @@
+DOSFS(4)                  386BSD Programmer's Manual                  DOSFS(4)
+
+NNAAMMEE
+     ddoossffss - MS-DOS FAT file system
+
+SSYYNNOOPPSSIISS
+     ddoossffss ffss__iiddxx..
+
+DDEESSCCRRIIPPTTIIOONN
+     The dosfs(4) filesystem provides support for a MS DOS formatted hard disk
+     partition or floppy disk to be mounted on the system's filesystem tree,
+     allowing DOS files to be directly accessible by all user programs.
+
+     Since DOS file and directory names and attributes do not correspond to
+     POSIX names and attributes, the filesystem implementation partially
+     compensates for these limitations for the convienence of the user. File
+     and directory names are silently truncated and case-wrapped to 7
+     character lowercase characters and numbers (11 if the 8th is a period).
+     While the names are recorded internally as upper case only, case is
+     always mapped to lower case on filename lookup and creation. Filenames
+     ending in a period have the period silently dropped as well. Files can
+     only be made "system read only" regardless of user, as only the single
+     write bit per file is present (the hidden and archived attribute bits are
+     not implemented). While all files appear to be owned by root, any user
+     can alter contents and attributes at will (so the only protection present
+     is that of the mount directory itself).  Read and execute attribute bits
+     are always set for user, group, and other.  The write protect attribute
+     bit can only be set from the user set (where it will appear to set them
+     all).
+
+     In addition, all time attributes reported are always the time of last
+     modification. Since times are kept in local time, times fitfully
+     correspond to DOS interpretations.
+
+AAUUTTHHOORR
+     dosfs(4) was written by Paul Popelka.
+
+386BSD Release 1.0              March 28, 1994                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

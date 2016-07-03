@@ -1,0 +1,3 @@
+%!
+/Hershey-Plain-Simplex findfont /CharData get
+/Hershey-Plain-Simplex-Bold-Oblique 4294140 2.2 -20 MakeHersheyFont

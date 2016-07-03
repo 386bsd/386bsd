@@ -1,0 +1,161 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtAppGetErrorDatabase 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtAppGetErrorDatabase, XtAppGetErrorDatabaseText \- obtain error database
+.SH SYNTAX
+XrmDatabase *XtAppGetErrorDatabase(\^\fIapp_context\fP\^)
+.br
+     XtAppContext \fIapp_context\fP;
+.LP
+void XtAppGetErrorDatabaseText(\fIapp_context\fP, \fIname\fP, \fItype\fP, \fIclass\fP, \fIdefault\fP, \fIbuffer_return\fP, \fInbytes\fP, \fIdatabase\fP)
+.br
+       XtAppContext \fIapp_context\fP;
+.br
+       char *\fIname\fP, *\fItype\fP, *\fIclass\fP;
+.br
+       char *\fIdefault\fP;
+.br
+       char *\fIbuffer_return\fP;
+.br
+       int \fInbytes\fP;
+.br
+       XrmDatabase \fIdatabase\fP;
+.SH ARGUMENTS
+.IP \fIapp_context\fP 1i
+Specifies the application context.
+.IP \fIbuffer_return\fP 1i
+Specifies the buffer into which the error message is to be returned.
+.ds Cl \ of the error message
+.IP \fIclass\fP 1i
+Specifies the resource class\*(Cl.
+.IP \fIdatabase\fP 1i
+Specifies the name of the alternative database that is to be used
+or NULL if the application's database is to be used.
+.IP \fIdefault\fP 1i
+Specifies the default message to use\*(Dm.
+.IP \fIname\fP 1i
+.br
+.ns
+.IP \fItype\fP 1i
+Specifies the name and type that are concatenated to form the resource name 
+of the error message.
+.IP \fInbytes\fP 1i
+Specifies the size of the buffer in bytes.
+.SH DESCRIPTION
+The
+.ZN XtAppGetErrorDatabase
+function returns the address of the error database.
+The \*(xI do a lazy binding of the error database and do not merge in the
+database file until the first call to
+.ZN XtAppGetErrorDatbaseText .
+.LP
+The
+.ZN XtAppGetErrorDatabaseText
+returns the appropriate message from the error database
+or returns the specified default message if one is not found in the
+error database.
+.SH "SEE ALSO"
+XtAppError(3Xt),
+XtAppErrorMsg(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

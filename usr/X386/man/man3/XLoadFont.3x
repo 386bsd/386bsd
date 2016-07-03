@@ -1,0 +1,535 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XLoadFont 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XLoadFont, XQueryFont, XLoadQueryFont, XFreeFont, XGetFontProperty, XUnloadFont, XCharStruct, XFontProp, XChar2b, XFontStruct \- load or unload fonts and font metric structures
+.SH SYNTAX
+.\" $Header: XLoadFont.f,v 1.1 88/02/26 10:01:25 mento Exp $
+Font XLoadFont\^(\^\fIdisplay\fP, \fIname\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIname\fP\^;
+.LP
+XFontStruct *XQueryFont\^(\^\fIdisplay\fP, \fIfont_ID\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XID \fIfont_ID\fP\^;
+.LP
+.\" $Header: XFontStruct.f,v 1.1 88/02/26 10:00:12 mento Exp $
+XFontStruct *XLoadQueryFont\^(\^\fIdisplay\fP, \fIname\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIname\fP\^;
+.LP
+.\" $Header: XFontFree.f,v 1.1 88/02/26 10:00:11 mento Exp $
+XFreeFont\^(\^\fIdisplay\fP, \fIfont_struct\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XFontStruct *\fIfont_struct\fP\^;
+.LP
+.\" $Header: XGetFontProp.f,v 1.1 88/02/26 10:00:27 mento Exp $
+Bool XGetFontProperty\^(\^\fIfont_struct\fP\^, \^\fIatom\fP\^, \^\fIvalue_return\fP\^)
+.br
+      XFontStruct *\fIfont_struct\fP\^;
+.br
+      Atom \fIatom\fP\^;
+.br
+      unsigned long *\fIvalue_return\fP\^;
+.LP
+.\" $Header: XCloseFont.f,v 1.1 88/02/26 09:58:49 mento Exp $
+XUnloadFont\^(\^\fIdisplay\fP, \fIfont\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Font \fIfont\fP\^;
+.SH ARGUMENTS
+.\" $Header: atom.a,v 1.2 88/04/06 12:06:45 mento Exp $
+.IP \fIatom\fP 1i
+Specifies the atom for the property name you want returned.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: font.a,v 1.2 88/05/09 14:28:06 mento Exp $
+.IP \fIfont\fP 1i
+Specifies the font.
+.IP \fIfont_ID\fP 1i
+Specifies the font ID or the 
+.ZN GContext
+ID.
+.\" $Header: ptr.a,v 1.1 88/02/26 10:30:46 mento Exp $
+.IP \fIfont_struct\fP 1i
+Specifies the storage associated with the font.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: name.a,v 1.2 88/05/13 10:40:29 mento Exp $
+.IP \fIname\fP 1i
+Specifies the name of the font,
+which is a null-terminated string.
+.\" $Header: value.a,v 1.2 88/04/06 15:17:04 mento Exp $
+.IP \fIvalue_return\fP 1i
+Returns the value of the font property.
+.SH DESCRIPTION
+.\" $Header: XLoadFont.d,v 1.2 88/06/11 07:51:54 mento Exp $
+The
+.ZN XLoadFont
+function loads the specified font and returns its associated font ID.
+If the font name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+The interpretation of characters ``?''
+and ``*'' in the name is not defined by the core protocol
+but is reserved for future definition.
+A structured format for font names is specified in the X Consortium standard 
+\fIX Logical Font Description Conventions\fP.
+If 
+.ZN XLoadFont
+was unsuccessful at loading the specified font, 
+a 
+.ZN BadName 
+error results.
+Fonts are not associated with a particular screen 
+and can be stored as a component
+of any GC.
+When the font is no longer needed, call 
+.ZN XUnloadFont .
+.LP
+.ZN XLoadFont
+can generate
+.ZN BadAlloc 
+and
+.ZN BadName 
+errors.
+.LP
+.\" $Header: XQueryFont.d,v 1.2 88/06/11 07:52:41 mento Exp $
+The
+.ZN XQueryFont
+function returns a pointer to the
+.ZN XFontStruct
+structure, which contains information associated with the font.
+You can query a font or the font stored in a GC.
+The font ID stored in the 
+.ZN XFontStruct
+structure will be the 
+.ZN GContext 
+ID, and you need to be careful when using this ID in other functions
+(see
+.ZN XGContextFromGC ).
+If the font does not exist,
+.ZN XQueryFont
+returns NULL.
+To free this data, use
+.ZN XFreeFontInfo .
+.LP
+.ZN XLoadQueryFont
+can generate a
+.ZN BadAlloc 
+error.
+.LP
+.\" $Header: XFontStruct.d,v 1.3 88/06/11 07:50:37 mento Exp $
+The
+.ZN XLoadQueryFont
+function provides the most common way for accessing a font.
+.ZN XLoadQueryFont
+both opens (loads) the specified font and returns a pointer to the
+appropriate
+.ZN XFontStruct
+structure.
+If the font name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+If the font does not exist,
+.ZN XLoadQueryFont
+returns NULL.
+.LP
+.\" $Header: XFontFree.d,v 1.3 88/05/13 10:59:37 mento Exp $
+The
+.ZN XFreeFont
+function deletes the association between the font resource ID and the specified 
+font and frees the
+.ZN XFontStruct
+structure.
+The font itself will be freed when no other resource references it.
+The data and the font should not be referenced again.
+.LP
+.ZN XFreeFont
+can generate a
+.ZN BadFont 
+error.
+.LP
+.\" $Header: XGetFontProp.d,v 1.6 88/08/18 09:39:18 mento Exp $
+Given the atom for that property,
+the
+.ZN XGetFontProperty
+function returns the value of the specified font property. 
+.ZN XGetFontProperty
+also returns 
+.ZN False
+if the property was not defined or 
+.ZN True
+if it was defined.
+A set of predefined atoms exists for font properties,
+which can be found in
+.Pn < X11/Xatom.h >.
+This set contains the standard properties associated with
+a font.
+Although it is not guaranteed,
+it is likely that the predefined font properties will be present.
+.LP
+.\" $Header: XCloseFont.d,v 1.2 88/06/11 07:49:24 mento Exp $
+The
+.ZN XUnloadFont
+function deletes the association between the font resource ID and the specified font.
+The font itself will be freed when no other resource references it.
+The font should not be referenced again.
+.LP
+.ZN XUnloadFont
+can generate a
+.ZN BadFont 
+error.
+.SH STRUCTURES
+The
+.ZN XFontStruct
+structure contains all of the information for the font
+and consists of the font-specific information as well as
+a pointer to an array of
+.ZN XCharStruct
+structures for the
+characters contained in the font.
+The
+.ZN XFontStruct ,
+.ZN XFontProp ,
+and
+.ZN XCharStruct
+structures contain:
+.LP
+.IN "XCharStruct" "" "@DEF@"
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	short lbearing;	/* origin to left edge of raster */
+	short rbearing;	/* origin to right edge of raster */
+	short width;	/* advance to next char's origin */
+	short ascent;	/* baseline to top edge of raster */
+	short descent;	/* baseline to bottom edge of raster */
+	unsigned short attributes;	/* per char flags (not predefined) */
+} XCharStruct;
+.De
+.LP
+.IN "XFontProp" "" "@DEF@"
+.Ds 0
+.TA .5i 1i 3i
+.ta .5i 1i 3i
+typedef struct {
+	Atom	name;
+	unsigned long card32;
+} XFontProp;
+.De
+.LP
+.IN "XChar2b" "" "@DEF@"
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {	/* normal 16 bit characters are two bytes */
+    unsigned char byte1;
+    unsigned char byte2;
+} XChar2b;
+.De
+.LP
+.IN "XFontStruct" "" "@DEF@"
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	XExtData *ext_data;	/* hook for extension to hang data */
+	Font fid;	/* Font id for this font */
+	unsigned direction;	/* hint about the direction font is painted */
+	unsigned min_char_or_byte2;	/* first character */
+	unsigned max_char_or_byte2;	/* last character */
+	unsigned min_byte1;	/* first row that exists */
+	unsigned max_byte1;	/* last row that exists */
+	Bool all_chars_exist;	/* flag if all characters have nonzero size */
+	unsigned default_char;	/* char to print for undefined character */
+	int n_properties;	/* how many properties there are */
+	XFontProp *properties;	/* pointer to array of additional properties */
+	XCharStruct min_bounds;	/* minimum bounds over all existing char */
+	XCharStruct max_bounds;	/* maximum bounds over all existing char */
+	XCharStruct *per_char;	/* first_char to last_char information */
+	int ascent;	/* logical extent above baseline for spacing */
+	int descent;	/* logical decent below baseline for spacing */
+} XFontStruct;
+.De
+.LP
+X supports single byte/character, two bytes/character matrix,
+and 16-bit character text operations.
+Note that any of these forms can be used with a font, but a
+single byte/character text request can only specify a single byte
+(that is, the first row of a 2-byte font).
+You should view 2-byte fonts as a two-dimensional matrix of defined
+characters: byte1 specifies the range of defined rows and
+byte2 defines the range of defined columns of the font.
+Single byte/character fonts have one row defined, and the byte2 range
+specified in the structure defines a range of characters.
+.LP
+The bounding box of a character is defined by the 
+.ZN XCharStruct 
+of that character.
+When characters are absent from a font,
+the default_char is used.
+When fonts have all characters of the same size,
+only the information in the
+.ZN XFontStruct
+min and max bounds are used.
+.LP
+The members of the 
+.ZN XFontStruct 
+have the following semantics:
+.IP \(bu 5
+The direction member can be either 
+.ZN FontLeftToRight 
+or 
+.ZN FontRightToLeft . 
+It is just a hint as to whether most 
+.ZN XCharStruct 
+elements 
+have a positive 
+.Pn ( FontLeftToRight ) 
+or a negative 
+.Pn ( FontRightToLeft )
+character width 
+metric.
+The core protocol defines no support for vertical text.
+.IP \(bu 5
+If the min_byte1 and max_byte1 members are both zero, min_char_or_byte2
+specifies the linear character index corresponding to the first element
+of the per_char array, and max_char_or_byte2 specifies the linear character
+index of the last element.
+.IP
+If either min_byte1 or max_byte1 are nonzero, both
+min_char_or_byte2 and max_char_or_byte2 are less than 256, 
+and the 2-byte character index values corresponding to the
+per_char array element N (counting from 0) are:
+.IP
+.nf
+	byte1 = N/D + min_byte1
+.br
+	byte2 = N\\D + min_char_or_byte2
+.IP
+.fi
+where:
+.IP
+.nf
+        D = max_char_or_byte2 \- min_char_or_byte2 + 1
+        / = integer division
+        \\ = integer modulus
+.fi
+.IP \(bu 5
+If the per_char pointer is NULL, 
+all glyphs between the first and last character indexes
+inclusive have the same information,
+as given by both min_bounds and max_bounds.
+.IP \(bu 5
+If all_chars_exist is 
+.ZN True ,
+all characters in the per_char array have nonzero bounding boxes.
+.IP \(bu 5
+The default_char member specifies the character that will be used when an
+undefined or nonexistent character is printed.  
+The default_char is a 16-bit character (not a 2-byte character).
+For a font using 2-byte matrix format, 
+the default_char has byte1 in the most-significant byte
+and byte2 in the least-significant byte.
+If the default_char itself specifies an undefined or nonexistent character, 
+no printing is performed for an undefined or nonexistent character.
+.IP \(bu 5
+The min_bounds and max_bounds members contain the most extreme values of
+each individual 
+.ZN XCharStruct 
+component over all elements of this array
+(and ignore nonexistent characters).
+The bounding box of the font (the smallest
+rectangle enclosing the shape obtained by superimposing all of the
+characters at the same origin [x,y]) has its upper-left coordinate at:
+.Ds
+	[x + min_bounds.lbearing, y \- max_bounds.ascent]
+.De
+.IP
+Its width is:
+.Ds
+	max_bounds.rbearing \- min_bounds.lbearing
+.De
+.IP
+Its height is:
+.Ds
+	max_bounds.ascent + max_bounds.descent
+.De
+.IP \(bu 5
+The ascent member is the logical extent of the font above the baseline that is
+used for determining line spacing.
+Specific characters may extend beyond
+this.
+.IP \(bu 5
+The descent member is the logical extent of the font at or below the
+baseline that is used for determining line spacing.
+Specific characters may extend beyond this.
+.IP \(bu 5
+If the baseline is at Y-coordinate y,
+the logical extent of the font is inclusive between the Y-coordinate 
+values (y \- font.ascent) and (y + font.descent \- 1).
+Typically,
+the minimum interline spacing between rows of text is given
+by ascent + descent.
+.LP
+For a character origin at [x,y],
+the bounding box of a character (that is, 
+the smallest rectangle that encloses the character's shape)
+described in terms of 
+.ZN XCharStruct 
+components is a rectangle with its upper-left corner at:
+.LP
+.Ds
+[x + lbearing, y \- ascent]
+.De
+.LP
+Its width is:
+.LP
+.Ds
+rbearing \- lbearing
+.De
+.LP
+Its height is:
+.LP
+.Ds
+ascent + descent
+.De
+.LP
+The origin for the next character is defined to be:
+.LP
+.Ds
+[x + width, y]
+.De
+.LP
+The lbearing member defines the extent of the left edge of the character ink
+from the origin.
+The rbearing member defines the extent of the right edge of the character ink
+from the origin.
+The ascent member defines the extent of the top edge of the character ink
+from the origin.
+The descent member defines the extent of the bottom edge of the character ink
+from the origin.
+The width member defines the logical width of the character.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badfont.e,v 1.2 87/09/09 18:08:11 mento Exp $
+.TP 1i
+.ZN BadFont
+A value for a Font or GContext argument does not name a defined Font.
+.\" $Header: badname.e,v 1.1 87/09/04 08:23:14 mento Exp $
+.TP 1i
+.ZN BadName
+A font or color of the specified name does not exist.
+.SH "SEE ALSO"
+XCreateGC(3X11),
+XListFonts(3X11),
+XSetFontPath(3X11)
+.br
+\fI\*(xL\fP

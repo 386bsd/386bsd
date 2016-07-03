@@ -1,0 +1,70 @@
+.TH ECHO 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+echo \- display a line of text
+.SH SYNOPSIS
+\fBecho\fP [\fB\-ne\fP] [\fIstring\fP ...]
+.br
+.B echo
+{\-\-help,\-\-version}
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR echo .
+Note that most shells have a built-in command by the same name and
+with similar functionality.
+.PP
+.B echo
+writes each given \fIstring\fP to the standard output, with a space
+between them and a newline after the last one.
+.SS OPTIONS
+.TP
+.I \-n
+Do not output the trailing newline.
+.TP
+.I \-e
+Enable interpretation of the following backslash-escaped characters in
+the strings:
+.RS
+.PD 0
+.TP
+.B \ea
+alert (bell)
+.TP
+.B \eb
+backspace
+.TP
+.B \ec
+suppress trailing newline
+.TP
+.B \ef
+form feed
+.TP
+.B \en
+new line
+.TP
+.B \er
+carriage return
+.TP
+.B \et
+horizontal tab
+.TP
+.B \ev
+vertical tab
+.TP
+.B \e\e
+backslash
+.TP
+.B \ennn
+the character whose ASCII code is \fInnn\fP (octal)
+.PD
+.RE
+.SS OPTIONS
+When GNU
+.B echo
+is invoked with exactly one argument, the following options are recognized:
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

@@ -1,0 +1,30 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/pvga1/Imakefile,v 2.2 1993/09/21 15:24:04 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 23:00:10 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driverp.c bankp.s
+
+OBJS = driverp.o bankp.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+DEFINES=-DMONOVGA
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(pvga1, $(OBJS))
+
+ObjectFromSpecialSource(driverp,$(VGA256DIR)/pvga1/driver,/**/)
+ObjectFromSpecialAsmSource(bankp,$(VGA256DIR)/pvga1/bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/pvga1)
+
+DependTarget()
+

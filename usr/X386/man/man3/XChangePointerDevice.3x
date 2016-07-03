@@ -1,0 +1,68 @@
+.ds xL Programming With Xlib
+.TH XChangePointerDevice 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XChangePointerDevice \- change which device is the X pointer
+.SH SYNTAX
+Status XChangePointerDevice\^(\^\fIdisplay\fP, \fIdevice\fP\^ \fIxaxis\fP\^, \fIyaxis\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      int \fIxaxis\fP\^; 
+.br
+      int \fIyaxis\fP\^; 
+.br
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device to be used as the X pointer.
+.TP 12
+.I xaxis
+Specifies the axis of the device to be used as the X pointer x-axis.
+.TP 12
+.I yaxis
+Specifies the axis of the device to be used as the X pointer y-axis.
+.SH DESCRIPTION
+The \fIXChangePointerDevice\fP request causes the server to use the specified
+device as the X pointer.  The device must have been opened by the client via
+\fIXOpenDevice\fP or a \fIBadDevice\fP error will result.  The device must
+support input class \fIValuators\fP or a \fIBadMatch\fP error will result.
+If the implementation does not support use of the specified device as the
+X pointer, a \fIBadDevice\fP error will result.
+.P
+If the specified device is grabbed by another client, \fIAlreadyGrabbed\fP
+is returned.  If the specified device is frozen by a grab on another device,
+\fIGrabFrozen\fP is returned.
+If the request is successful, \fISuccess\fP is returned.
+.P
+If the request succeeds,
+a \fIChangeDeviceNotify\fP event is sent to all clients that have selected that
+event.  A \fIMappingNotify\fP event with request = \fIMappingPointer\fP is
+sent to all clients.
+The specified device becomes the X pointer, and
+the old X pointer becomes accessible through the input extension
+protocol requests.
+.P
+\fIXChangePointerDevice\fP can generate a \fIBadDevice\fP or a \fIBadMatch\fP
+error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist, has 
+not been opened by this client via \fIXOpenInputDevice\fP, or is already
+one of the core X input devices (pointer or keyboard).  This error may also
+occur if the server implementation does not support using the specified
+device as the X pointer.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXChangePointerDevice\fP request was made 
+specifying a device that has less than two valuators, or specifying a 
+valuator index beyond the range supported by the device.
+.SH "SEE ALSO"
+XChangeKeyboardDevice
+.br
+\fI\*(xL\fP

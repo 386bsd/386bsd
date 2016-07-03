@@ -1,0 +1,318 @@
+.ds xL Programming With Xlib
+.TH XGetFeedbackControl 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XGetFeedbackControl, XChangeFeedbackControl \- query and change input device feedbacks
+.SH SYNTAX
+XFeedbackState *
+XGetFeedbackControl\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fInum_feedbacks\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      int *\fInum_feedbacks\fP\^; 
+.br
+.sp 
+int XChangeFeedbackControl\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fImask\fP\^, \fIcontrol\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      Mask \fImask\fP\^; 
+.br
+      XFeedbackControl *\fIcontrol\fP\^; 
+.SH ARGUMENTS
+.TP 15
+.I display
+Specifies the connection to the X server.
+.TP 15
+.I device
+Specifies the device whose feedbacks are to be queried or modified.
+.TP 15
+.I num_feedbacks
+Specifies an address into which the number of feedbacks supported by the
+device is to be returned.
+.TP 15
+.I mask 
+Specifies a mask specific to each type of feedback that describes how 
+the feedback is to be modified.  
+.TP 15 
+.I control
+Specifies the address of an \fIXFeedbackControl\fP structure that contains
+the new values for the feedback.
+.SH DESCRIPTION
+These requests are provided to manipulate those input devices that
+support feedbacks.  A \fIBadMatch\fP error will be generated if the
+requested device does not support feedbacks.  Whether or not a given
+device supports feedbacks can be determined by examining the information
+returned by the \fIXOpenDevice\fP request.  For those devices that
+support feedbacks, \fIXOpenDevice\fP will return an
+\fIXInputClassInfo\fP structure with the input_class field
+equal to the constant \fIFeedbackClass\fP (defined in the file \fIXI.h\fP).
+.P
+The \fIXGetFeedbackControl\fP request returns a pointer to a list of 
+\fIXFeedbackState\fP structures.  Each item in this list describes one
+of the feedbacks supported by the device.  The items are variable length,
+so each contains its length to allow traversal to the next item in the
+list.
+.P
+The feedback classes that are currently defined are:  \fIKbdFeedbackClass\fP,
+\fIPtrFeedbackClass\fP, \fIStringFeedbackClass\fP, \fIIntegerFeedbackClass\fP,
+\fILedFeedbackClass\fP, and \fIBellFeedbackClass\fP.  These constants are
+defined in the file \fIXI.h\fP.  An input device may
+support zero or more classes of feedback, and may support multiple feedbacks
+of the same class.  Each feedback contains a class identifier and an id
+that is unique within that class for that input device.  The id is used
+to identify the feedback when making an \fIXChangeFeedbackControl\fP request.
+.P
+\fIXGetFeedbackControl\fP can generate a \fIBadDevice\fP or
+\fIBadMatch\fP error.
+.P
+The \fIXChangeFeedbackControl\fP request modifies the values of one 
+feedback on the specified device.  The feedback is identified by the id
+field of the \fIXFeedbackControl\fP structure that is passed with the
+request.  The fields of the feedback that are to be modified are identified
+by the bits of the mask that is passed with the request.
+.P
+\fIXChangeFeedbackControl\fP can generate a \fIBadDevice\fP,
+\fIBadMatch\fP, or \fIBadValue\fP  error.
+.SH STRUCTURES
+Each class of feedback is described by a structure specific to that class.
+These structures are defined in the file \fIXInput.h\fP.
+\fIXFeedbackState\fP and \fIXFeedbackControl\fP are generic 
+structures that contain three fields that are at the beginning of each class
+of feedback:
+.P
+.DS
+typedef struct {
+.br
+	XID class;                         
+.br
+	int length;                                      
+.br
+	XID id;
+.br
+} XFeedbackState, XFeedbackControl;
+.DE
+.P
+The \fIXKbdFeedbackState\fP structure defines the attributes that are
+returned for feedbacks equivalent to those on the X keyboard.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     click;
+	int     percent;
+	int     pitch;
+	int     duration;
+	int     led_mask;
+	int     global_auto_repeat;
+	char    auto_repeats[32];
+} XKbdFeedbackState;
+.fi
+.DE
+.P
+The \fIXPtrFeedbackState\fP structure defines the attributes that are
+returned for feedbacks equivalent to those on the the X pointer.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     accelNum;
+	int     accelDenom;
+	int     threshold;
+} XPtrFeedbackState;
+.fi
+.DE
+.P
+The \fIXIntegerFeedbackState\fP structure defines attributes that are 
+returned for integer feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     resolution;
+	int     minVal;
+	int     maxVal;
+} XIntegerFeedbackState;
+.fi
+.DE
+.P
+The \fIXStringFeedbackState\fP structure defines the attributes that are
+returned for string feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     max_symbols;
+	int     num_syms_supported;
+	KeySym  *syms_supported;
+} XStringFeedbackState;
+.fi
+.DE
+.P
+The \fIXBellFeedbackState\fP structure defines the attributes that are
+returned for bell feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     percent;
+	int     pitch;
+	int     duration;
+} XBellFeedbackState;
+.fi
+.DE
+.P
+The \fIXLedFeedbackState\fP structure defines the attributes that are
+returned for LED feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     led_values;
+} XLedFeedbackState;
+.fi
+.DE
+.P
+The \fIXPrtFeedbackControl\fP structure defines the attributes that can be
+controlled for pointer feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     accelNum;
+	int     accelDenom;
+	int     threshold;
+} XPtrFeedbackControl;
+.fi
+.DE
+.P
+The \fIXKbdFeedbackControl\fP structure defines the attributes that can be
+controlled for keyboard feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     click;
+	int     percent;
+	int     pitch;
+	int     duration;
+	int     led_mask;
+	int     led_value;
+	int     key;
+	int     auto_repeat_mode;
+} XKbdFeedbackControl;
+.fi
+.DE
+.P
+The \fIXStringFeedbackControl\fP structure defines the attributes that can be
+controlled for string feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     num_keysyms;
+	KeySym  *syms_to_display;
+} XStringFeedbackControl;
+.fi
+.DE
+.P
+The \fIXIntegerFeedbackControl\fP structure defines the attributes that can
+be controlled for integer feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     int_to_display;
+} XIntegerFeedbackControl;
+.fi
+.DE
+.P
+The \fIXBellFeedbackControl\fP structure defines the attributes that can be
+controlled for bell feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     percent;
+	int     pitch;
+	int     duration;
+} XBellFeedbackControl;
+.fi
+.DE
+.P
+The \fIXLedFeedbackControl\fP structure defines the attributes that can be
+controlled for LED feedbacks.
+.P
+.DS
+.nf
+typedef struct {
+	XID     class;
+	int     length;
+	XID     id;
+	int     led_mask;
+	int     led_values;
+} XLedFeedbackControl;
+.fi
+.DE
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if some other client has caused the specified device to become
+the X keyboard or X pointer device via the \fIXChangeKeyboardDevice\fP or
+\fIXChangePointerDevice\fP requests.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGetFeedbackControl\fP request was made specifying
+a device that has no feedbacks, or an \fIXChangeFeedbackControl\fP request was
+made with an \fIXFeedbackControl\fP structure that contains an invalid feedback
+type.  It may also occur if an invalid combination of mask bits is specified
+(\fIDvKey\fP but no \fIDvAutoRepeatMode\fP for keyboard feedbacks), or if an 
+invalid KeySym is specified for a string feedback.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the 
+\fIXChangeFeedbackControl\fP request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

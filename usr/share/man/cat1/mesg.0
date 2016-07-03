@@ -1,0 +1,66 @@
+MESG(1)                     386BSD Reference Manual                    MESG(1)
+
+NNAAMMEE
+     mmeessgg - Display (do not display) messages from other users
+
+SSYYNNOOPPSSIISS
+     mmeessgg [nn | yy]
+
+DDEESSCCRRIIPPTTIIOONN
+     The mmeessgg utility is invoked by a user to control write access others have
+     to her or his terminal.  By default, write access is allowed, and
+     programs such as talk(1),  write(1) and echo(1) may display messages on
+     the target user's terminal.
+
+     Options available:
+
+     nn     Disallows messages and informs the sender that `Your party is
+           refusing messages'.
+
+     yy     Allows messages to be displayed.
+
+     If no arguments are given, mmeessgg displays the present message status.
+
+     The mmeessgg utility exits with one of the following values:
+
+            0    Messages are allowed.
+            1    Messages are not allowed.
+           -1    An error has occurred.
+
+FFIILLEESS
+     /dev/[pt]ty[pq]?
+
+SSEEEE AALLSSOO
+     write(1),  talk(1),  echo(1),  biff(1)
+
+HHIISSTTOORRYY
+     A mmeessgg command appeared in Version 6 AT&T UNIX.
+
+BSD Experimental                 July 26, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

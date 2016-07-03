@@ -1,0 +1,146 @@
+.TH XCLOCK 1 "Release 5" "X Version 11"
+.SH NAME
+xclock - analog / digital clock for X
+.SH SYNOPSIS
+.ta 8n
+\fBxclock\fP	[-\fItoolkitoption\fP ...] [-help] [-analog] [-digital]
+[-chime] [-hd \fIcolor\fP] 
+.br
+	[-hl \fIcolor\fP] [-update \fIseconds\fP] [-padding \fInumber\fP]
+.SH DESCRIPTION
+The
+.I xclock 
+program displays the time in analog or digital form.  The time is continuously
+updated at a frequency which may be specified by the user.  This program is
+nothing more than a wrapper around the Athena Clock widget.
+.SH OPTIONS
+.I Xclock
+accepts all of the standard X Toolkit command line options along with the 
+additional options listed below:
+.TP 8
+.B \-help
+This option indicates that a brief summary of the allowed options should be
+printed on the standard error.
+.TP 8
+.B \-analog 
+This option indicates that a conventional 12 hour clock face with tick marks
+and hands should be used.  This is the default.
+.TP 8
+.B \-digital
+This option indicates that a 24 hour digital clock should be used.
+.TP 8
+.B \-chime
+This option indicates that the clock should chime 
+once on the half hour and twice on the hour.
+.TP 8
+.B \-hd \fIcolor\fP
+This option specifies the color of the hands on an analog clock.  The default
+is \fIblack\fP.
+.TP 8
+.B \-hl \fIcolor\fP
+This option specifies the color of the edges of the hands on an analog clock,
+and is only useful on color displays.  The default is \fIblack\fP.
+.TP 8
+.B \-update \fIseconds\fP
+This option specifies the frequency in seconds at which \fIxclock\fP
+should update its display.  If the clock is obscured and then exposed,
+it will be updated immediately.  A value of less than 30 seconds will enable a
+second hand on an analog clock.  The default is 60 seconds.
+.TP 8
+.B \-padding \fInumber\fP
+This option specifies the width in pixels of the padding 
+between the window border and clock text or picture.  The default is 10
+on a digital clock and 8 on an analog clock.
+.SH X DEFAULTS
+This program uses the 
+.I Athena Clock
+widget.  It understands all of the core resource names and classes as well as:
+.PP
+.TP 8
+.B width (\fPclass\fB Width)
+Specifies the width of the clock.  The default for analog clocks is 164
+pixels; the default for digital clocks is whatever is needed to hold the 
+clock when displayed in the chosen font.
+.TP 8
+.B height (\fPclass\fB Height)
+Specifies the height of the clock.  The default for analog clocks is 164
+pixels; the default for digital clocks is whatever is needed to hold the
+clock when displayed in the chosen font.
+.TP 8
+.B update (\fPclass\fB Interval)
+Specifies the frequency in seconds at which the time should be redisplayed.
+.TP 8
+.B foreground (\fPclass\fB Foreground)
+Specifies the color for the tic marks. The default is depends on whether
+\fIreverseVideo\fP is specified.  If \fIreverseVideo\fP is specified
+the default is \fIlwhite\fP, otherwise the default is \fIblack\fP. 
+
+.TP 8
+.B hands (\fPclass\fB Foreground)
+Specifies the color of the insides of the clock's hands. The default is 
+depends on whether
+\fIreverseVideo\fP is specified.  If \fIreverseVideo\fP is specified
+the default is \fIlwhite\fP, otherwise the default is \fIblack\fP.
+.TP 8
+.B highlight (\fPclass\fB Foreground)
+Specifies the color used to highlight the clock's hands. The default is
+ depends on whether
+\fIreverseVideo\fP is specified.  If \fIreverseVideo\fP is specified
+the default is \fIlwhite\fP, otherwise the default is \fIblack\fP.
+.TP 8
+.B analog (\fPclass\fB Boolean)
+Specifies whether or not an analog clock should be used instead of a digital
+one.  The default is True.
+.TP 8
+.B chime (\fPclass\fB Boolean)
+Specifies whether or not a bell should be rung on the hour and half hour.
+.TP 8
+.B padding (\fPclass\fB Margin)
+Specifies the amount of internal padding in pixels to be used.  The default is
+8.
+.TP 8
+.B font (\fPclass\fB Font)
+Specifies the font to be used for the digital clock.  Note that variable width
+fonts currently will not always display correctly.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxclock\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.TA .5i 
+.ta .5i 
+XClock  xclock
+	Clock  clock
+.fi
+.sp
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get the default host and display number.
+.TP 8
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH FILES
+/usr/lib/X11/app-defaults/XClock - specifies required resources
+.SH "SEE ALSO"
+X(1), xrdb(1), time(3C), Athena Clock widget
+.SH BUGS
+.I Xclock
+believes the system clock.
+.PP
+When in digital mode, the string should be centered automatically.
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+Tony Della Fera (MIT-Athena, DEC)
+.br
+Dave Mankins (MIT-Athena, BBN)
+.br
+Ed Moy (UC Berkeley)
+

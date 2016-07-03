@@ -1,0 +1,29 @@
+XCOMM $XFree86: mit/server/ddx/x386/bdm2/drivers/hgc1280/Imakefile,v 2.2 1993/10/02 09:50:38 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = hgc1280driv.c hgc1280bank.s
+
+OBJS = hgc1280driv.o hgc1280bank.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../os-support -I../../bdm \
+           -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(hgc1280, $(OBJS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+InstallLinkKitNonExecFile(hgc1280HW.h,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+InstallLinkKitNonExecFile(hgc1280Port.h,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+InstallLinkKitNonExecFile(hgc1280bank.s,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+InstallLinkKitNonExecFile(hgc1280driv.c,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+InstallLinkKitNonExecFile(HGC1280.info,$(LINKKITDIR)/drivers/bdm2/hgc1280)
+
+DependTarget()
+

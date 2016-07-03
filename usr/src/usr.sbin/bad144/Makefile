@@ -1,0 +1,8 @@
+#	@(#)Makefile	5.3 (Berkeley) 5/11/90
+
+PROG=	bad144
+NONSTDINC=$(INCOLDBSD)
+MAN8=	bad144.0
+MANSUBDIR=/i386
+
+.include <bsd.prog.mk>

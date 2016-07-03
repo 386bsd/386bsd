@@ -1,0 +1,262 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XmbLookupString 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XmbLookupString, XwcLookupString \- obtain composed input from an input method
+.SH SYNTAX
+int XmbLookupString\^(\^\fIic\fP\^, \fIevent\fP\^, \fIbuffer_return\fP\^, \fIbytes_buffer\fP\^, \fIkeysym_return\fP\^, \fIstatus_return\fP\^)
+.br
+      XIC \fIic\fP\^;
+.br
+      XKeyPressedEvent *\fIevent\fP;
+.br
+      char *\fIbuffer_return\fP\^;
+.br
+      int \fIbytes_buffer\fP\^;
+.br
+      KeySym *\fIkeysym_return\fP\^;
+.br
+      Status *\fIstatus_return\fP\^;
+.LP
+int XwcLookupString\^(\^\fIic\fP\^, \fIevent\fP\^, \fIbuffer_return\fP\^, \fIbytes_buffer\fP\^, \fIkeysym_return\fP\^, \fIstatus_return\fP\^)
+.br
+      XIC \fIic\fP\^;
+.br
+      XKeyPressedEvent *\fIevent\fP\^;
+.br
+      wchar_t *\fIbuffer_return\fP\^;
+.br
+      int \fIwchars_buffer\fP\^;
+.br
+      KeySym *\fIkeysym_return\fP\^;
+.br
+      Status *\fIstatus_return\fP\^;
+.SH ARGUMENTS
+.IP \fIbuffer_return\fP 1i
+Returns a multibyte string or wide character string (if any)
+from the input method.
+.IP \fIbytes_buffer\fP 1i
+.br
+.ns
+.IP \fIwchars_buffer\fP 1i
+Specifies space available in return buffer.
+.ds Ev key event to be used
+.IP \fIevent\fP 1i
+Specifies the \*(Ev.
+.IP \fIic\fP 1i
+Specifies the input context.
+.IP \fIkeysym_return\fP 1i
+Returns the KeySym computed from the event if this argument is not NULL.
+.IP \fIstatus_return\fP 1i
+Returns a value indicating what kind of data is returned.
+.SH DESCRIPTION
+The
+.ZN XmbLookupString
+and
+.ZN XwcLookupString
+functions return the string from the input method specified
+in the buffer_return argument.
+If no string is returned,
+the buffer_return argument is unchanged.
+.LP
+The KeySym into which the KeyCode from the event was mapped is returned
+in the keysym_return argument if it is non-NULL and the status_return
+argument indicates that a KeySym was returned.
+If both a string and a KeySym are returned,
+the KeySym value does not necessarily correspond to the string returned.
+.LP
+Note that
+.ZN XmbLookupString
+returns the length of the string in bytes and that
+.ZN XwcLookupString
+returns the length of the string in characters.
+.LP
+.ZN XmbLookupString
+and
+.ZN XwcLookupString
+return text in the encoding of the locale bound to the input method
+of the specified input context.
+.LP
+Note that each string returned by
+.ZN XmbLookupString
+and
+.ZN XwcLookupString
+begins in the initial state of the encoding of the locale
+(if the encoding of the locale is state-dependent).
+.NT
+In order to insure proper input processing,
+it is essential that the client pass only 
+.ZN KeyPress
+events to
+.ZN XmbLookupString
+and
+.ZN XwcLookupString .
+Their behavior when a client passes a 
+.ZN KeyRelease
+event is undefined.
+.NE
+.LP
+Clients should check the status_return argument before
+using the other returned values.
+These two functions both return a value to status_return 
+that indicates what has been returned in the other arguments.
+The possible values returned are:
+.TS
+lw(1.5i) lw(4.3i).
+T{
+.ZN XBufferOverflow
+T}	T{
+The input string to be returned is too large for the supplied buffer_return.
+The required size
+.Pn ( XmbLookupString
+in bytes;
+.ZN XwcLookupString
+in characters) is returned as the value of the function,
+and the contents of buffer_return and keysym_return are not modified.
+The client should recall the function with the same event
+and a buffer of adequate size in order to obtain the string.
+T}
+T{
+.ZN XLookupNone
+T}	T{
+No consistent input has been composed so far.
+The contents of buffer_return and keysym_return are not modified, 
+and the function returns zero.
+T}
+T{
+.ZN XLookupChars
+T}	T{
+Some input characters have been composed.
+They are placed in the buffer_return argument,
+and the string length is returned as the value of the function.
+The string is encoded in the locale bound to the input context.
+The contents of the keysym_return argument is not modified.
+T}
+T{
+.ZN XLookupKeySym
+T}	T{
+A KeySym has been returned instead of a string
+and is returned in keysym_return.
+The contents of the buffer_return argument is not modified,
+and the function returns zero.
+T}
+T{
+.ZN XLookupBoth
+T}	T{
+Both a KeySym and a string are returned;
+.ZN XLookupChars
+and
+.ZN XLookupKeySym
+occur simultaneously.
+T}
+.TE
+.LP
+It does not make any difference if the input context passed as an argument to
+.ZN XmbLookupString
+and
+.ZN XwcLookupString
+is the one currently in possession of the focus or not.
+Input may have been composed within an input context before it lost the focus,
+and that input may be returned on subsequent calls to
+.ZN XmbLookupString
+or
+.ZN XwcLookupString ,
+even though it does not have any more keyboard focus.
+.SH "SEE ALSO"
+XLookupKeysym(3X11)
+.br
+\fI\*(xL\fP

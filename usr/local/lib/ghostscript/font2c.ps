@@ -1,0 +1,500 @@
+%    Copyright (C) 1992, 1993 Aladdin Enterprises.  All rights reserved.
+%
+% This file is part of Ghostscript.
+%
+% Ghostscript is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY.  No author or distributor accepts responsibility
+% to anyone for the consequences of using it or for whether it serves any
+% particular purpose or works at all, unless he says so in writing.  Refer
+% to the Ghostscript General Public License for full details.
+%
+% Everyone is granted permission to copy, modify and redistribute
+% Ghostscript, but only under the conditions described in the Ghostscript
+% General Public License.  A copy of this license is supposed to have been
+% given to you along with Ghostscript so you can know your rights and
+% responsibilities.  It should be in a file named COPYING.  Among other
+% things, the copyright notice and this notice must be preserved on all
+% copies.
+
+% font2c.ps
+% Write out a Type 1 font as C code that can be linked with Ghostscript.
+% This even works on protected fonts, if you use the -dWRITESYSTEMDICT
+% switch in the command line.  The code is reentrant and has no
+% external references, so it can be shared.
+
+% Define the maximum string length that will get by the compiler.
+% This must be approximately
+%	min(max line length, max string literal length) / 4 - 5.
+
+/max_wcs 50 def
+
+% ------ Protection utilities ------ %
+
+% Protection values are represented by a mask:
+/a_noaccess 0 def
+/a_executeonly 1 def
+/a_readonly 3 def
+/a_all 7 def
+/prot_names
+ [ (0) (a_execute) null (a_readonly) null null null (a_all)
+ ] def
+/prot_opers
+ [ {noaccess} {executeonly} {} {readonly} {} {} {} {}
+ ] def
+
+% Get the protection of an object.
+   /getpa
+    { dup wcheck
+       { pop a_all }
+       {	% Check for executeonly or noaccess objects in protected.
+         dup protected exch known
+	  { protected exch get }
+	  { pop a_readonly }
+	 ifelse
+       }
+      ifelse
+    } bind def
+
+% Get the protection appropriate for (all the) values in a dictionary.
+   /getva
+    { a_noaccess exch
+       { exch pop
+         dup type dup /stringtype eq exch /arraytype eq or
+	  { getpa a_readonly and or }
+	  { pop pop a_all exit }
+	 ifelse
+       }
+      forall
+    } bind def
+
+% Keep track of executeonly and noaccess objects,
+% but don't let the protection actually take effect.
+/protected		% do first so // will work
+  systemdict wcheck { 1500 dict } { 1 dict } ifelse
+def
+systemdict wcheck
+ { systemdict begin
+     /executeonly
+      { dup //protected exch a_executeonly put readonly
+      } bind odef
+     /noaccess
+      { dup //protected exch a_noaccess put readonly
+      } bind odef
+   end
+ }
+ { (Warning: you will not be able to convert protected fonts.\n) print
+   (If you need to convert a protected font,\n) print
+   (please restart Ghostscript with the -dWRITESYSTEMDICT switch.\n) print
+   flush
+ }
+ifelse
+
+% ------ Output utilities ------ %
+
+% By convention, the output file is named cfile.
+
+% Define some utilities for writing the output file.
+   /wtstring 100 string def
+   /wb {cfile exch write} bind def
+   /ws {cfile exch writestring} bind def
+   /wl {ws (\n) ws} bind def
+   /wt {wtstring cvs ws} bind def
+
+% Write a C string.  Some compilers have unreasonably small limits on
+% the length of a string literal or the length of a line, so every place
+% that uses wcs must either know that the string is short,
+% or be prepared to use wcca instead.
+   /wbx
+    { 8#1000 add 8 (0000) cvrs dup 0 (\\) 0 get put ws
+    } bind def
+   /wcst
+    [
+      32 { /wbx load } repeat
+      95 { /wb load } repeat
+      129 { /wbx load } repeat
+    ] def
+   ("\\) { wcst exch { (\\) ws wb } put } forall
+   /wcs
+    { (") ws { dup wcst exch get exec } forall (") ws
+    } bind def
+   /can_wcs	% Test if can use wcs
+    { length max_wcs le
+    } bind def
+   /wncs	% name -> C string
+    { wtstring cvs wcs
+    } bind def
+% Write a C string as an array of character values.
+% We only need this because of line and literal length limitations.
+   /wca		% string prefix suffix ->
+    { 0 4 -2 roll exch
+       { exch ws
+         exch dup 19 ge { () wl pop 0 } if 1 add
+	 exch wt (,)
+       } forall
+      pop pop ws
+    } bind def
+   /wcca
+    { ({\n) (}) wca
+    } bind def
+
+% Write object protection attributes.  Note that dictionaries are
+% the only objects that can be writable.
+   /wpa
+    { dup xcheck { (a_executable+) ws } if
+      dup type /dicttype eq { getpa } { getpa a_readonly and } ifelse
+      prot_names exch get ws
+    } bind def
+   /wva
+    { getva prot_names exch get ws
+    } bind def
+
+% ------ Object writing ------ %
+
+   /wnstring 128 string def
+
+% Write a string/name or null as an element of a string/name/null array. */
+   /wsn
+    { dup null eq
+       { pop (\t255,255,) wl
+       }
+       { dup type /nametype eq { wnstring cvs } if
+         dup length 256 idiv wt (,) ws
+	 dup length 256 mod wt
+	 (,) (,\n) wca
+       }
+      ifelse
+    } bind def
+% Write a packed string/name/null array.
+   /wsna	% name (string/name/null)* ->
+    { (\tstatic const char ) ws exch wt ([] = {) wl
+      { wsn } forall
+      (\t0\n};) wl
+    } bind def
+
+
+% Write a named object.  Return true if this was possible.
+% Legal types are: boolean, integer, name, real, string,
+% array of (integer, integer+real, name, null+string).
+% Dictionaries are handled specially.  Other types are ignored.
+   /isall	% array proc -> bool
+    { true 3 -1 roll
+       { 2 index exec not { pop false exit } if }
+      forall exch pop
+    } bind def
+   /wott 7 dict dup begin
+      /arraytype
+       { woatt
+          { aload pop 2 index 2 index isall
+	     { exch pop exec exit }
+	     { pop pop }
+	    ifelse
+	  }
+	 forall
+       } bind def
+      /booleantype
+       { { (\tmake_true\(&) } { (\tmake_false\(&) } ifelse ws
+         wt (\);) wl true
+       } bind def
+      /dicttype
+       { dup alldicts exch known
+          { alldicts exch get (\t) ws exch wt ( = ) ws wt (;) wl true }
+	  { pop pop false }
+	 ifelse
+       } bind def
+      /integertype
+       { (\tmake_int\(&) ws exch wt (, ) ws
+         wt (\);) wl true
+       } bind def
+      /nametype
+       { (\tcode = (*pprocs->name_create)\(&) ws exch wt
+         (, ) ws wnstring cvs wcs	% OK, names are short
+	 (\);) wl
+	 (\tif ( code < 0 ) return code;) wl
+	 true
+       } bind def
+      /realtype
+       { (\tmake_real\(&) ws exch wt (, ) ws
+         wt (\);) wl true
+       } bind def
+      /stringtype
+       { ({\tstatic const char s_[] = ) ws
+         dup dup can_wcs { wcs } { wcca } ifelse
+	 (;) wl
+	 (\tmake_const_string\(&) ws exch wt
+	 (, a_readonly, ) ws length wt (, (const byte *)s_\);) wl
+	 (}) wl true
+       } bind def
+   end def
+   /wo		% name obj -> OK
+    { dup type wott exch known
+       { dup type wott exch get exec }
+       { pop pop false }
+      ifelse
+    } bind def
+
+% Write an array (called by wo).
+   /wnuma	% name array C_type type_v ->
+    { ({\tstatic const ref_\() ws exch ws
+      (\) a_[] = {) wl exch
+      dup length 0 eq
+       { (\t0) wl
+       }
+       { dup
+          { (\t) ws 2 index ws (\() ws wt (\),) wl
+	  } forall
+       }
+      ifelse
+      (\t};) wl exch pop
+      (\tmake_array\(&) ws exch wt
+      (, ) ws dup wpa (, ) ws length wt
+      (, (ref *)a_\);) wl (}) wl
+    } bind def
+   /woatt [
+	% Integers
+     { { type /integertype eq }
+       { (long) (integer_v) wnuma true }
+     }
+	% Integers + reals
+     { { type dup /integertype eq exch /realtype eq or }
+       { (float) (real_v) wnuma true }
+     }
+	% Strings + nulls
+     { { type dup /nulltype eq exch /stringtype eq or }
+       { ({) ws dup (sa_) exch wsna
+	 exch (\tcode = (*pprocs->string_array_create)\(&) ws wt
+	 (, sa_, ) ws dup length wt (, ) ws wpa (\);) wl
+	 (\tif ( code < 0 ) return code;) wl
+	 (}) wl true
+       }
+     }
+	% Names
+     { { type /nametype eq }
+       { ({) ws dup (na_) exch wsna
+	 exch (\tcode = (*pprocs->name_array_create)\(&) ws wt
+	 (, na_, ) ws length wt (\);) wl
+	 (\tif ( code < 0 ) return code;) wl
+	 (}) wl true
+       }
+     }
+	% Default
+     { { pop true }
+       { pop pop false }
+     }
+   ] def
+
+% Write a named dictionary.  We assume the ref is already declared.
+   /wd		% name dict
+    { ({) ws
+      (\tref v_[) ws dup length wt (];) wl
+      dup [ exch
+       { counttomark 2 sub wtstring cvs
+         (v_[) exch concatstrings (]) concatstrings exch wo not
+          { pop }
+	 if
+       } forall
+      ]
+      % stack: array of keys (names)
+      ({) ws dup (str_keys_) exch wsna
+      (\tstatic const cfont_dict_keys keys_ =) wl
+      (\t { 0, 0, ) ws length wt (, 1, ) ws
+      dup wpa (, ) ws dup wva ( };) wl
+      (\tcode = \(*pprocs->ref_dict_create\)\(&) ws 1 index wt
+      (, &keys_, str_keys_, &v_[0]\);) wl
+      (\tif (code < 0) return code;) wl
+      pop pop
+      (}) wl
+      (}) wl
+    } bind def
+
+% Write a character dictionary.
+% We save a lot of space by abbreviating keys which appear in
+% StandardEncoding or ISOLatin1Encoding.
+   /wcd		% namestring createtype dict valuetype writevalueproc ->
+    {	% Keys present in StandardEncoding or ISOLatin1Encoding
+      2 index
+      (static const charindex enc_keys_[] = {) wl
+      [ exch 0 exch
+       { pop decoding 1 index known
+          { decoding exch get ({) ws dup -8 bitshift wt
+	    (,) ws 255 and wt (}, ) ws
+	    1 add dup 5 mod 0 eq { (\n) ws } if
+	  }
+	  { exch }
+	 ifelse
+       }
+      forall pop
+      ]
+      ({0,0}\n};) wl
+	% Other keys
+      (str_keys_) exch wsna
+	% Values, with those corresponding to stdkeys first.
+      (static const ) ws 1 index ws
+      ( values_[] = {) wl
+      2 index
+       { decoding 2 index known
+          { exch pop 1 index exec }
+	  { pop pop }
+	 ifelse
+       }
+      forall
+      2 index
+       { decoding 2 index known
+          { pop pop }
+	  { exch pop 1 index exec }
+	 ifelse
+       }
+      forall
+      (\t0\n};) wl
+	% Actual creation code
+      (static const cfont_dict_keys keys_ = {) wl
+      (\tenc_keys_, countof\(enc_keys_\) - 1,) wl
+      (\t) ws 2 index length wt ( - \(countof\(enc_keys_\) - 1\), 0, ) ws
+      pop pop
+      dup wpa (, ) ws wva () wl
+      (};) wl
+      (\tcode = \(*pprocs->) ws ws (_dict_create\)\(&) ws ws
+      (, &keys_, str_keys_, &values_[0]\);) wl
+      (\tif ( code < 0 ) return code;) wl
+    } bind def
+
+% ------ The main program ------ %
+
+% Construct an inverse dictionary of encodings.
+4 dict begin
+ StandardEncoding (StandardEncoding) def
+ ISOLatin1Encoding (ISOLatin1Encoding) def
+ SymbolEncoding (SymbolEncoding) def
+ DingbatsEncoding (DingbatsEncoding) def
+currentdict end /encodingnames exch def
+
+% Invert the StandardEncoding and ISOLatin1Encoding vector.
+512 dict begin
+  0 1 255 { dup ISOLatin1Encoding exch get exch 256 add def } for
+  0 1 255 { dup StandardEncoding exch get exch def } for
+currentdict end /decoding exch def
+
+/makefontprocname	% fontname -> procname
+ { wtstring cvs
+   dup length 1 sub -1 0
+    { dup wtstring exch get 45 eq { wtstring exch 95 put } { pop } ifelse
+    }
+   for 
+ } def
+
+/writefont		% cfilename procname -> [writes the current font]
+ { (gsf_) exch concatstrings
+     /fontprocname exch def
+   /cfname exch def
+   /cfile cfname (w) file def
+   /Font currentfont def
+   Font /CharStrings get length dict
+   /charmap exch def
+
+% Define all the dictionaries we know about.
+% wo uses this when writing out dictionaries.
+   /alldicts 10 dict def
+   alldicts begin
+     Font /Font def
+      { /FontInfo /CharStrings /Private }
+      { dup Font exch get exch def }
+     forall
+     Font /Metrics known { Font /Metrics get /Metrics def } if
+   end
+
+% Write out the boilerplate.
+   Font begin
+   (/* Portions of this file are) wl
+   systemdict /copyright get ws
+   (All rights reserved.) wl
+   (*/) wl
+   FontInfo /Notice known
+    { (/* Portions of this file are also subject to the following notice: */) wl
+      (/****************************************************************) wl
+      FontInfo /Notice get wl
+      ( ****************************************************************/) wl
+    } if
+   () wl
+   (/* ) ws cfname ws ( */) wl
+   (/* This file was created by the Ghostscript font2c utility. */) wl
+   () wl
+   (#include "std.h") wl
+   (#include "iref.h") wl
+   (#include "store.h") wl
+   (#include "ccfont.h") wl
+   () wl
+
+% Write the procedure prologue.
+   (#ifdef __PROTOTYPES__) wl
+   (int huge) wl
+   fontprocname ws ((const cfont_procs *pprocs, ref *pfont)) wl
+   (#else) wl
+   (int huge) wl
+   fontprocname ws ((pprocs, pfont) const cfont_procs *pprocs; ref *pfont;) wl
+   (#endif) wl
+   ({\tint code;) wl
+   alldicts
+    { exch pop (\tref ) ws wt (;) wl }
+   forall
+
+% Write out the FontInfo.
+   (FontInfo) FontInfo wd
+
+% Write out the CharStrings.
+   ({) wl
+   (CharStrings) (string) CharStrings (char) { wsn } wcd
+   (}) wl
+
+% Write out the Metrics.
+   Font /Metrics known
+    { ({) wl
+      (Metrics) (num) Metrics (float) { (\t) ws wtstring cvs ws (,) wl } wcd
+      (}) wl
+    }
+   if
+
+% Write out the Private dictionary.
+   (Private) Private wd
+
+% Write out the main font dictionary.
+% If possible, substitute the encoding name for the encoding;
+% PostScript code will fix this up.
+   Font dup length dict copy
+   encodingnames Encoding known
+    { dup /Encoding encodingnames Encoding get put
+    }
+   if
+   (Font) exch wd
+
+% Finish the procedural initialization code.
+   (\t*pfont = Font;) wl
+   (\treturn 0;) wl
+   (}) wl
+   end
+
+   cfile closefile
+
+ } bind def
+
+% If the program was invoked from the command line, run it now.
+[ shellarguments
+ { counttomark dup 2 eq exch 3 eq or
+    { counttomark -1 roll cvn
+      (Converting ) print dup =only ( font.\n) print flush
+      dup FontDirectory exch known { dup FontDirectory exch undef } if
+      findfont setfont
+      (FontName is ) print currentfont /FontName get ==only (.\n) print flush
+      counttomark 1 eq
+       {	% Construct the procedure name from the file name.
+         currentfont /FontName get makefontprocname
+       }
+      if
+      writefont
+    }
+    { cleartomark
+      (Usage: font2c fontname cfilename.c [shortname]\n) print
+      ( e.g.: font2c Courier cour.c\n) print flush
+      mark
+    }
+   ifelse
+ }
+if pop

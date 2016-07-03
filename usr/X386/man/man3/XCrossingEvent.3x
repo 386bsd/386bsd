@@ -1,0 +1,279 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XCrossingEvent 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XCrossingEvent \- EnterNotify and LeaveNotify event structure
+.SH STRUCTURES
+The structure for
+.ZN EnterNotify 
+and
+.ZN LeaveNotify
+events contains:
+.LP
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	int type;	/* EnterNotify or LeaveNotify */
+	unsigned long serial;	/* # of last request processed by server */
+	Bool send_event;	/* true if this came from a SendEvent request */
+	Display *display;	/* Display the event was read from */
+	Window window;	/* ``event'' window reported relative to */
+	Window root;	/* root window that the event occurred on */
+	Window subwindow;	/* child window */
+	Time time;	/* milliseconds */
+	int x, y;	/* pointer x, y coordinates in event window */
+	int x_root, y_root;	/* coordinates relative to root */
+	int mode;	/* NotifyNormal, NotifyGrab, NotifyUngrab */
+	int detail;
+		/*
+	 	* NotifyAncestor, NotifyVirtual, NotifyInferior, 
+	 	* NotifyNonlinear,NotifyNonlinearVirtual
+	 	*/
+	Bool same_screen;	/* same screen flag */
+	Bool focus;	/* boolean focus */
+	unsigned int state;	/* key or button mask */
+} XCrossingEvent;
+typedef XCrossingEvent XEnterWindowEvent;
+typedef XCrossingEvent XLeaveWindowEvent;
+.De
+.LP
+When you receive these events,
+the structure members are set as follows.
+.LP
+The type member is set to the event type constant name that uniquely identifies
+it.
+For example, when the X server reports a
+.ZN GraphicsExpose
+event to a client application, it sends an
+.ZN XGraphicsExposeEvent
+structure with the type member set to
+.ZN GraphicsExpose .
+The display member is set to a pointer to the display the event was read on.
+The send_event member is set to
+.ZN True
+if the event came from a
+.ZN SendEvent
+protocol request.
+The serial member is set from the serial number reported in the protocol
+but expanded from the 16-bit least-significant bits to a full 32-bit value.
+The window member is set to the window that is most useful to toolkit
+dispatchers.
+.LP
+The window member is set to the window on which the
+.ZN EnterNotify
+or
+.ZN LeaveNotify
+event was generated and is referred to as the event window. 
+This is the window used by the X server to report the event, 
+and is relative to the root
+window on which the event occurred. 
+The root member is set to the root window of the screen
+on which the event occurred.
+.LP
+For a
+.ZN LeaveNotify 
+event,
+if a child of the event window contains the initial position of the pointer,
+the subwindow component is set to that child.
+Otherwise, the X server sets the subwindow member to
+.ZN None .
+For an
+.ZN EnterNotify 
+event, if a child of the event window contains the final pointer position, 
+the subwindow component is set to that child or
+.ZN None .
+.LP
+The time member is set to the time when the event was generated
+and is expressed in milliseconds.
+The x and y members are set to the coordinates of the pointer position in 
+the event window.
+This position is always the pointer's final position,
+not its initial position.
+If the event window is on the same
+screen as the root window, x and y are the pointer coordinates
+relative to the event window's origin. 
+Otherwise, x and y are set to zero.
+The x_root and y_root members are set to the pointer's coordinates relative to the
+root window's origin at the time of the event.
+.LP
+The same_screen member is set to indicate whether the event window is on the same screen
+as the root window and can be either
+.ZN True 
+or
+.ZN False .
+If
+.ZN True ,
+the event and root windows are on the same screen.
+If
+.ZN False ,
+the event and root windows are not on the same screen.
+.LP
+The focus member is set to indicate whether the event window is the focus window or an
+inferior of the focus window.
+The X server can set this member to either
+.ZN True 
+or
+.ZN False .
+If
+.ZN True ,
+the event window is the focus window or an inferior of the focus window.
+If
+.ZN False ,
+the event window is not the focus window or an inferior of the focus window.
+.LP
+The state member is set to indicate the state of the pointer buttons and
+modifier keys just prior to the
+event.
+The X server can set this member to the bitwise inclusive OR of one 
+or more of the button or modifier key masks:
+.ZN Button1Mask ,
+.ZN Button2Mask ,
+.ZN Button3Mask ,
+.ZN Button4Mask ,
+.ZN Button5Mask ,
+.ZN ShiftMask ,
+.ZN LockMask ,
+.ZN ControlMask ,
+.ZN Mod1Mask ,
+.ZN Mod2Mask ,
+.ZN Mod3Mask ,
+.ZN Mod4Mask ,
+.ZN Mod5Mask .
+.LP
+The mode member is set to indicate whether the events are normal events, 
+pseudo-motion events
+when a grab activates, or pseudo-motion events when a grab deactivates.
+The X server can set this member to 
+.ZN NotifyNormal ,
+.ZN NotifyGrab ,
+or
+.ZN NotifyUngrab .
+.LP
+The detail member is set to indicate the notify detail and can be
+.ZN NotifyAncestor ,
+.ZN NotifyVirtual ,
+.ZN NotifyInferior ,
+.ZN NotifyNonlinear ,
+or
+.ZN NotifyNonlinearVirtual .
+.SH "SEE ALSO"
+XAnyEvent(3X11),
+XButtonEvent(3X11),
+XCreateWindowEvent(3X11),
+XCirculateEvent(3X11),
+XCirculateRequestEvent(3X11),
+XColormapEvent(3X11),
+XConfigureEvent(3X11),
+XConfigureRequestEvent(3X11),
+XDestroyWindowEvent(3X11),
+XErrorEvent(3X11),
+XExposeEvent(3X11),
+XFocusChangeEvent(3X11),
+XGraphicsExposeEvent(3X11),
+XGravityEvent(3X11),
+XKeymapEvent(3X11),
+XMapEvent(3X11),
+XMapRequestEvent(3X11),
+XPropertyEvent(3X11),
+XReparentEvent(3X11),
+XResizeRequestEvent(3X11),
+XSelectionClearEvent(3X11),
+XSelectionEvent(3X11),
+XSelectionRequestEvent(3X11),
+XUnmapEvent(3X11),
+XVisibilityEvent(3X11)
+.br
+\fI\*(xL\fP

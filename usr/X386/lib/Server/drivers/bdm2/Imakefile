@@ -1,0 +1,14 @@
+XCOMM $XFree86: mit/server/ddx/x386/bdm2/drivers/Imakefile,v 2.0 1993/08/30 15:22:05 dawes Exp $
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SUBDIRS = X386Bdm2Drivers
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/bdm2)
+
+#if X386LinkKit
+#include <LinkKit.tmpl>
+#endif

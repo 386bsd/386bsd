@@ -1,0 +1,34 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH AUTO_BOX 1 "Release 5" "X Version 11"
+.SH NAME
+auto_box \- display a rotating cube using PHIGS
+.SH SYNOPSIS
+.B auto_box
+.SH DESCRIPTION
+.I auto_box
+is a simple program that displays four views of a rotating cube.  It
+initially displays the cube with filled polygons, then with hollow
+polygons, or polylines.  Four views of the cube are presented in four
+quadrants. each with a different rotation applied.  In the first and fourth
+quadrants the back faces and front faces are respectively culled out,
+demonstrating one of the PHIGS PLUS features.  auto_box uses only PHIGS
+indexed colors.  Type auto_box to run the program.  It exits after all views
+and rotations are completed once.
+
+.SH "SEE ALSO"
+.PP
+PEX-SI User Guide 
+.SH COPYRIGHT
+Copyright 1991, Massachusetts Institute of Technology.

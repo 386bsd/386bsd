@@ -1,0 +1,232 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XrmPutResource 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XrmPutResource, XrmQPutResource, XrmPutStringResource, XrmQPutStringResource, XrmPutLineResource \- store database resources
+.SH SYNTAX
+void XrmPutResource\^(\^\fIdatabase\fP, \fIspecifier\fP, \fItype\fP, \fIvalue\fP\^)
+.br
+     XrmDatabase *\fIdatabase\fP\^;
+.br
+     char *\fIspecifier\fP\^;
+.br
+     char *\fItype\fP\^;
+.br
+     XrmValue *\fIvalue\fP\^;
+.LP
+void XrmQPutResource\^(\^\fIdatabase\fP, \fIbindings\fP, \fIquarks\fP, \
+\fItype\fP, \fIvalue\fP\^)
+.br
+     XrmDatabase *\fIdatabase\fP\^;
+.br
+     XrmBindingList \fIbindings\fP\^;
+.br
+     XrmQuarkList \fIquarks\fP\^;
+.br
+     XrmRepresentation \fItype\fP\^;
+.br
+     XrmValue *\fIvalue\fP\^;
+.LP
+void XrmPutStringResource\^(\^\fIdatabase\fP, \fIspecifier\fP, \fIvalue\fP\^)
+.br
+     XrmDatabase *\fIdatabase\fP\^;
+.br
+     char *\fIspecifier\fP\^;
+.br
+     char *\fIvalue\fP\^;
+.LP
+void XrmQPutStringResource\^(\^\fIdatabase\fP, \fIbindings\fP, \fIquarks\fP, \
+\fIvalue\fP\^)
+.br
+     XrmDatabase *\fIdatabase\fP\^;
+.br
+     XrmBindingList \fIbindings\fP\^;
+.br
+     XrmQuarkList \fIquarks\fP\^;
+.br
+     char *\fIvalue\fP\^;
+.LP
+void XrmPutLineResource\^(\^\fIdatabase\fP, \fIline\fP\^)
+.br
+     XrmDatabase *\fIdatabase\fP\^;
+.br
+     char *\fIline\fP\^;
+.SH ARGUMENTS
+.IP \fIbindings\fP 1i
+Specifies a list of bindings.
+.IP \fIdatabase\fP 1i
+Specifies the resource database.
+.IP \fIline\fP 1i
+Specifies the resource name and value pair as a single string.
+.IP \fIquarks\fP 1i
+Specifies the complete or partial name or the class list of the resource.
+.IP \fIspecifier\fP 1i
+Specifies a complete or partial specification of the resource.
+.IP \fItype\fP 1i
+Specifies the type of the resource.
+.IP \fIvalue\fP 1i
+Specifies the value of the resource, which is specified as a string.
+.SH DESCRIPTION
+If database contains NULL,
+.ZN XrmPutResource
+creates a new database and returns a pointer to it.
+.ZN XrmPutResource
+is a convenience function that calls
+.ZN XrmStringToBindingQuarkList
+followed by:
+.LP
+.Ds
+XrmQPutResource(database, bindings, quarks, XrmStringToQuark(type), value)
+.De
+If the specifier and type are not in the Host Portable Character Encoding
+the result is implementation dependent.
+The value is stored in the database without modification.
+.LP
+If database contains NULL,
+.ZN XrmQPutResource
+creates a new database and returns a pointer to it.
+If a resource entry with the identical bindings and quarks already
+exists in the database, the previous value is replaced by the new
+specified value.
+The value is stored in the database without modification.
+.LP
+If database contains NULL,
+.ZN XrmPutStringResource
+creates a new database and returns a pointer to it.
+.ZN XrmPutStringResource
+adds a resource with the specified value to the specified database.
+.ZN XrmPutStringResource
+is a convenience function that first calls
+.ZN XrmStringToBindingQuarkList
+on the specifier and then calls
+.ZN XrmQPutResource ,
+using a ``String'' representation type.
+If the specifier is not in the Host Portable Character Encoding
+the result is implementation dependent.
+The value is stored in the database without modification.
+.LP
+If database contains NULL,
+.ZN XrmQPutStringResource
+creates a new database and returns a pointer to it.
+.ZN XrmQPutStringResource
+is a convenience routine that constructs an
+.ZN XrmValue
+for the value string (by calling
+.ZN strlen
+to compute the size) and
+then calls
+.ZN XrmQPutResource ,
+using a ``String'' representation type.
+The value is stored in the database without modification.
+.LP
+If database contains NULL,
+.ZN XrmPutLineResource
+creates a new database and returns a pointer to it.
+.ZN XrmPutLineResource
+adds a single resource entry to the specified database.
+The line must be in valid ResourceLine format (see section 15.1).
+The string is parsed in the locale of the database.
+If the
+.ZN ResourceName
+is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Note that comment lines are not stored.
+.SH "SEE ALSO"
+XrmGetResource(3X11),
+XrmInitialize(3X11),
+XrmMergeDatabases(3X11),
+XrmUniqueQuark(3X11)
+.br
+\fI\*(xL\fP

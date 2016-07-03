@@ -1,0 +1,84 @@
+.TH XCONSOLE 1 "Release 5" "X Version 11"
+.SH NAME
+xconsole - monitor system console messages
+.SH SYNOPSIS
+.ta 8n
+\fBxconsole\fP	[-\fItoolkitoption\fP ...] [-file \fIfile-name\fP]
+[-notify] [-stripNonprint] [-daemon] [-verbose] [-exitOnFail] [-tail]
+.SH DESCRIPTION
+The
+.I xconsole 
+program displays messages which are usually sent to /dev/console.
+.SH OPTIONS
+.I Xconsole
+accepts all of the standard X Toolkit command line options along with the 
+additional options listed below:
+.TP 8
+.B \-file \fIfile-name\fP
+To monitor some other device, use this option to specify the device name.
+This does not work on regular files as they are always ready to be read from.
+.TP 8
+.B \-tail
+This option makes
+.I xconsole
+work on a regular file.  Only data appended to the file after
+.I xconsole
+starts is displayed.
+.TP 8
+.B \-notify \-nonotify
+When new data are received from the console and the notify option is set,
+the icon name of the application has " *" appended, so that it is evident
+even when the application is iconified.  \-notify is the default.
+.TP 8
+.B \-daemon
+This option causes
+.I xconsole
+to place itself in the background, using fork/exit.
+.TP 8
+.B \-verbose
+When set, this option directs
+.I xconsole
+to display an informative message in the first line of the text buffer.
+.TP 8
+.B \-exitOnFail
+When set, this option directs
+.I xconsole
+to exit when it is unable to redirect the console output.
+.SH X DEFAULTS
+This program uses the 
+.I Athena Text
+widget, look in the
+.I Athena Widget Set
+documentation for controlling it.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxconsole\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.TA .5i 
+.ta .5i 
+XConsole  xconsole
+	XConsole  text
+.fi
+.sp
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get the default host and display number.
+.TP 8
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH FILES
+/usr/lib/X11/app-defaults/XConsole - specifies required resources
+.SH "SEE ALSO"
+X(1), xrdb(1), Athena Text widget
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Keith Packard (MIT X Consortium)

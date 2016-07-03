@@ -1,0 +1,60 @@
+.TH XKILL 1 "Release 5" "X Version 11"
+.SH NAME
+xkill - kill a client by its X resource
+.SH SYNOPSIS
+.B "xkill"
+[\-display \fIdisplayname\fP] [\-id \fIresource\fP] [\-button number] [\-frame] [\-all] 
+.SH DESCRIPTION
+.PP
+.I Xkill
+is a utility for forcing the X server to close connections to clients.  This
+program is very dangerous, but is useful for aborting programs that have 
+displayed undesired windows on a user's screen.  If no resource identifier
+is given with \fI-id\fP, \fIxkill\fP will display a special cursor
+as a prompt for the user to select a window to be killed.  If a pointer button
+is pressed over a non-root window, the server will close its connection to
+the client that created the window.
+.SH OPTIONS
+.TP 8
+.B \-display \fIdisplayname\fP
+This option specifies the name of the X server to contact.
+.TP 8
+.B \-id \fIresource\fP
+This option specifies the X identifier for the resource whose creator is
+to be aborted.  If no resource is specified, \fIxkill\fP will display a 
+special cursor with which you should select a window to be kill.
+.TP 8
+.B \-button \fInumber\fP
+This option specifies the number of pointer button
+that should be used in selecting a window to kill.  
+If the word "any" is specified, any button on the pointer may be used.  By
+default, the first button in the pointer map (which is usually the leftmost
+button) is used.
+.TP 8
+.B \-all
+This option indicates that all clients with top-level windows on the screen
+should be killed.  \fIXkill\fP will ask you to select the root window with 
+each of the currently defined buttons to give you several chances to abort.
+Use of this option is highly discouraged.
+.TP 8
+.B \-frame
+This option indicates that xkill should ignore the standard conventions for
+finding top-level client windows (which are typically nested inside a window
+manager window), and simply believe that you want to kill direct children of
+the root.
+.SH XDEFAULTS
+.TP 8
+.B Button
+Specifies a specific pointer button number or the word "any" to use when 
+selecting windows.
+.SH "SEE ALSO"
+X(1), xwininfo(1), XKillClient and XGetPointerMapping in the Xlib Programmers 
+Manual, KillClient in the X Protocol Specification
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium
+.br
+Dana Chee, Bellcore

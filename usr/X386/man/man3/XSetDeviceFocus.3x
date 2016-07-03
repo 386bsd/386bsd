@@ -1,0 +1,205 @@
+.ds xL Programming with Xlib
+.TH XSetDeviceFocus 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XSetDeviceFocus, XGetDeviceFocus \- control extension input device focus
+.SH SYNTAX
+XSetDeviceFocus\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIfocus\fP\^, \fIrevert_to\fP\^, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Display *\fIdevice\fP\^;
+.br
+      Window \fIfocus\fP\^;
+.br
+      int \fIrevert_to\fP\^; 
+.br
+      Time \fItime\fP\^; 
+.sp
+XGetDeviceFocus\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIfocus_return\fP\^, 
+\fIrevert_to_return\fP, \fItime_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Display *\fIdevice\fP\^;
+.br
+      Window *\fIfocus_return\fP\^;
+.br
+      int *\fIrevert_to_return\fP\^;
+.br
+      int *\fItime_return\fP\^;
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device whose focus is to be queried or changed.
+.TP 12
+.I focus
+Specifies the window,
+\fIPointerRoot\fP,
+\fIFollowKeyboard\fP,
+or
+\fINone\fP.
+.TP 12
+.I focus_return
+Returns the focus window,
+\fIPointerRoot\fP,
+\fIFollowKeyboard\fP,
+or 
+\fINone\fP.
+.TP 12
+.I revert_to
+Specifies where the input focus reverts to if the window becomes not
+viewable.
+You can pass 
+\fIRevertToParent\fP, 
+\fIRevertToPointerRoot\fP, 
+\fIRevertToFollowKeyboard\fP, 
+or 
+\fIRevertToNone\fP.
+.TP 12
+.I revert_to_return
+Returns the current focus state
+\fIRevertToParent\fP, 
+\fIRevertToPointerRoot\fP, 
+\fIRevertToFollowKeyboard\fP, 
+or 
+\fIRevertToNone\fP.
+.TP 12
+.I time_return
+Returns the last_focus_time for the device.
+.TP 12
+.I time
+Specifies the time.
+You can pass either a timestamp or
+\fICurrentTime\fP.
+.SH DESCRIPTION
+The \fIXSetDeviceFocus\fP
+request changes the focus of the specified device and its last-focus-change 
+time.
+It has no effect if the specified time is earlier than the current
+last-focus-change time or is later than the current X server time.
+Otherwise, the last-focus-change time is set to the specified time
+\fICurrentTime\fP
+is replaced by the current X server time).
+\fIXSetDeviceFocus\fP
+causes the X server to generate
+\fIDeviceFocusIn\fP
+and 
+\fIDeviceFocusOut\fP
+events.
+.P
+Depending on the focus argument,
+the following occurs: 
+.IP \(bu 5
+If focus is
+\fINone\fP ,
+all device events are discarded until a new focus window is set,
+and the revert_to argument is ignored.
+.IP \(bu 5
+If focus is a window, 
+it becomes the device's focus window.
+If a generated device event would normally be reported to this window
+or one of its inferiors, the event is reported as usual. 
+Otherwise, the event is reported relative to the focus window.
+.IP \(bu 5
+If focus is
+\fIPointerRoot\fP,
+the focus window is dynamically taken to be the root window of whatever screen 
+the pointer is on at each event from the specified device.  
+In this case, the revert_to argument is ignored.
+.IP \(bu 5
+If focus is
+\fIFollowKeyboard\fP,
+the focus window is dynamically taken to be the window to which the X keyboard
+focus is set at each input event.
+.P
+The specified focus window must be viewable at the time 
+\fIXSetDeviceFocus\fP
+is called,
+or a
+\fIBadMatch\fP
+error results.
+If the focus window later becomes not viewable, 
+the X server
+evaluates the revert_to argument to determine the new focus window as follows: 
+.IP \(bu 5
+If revert_to is
+\fIRevertToParent\fP,
+the focus reverts to the parent (or the closest viewable ancestor), 
+and the new revert_to value is taken to be
+\fIRevertToNone\fP.  
+.IP \(bu 5
+If revert_to is
+\fIRevertToPointerRoot\fP,
+\fIRevertToFollowKeyboard\fP,
+or 
+\fIRevertToNone\fP,
+the focus reverts to
+\fIPointerRoot\fP,
+\fIFollowKeyboard\fP,
+or
+\fINone\fP,
+respectively.
+.P
+When the focus reverts,
+the X server generates
+\fIDeviceFocusIn\fP
+and
+\fIDeviceFocusOut\fP
+events, but the last-focus-change time is not affected.
+.P
+Input extension devices are not required to support the ability to be focused.
+Attempting to set the focus of a device that does not support this request
+will result in a \fIBadMatch\fP error.  Whether or not given device can
+support this request can be determined by the information returned by
+\fIXOpenDevice\fP.
+For those devices that
+support focus, \fIXOpenDevice\fP will return an
+\fIXInputClassInfo\fP structure with the input_class field
+equal to the constant \fIFocusClass\fP (defined in the file \fIXI.h\fP).
+.P
+\fIXSetDeviceFocus\fP
+can generate
+\fIBadDevice\fP,
+\fIBadMatch\fP,
+\fIBadValue\fP,
+and
+\fIBadWindow\fP
+errors.
+.P
+The
+\fIXGetDeviceFocus\fP
+request returns the focus window and the current focus state.
+.P
+Not all input extension devices can be focused.  Attempting to query the
+focus state of a device that can't be focused results in a \fIBadMatch\fP
+error.  A device that can be focused returns information for input Class
+Focus when an \fIXOpenDevice\fP request is made.
+.P
+\fIXGetDeviceFocus\fP can generate \fIBadDevice\fP,
+and \fIBadMatch\fP errors.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.TP 12
+\fIBadWindow\fP
+A value for a Window argument does not name a defined Window.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGetDeviceFocus\fP or \fIXSetDeviceFocus\fP
+request was made specifying a device that the server implementation does not 
+allow to be focused.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

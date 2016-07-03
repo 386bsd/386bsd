@@ -1,0 +1,9 @@
+XCOMM $XFree86: mit/server/ddx/x386/LinkKit/LinkKit.tmpl,v 1.1 1993/03/04 12:56:10 dawes Exp $
+XCOMM ----------------------------------------------------------------------
+XCOMM LinkKit.tmpl: Template for some LinkKit specifics
+XCOMM ----------------------------------------------------------------------
+
+   IMAKE_DEFINES = -DX386LinkKit=1
+       IMAKE_CMD = $(IMAKE) -DUseInstalled -I$(TOP)/$(NEWTOP) -I$(IRULESRC) \
+                   $(IMAKE_DEFINES)
+

@@ -1,0 +1,47 @@
+.\" $NCDId: @(#)fsinfo.man,v 4.2 1991/06/27 18:31:36 lemke Exp $
+.TH FSINFO 1 "Release 5" "X Version 11"
+.SH NAME
+fsinfo \- font server information utility
+.SH SYNOPSIS
+.B "fsinfo"
+[\-server \fIservername\fP]
+.SH DESCRIPTION
+.PP
+.I Fsinfo
+is a utility for displaying information about an X font server.  It is used to 
+examine the
+capabilities of a server, the predefined values for various parameters used
+in communicating between clients and the server, and the font catalogues
+and alternate servers that are available.
+.SH EXAMPLE
+.PP
+The following shows a sample produced by
+.I fsinfo.
+.PP
+.nf
+name of server:	hansen:7000
+version number:	1
+vendor string:	Font Server Prototype
+vendor release number:	17
+maximum request size:	16384 longwords (65536 bytes)
+number of catalogues:	1
+	all
+Number of alternate servers: 2
+    #0	hansen:7001
+    #1	hansen:7002
+number of extensions:	0
+.fi
+
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B FONTSERVER
+To get the default fontserver.
+.SH "SEE ALSO"
+fs(1), fslsfonts(1)
+.SH COPYRIGHT
+Copyright 1991, Network Computing Devices, Inc
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Dave Lemke, Network Computing Devices, Inc

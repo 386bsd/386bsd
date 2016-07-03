@@ -1,0 +1,118 @@
+.\" $XConsortium: startx.man,v 1.2 91/07/30 14:12:47 gildea Exp $
+.TH STARTX 1 "Release 5" "X Version 11"
+.SH NAME
+startx \- initialize an X session
+.SH SYNOPSIS
+.B startx
+[ [
+.I client
+]
+.I options
+\&\.\|.\|. ] [
+.B \-\^\-
+[
+.I server
+]
+.I options
+\&.\|.\|. ]
+.SH DESCRIPTION
+NOTE: The \fIstartx\fP script supplied with the X11 distribution is a sample
+designed more as a base for customization than as a
+finished product.  Site administrators are urged to customize it for
+their site.  And to update this manual page when they do!
+.PP
+The \fIstartx\fP script is a front end to \fIxinit\fP that provides a
+somewhat nicer user interface for running a single session of the X
+Window System.  It is typically run with no arguments.
+.PP
+To determine the client to run,
+.I startx
+first looks for a file called
+.I .xinitrc
+in the user's home directory.  If that is not found, it uses
+the file
+.I xinitrc
+in the
+.I xinit
+library directory.
+If command line client options are given, they override this
+behavior.
+To determine the server to run,
+.I startx
+first looks for a file called
+.I .xserverrc
+in the user's home directory.  If that is not found, it uses
+the file
+.I xserverrc
+in the
+.I xinit
+library directory.
+If command line server options are given, they override this
+behavior.  Users rarely need to provide a
+.I .xserverrc
+file.
+See the
+.IR xinit (1)
+manual page for more details on the arguments.
+.PP
+The
+.I .xinitrc
+is typically a shell script which starts many clients according to the
+user's preference.  When this shell script exits,
+.I startx 
+kills the server and performs any other session shutdown needed.
+Most of the clients started by
+.I .xinitrc
+should be run in the background.  The last client should run in the
+foreground; when it exits, the session will exit.  People often choose
+a session manager, window manager, or \fIxterm\fP as the ``magic'' client.
+.SH EXAMPLE
+.PP
+Below is a sample \fI\.xinitrc\fP that starts several applications and
+leaves the window manager running as the ``last'' application.  Assuming that
+the window manager has been configured properly, the user
+then chooses the ``Exit'' menu item to shut down X.
+.sp
+.in +4
+.nf
+xrdb  \-load  $HOME/.Xresources
+xsetroot  \-solid  gray  &
+xbiff  \-geometry  \-430+5  &
+oclock  \-geometry  75x75\-0\-0  &
+xload  \-geometry  \-80\-0  &
+xterm  \-geometry  +0+60  \-ls  &
+xterm  \-geometry  +0\-100  &
+xconsole  \-geometry  \-0+0  \-fn  5x7  &
+exec  twm
+.fi
+.in -4
+.SH "ENVIRONMENT VARIABLES"
+.TP 25
+DISPLAY
+This variable gets set to the name of the display to which clients should
+connect.  Note that this gets
+.I set,
+not read.
+.SH FILES
+.TP 25
+.I $(HOME)/.xinitrc
+Client to run.  Typically a shell script which runs many programs in
+the background.
+.TP 25
+.I $(HOME)/.xserverrc
+Server to run.  The default is
+.I X.
+.TP 25
+.I /usr/lib/X11/xinit/xinitrc
+Client to run if the user has no
+.I .xinitrc
+file
+.TP 25
+.I /usr/lib/X11/xinit/xserverrc
+Client to run if the user has no
+.I .xserverrc
+file.  This is only needed if the server needs special arguments or is
+not named
+.I X.
+.SH "SEE ALSO"
+.IR xinit (1)

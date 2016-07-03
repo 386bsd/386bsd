@@ -1,0 +1,101 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH NEWALIAS 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+newalias - install new elm aliases for user and/or system
+.SH SYNOPSIS
+.B newalias
+[-g]
+.SH DESCRIPTION
+.I Newalias
+creates new hash and data files from a text file.
+If the program is invoked with the
+.I -g
+(global) flag, the program updates the system alias files.
+Otherwise, the program looks for a file called \fI$HOME/.elm/aliases.text\fR
+and, upon finding it, creates files \fI$HOME/.elm/aliases.dir\fR,
+\fI$HOME/.elm/aliases.pag\fR and
+\fI$HOME/.elm/aliases\fR for the
+.I elm
+program.
+.PP
+The format that the program expects is;
+.sp
+.nf
+	alias, alias, .. = comment = address
+or
+	alias, alias, .. = comment = alias, alias, ...
+   
+The first form is for an individual user such as;
+
+	dave, taylor = Dave Taylor = veeger!hpcnou!dat
+
+or optionally as;
+
+	dave, taylor = Taylor; Dave = veeger!hpcnou!dat
+
+to allow the aliases to be properly sorted by last name.
+
+The second is for defining a group alias such as;
+
+	gurus = Unix Gurus = alan, john, dave, mike, richard,
+		             larry, t_richardson
+
+.fi
+.sp
+Note that lines can be continued at will, blank lines are accepted
+without error, and that any line starting with '#' is considered a
+comment and is not processed.
+.sp
+If the `comment', or `address' fields need to contain `=' characters,
+those characters must either be escaped using a backslash character
+or the address must be inside doublequotes (`"').
+.sp
+Aliases are case insensitive so dave and Dave are both the same alias.
+.PP
+Finally, aliases can contain other aliases, and/or groups;
+.sp
+.nf
+	unix = Unix people = gurus, taylor, jonboy
+.fi
+' onto the next page, if you please
+.sp 3
+.SH FILES
+$HOME/.elm/aliases.text         alias source for user 
+.br
+$HOME/.elm/aliases.dir          alias dbz directory for user
+.br
+$HOME/.elm/aliases.pag          alias dbz hash file for user
+.br
+$HOME/.elm/aliases              alias data file for user
+.br
+/usr/local/lib/aliases.text     alias source for system
+.br
+/usr/local/lib/aliases.dir      alias dbz directory for system
+.br
+/usr/local/lib/aliases.pag      alias data hash table for system
+.br
+/usr/local/lib/aliases          alias data file for system
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+elm(1L), elmalias(1L), checkalias(1L), mail(1), mailx(1)
+.SH DIAGNOSTICS
+Newalias has a couple of descriptive error messages which
+don't need to be detailed here.  It is, however, worth
+noting that the
+.I checkalias
+program can be used to ensure that the aliases are in the
+proper order and are available for the 
+.I elm
+system.
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

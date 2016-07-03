@@ -1,0 +1,284 @@
+.TH GOPHERD.CONF 5
+.SH NAME
+gopherd.conf \- configuration file for gopherd(8)
+.SH DESCRIPTION
+.LP
+The
+.B gopherd.conf
+file contains a list of directives that alter the behaviour of the
+.BR gopherd (8)
+server.  It is composed of lines of the form:
+.IP
+.I
+Token:\ Value
+.LP
+Tokens are case insensitive and the value field will change, depending on the
+token.  A pound sign at the beginning of a line signifies a comment line.
+
+.I
+Quick pseudo grammer
+
+.IP
+Admin:\ <Administrator\ Name/Info>
+AdminEmail:\ <Email\ address\ of\ Administrator\ of\ the\ server>
+Site:\ <Name\ of\ site>
+Org:\ <Organization\ or\ group\ owning\ the\ site>
+Loc:\ <city,\ state,\ country>
+Geog:\ <latitude>\ <longitude>
+Language:\ <default\ language>
+hostalias:\ <DNS\ alias\ name>
+viewext:\ <extension>\ <Gophertype>\ <Prefix>\ <Gopher+Type>\ [Langauge]
+ignore:\ <extension>
+blockext:\ <extension>\ <Blockname>
+Bummermsg:\ <message>
+site:\ <domain\ name|ip\ fragment|"default">\ <[!](browse|read|search)+>
+decoder: <extension> <decoderprogram>
+.LP
+
+The following tokens are recognized
+.TP 12
+.I hostalias:
+changes the hostname that is returned by the server.  This is useful
+when the gopher server is defined by a CNAME record in the DNS system.
+.TP
+.I Admin:
+The name of the administrator.  It may contain a name, a phone number,
+etc.
+.TP
+.I AdminEmail:
+An email address where the administrator can be reached.
+.TP
+.I Site:
+The name of the site, such as
+.B Turnip Research and Development Labs
+.TP
+.I Loc:
+The physical location of the site, put stuff like the City, State, and
+country in this field.
+.TP
+.I Geog:
+The lattitude and longitude of the server location.  For instance, the
+entry for Minneapolis, MN, USA would be:
+.B 44 58 48 N 93 15 49 W
+.TP
+.I Language:
+The ANSI language of the site, as used by setlocale().  Here are some
+sample settings:
+.IP
+ Danish                  Da_DK
+ Dutch (Belgium)         Nl_BE
+ Dutch                   Nl_NL
+ English (Great Britian) En_GB
+ English (US)            En_US
+ Finnish                 Fi_FI
+ French (Belgium)        Fr_BE
+ French (Canada)         Fr_CA
+ French (Switzerland)    Fr_CH
+ French                  Fr_FR
+ German (Switzerland)    De_CH
+ German                  De_DE
+ Greek                   El_GR
+ Icelandic               Is_IS
+ Italian                 It_IT
+ Japanese                Jp_JP
+ Norwegian               No_NO
+ Portuguese              Pt_PT
+ Spanish                 Es_ES
+ Swedish                 Sv_SE
+ Turkish                 Tr_TR
+.TP
+.I viewext:
+maps a filename extension onto a particular gopher type.  The first
+parameter is a case insensitive extension like
+.B .gif.
+The next parameter is the single character gopher type (1,0,I,etc...)
+The third parameter is a prefix that will be appended to the normal
+filename path.  The fourth parameter is the gopher+ view attribute, such
+as
+.B image/gif
+The optional fifth parameter is a language to use for the file instead
+of the default language.
+.TP
+.I ignore:
+specifies a filename extension to ignore completely.  Files matching
+the ignore criteria are never presented to the gopher user.  However,
+ignoring files does not protect them from prying eyes.
+.TP
+.I Blockext:
+specifies that a file with a particular extension is to be mapped to a
+specific gopher+ attribute block.  For instance the line:
+.B Blockext: .abstract ABSTRACT 
+would map all files with the extension .abstract into an abstract for
+the file without the abstract extension.
+.TP
+.I Decoder:
+specifies that the given program will be run on the given extension when
+the file is retrieved.  This is most often used for compressed files.
+.TP
+.I BummerMsg: 
+specifies a message that will be presented to the client when access
+is denied.
+.TP
+.I access:
+allows you to set who can browse directories, read files, and search
+your system.  The first parameter is a domain name component (like
+.micro.umn.edu), a fragment of an IP address (like 129.42.172), or the
+special key "default"  The second parameter is a list of comma
+separated words defining the access for the particular match,
+optionally beginning with a negation character (!).  The three words
+that define access levels are "browse", "read", and "search".  For
+instance, to allow reading and browsing, but not searching specify
+"read,browse,!search" for the second parameter.
+
+If you're using the site access system, you'll want to set the default
+access level *first*.  All following entries inherit the default that
+you set.  For instance, if your default is "!read,!browse,!search' and
+you want to turn on browse access for a certain machine you can just
+specify "browse", not "!read,browse,!search"
+
+.LP
+
+.I
+Sample gopherd.conf file
+
+.IP
+ #
+ # The name we want to be known as
+ #
+ hostalias: gopher.turnip.com
+
+ # Administrator
+
+ Admin: Bob Bagel, Turnip Postmaster and Gopher support 1-800-555-1212 
+ AdminEmail: gopher@turnip.com
+
+ #
+ # Site description
+ #
+
+ Site: Turnip Research and Development labs
+ Org: Turnip Incorporated
+ Loc: Minneapolis, MN, USA
+ Geog: 44 58 48 N 93 15 49 W
+ Language: En_US
+
+ #
+ # Extension mapping
+ #
+
+ # Different Languages
+ viewext: .txt.spanish 0 0 Text/plain Es_ES
+ viewext: .txt.german 0 0 Text/plain De_DE
+ viewext: .txt.french 0 0 Text/plain Fr_FR
+
+ viewext: .hqx 4 0 application/mac-binhex40
+
+ #
+ # Telnet file formats
+ #
+ viewext: .telnet 8 0 terminal/telnet
+ viewext: .tn3270 T 0 terminal/tn3270
+
+ #
+ # Graphics file formats
+ #
+ viewext: .gif I 9 image/gif
+ viewext: .pcx I 9 image/pcx
+ viewext: .pict I 9 image/PICT
+ viewext: .tiff I 9 image/TIFF
+ viewext: .jpg I 9 image/JPEG
+ viewext: .ppm I 9 image/ppm
+ viewext: .pgm I 9 image/pgm
+ viewext: .pbm I 9 image/pgm
+
+ #
+ # Sounds
+ #
+ viewext: .au s s audio/mulaw
+ viewext: .snd s s audio/mulaw
+ viewext: .wav s s audio/wave
+
+ #
+ # Movies
+ #
+ viewext: .quicktime 9 9 video/quicktime
+ viewext: .mpg 9 9 video/mpeg
+
+ #
+ # Binary files
+ #
+ viewext: .tar.Z 9 9 file/tar.Z
+ viewext: .tar 9 9 file/tar
+ viewext: .zip 5 9 file/PKzip
+ viewext: .zoo 5 9 file/Zoo
+ viewext: .arc 5 9 file/Arc
+ viewext: .lzh 5 9 file/Lharc
+ viewext: .exe 5 9 file/PCEXE
+ viewext: .mcb 9 9 file/MacBinary
+ viewext: .uu 9 9 file/uuencode
+
+
+ #
+ # Various forms of text
+ #
+ viewext: .ps 0 0 Text/postscript
+ viewext: .tex 0 0 Text/tex
+ viewext: .dvi 0 9 Text/dvi
+ viewext: .troff 0 0 Text/troff
+ viewext: .unicode 0 0 Text/unicode
+ viewext: .sjis 0 0 Text/sjis
+ viewext: .jis 0 0 Text/jis
+ viewext: .euc 0 0 Text/jis
+ viewext: .big5 0 0 Text/big-5
+ viewext: .rtf 0 0 Text/rtf
+ viewext: .word5 0 0 Text/MSWord5
+ viewext: .word4 0 0 Text/MSWord4
+ viewext: .mw 0 0 Text/MacWrite
+ viewext: .wp 0 0 Text/WordPerfect51
+
+ viewext: .smell 9 9 smell/funky
+
+ #
+ #
+ viewext: .mindex 7 mindex: Directory
+ viewext: .src 7 waissrc: Directory
+ viewext: .html h GET /h application/WWW
+
+ #
+ # Map files to certain blocks
+ # 
+
+ blockext: .abstract ABSTRACT
+ blockext: .ask ASK
+
+
+ #
+ # Error message generated for non local hosts
+ #
+ Bummermsg: Sorry no access for non turnipheads.
+
+ # Don't allow anyone to read or browse us, 
+ # anyone can search though.
+ access: default         !browse,!read,search
+ #
+ # allow any hostname that ends with 
+ # turnip.com to browse and read
+ #
+ access: .turnip.com 	browse,read
+ #
+ # Allow anyone on a class C network 
+ # (starting with 192) to browse
+ #
+ access: 192.		browse
+ #
+ # Allow anyone on the 128.101.193 network 
+ # to read from us.
+ #
+ access: 128.101.193  	read
+ #
+ # Turn off searching for these bozos
+ # they can't do anything
+ #
+ access: bozo.org	!search
+
+.

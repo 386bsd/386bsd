@@ -1,0 +1,14 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/Imakefile,v 1.3 1993/03/04 13:03:12 dawes Exp $
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SUBDIRS = X386Vga2Drivers
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2)
+
+#if X386LinkKit
+#include <LinkKit.tmpl>
+#endif

@@ -1,0 +1,99 @@
+.TH ISPELL 1
+.SH NAME
+ispell \- Correct spelling for a file
+.SH SYNOPSIS
+.B ispell
+[ file ... ]
+.br
+.B ispell
+[
+.B \-l
+|
+.B \-D
+|
+.B \-E
+]
+.br
+.B spell
+[ +local_file ] [ file ...]
+.SH DESCRIPTION
+.PP
+Ispell
+is a program that helps you to correct typos in a file, and to find
+the correct spelling of words.  When presented with a word that is not
+in the dictionary, ispell attempts to find near misses that might
+include the word you meant.
+.PP
+The best way to use ispell is with GNU EMACS.  For documentation about
+this mode, see the info topic "ispell".
+.PP
+Ispell can also be used by itself, and in this case
+the most common usage is "ispell filename".
+If ispell finds a word that is not in the dictionary, 
+it is printed at the top of the screen.  Ispell then checks the
+dictionary for near misses \- words that differ only by a single
+letter, a missing or extra letter, or a pair of transposed letters.
+Any that are found are printed on the following lines,
+and finally, two lines of context
+containing the word are printed at the bottom of the screen.  If your
+terminal can type in reverse video, the word itself is highlighted.
+.PP
+If you think the word is correct as it
+stands, you can type either "Space" to accept it this one time, "A" to
+accept it for the rest of this file, or "I" to accept it and put it in
+your private dictionary.  If one of the near misses is the word you
+want, type the corresponding number.  Finally,
+you can type "R" and you will be prompted for a
+replacement word.  The string you type will be broken into words, and
+each one will also be checked.  You can also type "?" for help.
+.PP
+If ispell is started with no arguments, it enters a loop reading words
+from the standard input, and printing messages about them on the
+standard output.  You can use this mode to find the spelling of a
+problem word.  For example:
+.PP
+You can print out the system dictionary.  Use -D if you want flags, or 
+-E if you want the words expanded.
+.sp 1
+.RS
+.nf
+% ispell
+word: independant
+how about: independent
+word: ^D
+.RE
+.fi
+.PP
+The
+.B \-l
+or "list" option to ispell is used to produce a list
+of misspelled words from the standard input.  This mode is
+compatible with the traditional spell program, except that the
+output is not sorted.
+.PP
+There are several other options provided so that other programs can
+use ispell.  See the documentation in the ispell source directory for
+details. 
+.PP
+If ispell is executed with the name `spell', it attempts to be compatible
+with the traditional spell program.  You can also get this behavior
+with the 
+.B \-u
+flag.  In this case, the list of files (or standard input) is checked,
+and an alphabetized list of misspellings is produced on the standard
+output.
+.SH FILES
+.PD 0
+.TP 40
+/usr/lib/ispell.dict
+System dictionary
+.TP 40
+$HOME/ispell.words
+Private dictionary
+.br
+.PD
+.SH SEE ALSO
+ispell.texinfo
+.SH AUTHOR
+Pace Willisson (pace@mit-vax pace@eddie.mit.edu)
+

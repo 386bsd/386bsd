@@ -1,0 +1,28 @@
+XCOMM $XFree86: mit/server/ddx/x386/bdm2/drivers/sigma/Imakefile,v 2.0 1993/09/10 08:11:44 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = sigmadriv.c sigmabank.s
+
+OBJS = sigmadriv.o sigmabank.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../os-support -I../../bdm \
+           -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(sigma, $(OBJS))
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/bdm2/sigma)
+InstallLinkKitNonExecFile(sigmaHW.h,$(LINKKITDIR)/drivers/bdm2/sigma)
+InstallLinkKitNonExecFile(sigmaPorts.h,$(LINKKITDIR)/drivers/bdm2/sigma)
+InstallLinkKitNonExecFile(sigmabank.s,$(LINKKITDIR)/drivers/bdm2/sigma)
+InstallLinkKitNonExecFile(sigmadriv.c,$(LINKKITDIR)/drivers/bdm2/sigma)
+
+DependTarget()
+

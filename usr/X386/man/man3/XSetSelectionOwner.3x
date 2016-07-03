@@ -1,0 +1,262 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetSelectionOwner 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetSelectionOwner, XGetSelectionOwner, XConvertSelection \- manipulate window selection
+.SH SYNTAX
+.\" $Header: XSetSelOwner.f,v 1.1 88/02/26 10:03:38 mento Exp $
+XSetSelectionOwner\^(\^\fIdisplay\fP, \fIselection\fP\^, \fIowner\fP\^, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Atom \fIselection\fP\^;
+.br
+      Window \fIowner\fP\^; 
+.br
+      Time \fItime\fP\^;
+.LP
+.\" $Header: XGetSelOwner.f,v 1.1 88/02/26 10:00:59 mento Exp $
+Window XGetSelectionOwner\^(\^\fIdisplay\fP, \fIselection\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Atom \fIselection\fP\^;
+.LP
+.\" $Header: XConvertSel.f,v 1.1 88/02/26 09:58:58 mento Exp $
+XConvertSelection\^(\^\fIdisplay\fP, \fIselection\fP\^, \fItarget\fP\^, \fIproperty\fP\^, \fIrequestor\fP\^, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Atom \fIselection\fP\^, \fItarget\fP\^;
+.br
+      Atom \fIproperty\fP\^;
+.br
+      Window \fIrequestor\fP\^;
+.br
+      Time \fItime\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: owner.a,v 1.2 88/05/08 12:15:34 mento Exp $
+.IP \fIowner\fP 1i
+Specifies the owner of the specified selection atom.
+You can pass a window or
+.ZN None .
+.\" $Header: property.a,v 1.2 88/04/05 15:19:43 mento Exp $
+.IP \fIproperty\fP 1i
+Specifies the property name.
+You also can pass
+.ZN None .
+.\" $Header: requestor.a,v 1.1 88/02/26 10:30:53 mento Exp $
+.IP \fIrequestor\fP 1i
+Specifies the requestor.
+.\" $Header: selection.a,v 1.1 88/02/26 10:31:11 mento Exp $
+.IP \fIselection\fP 1i
+Specifies the selection atom.
+.\" $Header: target.a,v 1.1 88/02/26 10:31:37 mento Exp $
+.IP \fItarget\fP 1i
+Specifies the target atom.
+.IP \fItime\fP 1i
+Specifies the time.
+You can pass either a timestamp or
+.ZN CurrentTime .
+.SH DESCRIPTION
+.\" $Header: XSetSelOwner.d,v 1.3 88/06/11 07:53:34 mento Exp $
+The
+.ZN XSetSelectionOwner
+function changes the owner and last-change time for the specified selection
+and has no effect if the specified time is earlier than the current
+last-change time of the specified selection 
+or is later than the current X server time.
+Otherwise, the last-change time is set to the specified time,
+with
+.ZN CurrentTime
+replaced by the current server time.
+If the owner window is specified as
+.ZN None ,
+then the owner of the selection becomes 
+.ZN None
+(that is, no owner).
+Otherwise, the owner of the selection becomes the client executing
+the request.
+.LP 
+If the new owner (whether a client or
+.ZN None )
+is not
+the same as the current owner of the selection and the current
+owner is not
+.ZN None ,
+the current owner is sent a 
+.ZN SelectionClear 
+event.
+If the client that is the owner of a selection is later
+terminated (that is, its connection is closed)
+or if the owner window it has specified in the request is later
+destroyed,
+the owner of the selection automatically
+reverts to
+.ZN None ,
+but the last-change time is not affected.
+The selection atom is uninterpreted by the X server.
+.ZN XGetSelectionOwner
+returns the owner window, which is reported in 
+.ZN SelectionRequest
+and
+.ZN SelectionClear
+events.
+Selections are global to the X server.
+.LP
+.ZN XSetSelectionOwner
+can generate
+.ZN BadAtom
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XGetSelOwner.d,v 1.2 88/06/11 07:51:28 mento Exp $
+The
+.ZN XGetSelectionOwner
+function
+returns the window ID associated with the window that currently owns the
+specified selection.
+If no selection was specified, the function returns the constant
+.ZN None .
+If
+.ZN None
+is returned,
+there is no owner for the selection.
+.LP
+.ZN XGetSelectionOwner
+can generate a
+.ZN BadAtom 
+error.
+.LP
+.\" $Header: XConvertSel.d,v 1.3 88/05/08 12:25:35 mento Exp $
+.ZN XConvertSelection
+requests that the specified selection be converted to the specified target
+type:
+.IP \(bu 5
+If the specified selection has an owner, the X server sends a
+.ZN SelectionRequest
+event to that owner.
+.IP \(bu 5
+If no owner for the specified
+selection exists, the X server generates a
+.ZN SelectionNotify
+event to the
+requestor with property
+.ZN None .
+.LP
+The arguments are passed on unchanged in either of the events.
+There are two predefined selection atoms: PRIMARY and SECONDARY.
+.LP
+.ZN XConvertSelection
+can generate
+.ZN BadAtom
+and
+.ZN BadWindow 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badatom.e,v 1.1 87/09/04 08:22:55 mento Exp $
+.TP 1i
+.ZN BadAtom
+A value for an Atom argument does not name a defined Atom.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+\fI\*(xL\fP

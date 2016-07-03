@@ -1,0 +1,34 @@
+.TH FSTOBDF 1 "Release 5" "X Version 11"
+.SH NAME
+fstobdf - BDF font generator
+.SH SYNOPSIS
+.B "fstobdf"
+-fn \fIfontname\fP [-option ...]
+.SH DESCRIPTION
+The \fIfstobdf\fP program reads a font from a font server and prints a BDF
+file on the standard output that may be used to recreate the font.
+This is useful in testing servers, debugging font metrics, and reproducing 
+lost BDF files.
+.SH OPTIONS
+.TP 8
+.B \-server \fIservername\fP
+This option specifies the server from which the font should be read.
+.TP 8
+.B \-fn \fIfontname\fP
+This option specifies the font for which a BDF file should be generated.
+.SH "SEE ALSO"
+fs(1), bdftosnf(1), fslsfonts(1), xtobdf(1)
+.SH COPYRIGHT
+Copyright 1990, Network Computing Devices
+.br
+.sp
+Copyright 1990, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Olaf Brandt, Network Computing Devices
+.br
+Dave Lemke, Network Computing Devices
+.br
+.sp
+Jim Fulton, MIT X Consortium

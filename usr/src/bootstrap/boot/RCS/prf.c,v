@@ -1,0 +1,50 @@
+head     1.1;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @ * @;
+
+
+1.1
+date     94.10.20.16.45.30;  author root;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*
+ * Copyright (c) 1989 William F. Jolitz.
+ * 386BSD Copyright Restrictions Apply. All Other Rights Reserved.
+ *
+ * $Id$
+ * dummy interface functions.
+ */
+
+#include "sys/types.h"
+
+putchar(c)
+char c;
+{
+        if (c == '\n')
+		sput('\r');
+	sput(c);
+	return(0);
+}
+
+wait(n) {
+	int v;
+
+	while(n-- /* && (v = scankbd()) == 0*/);
+	if (v) kbdreset();
+}
+@

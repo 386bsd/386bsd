@@ -1,0 +1,250 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XStoreBytes 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XStoreBytes, XStoreBuffer, XFetchBytes, XFetchBuffer, XRotateBuffers \- manipulate cut and paste buffers
+.SH SYNTAX
+.\" $Header: XStoreBytes.f,v 1.2 88/04/07 17:21:31 mento Exp $
+XStoreBytes\^(\^\fIdisplay\fP, \fIbytes\fP\^, \fInbytes\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIbytes\fP\^;
+.br
+      int \^\fInbytes\fP\^;
+.br
+.LP
+.\" $Header: XStoreBuffer.f,v 1.2 88/04/07 17:22:43 mento Exp $
+XStoreBuffer\^(\^\fIdisplay\fP, \fIbytes\fP\^, \fInbytes\fP\^, \fIbuffer\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIbytes\fP\^;
+.br
+      int \^\fInbytes\fP\^;
+.br
+      int \fIbuffer\fP\^;
+.LP
+.\" $Header: XFetchBytes.f,v 1.1 88/02/26 10:00:00 mento Exp $
+char *XFetchBytes\^(\^\fIdisplay\fP, \fInbytes_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int *\fInbytes_return\fP\^;
+.LP
+.\" $Header: XFetchBuffer.f,v 1.2 88/04/07 17:31:40 mento Exp $
+char *XFetchBuffer\^(\^\fIdisplay\fP, \fInbytes_return\fP\^, \fIbuffer\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int *\fInbytes_return\fP\^;
+.br
+      int \fIbuffer\fP\^;
+.LP
+.\" $Header: XRotateBufs.f,v 1.1 88/02/26 10:02:45 mento Exp $
+XRotateBuffers\^(\^\fIdisplay\fP, \fIrotate\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fIrotate\fP\^;
+.SH ARGUMENTS
+.ds Fn in which you want to store the bytes \
+or from which you want the stored data returned
+.\" $Header: buffer.a,v 1.4 88/08/04 11:02:57 mento Exp $
+.IP \fIbuffer\fP 1i
+Specifies the buffer \*(Fn.
+.\" $Header: bytes.a,v 1.2 88/05/20 05:55:18 mento Exp $
+.IP \fIbytes\fP 1i
+Specifies the bytes, which are not necessarily ASCII or null-terminated.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fInbytes\fP 1i
+Specifies the number of bytes to be stored.
+.\" $Header: nbytes.a,v 1.2 88/05/20 05:59:12 mento Exp $
+.IP \fInbytes_return\fP 1i
+Returns the number of bytes in the buffer.
+.\" $Header: rotate.a,v 1.2 88/05/20 06:01:18 mento Exp $
+.IP \fIrotate\fP 1i
+Specifies how much to rotate the cut buffers.
+.SH DESCRIPTION
+.\" $Header: XStoreBytes.d,v 1.2 88/06/11 07:53:46 mento Exp $
+Note that the data can have embedded null characters,
+and need not be null terminated.
+The cut buffer's contents can be retrieved later by
+any client calling
+.ZN XFetchBytes .
+.LP
+.ZN XStoreBytes
+can generate a
+.ZN BadAlloc
+error.
+.LP
+.\" $Header: XStoreBuffer.d,v 1.2 88/06/11 07:53:45 mento Exp $
+If an invalid buffer is specified, the call has no effect.
+Note that the data can have embedded null characters,
+and need not be null terminated.
+.LP
+.ZN XStoreBuffer
+can generate a
+.ZN BadAlloc
+error.
+.LP
+.\" $Header: XFetchBytes.d,v 1.3 88/08/20 10:22:26 mento Exp $
+The
+.ZN XFetchBytes
+function
+returns the number of bytes in the nbytes_return argument,
+if the buffer contains data.
+Otherwise, the function
+returns NULL and sets nbytes to 0.
+The appropriate amount of storage is allocated and the pointer returned.
+The client must free this storage when finished with it by calling
+.ZN XFree .
+.LP
+.\" $Header: XFetchBuffer.d,v 1.3 88/08/20 10:23:20 mento Exp $
+The
+.ZN XFetchBuffer
+function returns zero to the nbytes_return argument 
+if there is no data in the buffer or if an invalid
+buffer is specified.
+.LP
+.ZN XFetchBuffer
+can generate a
+.ZN BadValue 
+error.
+.LP
+.\" $Header: XRotateBufs.d,v 1.3 88/06/11 07:52:52 mento Exp $
+The
+.ZN XRotateBuffers
+function rotates the cut
+buffers, such that buffer 0 becomes buffer n, 
+buffer 1 becomes n + 1 mod 8, and so on.
+This cut buffer numbering is global to the display.
+Note that
+.ZN XRotateBuffers
+generates
+.ZN BadMatch
+errors if any of the eight buffers have not been created.
+.LP
+.ZN XRotateBuffers
+can generate a
+.ZN BadMatch
+error.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badatom.e,v 1.1 87/09/04 08:22:55 mento Exp $
+.TP 1i
+.ZN BadAtom
+A value for an Atom argument does not name a defined Atom.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XFree(3X11)
+.br
+\fI\*(xL\fP

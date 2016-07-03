@@ -1,0 +1,171 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH ELM 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+elm - an interactive mail system
+.SH SYNOPSIS
+.B elm
+[
+.B \-achkKmrtwz
+] [
+.B \-f
+.I "alternate-folder"
+] [
+.B \-d
+.I debug-level
+]
+.br
+.B elm 
+[
+.B \-s 
+.I subject
+]
+.I "list of aliases or addresses"
+.PP
+.SH DESCRIPTION
+.I Elm\^
+is an interactive screen-oriented mailer program that supersedes 
+.I mail
+and 
+.I mailx.
+.PP
+There are three main ways to use the \fBelm\fR mailer.  One way
+to use the mailer is to specify a list of addresses on the
+command line when the mailer is invoked.  This will allow sending
+of a single message to the specified recipients with all the
+options usually available in the \fBelm\fR system itself. For example,
+the command
+.nf
+
+	elm -s testing joe
+
+.fi
+would initiate the sending of a message to the alias joe with the subject
+"testing" indicated and
+would put you into an editor for you to enter the text of the message.
+If the subject flag and argument were not present, you would be prompted
+for a message subject.
+.PP
+The second way, used most commonly when transmitting files and such,
+is to specify the subject of the message and the recipients using
+the command line and redirect a file as standard input.  For example,
+the command 
+.nf
+
+	elm -s testing joe < test.c 
+
+.fi
+would mail a copy of the
+file test.c to alias joe, with the subject "testing" indicated.
+The subject flag and argument are optional.
+.PP
+The third way, elm is invoked
+with neither subject nor addresses specified on the command line and
+without standard input redirected.
+You can then read any messages in your incoming mailbox (or specified
+folder), reply to messages in the mailbox, mail messages, etc.
+.PP
+Options are:
+.TP 1.0i
+.B "  -a"
+Arrow - force the arrow cursor (instead of the inverse bar)
+.TP
+.B "  -c"
+Checkalias - expand the following aliases and return.
+.TP
+.B "  -d \fIlevel\fR  "
+Debug - set specified debug level - Output to "$HOME/ELM:debug.info"
+.TP
+.B "  -f \fIalternative-folder\fR  "
+Folder - read folder (specified) rather than the incoming mailbox.
+.TP
+.B "  -h"
+Help - give a list of starting options.
+.TP
+.B "  -i \fIfile\fR  "
+Include - include prepared file in edit buffer for sending.
+.TP
+.B "  -?"
+Synonymous with the "-h" option.
+.TP
+.B "  -k"
+Keypad - force knowledge of HP terminal keyboard, to allow
+the use of the NEXT, PREV and HOME/SHIFT-HOME keys.
+.TP
+.B "  -K"
+Keypad + softkeys - enable use of softkeys on HP terminals only.
+.TP
+.B "  -m"
+Menu off - Use the extra lines for more message headers.
+.TP
+.B "  -s \fIsubj\fR  "
+Subject - specify subject for message to mail.
+.TP
+.B "  -t"
+tite - turn off usage of the termcap/terminfo ti/te sequence.
+.TP
+.B "  -v"
+Version - print version and configuration information.
+.TP
+.B "  -z"
+Zero - don't enter \fBElm\fR if no mail is pending.
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+The Elm documentation package, including:
+.I
+The Elm Users Guide,
+The Elm Reference Guide,
+The Elm Alias System Users Guide,
+The Elm Forms Mode Guide,
+The Elm Filter Guide,
+The Elm Configuration Guide\fR
+.sp 
+.br
+checkalias(1L), frm(1L), mail(1), mailx(1), newalias(1L), printmail(1L), readmsg(1L)
+.SH FILES
+/usr/local/lib/elm-help.*         help files
+.br
+/usr/local/lib/aliases.text       system alias source
+.br
+/usr/local/lib/aliases.dir        system alias dbz directory table
+.br
+/usr/local/lib/aliases.pag        system alias dbz hash table
+.br
+/usr/local/lib/aliases            system alias data table
+.br
+.br
+/usr/local/lib/aliases.hash       system alias hash table
+.br
+/usr/local/lib/aliases.data       system alias data table
+.br
+$HOME/.elm/aliases.text           user alias source
+.br
+$HOME/.elm/aliases.dir            user alias dbz directory table
+.br
+$HOME/.elm/aliases.pag            user alias dbz hash table
+.br
+$HOME/.elm/aliases                user alias data table
+.br
+$HOME/.elm/elmrc                  customized mailer parameters
+.br
+$HOME/.elm/elmheaders             customized message headers
+.br
+/tmp/snd.$$                       outgoing mail edit buffer
+.br
+/tmp/mbox.\fIlogname\fR            temporary mailbox
+.br
+$HOME/ELM:debug.info              Debug output if turned on
+.SH DIAGNOSTICS
+Should know about keyboards/softkey terminals other than HP.  (If only 
+termcap were that powerful!)
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

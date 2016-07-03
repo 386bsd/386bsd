@@ -1,0 +1,43 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH PRINTMAIL 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+printmail - format mail in a readable fashion for printing
+.SH SYNOPSIS
+.B printmail
+{-p}
+{filename}
+.SH DESCRIPTION
+.I Printmail
+copies all messages from either the file specified or the
+default user mailbox with each message separated by a line of dashes.
+With the
+.B \-p
+option, the messages are separated by a form feed instead.
+.sp
+In fact, this command is actually just a slightly differently
+formatted call to \fIreadmsg\fR:
+.nf
+	readmsg {-p} {-f \fIfilename\fR} *
+.fi
+which does all the work here.
+.SH EXAMPLE
+A typical usage of this command is;
+.nf
+
+	printmail | lpr 
+
+.fi
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+readmsg(1L)
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

@@ -1,0 +1,1 @@
+gs -q -sDEVICE=bj10e -r180 -dNOPAUSE -- gslp.ps $*

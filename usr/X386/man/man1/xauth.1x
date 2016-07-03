@@ -1,0 +1,157 @@
+.TH XAUTH 1 "Release 5" "X Version 11"
+.SH NAME
+xauth - X authority file utility
+.SH SYNOPSIS
+.B xauth
+[-f \fIauthfile\fP] [-vqib] [\fIcommand arg...\fP]
+.SH DESCRIPTION
+.PP
+The \fIxauth\fP program is used to edit and display the authorization 
+information used in connecting to the X server.  This program is usually
+to extract authorization records from one machine and merge them in on 
+another (as is the case when using remote logins or to grant access to
+other users).  Commands (described below) may be entered interactively,
+on the \fIxauth\fP command line, or in scripts.  Note that this program
+does \fBnot\fP contact the X server.
+.SH OPTIONS
+The following options may be used with \fIxauth\fP.  They may be given 
+individually (e.g. \fI\-q \-i\fP) or may combined (e.g. \fI-qi\fP):
+.TP 8
+.B "\-f \fIauthfile\fP"
+This option specifies the name of the authority file to use.  By default,
+\fIxauth\fP will use the file specified by the XAUTHORITY environment variable
+or \fI\.Xauthority\fP in the user's home directory.
+.TP 8
+.B \-q
+This option indicates that \fIxauth\fP should operate quietly and not print
+unsolicited status messages.  This is the default if an \fIxauth\fP command is
+is given on the command line or if the standard output is not directed to a
+terminal.
+.TP 8
+.B \-v
+This option indicates that \fIxauth\fP should operate verbosely and print
+status messages indicating the results of various operations (e.g. how many
+records have been read in or written out).  This is the default if \fIxauth\fP
+is reading commands from its standard input and its standard output is
+directed to a terminal.
+.TP 8
+.B \-i
+This option indicates that \fIxauth\fP should ignore any authority file
+locks.  Normally, \fIxauth\fP will refuse to read or edit any authority files
+that have been locked by other programs (usually \fIxdm\fP or another 
+\fIxauth\fP).
+.TP 8
+.B \-b
+This option indicates that \fIxauth\fP should attempt to break any authority
+file locks before proceeding and should only be used to clean up stale locks.
+.SH COMMANDS
+The following commands may be used to manipulate authority files:
+.TP 8
+.B "add \fIdisplayname protocolname hexkey"
+An authorization entry for the indicated display using the given protocol
+and key data is added to the authorization file.  The data is specified as
+an even-lengthed string of hexadecimal digits, each pair representing 
+one octet.  The first digit of each pair gives the most significant 4 bits
+of the octet and the second digit of the pairgives the least significant 4
+bits.  For example, a 32 character hexkey would represent a 128-bit value.
+A protocol name consisting of just a 
+single period is treated as an abbreviation for \fIMIT-MAGIC-COOKIE-1\fP.
+.TP 8
+.B "[n]extract \fIfilename displayname..."
+Authorization entries for each of the specified displays are written to the 
+indicated file.  If the \fInextract\fP command is used, the entries are written
+in a numeric format suitable for non-binary transmission (such as secure
+electronic mail).  The extracted entries can be read back in using the 
+\fImerge\fP and \fInmerge\fP commands.  If the the filename consists of 
+just a single dash, the entries will be written to the standard output.
+.TP 8
+.B "[n]list \fR[\fIdisplayname\fP...]"
+Authorization entries for each of the specified displays (or all if no
+displays are named) are printed on the standard output.  If the \fInlist\fP
+command is used, entries will be shown in the numeric format used by 
+the \fInextract\fP command; otherwise, they are shown in a textual format.
+Key data is always displayed in the hexadecimal format given in the
+description of the \fIadd\fP command.
+.TP 8
+.B "[n]merge \fR[\fIfilename\fP...]"
+Authorization entries are read from the specified files and are merged into
+the authorization database, superceding any matching existing entries. If
+the \fInmerge\fP command is used, the numeric format given in the description
+of the \fIextract\fP command is used.  If a filename consists of just a single
+dash, the standard input will be read if it hasn't been read before.
+.TP 8
+.B "remove \fIdisplayname\fR..."
+Authorization entries matching the specified displays are removed from the
+authority file.
+.TP 8
+.B "source \fIfilename"
+The specified file is treated as a script containing \fIxauth\fP commands
+to execute.  Blank lines and lines beginning with a sharp sign (#) are 
+ignored.  A single dash may be used to indicate the standard input, if it
+hasn't already been read.
+.TP 8
+.B "info"
+Information describing the authorization file, whether or not any changes
+have been made, and from where \fIxauth\fP commands are being read
+is printed on the standard output. 
+.TP 8
+.B "exit"
+If any modifications have been made, the authority file is written out (if
+allowed), and the program exits.  An end of file is treated as an implicit
+\fIexit\fP command.
+.TP 8
+.B "quit"
+The program exits, ignoring any modifications.  This may also be accomplished
+by pressing the interrupt character.
+.TP 8
+.B "help [\fIstring\fP]"
+A description of all commands that begin with the given string (or all
+commands if no string is given) is printed on the standard output.
+.TP 8
+.B "?"
+A short list of the valid commands is printed on the standard output.
+.SH "DISPLAY NAMES"
+Display names for the \fIadd\fP, \fI[n]extract\fP, \fI[n]list\fP,
+\fI[n]merge\fP, and \fIremove\fP commands use the same format as the
+DISPLAY environment variable and the common \fI-display\fP command line
+argument.  Display-specific information (such as the screen number)
+is unnecessary and will be ignored.
+Same-machine connections (such as local-host sockets,
+shared memory, and the Internet Protocol hostname \fIlocalhost\fP) are 
+referred to as \fIhostname\fP/unix:\fIdisplaynumber\fP so that
+local entries for different machines may be stored in one authority file.
+.SH EXAMPLE
+.PP
+The most common use for \fIxauth\fP is to extract the entry for the 
+current display, copy it to another machine, and merge it into the 
+user's authority file on the remote machine:
+.sp
+.nf
+        %  xauth extract - $DISPLAY | rsh other xauth merge -
+.fi
+.SH ENVIRONMENT
+This \fIxauth\fP program uses the following environment variables:
+.TP 8
+.B XAUTHORITY
+to get the name of the authority file to use if the \fI\-f\fP option isn't
+used.  If this variable is not set, \fIxauth\fP will use \fI.Xauthority\fP
+in the user's home directory.
+.TP 8
+.B HOME
+to get the user's home directory if XAUTHORITY isn't defined.
+.SH BUGS
+.PP
+Users that have unsecure networks should take care to use encrypted 
+file transfer mechanisms to copy authorization entries between machines.  
+Similarly, the \fIMIT-MAGIC-COOKIE-1\fP protocol is not very useful in
+unsecure environments.  Sites that are interested in additional security
+may need to use encrypted authorization mechanisms such as Kerberos.
+.PP
+Spaces are currently not allowed in the protocol name.  Quoting could be
+added for the truly perverse.
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium

@@ -1,0 +1,137 @@
+.ds xL Programming with Xlib
+.TH XSelectExtensionEvent 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XSelectExtensionEvent, XGetSelectedExtensionEvents \- select extension events, get the list of currently selected extension events
+.SH SYNTAX
+XSelectExtensionEvent\^(\^\fIdisplay\fP, \fIw\fP\^, \fIevent_list\fP\^, \fIevent_count\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      XEventClass *\fIevent_list\fP\^;
+.br
+      int \fIevent_count\fP\^;
+.sp 
+XGetSelectedExtensionEvents\^(\^\fIdisplay\fP, \fIw\fP\^, \fIthis_client_event_count_return\fP\^, 
+.br
+\fIthis_client_event_list_return\fP\^, \fIall_clients_event_count_return\fP\^,
+\fIall_clients_event_list_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      int \fIthis_client_event_count_return\fP\^;
+.br
+      XEventClass *\fIthis_client_event_list_return\fP\^;
+.br
+      int \fIall_clients_event_count_return\fP\^;
+.br
+      XEventClass *\fIall_clients_event_list_return\fP\^;
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.ds Wi whose events you are interested in
+.TP 12
+.I w
+Specifies the window \*(Wi.
+.TP 12
+.I event_list
+Specifies the list of event classes that describe the events you are interested in.
+.TP 12
+.I event_count
+Specifies the count of event classes in the event list.
+.TP 12
+.I this_client_event_count_return
+Returns the count of event classes selected by this client.
+.TP 12
+.I this_client_event_list_return
+Returns a pointer to the list of event classes selected by this client.
+.TP 12
+.I all_clients_event_count_return
+Returns the count of event classes selected by all clients.
+.TP 12
+.I all_clients_event_list_return
+Returns a pointer to the list of event classes selected by all clients.
+.SH DESCRIPTION
+The
+\fIXSelectExtensionEvent\fP request causes the X server to report the 
+events associated with the 
+specified list of event classes.
+Initially, X will not report any of these events.
+Events are reported relative to a window.
+If a window is not interested in a device event, it usually propagates to
+the closest ancestor that is interested,
+unless the do_not_propagate mask prohibits it.
+.P
+Multiple clients can select for the same events on the same window
+with the following restrictions:
+.IP \(bu 5
+Multiple clients can select events on the same window because their event masks
+are disjoint.
+When the X server generates an event, it reports it
+to all interested clients.
+.IP \(bu 5
+Only one client at a time can select a 
+\fIDeviceButtonPress\fP 
+event with automatic passive grabbing enabled, which is associated with
+the event class \fIDeviceButtonPressGrab\fP.
+To receive \fIDeviceButtonPress\fP events without automatic passive
+grabbing, use event class \fIDeviceButtonPress\fP but do not specify
+event class \fIDeviceButtonPressGrab\fP.
+.P
+The server reports the event to all interested clients.
+.P
+Information contained in the \fIXDevice\fP structure returned by
+\fIXOpenDevice\fP is used
+by macros to obtain the event classes that clients use in making
+\fIXSelectExtensionEvent\fP requests.  Currently defined macros include
+\fIDeviceKeyPress\fP, \fIDeviceKeyRelease\fP, \fIDeviceButtonPress\fP, 
+\fIDeviceButtonRelese\fP, \fIDeviceMotionNotify\fP, \fIDeviceFocusIn\fP, 
+\fIDeviceFocusOut\fP, \fIProximityIn\fP, \fIProximityOut\fP, 
+\fIDeviceStateNotify\fP, \fIDeviceMappiingNotify\fP, 
+\fIChangeDeviceNotify\fP, \fIDevicePointerMotionHint\fP, 
+\fIDeviceButton1Motion\fP, \fIDeviceButton2Motion\fP, \fIDeviceButton3Motion\fP,
+\fIDeviceButton4Motion\fP, \fIDeviceButton5Motion\fP, \fIDeviceButtonMotion\fP,
+\fIDeviceOwnerGrabButton\fP, \fIDeviceButtonPressGrab\fP, and
+\fINoExtensionEvent\fP.
+.P
+To obtain the proper event class for a particular device, one of the above
+macros is invoked using the \fIXDevice\fP structure for that device.  For
+example, 
+.P
+.DS 0
+.TA .5i
+.ta .5i
+DeviceKeyPress (*device, type, eventclass);
+.DE
+.P
+returns the \fIDeviceKeyPress\fP event type and the eventclass for selecting
+\fIDeviceKeyPress\fP events from this device.
+.P
+\fIXSelectExtensionEvent\fP
+can generate a \fIBadWindow\fP or \fIBadClass\fP error.
+The
+\fIXGetSelectedExtensionEvents\fP
+request reports the extension events selected by this client and all clients
+for the specified window.  This request returns pointers to two 
+\fIXEventClass\fP
+arrays.  One lists the input extension events selected by this client from
+the specified window.  The other lists the event classes selected by all
+clients from the specified window.  You should use \fIXFree\fP to free these
+two arrays.
+.P
+\fIXGetSelectedExtensionEvents\fP
+can generate a \fIBadWindow\fP error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadWindow\fP
+A value for a Window argument does not name a defined Window.
+.TP 12
+\fIBadClass\fP
+A value for an XEventClass argument is invalid.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

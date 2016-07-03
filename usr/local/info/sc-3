@@ -1,0 +1,191 @@
+This is Info file ../info/sc, produced by Makeinfo-1.55 from the input
+file sc.texi.
+
+   This document describes the Supercite Version 3.1 package for citing
+and attributing the replies for various GNU Emacs mail and news reading
+subsystems.
+
+   Copyright (C) 1993 Barry A. Warsaw
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+
+File: sc,  Node: Key Index,  Next: Variable Index,  Prev: Command Index,  Up: Top
+
+Key Index
+*********
+
+* Menu:
+
+* C-c C-p:                              Post-yank Formatting Commands.
+* C-c C-p:                              Reply Buffer Initialization.
+* C-c C-p ?:                            Miscellaneous Commands.
+* C-c C-p c:                            Citing Commands.
+* C-c C-p C-b:                          Miscellaneous Commands.
+* C-c C-p C-p:                          Variable Toggling Shortcuts.
+* C-c C-p C-p:                          Filling Cited Text.
+* C-c C-p C-t:                          Variable Toggling Shortcuts.
+* C-c C-p f:                            Mail Field Commands.
+* C-c C-p f:                            Mail Field Commands.
+* C-c C-p g:                            Mail Field Commands.
+* C-c C-p h:                            Miscellaneous Commands.
+* C-c C-p i:                            Insertion Commands.
+* C-c C-p o:                            Miscellaneous Commands.
+* C-c C-p r:                            Citing Commands.
+* C-c C-p u:                            Citing Commands.
+* C-c C-p v:                            Miscellaneous Commands.
+* C-c C-p w:                            Insertion Commands.
+* C-c C-y:                              Usage Overview.
+* C-u:                                  Citing Commands.
+* f:                                    Usage Overview.
+* g:                                    Electric References.
+* j:                                    Electric References.
+* LFD:                                  Electric References.
+* n:                                    Electric References.
+* p:                                    Electric References.
+* q:                                    Electric References.
+* r:                                    Usage Overview.
+* RET:                                  Electric References.
+* s:                                    Electric References.
+* x:                                    Electric References.
+
+
+File: sc,  Node: Variable Index,  Prev: Key Index,  Up: Top
+
+Variable Index
+**************
+
+   Since all supercite variables are prepended with the string "`sc-'",
+each appears under its `sc-'VARIABLE name and its VARIABLE name.
+
+* Menu:
+
+* attrib-selection-list:                Version 3 Changes.
+* attrib-selection-list (sc-):          Attribution Preferences.
+* attrib-selection-list (sc-):          Attribution Preferences.
+* attribs-postselect-hook (sc-):        Anonymous Attributions.
+* attribs-preselect-hook (sc-):         Anonymous Attributions.
+* auto-fill-region-p (sc-):             Filling Cited Text.
+* blank-lines-after-headers (sc-):      Reply Buffer Initialization.
+* citation-delimiter (sc-):             Citation Elements.
+* citation-delimiter-regexp (sc-):      Recognizing Citations.
+* citation-leader (sc-):                Citation Elements.
+* citation-leader-regexp (sc-):         Recognizing Citations.
+* citation-nonnested-root-regexp (sc-): Recognizing Citations.
+* citation-root-regexp (sc-):           Recognizing Citations.
+* citation-separator (sc-):             Citation Elements.
+* citation-separator-regexp (sc-):      Recognizing Citations.
+* cite-blank-lines-p (sc-):             Reply Buffer Initialization.
+* cite-region-limit:                    Version 3 Changes.
+* cite-region-limit (sc-)b:             Reply Buffer Initialization.
+* confirm-always-p:                     Citing Commands.
+* confirm-always-p (sc-):               Reply Buffer Initialization.
+* confirm-always-p (sc-):               Anonymous Attributions.
+* confirm-always-p (sc-):               Citing Commands.
+* default-attribution (sc-):            Anonymous Attributions.
+* default-author-name (sc-):            Anonymous Attributions.
+* downcase-p (sc-):                     Anonymous Attributions.
+* electric-circular-p (sc-):            Electric References.
+* electric-mode-hook (sc-):             Electric References.
+* electric-references-p (sc-):          Electric References.
+* fill-prefix:                          What Supercite Does.
+* fill-prefix:                          Filling Cited Text.
+* fixup-whitespace-p (sc-):             Filling Cited Text.
+* gnews-ready-hook:                     GNEWS with any Emacsen.
+* hyperb:version:                       Overloading for Non-conforming MUAs.
+* load-hook (sc-):                      Filling Cited Text.
+* load-hook (sc-):                      Getting Connected.
+* mail-citation-hook:                   Overloading for Non-conforming MUAs.
+* mail-citation-hook:                   Emacs 19 MUAs.
+* mail-citation-hook:                   VM with any Emacsen.
+* mail-citation-hook:                   Hints to MUA Authors.
+* mail-citation-hook:                   Emacs 18 MUAs.
+* mail-header-separator:                What Supercite Does Not Do.
+* mail-warn-if-non-rfc822-p (sc-):      Reply Buffer Initialization.
+* mail-yank-hooks:                      Hints to MUA Authors.
+* mail-yank-hooks:                      VM with any Emacsen.
+* mh-yank-from-start-of-msg:            MH-E with any Emacsen.
+* mh-yank-hooks:                        MH-E with any Emacsen.
+* mode-map-prefix (sc-):                Reply Buffer Initialization.
+* mode-map-prefix (sc-):                Post-yank Formatting Commands.
+* mumble (sc-):                         Information Keys and the Info Alist.
+* name-filter-alist (sc-):              Author Names.
+* nested-citation-p (sc-):              Citations.
+* news-reply-mode-hook:                 GNEWS with any Emacsen.
+* news-reply-mode-hook:                 Overloading for Non-conforming MUAs.
+* nuke-mail-header-list (sc-):          Reply Buffer Initialization.
+* nuke-mail-headers (sc-):              Reply Buffer Initialization.
+* post-hook (sc-):                      Reply Buffer Initialization.
+* pre-cite-hook (sc-):                  Citing Commands.
+* pre-hook (sc-):                       Reply Buffer Initialization.
+* pre-hook (sc-):                       Getting Connected.
+* preferred-attribution-list (sc-):     Selecting an Attribution.
+* preferred-header-style (sc-):         Reference Headers.
+* preferred-header-style (sc-):         Insertion Commands.
+* reference-tag-string (sc-):           The Built-in Header Rewrite Functions.
+* rewrite-header-list (sc-):            Reference Headers.
+* sc-attrib-selection-list:             Attribution Preferences.
+* sc-attrib-selection-list:             Attribution Preferences.
+* sc-attrib-selection-list:             Version 3 Changes.
+* sc-attribs-postselect-hook:           Anonymous Attributions.
+* sc-attribs-preselect-hook:            Anonymous Attributions.
+* sc-auto-fill-region-p:                Filling Cited Text.
+* sc-blank-lines-after-headers:         Reply Buffer Initialization.
+* sc-citation-delimiter:                Citation Elements.
+* sc-citation-delimiter-regexp:         Recognizing Citations.
+* sc-citation-leader:                   Citation Elements.
+* sc-citation-leader-regexp:            Recognizing Citations.
+* sc-citation-nonnested-root-regexp:    Recognizing Citations.
+* sc-citation-root-regexp:              Recognizing Citations.
+* sc-citation-separator:                Citation Elements.
+* sc-citation-separator-regexp:         Recognizing Citations.
+* sc-cite-blank-lines-p:                Reply Buffer Initialization.
+* sc-cite-frame-alist:                  Frames You Can Customize.
+* sc-cite-region-limit:                 Reply Buffer Initialization.
+* sc-cite-region-limit:                 Citing Commands.
+* sc-cite-region-limit:                 Version 3 Changes.
+* sc-confirm-always-p:                  Anonymous Attributions.
+* sc-confirm-always-p:                  Citing Commands.
+* sc-confirm-always-p:                  Reply Buffer Initialization.
+* sc-confirm-always-p:                  Citing Commands.
+* sc-default-attribution:               Anonymous Attributions.
+* sc-default-author-name:               Anonymous Attributions.
+* sc-default-cite-frame:                Frames You Can Customize.
+* sc-default-recite-frame:              Frames You Can Customize.
+* sc-default-uncite-frame:              Frames You Can Customize.
+* sc-downcase-p:                        Anonymous Attributions.
+* sc-electric-circular-p:               Electric References.
+* sc-electric-mode-hook:                Electric References.
+* sc-electric-references-p:             Electric References.
+* sc-fixup-whitespace-p:                Filling Cited Text.
+* sc-load-hook:                         Getting Connected.
+* sc-load-hook:                         Filling Cited Text.
+* sc-mail-field:                        Frames You Can Customize.
+* sc-mail-warn-if-non-rfc822-p:         Reply Buffer Initialization.
+* sc-mode-map-prefix:                   Post-yank Formatting Commands.
+* sc-mode-map-prefix:                   Reply Buffer Initialization.
+* sc-mumble:                            Information Keys and the Info Alist.
+* sc-name-filter-alist:                 Author Names.
+* sc-nested-citation-p:                 Citations.
+* sc-nuke-mail-header:                  Frames You Can Customize.
+* sc-nuke-mail-header-list:             Reply Buffer Initialization.
+* sc-nuke-mail-headers:                 Reply Buffer Initialization.
+* sc-post-hook:                         Reply Buffer Initialization.
+* sc-pre-cite-hook:                     Citing Commands.
+* sc-pre-hook:                          Reply Buffer Initialization.
+* sc-pre-hook:                          Getting Connected.
+* sc-preferred-attribution-list:        Selecting an Attribution.
+* sc-preferred-header-style:            Reference Headers.
+* sc-preferred-header-style:            Insertion Commands.
+* sc-recite-frame-alist:                Frames You Can Customize.
+* sc-reference-tag-string:              The Built-in Header Rewrite Functions.
+* sc-rewrite-header-list:               Reference Headers.
+* sc-titlecue-regexp:                   Author Names.
+* sc-uncite-frame-alist:                Frames You Can Customize.
+* sc-use-only-preference-p:             Anonymous Attributions.
+* titlecue-regexp (sc-):                Author Names.
+* use-only-preference-p (sc-):          Anonymous Attributions.
+
+

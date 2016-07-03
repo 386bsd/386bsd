@@ -1,0 +1,293 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSendEvent 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSendEvent, XDisplayMotionBufferSize, XGetMotionEvents, XTimeCoord \- send events and pointer motion history structure
+.SH SYNTAX
+.\" $Header: XSendEvent.f,v 1.2 88/05/04 06:29:14 mento Exp $
+Status XSendEvent\^(\^\fIdisplay\fP, \fIw\fP\^, \fIpropagate\fP\^, \fIevent_mask\fP\^, \fIevent_send\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Bool \fIpropagate\fP\^;
+.br
+      long \fIevent_mask\fP\^;
+.br
+      XEvent *\fIevent_send\fP\^;
+.LP
+unsigned long XDisplayMotionBufferSize\^(\^\fIdisplay\fP\^)
+.br
+        Display *\fIdisplay\fP\^;
+.LP
+.\" $Header: XGetMoEvents.f,v 1.1 88/02/26 10:00:51 mento Exp $
+XTimeCoord *XGetMotionEvents\^(\^\fIdisplay\fP, \fIw\fP\^, \fIstart\fP\^, \fIstop\fP\^, \fInevents_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Time \fIstart\fP\^, \fIstop\fP\^;	
+.br
+      int *\fInevents_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: eventmask.a,v 1.2 88/05/14 13:04:06 mento Exp $
+.IP \fIevent_mask\fP 1i
+Specifies the event mask.
+.IP \fIevent_send\fP 1i
+Specifies the event that is to be sent.
+.\" $Header: nevents.a,v 1.1 88/02/26 10:29:31 mento Exp $
+.IP \fInevents_return\fP 1i
+Returns the number of events from the motion history buffer.
+.\" $Header: propagate.a,v 1.3 88/05/14 13:42:06 mento Exp $
+.IP \fIpropagate\fP 1i
+Specifies a Boolean value.
+.\" $Header: startstop.a,v 1.2 88/05/14 13:47:41 mento Exp $
+.IP \fIstart\fP 1i
+.br
+.ns
+.IP \fIstop\fP 1i
+Specify the time interval in which the events are returned from the motion
+history buffer.
+You can pass a timestamp or
+.ZN CurrentTime .
+.ds Wi the window the event is to be sent to,
+.ZN PointerWindow , \
+or \
+.ZN InputFocus .
+.\" $Header: w_gen.a,v 1.4 88/08/04 11:21:56 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window \*(Wi.
+.SH DESCRIPTION
+.\" $Header: XSendEvent.d,v 1.4 88/08/20 09:17:09 mento Exp $
+The
+.ZN XSendEvent
+function identifies the destination window, 
+determines which clients should receive the specified events, 
+and ignores any active grabs.
+This function requires you to pass an event mask.
+For a discussion of the valid event mask names,
+see section 10.3.
+This function uses the w argument to identify the destination window as follows:
+.IP \(bu 5
+If w is
+.ZN PointerWindow ,
+the destination window is the window that contains the pointer.
+.IP \(bu 5
+If w is
+.ZN InputFocus 
+and if the focus window contains the pointer, 
+the destination window is the window that contains the pointer; 
+otherwise, the destination window is the focus window.
+.LP
+To determine which clients should receive the specified events,
+.ZN XSendEvent
+uses the propagate argument as follows:
+.IP \(bu 5
+If event_mask is the empty set,
+the event is sent to the client that created the destination window.
+If that client no longer exists,
+no event is sent.
+.IP \(bu 5
+If propagate is 
+.ZN False ,
+the event is sent to every client selecting on destination any of the event
+types in the event_mask argument.
+.IP \(bu 5
+If propagate is 
+.ZN True 
+and no clients have selected on destination any of
+the event types in event-mask, the destination is replaced with the
+closest ancestor of destination for which some client has selected a
+type in event-mask and for which no intervening window has that type in its
+do-not-propagate-mask. 
+If no such window exists or if the window is
+an ancestor of the focus window and 
+.ZN InputFocus 
+was originally specified
+as the destination, the event is not sent to any clients.
+Otherwise, the event is reported to every client selecting on the final
+destination any of the types specified in event_mask.
+.LP
+The event in the
+.ZN XEvent
+structure must be one of the core events or one of the events
+defined by an extension (or a 
+.ZN BadValue
+error results) so that the X server can correctly byte-swap 
+the contents as necessary.  
+The contents of the event are
+otherwise unaltered and unchecked by the X server except to force send_event to
+.ZN True
+in the forwarded event and to set the serial number in the event correctly.
+.LP
+.ZN XSendEvent
+returns zero if the conversion to wire protocol format failed
+and returns nonzero otherwise.
+.ZN XSendEvent
+can generate
+.ZN BadValue 
+and
+.ZN BadWindow 
+errors.
+.LP
+The server may retain the recent history of the pointer motion
+and do so to a finer granularity than is reported by
+.ZN MotionNotify
+events.
+The
+.ZN XGetMotionEvents
+function makes this history available.
+.LP
+.\" $Header: XGetMoEvents.d,v 1.3 88/06/11 07:51:11 mento Exp $
+The
+.ZN XGetMotionEvents
+function returns all events in the motion history buffer that fall between the
+specified start and stop times, inclusive, and that have coordinates
+that lie within the specified window (including its borders) at its present
+placement.
+If the server does not support motion history, 
+or if the start time is later than the stop time,
+or if the start time is in the future, 
+no events are returned, and
+.ZN XGetMotionEvents
+returns NULL.
+If the stop time is in the future, it is equivalent to specifying
+.ZN CurrentTime .
+.ZN XGetMotionEvents
+can generate a
+.ZN BadWindow 
+error.
+.SH STRUCTURES
+The
+.ZN XTimeCoord
+structure contains:
+.LP
+.Ds 0
+.TA .5i
+.ta .5i
+typedef struct {
+	Time time;
+	short x, y;
+} XTimeCoord;
+.De
+.LP
+The time member is set to the time, in milliseconds. 
+The x and y members are set to the coordinates of the pointer and
+are reported relative to the origin
+of the specified window.
+.SH DIAGNOSTICS
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAnyEvent(3X11),
+XIfEvent(3X11),
+XNextEvent(3X11),
+XPutBackEvent(3X11)
+.br
+\fI\*(xL\fP

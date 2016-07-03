@@ -1,0 +1,53 @@
+
+                Information for former XS3 users
+                --------------------------------
+
+Contents
+--------
+        1) Functionality
+        2) Xconfig changes
+
+1 - Functionality
+-----------------
+
+XF86_S3 is derived from XS3 but it contains many new features and has
+many bugs removed. There are several improvements that should be noted:
+
+  -  Real support for the S3 86C928 (no Hack needed); the server defaults
+     to use the Memory-Mapped-IO (mmio) routines for 928 boards which give
+     a significant performance boost on some operations. This can be
+     overruled with the 'chipset "s3_generic"' keyword.
+  -  Support for programmable clocks (for the icd2061a programmable clock
+     generator): Note that there exist two versions to set the clocks:
+     "icd2061a" and "icd2061a_slow". There is no visible speed difference
+     between both of them, but some boards don't work reliably with the 
+     standard "icd2061a" method (notably ELSA Winner boards). For those 
+     use "icd2061a_slow".
+  -  Better support for external clock programs than with XS3. See the
+     Xconfig(4/5) manpage and README.clockprog for details.
+  -  More than 1MB Videoram supported.  The videoram setting is usually not
+     needed in Xconfig. Some 512k boards seem to be exceptions.
+  -  Rudimentary support for Brooktree Bt485 RAMDACs (full support will be
+     available shortly). This basically means that on boards with the Bt485 
+     the maximum dot clock frequency is restricted to 85MHz. These boards 
+     are for example the #9GXe, the Metheus Premier and the ELSA Winner 2000.
+  -  VT switching supported.
+  -  The x-resolution is not restricted to 1024, and can be up to 1280.
+
+2 - Xconfig changes
+-------------------
+
+Due to the integration of the S3 server into XFree86-2.0 several
+changes to the parsing of the Xconfig file have been made:
+
+  -  the configuration for the server has the keyword accel instead of vga256
+  -  It is no longer necessary to set the virtual resolution. It defaults to
+     the largest physical display mode specified.
+  -  the "vendor" keyword has been replaced by "option"
+  -  'option "nolinear"' is NOT the same as 'vendor "nolinear"' in XS3. To 
+     get the same result, you have to use the option "nomemaccess". This is,
+     however, much less likely to be needed than with XS3.   
+
+
+
+$XFree86: mit/server/ddx/x386/etc/README.XS3,v 2.2 1993/10/24 13:44:49 dawes Exp $

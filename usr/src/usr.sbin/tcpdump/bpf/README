@@ -1,0 +1,147 @@
+Mon Jun 24 16:42:44 PDT 1991
+
+This directory contains the files necessary to install the
+Berkeley Packet Filter (BPF) in a BSD (or BSD-like) kernel.
+BPF is derived from the Stanford/CMU enet packet filter that was 
+distributed with 4.3BSD release.  We have made no efforts to keep 
+the two interfaces compatible.
+
+BPF has been tested on hp300's running BSD Tahoe, on Sparcstations 
+running SunOS 4.1, and on Sun 3's running SunOS 3.5.  We have configured
+it into the BSD Lance ethernet driver, the Sun LANCE and Intel drivers,
+and our (soon to be released) SLIP driver (SunOS 3.5 and 4.1).  The modified 
+BSD driver is included in this distribution, however, the Sun drivers cannot 
+be made available.  There is a context diff in bpf/sunif/if_le.c-sunos4.1-diff
+for the SunOS 4.1 LANCE driver (if_le.c) [so you need SunOS source].
+
+Here's what you need to do:
+
+(1)	Add the following line to your config file.  The parameter
+	is an upper bound for two things: the number of simultaneuous open 
+	files, and the number of hardware interfaces attached to BPF.
+
+pseudo-device   bpfilter 16
+
+	Add these lines to conf/files:
+
+net/bpf.c		optional bpfilter
+net/bpf_filter.c	optional bpfilter
+
+(2)	Copy these files into /sys/net:
+
+bpf/net/bpf.c
+bpf/net/bpf_filter.c
+bpf/net/bpf.h
+bpf/net/bpfcodes.h
+bpf/net/bpfdesc.h
+
+(3)	Install bpf.h and bpfcodes.h in /usr/include/net.
+
+(4)	Add an entry for BPF in `cdevsw'.  You need to add these
+	routines: bpfopen(), bpfclose(), bpfread(), bpfwrite(), 
+	bpfioctl(), and bpfselect().
+
+	Create the special device files /dev/bpf0, /dev/bpf1, etc.
+	Make sure the major device number correpsonds to the entry in
+	cdevsw; the minor device number should be the same as the
+	trailing digit of the file name.
+
+	Access to the packet interface is controlled by the permissions
+	on the device files.  We recommend that access be restricted to 
+	group `wheel'.  For example, 
+
+		/etc/mknod /dev/bpf0 c {major dev} 0
+		/etc/mknod /dev/bpf1 c {major dev} 1
+		/etc/mknod /dev/bpf2 c {major dev} 2
+		...
+		chmod 440 /dev/bpf*
+		chgrp wheel /dev/bpf*
+
+	The highest allowable minor device number corresponds to the 
+	number given in the "pseudo-device" config line (less one).
+
+(5)	Modify the link level device drivers to interact with BPF.
+	hpdev/if_le.c is an example driver for a LANCE Ethernet
+	interface on an hp300 series machine.  [If this is your
+	setup, go to (6).]
+
+	If you're starting from scratch, this is not too difficult.
+	All the BPF mods to hpdev/if_le.c are encapsulated with 
+	`#ifdef NBPFILTER > 0', so they're easy to spot.  You need to:
+
+	a) Add includes for bpfilter.h and ../net/bpf.h.
+
+	b) Add a caddr_t to the softc.  This is the magic cookie
+	   that tells bpf_tap() who is talking to it.
+
+	c) Modify the attach routine to set up some device parameters
+	   [see hpdev/if_le.c:leattach()] and call bpfattach().
+
+	d) Make sure the driver can handle promiscuous operation,
+	   and that the routine ifpromisc() exists.  Ifpromisc()
+	   takes an ifp and a flag saying whether to enter or leave
+	   promiscuous operation.  It should reference count the
+	   calls and take actions only the last `off' or first `on'.
+	   The action it should take is setting/clearing the IFF_PROMISC
+	   bit, and calling the driver's SIOCIFFLAGS ioctl.  The
+	   driver should inspect the IFF_PROMISC bit and do the right
+	   thing.
+
+	d) Add calls to bpf_tap() at the following places:
+
+		i.  Right after the device interrupts and the packet is
+		    in contiguous interface memory.  This is before
+		    the packet has been copied in to mbufs.
+
+		ii. Right before the packet is transmitted.
+		    This is after the packet has been copied out of mbufs.
+
+		If the packet never exists in contiguous memory
+		(some interfaces can follow chains), you need to
+		call bpf_mtap instead.
+
+		To minimize the cost of the filter when there are no
+		listeners, bpf_tap() is only called when the magic
+		cookie in the driver's softc is nonzero.  (BPF will
+		set and clear it.)
+
+		Because BPF can force an interface into promiscuous mode,
+		you want to check that incoming packets are destined for
+		this host or are broadcast/multicast.  If neither is the 
+		case, the packet should be tossed (after calling bpf_tap()).
+		This check only needs to be done when there are listeners.
+
+(6)	BPF calls the routine ifpromisc() to put an interface into 
+	promiscuous mode.  SunOS 4.1 provides this routine; we have
+	provided our versions for SunOS 3.5 and BSD in the files
+	bpf/net/if-sunos3.c and bpf/net/if-bsd.c.  Merge this code 
+	into net/if.c.	Additionally, the `if_pcount' integer field
+	must be added to the `struct ifnet' in net/if.h.
+
+(7)	That's it.  Run config, make depend, and make, and you're ready to go.
+
+
+All the code in these directories is subject to the standard Berkeley 
+network software copyright:
+
+  Copyright (c) 1990 The Regents of the University of California.
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that: (1) source code distributions
+  retain the above copyright notice and this paragraph in its entirety, (2)
+  distributions including binary code include the above copyright notice and
+  this paragraph in its entirety in the documentation or other materials
+  provided with the distribution, and (3) all advertising materials mentioning
+  features or use of this software display the following acknowledgement:
+  ``This product includes software developed by the University of California,
+  Lawrence Berkeley Laboratory and its contributors.'' Neither the name of
+  the University nor the names of its contributors may be used to endorse
+  or promote products derived from this software without specific prior
+  written permission.
+  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+
+

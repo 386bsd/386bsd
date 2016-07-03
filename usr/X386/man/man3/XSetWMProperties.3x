@@ -1,0 +1,355 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetWMProperties 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetWMProperties, XmbSetWMProperties \- set standard window properties
+.SH SYNTAX
+void XSetWMProperties\^(\^\fIdisplay\fP, \fIw\fP, \fIwindow_name\fP, \
+\fIicon_name\fP, \fIargv\fP, \fIargc\fP, \fInormal_hints\fP, \fIwm_hints\fP, \
+\fIclass_hints\fP\^)
+.br
+      Display *\fIdisplay\fP\^; 
+.br
+      Window \fIw\fP\^;
+.br
+      XTextProperty *\fIwindow_name\fP\^;
+.br
+      XTextProperty *\fIicon_name\fP\^;
+.br
+      char **\fIargv\fP\^;
+.br
+      int \fIargc\fP\^;
+.br
+      XSizeHints *\fInormal_hints\fP\^;
+.br
+      XWMHints *\fIwm_hints\fP\^;
+.br
+      XClassHint *\fIclass_hints\fP\^;
+.LP
+void XmbSetWMProperties\^(\^\fIdisplay\fP\^, \fIw\fP\^, \fIwindow_name\fP\^, \fIicon_name\fP\^, \fIargv\fP\^, \fIargc\fP\^,
+.br
+                      \fInormal_hints\fP\^, \fIwm_hints\fP\^, \fIclass_hints\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      char *\fIwindow_name\fP\^;
+.br
+      char *\fIicon_name\fP\^;
+.br
+      char *\fIargv\fP\^[];
+.br
+      int \fIargc\fP\^;
+.br
+      XSizeHints *\fInormal_hints\fP\^;
+.br
+      XWMHints *\fIwm_hints\fP\^;
+.br
+      XClassHint *\fIclass_hints\fP\^;
+.SH ARGUMENTS
+.IP \fIargc\fP 1i
+Specifies the number of arguments.
+.IP \fIargv\fP 1i
+Specifies the application's argument list.
+.IP \fIclass_hints\fP 1i
+Specifies the
+.ZN XClassHint
+structure to be used.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: icon_name.a,v 1.2 88/05/17 11:22:33 mento Exp $
+.IP \fIicon_name\fP 1i
+Specifies the icon name,
+which should be a null-terminated string.
+.IP \fInormal_hints\fP 1i
+Specifies the size hints for the window in its normal state.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.\" $Header: window_name.a,v 1.2 88/05/18 05:22:36 mento Exp $
+.IP \fIwindow_name\fP 1i
+Specifies the window name,
+which should be a null-terminated string.
+.IP \fIwm_hints\fP 1i
+Specifies the
+.ZN XWMHints
+structure to be used.
+.SH DESCRIPTION
+The 
+.ZN XSetWMProperties 
+convenience function provides a single programming interface 
+for setting those essential window properties that are used 
+for communicating with other clients (particularly window and session
+managers).
+.LP
+If the window_name argument is non-NULL, 
+.ZN XSetWMProperties
+calls
+.ZN XSetWMName ,
+which in turn, sets the WM_NAME property (see section 14.1.4).
+If the icon_name argument is non-NULL,
+.ZN XSetWMProperties
+calls
+.ZN XSetWMIconName ,
+which sets the WM_ICON_NAME property (see section 14.1.5).
+If the argv argument is non-NULL, 
+.ZN XSetWMProperties
+calls
+.ZN XSetCommand ,
+which sets the WM_COMMAND property (see section 14.2.1).
+Note that an argc of zero is allowed to indicate a zero-length command.
+Note also that the hostname of this machine is stored using
+.ZN XSetWMClientMachine 
+(see section 14.2.2).
+.LP
+If the normal_hints argument is non-NULL, 
+.ZN XSetWMProperties
+calls
+.ZN XSetWMNormalHints ,
+which sets the WM_NORMAL_HINTS property (see section 14.1.7).
+If the wm_hints argument is non-NULL, 
+.ZN XSetWMProperties
+calls
+.ZN XSetWMHints ,
+which sets the WM_HINTS property (see section 14.1.6).
+.LP
+If the class_hints argument is non-NULL, 
+.ZN XSetWMProperties
+calls
+.ZN XSetClassHint ,
+which sets the WM_CLASS property (see section 14.1.8).
+If the res_name member in the
+.ZN XClassHint
+structure is set to the NULL pointer and the RESOURCE_NAME environment 
+variable is set, 
+then the value of the environment variable is substituted for res_name.
+If the res_name member is NULL, 
+the environment variable is not set, 
+and argv and argv[0] are set, 
+then the value of argv[0], stripped of
+any directory prefixes, is substituted for res_name.
+.LP
+The
+.ZN XmbSetWMProperties
+convenience function provides a simple programming interface 
+for setting those essential window properties that are used 
+for communicating with other clients
+(particularly window and session managers).
+.LP
+If the window_name argument is non-NULL,
+.ZN XmbSetWMProperties
+sets the WM_NAME property.
+If the icon_name argument is non-NULL,
+.ZN XmbSetWMProperties
+sets the WM_ICON_NAME property.
+The window_name and icon_name arguments are null-terminated strings
+in the encoding of the current locale.
+If the arguments can be fully converted to the STRING encoding,
+the properties are created with type ``STRING'': 
+otherwise, the arguments are converted to Compound Text, 
+and the properties are created with type ``COMPOUND_TEXT''.
+.LP
+If the normal_hints argument is non-NULL,
+.ZN XmbSetWMProperties
+calls
+.ZN XSetWMNormalHints ,
+which sets the WM_NORMAL_HINTS property (see section 14.1.7).
+If the wm_hints argument is non-NULL, 
+.ZN XmbSetWMProperties
+calls
+.ZN XSetWMHints ,
+which sets the WM_HINTS property (see section 14.1.6).
+.LP
+If the argv argument is non-NULL,
+.ZN XmbSetWMProperties
+sets the WM_COMMAND property from argv and argc.
+Note that an argc of 0 indicates a zero-length command.
+.LP
+The hostname of this machine is stored using 
+.ZN XSetWMClientMachine 
+(see section 14.2.2).
+.LP
+If the class_hints argument is non-NULL,
+.ZN XmbSetWMProperties
+sets the WM_CLASS property.
+If the res_name member in the 
+.ZN XClassHint
+structure is set to the NULL pointer and the RESOURCE_NAME
+environment variable is set,
+the value of the environment variable is substituted for res_name.
+If the res_name member is NULL,
+the environment variable is not set, and argv and argv[0] are set,
+then the value of argv[0], stripped of any directory prefixes,
+is substituted for res_name.
+.LP
+It is assumed that the supplied class_hints.res_name and argv,
+the RESOURCE_NAME environment variable, and the hostname of this machine
+are in the encoding of the locale announced for the LC_CTYPE category.
+(On POSIX-compliant systems, the LC_CTYPE, else LANG environment variable).
+The corresponding WM_CLASS, WM_COMMAND, and WM_CLIENT_MACHINE properties
+are typed according to the local host locale announcer.
+No encoding conversion is performed prior to storage in the properties.
+.LP
+For clients that need to process the property text in a locale,
+.ZN XmbSetWMProperties
+sets the WM_LOCALE_NAME property to be the name of the current locale.
+The name is assumed to be in the Host Portable Character Encoding,
+and is converted to STRING for storage in the property.
+.LP
+.ZN XSetWMProperties
+and
+.ZN XmbSetWMProperties
+can generate
+.ZN BadAlloc
+and
+.ZN BadWindow
+errors.
+.SH PROPERTIES
+.TP 1i
+\s-1WM_CLASS\s+1
+Set by application programs to allow window and session
+managers to obtain the application's resources from the resource database.
+.TP 1i
+\s-1WM_CLIENT_MACHINE\s+1
+The string name of the machine on which the client application is running.
+.TP 1i
+\s-1WM_COMMAND\s+1
+The command and arguments, null-separated, used to invoke the
+application.
+.TP 1i
+\s-1WM_HINTS\s+1
+Additional hints set by the client for use by the window manager.
+The C type of this property is 
+.ZN XWMHints .
+.TP 1i
+\s-1WM_ICON_NAME\s+1
+The name to be used in an icon.
+.TP 1i
+\s-1WM_NAME\s+1
+The name of the application.
+.TP 1i
+\s-1WM_NORMAL_HINTS\s+1
+Size hints for a window in its normal state.
+The C type of this property is
+.ZN XSizeHints .
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllocClassHint(3X11),
+XAllocIconSize(3X11),
+XAllocSizeHints(3X11),
+XAllocWMHints(3X11),
+XParseGeometry(3X11),
+XSetCommand(3X11),
+XSetTransientForHint(3X11),
+XSetTextProperty(3X11),
+XSetWMClientMachine(3X11),
+XSetWMColormapWindows(3X11),
+XSetWMIconName(3X11),
+XSetWMName(3X11),
+XSetWMProtocols(3X11),
+XStringListToTextProperty(3X11),
+XTextListToTextProperty(3X11)
+.br
+\fI\*(xL\fP

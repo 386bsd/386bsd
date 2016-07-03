@@ -1,0 +1,66 @@
+
+
+
+CRONTAB(1)                     1988                    CRONTAB(1)
+
+
+NNAAMMEE
+       crontab - maintain crontab files for individual users
+
+SSYYNNOOPPSSIISS
+       crontab [ -u user ] { -l | -d | -r file }
+
+DDEESSCCRRIIPPTTIIOONN
+       _C_r_o_n_t_a_b  is the program used to install, deinstall or list
+       the tables used to drive  the  _c_r_o_n_d(8)  daemon  in  Vixie
+       Cron.   Each  user has their own crontab, and though these
+       are files in /var, they are not readable  or  writable  by
+       anyone  or  anything except the super-user or the _c_r_o_n_d(8)
+       or _c_r_o_n_t_a_b programs.
+
+       If the _a_l_l_o_w file exists, then you must be listed  therein
+       in  order to be allowed to use this command.  If the _a_l_l_o_w
+       file does not exist but the _d_e_n_y file does exist, then you
+       must  nnoott  be listed in the _d_e_n_y file in order to use this
+       command.  If neither of these files exists, then depending
+       on site-dependent configuration parameters, only the super
+       user will be allowed to use this  command,  or  all  users
+       will be able to use this command.
+
+       If  the  -_u  option is given, it specifies the name of the
+       user whose crontab is to be tweaked.  If  this  option  is
+       not  given,  _c_r_o_n_t_a_b  examines  "your"  crontab, i.e., the
+       crontab of the person executing the  command.   Note  that
+       _s_u(8)  can  confuse  _c_r_o_n_t_a_b  and  that if you are running
+       inside of _s_u(8) you should always use the  -_u  option  for
+       safety's sake.
+
+       The  -_l  option causes the current crontab to be displayed
+       on standard output.
+
+       The -_d option causes the current crontab to be deleted.
+
+       The -_r option is used to replace the current  crontab  (if
+       any) with the contents of the named file.
+
+SSEEEE AALLSSOO
+       crontab(5), crond(8)
+
+FFIILLEESS
+       /var/cron/allow
+       /var/cron/deny
+
+DDIIAAGGNNOOSSTTIICCSS
+       A  fairly  informative usage message appears if you run it
+       with a bad command line.
+
+AAUUTTHHOORR
+       Paul Vixie, paul@vixie.sf.ca.us
+
+
+
+
+
+December                        9                               1
+
+

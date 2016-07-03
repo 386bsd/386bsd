@@ -1,0 +1,66 @@
+
+
+
+RCSCLEAN(1L)                                         RCSCLEAN(1L)
+
+
+NNAAMMEE
+       rcsclean - clean up working files
+
+SSYYNNOOPPSSIISS
+       rrccsscclleeaann [ --rr_r_e_v ] [ --qq_r_e_v ] file...
+
+DDEESSCCRRIIPPTTIIOONN
+       _R_c_s_c_l_e_a_n  removes  working files that were checked out and
+       never modified.  For each file  given,  _r_c_s_c_l_e_a_n  compares
+       the  working  file and a revision in the corresponding RCS
+       file. If it finds no difference, it  removes  the  working
+       file,  and,  if  the  revision  was  locked by the caller,
+       unlocks the revision.
+
+       A file name ending in ',v' is an RCS file name,  otherwise
+       a  working  file  name.  _R_c_s_c_l_e_a_n derives the working file
+       name from the RCS file name and vice versa,  as  explained
+       in  _c_o(1L).  Pairs consisting of both an RCS and a working
+       file name may also be specified.
+
+       _R_e_v specifies with which  revision  the  working  file  is
+       compared.   If  _r_e_v  is  omitted,  _r_c_s_c_l_e_a_n  compares  the
+       working file with  the  latest  revision  on  the  default
+       branch  (normally  the  highest branch on the trunk).  The
+       option --qq suppresses diagnostics.
+
+       _R_c_s_c_l_e_a_n is useful for "clean" targets in Makefiles.  Note
+       that _r_c_s_d_i_f_f(1L) prints out the differences.  Also, _c_i(1L)
+       normally asks whether to check in a file  if  it  was  not
+       changed.
+
+EEXXAAMMPPLLEESS
+       The command
+
+            rcsclean *.c *.h
+
+       removes all working files ending in ".c" or ".h" that were
+       not changed since their checkout.
+
+DDIIAAGGNNOOSSTTIICCSS
+       The exit status is 0 if there were no  differences  during
+       the  last  comparison  or if the last working file did not
+       exist, 1 if there were differences, and 2  if  there  were
+       errors.
+
+IIDDEENNTTIIFFIICCAATTIIOONN
+       Author:   Walter   F.   Tichy,   Purdue  University,  West
+       Lafayette, IN, 47907.
+       Revision Number: 1.2 ; Release Date: 89/05/02 .
+       Copyright (C) 1982, 1988, 1989 by Walter F. Tichy.
+
+SSEEEE AALLSSOO
+       co(1L),   ci(1L),   ident(1L),    rcs(1L),    rcsdiff(1L),
+       rcsintro(1L), rcsmerge(1L), rlog(1L), rcsfile(5L).
+
+
+
+University                    Purdue                            1
+
+

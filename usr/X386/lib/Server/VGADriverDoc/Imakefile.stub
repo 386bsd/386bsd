@@ -1,0 +1,63 @@
+XCOMM $XFree86: mit/server/ddx/x386/VGADriverDoc/Imakefile.stub,v 2.2 1993/09/22 15:42:46 dawes Exp $
+XCOMM
+XCOMM This is an Imakefile for the stub driver.  
+XCOMM 
+#include <Server.tmpl>
+
+#if i386Mach
+SRCS = stub_driver.c
+#else
+SRCS = stub_driver.c stub_bank.s
+#endif
+
+OBJS = stub_driver.o stub_bank.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+XCOMM
+XCOMM Uncomment this like for use under drivers/vga2 in the Link Kit
+XCOMM
+XCOMM VGA256DIR = ../../vga256
+#else
+XCOMM
+XCOMM This define is for use under vga256/drivers; comment it out for vga2
+XCOMM
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../cfb.banked -I../../vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+XCOMM
+XCOMM Use these lines instead for use under vga2/drivers
+XCOMM
+XCOMM INCLUDES = -I. -I../../../common -I../../../common_hw \
+XCOMM            -I../../../os-support -I../../../vga256/vga \
+XCOMM            -I$(SERVERSRC)/include -I$(INCLUDESRC)
+XCOMM VGA256DIR = ../../../vga256/drivers
+#endif
+
+XCOMM
+XCOMM Uncomment this line for use with vga2
+XCOMM
+XCOMM DEFINES = -DMONOVGA
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(stub, $(OBJS))
+
+XCOMM
+XCOMM These lines are for a driver under vga256/drivers
+XCOMM
+InstallLinkKitNonExecFile(stub_driver.c,$(LINKKITDIR)/drivers/vga256/stub)
+InstallLinkKitNonExecFile(stub_bank.s,$(LINKKITDIR)/drivers/vga256/stub)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga256/stub)
+
+XCOMM
+XCOMM These lines would be used in place of the above three lines for the
+XCOMM same driver being built under vga2/drivers.  If the driver is ONLY
+XCOMM going to be under vga2/drivers, use the above 3 lines, but replace
+XCOMM vga256 with vga2
+XCOMM
+XCOMM ObjectFromSpecialSource(stub_driver,$(VGA256DIR)/stub/stub_driver,/**/)
+XCOMM ObjectFromSpecialAsmSource(stub_bank,$(VGA256DIR)/stub/stub_bank,/**/)
+XCOMM InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/stub)
+
+DependTarget()

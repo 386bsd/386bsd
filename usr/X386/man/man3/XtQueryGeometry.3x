@@ -1,0 +1,144 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtQueryGeometry 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtQueryGeometry \- query the preferred geometry of a child widget
+.SH SYNTAX
+XtGeometryResult XtQueryGeometry(\fIw\fP, \fIintended\fP, \
+\fIpreferred_return\fP)
+.br
+     Widget \fIw\fP\^;
+.br
+     XtWidgetGeometry *\fIintended\fP, *\fIpreferred_return\fP\^;
+.SH ARGUMENTS
+.IP \fIintended\fP 1i
+Specifies any changes the parent plans to make to the child's geometry or
+NULL.
+.IP \fIpreferred_return\fP 1i
+Returns the child widget's preferred geometry.
+.IP \fIw\fP 1i
+Specifies the widget.
+.SH DESCRIPTION
+To discover a child's preferred geometry,
+the child's parent sets any changes
+that it intends to make to the child's geometry in the corresponding fields of
+the intended structure, sets the corresponding bits in intended.request_mode,
+and calls
+.ZN XtQueryGeometry .
+.LP
+.ZN XtQueryGeometry
+clears all bits in the preferred_return->request_mode and checks the
+query_geometry field of the specified widget's class record.
+If query_geometry is not NULL,
+.ZN XtQueryGeometry
+calls the query_geometry procedure and passes as arguments the
+specified widget, intended, and preferred_return structures.
+If the intended argument is NULL,
+.ZN XtQueryGeometry
+replaces it with a pointer to an
+.ZN XtWidgetGeometry
+structure with request_mode=0 before calling query_geometry.
+.SH "SEE ALSO"
+XtConfigureWidget(3Xt),
+XtMakeGeometryRequest(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

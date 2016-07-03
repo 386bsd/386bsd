@@ -1,0 +1,1018 @@
+#---------------------------------------------------------------------------#
+#
+# Accelerated card supported by XFree86
+# 
+# Version 1.0 - Oct 16, 1993
+#  List for XFree86 2.0 - David Wexelblat <dwex@goblin.org>, <dwex@aib.com>
+#---------------------------------------------------------------------------#
+# This file contains the list of accelerated cards that have been tested
+# as compatible with XFree86.  Other cards with supported chipsets may
+# work with XFree86, but we cannot guarentee it.  If you try out a card 
+# not on this list and it works, please fill in the blank template at the
+# bottom of this file and mail it to us at <xfree86@physics.su.oz.au>.
+#
+# If you have a card with a supported chipset that does not function with
+# XFree86, please get in touch with us so we can attempt to rectify the
+# situations.  Please first ensure that your hardware is functioning
+# correctly by running under DOS/Windows.
+#---------------------------------------------------------------------------#
+# This file is divided into sections by chipset:
+#   S3 911/924
+#   S3 801/805
+#   S3 928
+#   8514/A
+#   ATI Mach8
+#   ATI Mach32
+#   SVGA (Cirrus)
+#   SVGA (Western Digital)
+#
+# A lot of information about RAMDACs and clock chips is provided; this is
+# likely sufficient to get an unlisted card up and running.  At the bottom
+# of this file, above the blank form, is a listing of available clocks
+# for clock synthesizer chipsets we know about.  If your card has one
+# of these chipsets, you can use the clocks listed in the Clocks line of
+# your Xconfig file.  You should copy the list exactly as it appears.
+#
+#---------------------------------------------------------------------------#
+# S3 911/924                                                                #
+#---------------------------------------------------------------------------#
+Card Vendor		: Orchid
+Card Model		: Fahrenheit 1280 (Circa 1991)
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: 86C911
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 80 ns
+Clock Chip		: Chrontel CH9204CB-NC
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 25.175 28.33 40 0 50 77 36 44.9
+Clocks (cont)		: 130 120 80 31.5 110 65 75 96
+Option Flags		:
+RAMDAC			: SC11483CV (Silkscreen outine for Bt476)
+Submitter		: Douglas Lenz (lenz@comm.mot.com)
+Last Edit Date		: Sept 29, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Paelit
+Card Model		: S3 VGA (I kid you not)
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: 911
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 100ns
+Clock Chip		: 
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 25.175 28.322 40.0 0.0 50.0 77.0 36.0 44.9
+Clocks (cont)		: 130.0 120.0 80.0 31.5 110.0 65.0 76.0 94.5
+Option Flags		:
+RAMDAC			:
+Submitter		: Stephen Hocking
+Last Edit Date		: Sep 29, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Orchid 
+Card Model		: Farenheit 1280
+Card Bus(ISA/EISA/VLB)	: ISA
+Chipset			: S3 86C924
+Video Memory		: 1024k
+Memory Type(DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: ?
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks        		: 25.20 28.32 32.50 0.00 40.00 44.90 50.40 65.00
+Clocks (cont) 		: 78.00 56.70 63.00 74.90 80.00 89.90 100.90 31.50
+Option Flags		: 
+RAMDAC			: AT&T 20C491
+Submitter		: Richard Coley
+Last Edit Date		: Oct 4 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: S3, Incorporated
+Card Model		: MVGA-S3C911
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: 924
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: AV9194-56N20
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25.2 28.3 39.7 0.0 49.9 76.7 35.7 44.6 130.2 119.5
+Clocks (cont)		: 79.4 31.2 110.0 65.2 74.9 71.3
+Option Flags		:
+RAMDAC			: SC11487CN
+Submitter		: C.E. Hawkins ceh@eng.cam.ac.uk
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+# S3 801/805                                                                #
+#---------------------------------------------------------------------------#
+Card Vendor		: Actix
+Card Model		: GraphicsEngine32 (original proto design).
+Card Bus (ISA/EISA/VLB)	: ISA.
+Chipset			: S3 86C801
+Video Memory		: 1024k (upgradable)
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: crontel (need to check make)
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25 28 40 72 49 77 36 45
+Clocks (cont)		: 90 120 80 32 110 65 75 95
+Option Flags		:
+RAMDAC			: AT&T 20C491-11
+Submitter		: Jon Tombs <jon@gtex02.us.es>
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Actix
+Card Model		: GraphicsEngine32 Plus
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: S3 86C801
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: Unknown
+Clock Chip		: Avasem AV9194-??
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25.20  28.32  40.0 0.0 50.1 77.0 36.2 44.9
+Clocks (cont)		: 80.0 120.0 130.2 31.5 110.3 65.0 74.9 72.4
+Option Flags		: 
+RAMDAC			: AT&T 20C490-11
+Submitter		: Jordan K. Hubbard <jkh@whisker.lotus.ie>
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Actix
+Card Model		: GraphicsEngine32 Plus
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: S3 86C801
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 45ns
+Clock Chip		: Avasem AV9194-11
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25.175 28.322 40.0 0.0 50.0 77.0 36.0 44.9
+Clocks (cont)		: 130.0 120.0 80.0 31.5 110.0 65.0 75.0 95.0
+Option Flags		: 
+RAMDAC			: AT&T 20C490-11
+Submitter		: David E. Wexelblat <dwex@goblin.org>
+Last Edit Date		: Sept 25, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: "made in taiwan" VGA windows accellerator
+Card Model		: 2157?
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: S3-801
+Video Memory		: 1024k + 1024k optional, I have 2Mb.
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 50ns.
+Clock Chip		: Avasem AV9194-11
+Programmable? (Y/N)	: No.
+Number of clocks	: 16
+Clocks			: 25.175 28.322 40.0 0.0 50.0 77.0 36.0 44.9
+Clocks (cont)		: 130.0 120.0 80.0 31.5 110.0 65.0 75.0 94.5
+Option Flags		: None.
+RAMDAC			: ATT 491? (24/15/16/8 bit ramdac from ATT) (110Mhz)
+Submitter		: R.E. Wolff
+Last Edit Date		: Mon Sep 27 09:15:36 MET 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Dell Computer on board video card
+Card Model		:
+Card Bus (ISA/EISA/VLB)	: Integrated Local Bus
+Chipset			: S3 86C805 
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: ?
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 25.20 28.32 40.00 0.00 40.00 77.50 77.50 44.90
+Clocks (cont)		: 63.00 100.20 79.90 31.50 110.00 65.00 75.00 94.50
+Option Flags		:
+RAMDAC			: AT&T 20C492
+Submitter		: Didier Poirot <dp@chorus.fr>
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Dell
+Card Model		: 433/M
+Card Bus (ISA/EISA/VLB)	: Integrated
+Chipset			: S3 805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: ICS2494AM
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 25.20  28.32 40.00  0.00  50.10 77.50 36.00 44.90
+Clocks (cont)		: 63.00 100.20 79.90 31.50 110.10 65.00 75.00 94.50
+Option Flags		:
+RAMDAC			: SC11483CV
+Submitter		: Joe V. Moss <joe@morton.rain.com>
+Last Edit Date		: Oct 14, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Dell
+Card Model		: 4066/XE
+Card Bus (ISA/EISA/VLB)	: Integrated
+Chipset			: S3 805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: ICS2494AM
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 25.20  28.32 40.00  0.00  50.10 78.20 36.00 44.90
+Clocks (cont)		: 63.00 100.20 79.90 31.50 110.00 65.00 75.00 94.50
+Option Flags		:
+RAMDAC			: SC11483CV
+Submitter		: Joe V. Moss <joe@morton.rain.com>
+Last Edit Date		: Oct 14, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Orchid
+Card Model		: Fahrenheit VLB  ( = VA/VLB - audio )
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: S3 86C805
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 50ns(1M) + 60ns (1M)
+Clock Chip		: ?
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			:  25.20  28.32 40.00  0.00  50.10 77.00 36.10 45.00 
+Clocks (cont)		: 130.00 120.20 80.00 31.50 110.30 65.00 75.00 94.60
+Option Flags		: 
+RAMDAC			: AT&T 490
+Submitter		: Yasu-Hiro Yamazaki(hiro@rainbow.physics.utoronto.ca)
+Last Edit Date		: Oct. 7, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Orchid
+Card Model		: Fahrenheit 1280 Plus VLB
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: S3-805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60 ns
+Clock Chip		: Chrontel 9303 (?)
+Programmable? (Y/N)	: N (?)
+Number of clocks	: 16
+Clocks			: 25.20 28.32 40.00 0.00 50.10 77.00 36.20 44.90
+Clocks (cont)		: 130.10 120.00 80.00 31.50 110.20 65.00 75.00 94.60
+Option Flags		:
+RAMDAC			: AT&T 20C490-80
+Submitter		: Steve Forsythe <forsse@meaddata.com>
+Last Edit Date		: Oct. 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor             : Orchid
+Card Model              : Fahrenheit 1280 Plus
+Card Bus (ISA/EISA/VLB) : VLB
+Chipset                 : S3 805
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : DRAM
+Memory Speed            : 60 ns
+Clock Chip              : ?
+Programmable? (Y/N)     : No
+Number of clocks        : 16
+Clocks                  : 25.20 28.32 40.00 0.00 50.10 77.00 36.20 44.90
+Clocks (cont)           : 130.00 120.00 80.00 31.50 110.20 65.00 75.00 94.60
+Option Flags            : nomemaccess
+RAMDAC                  : ?
+Submitter               : Steven Wallace <swallace@ece.uci.edu>
+Last Edit Date          : October 3, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: SPEA Videoseven
+Card Model		: V7-Mirage
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: 86C805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: AV9194-56N20
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25.2 28.3 39.7 0.0 49.9 76.7 35.7 44.6 130.2 119.5
+Clocks (cont)		: 79.4 31.2 110.0 65.2 74.9 71.3
+Option Flags		:
+RAMDAC			:
+Submitter		: C.E. Hawkins ceh@eng.cam.ac.uk
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: STB
+Card Model		: VL-24
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: 805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: ?
+Clock Chip		: ICD2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: progamable
+Clocks			: "icd2061a_slow"
+Option Flags		:
+RAMDAC			:
+Submitter		:
+Last Edit Date		:
+#---------------------------------------------------------------------------#
+Card Vendor		: Viglen
+Card Model		: Genie
+Card Bus (ISA/EISA/VLB)	: Integrated
+Chipset			: 86C805
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: AV9194-56N20
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 25.2 28.3 39.7 0.0 49.9 76.7 35.7 44.6 130.2 119.5
+Clocks (cont)		: 79.4 31.2 110.0 65.2 74.9 71.3
+Option Flags		:
+RAMDAC			:
+Submitter		: C.E. Hawkins ceh@eng.cam.ac.uk
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+# S3 928                                                                    #
+#---------------------------------------------------------------------------#
+Card Vendor		: Actix
+Card Model		: GraphicsEngine Ultra Plus
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: S3 86C928
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 25ns (I think: chips are: TMS 44C251ASD)
+Clock Chip		: Chrontel CH9204CL-NC
+Programmable? (Y/N)	: Not sure (probably not)
+Number of clocks	: 16
+Clocks			: 25 28 40 72 50 77 36 45 90 120 80 32 110 65 75 95
+Option Flags		:
+RAMDAC			: Winbond W82C490P-110
+Submitter		: Richard Gooch <rgooch@atnf.csiro.au>
+Last Edit Date		: 1-OCT-1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Diamond Computer Systems, Inc.
+Card Model		: Stealth Pro
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: S3 86C928
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 60ns
+Clock Chip		:          
+Programmable? (Y/N)	: Y  ;Need external clock program (like ds3) to
+Number of clocks	: 3 or more ;set 3rd clock entry to:
+Clocks			: 19.9 22.3 24.8 25.0 28.1 31.3 
+Clocks (cont)		: 32.2 35.7 35.9 37.0 39.8 (interlaced)
+Clocks (cont)		: 39.7 44.6 49.6 49.9 56.2 62.6 
+Clocks (cont)		: 64.4 71.4 71.8 73.9 79.6 (non-interlaced)
+Option Flags		: nomemaccess
+RAMDAC			: Diamond SS2410
+Submitter		: Hans Oey <hans@mo.hobby.nl>
+Last Edit Date		: Oct 5, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ELSA
+Card Model		: Winner 1000
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: 86C928
+Video Memory		: 2048k and 1024k (tested both)
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 70ns
+Clock Chip		: ICD 2061ASC-1
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "icd2061a_slow"
+Option Flags		: 
+RAMDAC			: Sierra SC 15025CV Highcolor 24 - 110
+Submitter		: hohndel@informatik.uni-wuerzburg.de
+Last Edit Date		: 09/27/93
+#---------------------------------------------------------------------------#
+Card Vendor		: ELSA, Aachen, Germany
+Card Model		: ELSA Winner 1000
+Card Bus (ISA/EISA/VLB)	: ISA (and EISA, but no EISA motherboard, not tested)
+Chipset			: S3-928 rev. D
+Video Memory		: 1024k (up to 2MB VRAM)
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: ICD 2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "icd2061a_slow"
+Option Flags		: 
+RAMDAC			: SC 15025
+Submitter		: Harald Koenig <koenig@tat.physik.uni-tuebingen.de>
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ELSA, Aachen, Germany
+Card Model		: ELSA Winner 1000 VL
+Card Bus (ISA/EISA/VLB)	: VLB (33 MHz)
+Chipset			: S3-928 rev. D
+Video Memory		: 1024k (up to 2MB VRAM + 1MB offscreen DRAM)
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: ICD 2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "icd2061a_slow"
+Option Flags		: 
+RAMDAC			: SC 15025
+Submitter		: Harald Koenig <koenig@tat.physik.uni-tuebingen.de>
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ELSA
+Card Model		: Winner 1000
+Card Bus (ISA/EISA/VLB)	: ISA/EISA Twinbus (EISA not yet tested)
+Chipset			: S3 928 D-step
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 60ns
+Clock Chip		: ICD2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "ic2061a_slow"
+Option Flags		: nomemaccess
+RAMDAC			: SIERRA 15/16 bit (SC15025)
+Submitter		: Helmut Geyer  geyer@kalliope.iwr.uni-heidelberg.de
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor             : Elsa
+Card Model              : Winner 1000
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : S3 86C928
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : VRAM (Micron MT42C4256Z-8 or -7)
+Memory Speed            : 80ns
+Clock Chip              : ICD2061A
+Programmable? (Y/N)     : Y
+Number of clocks        : programmable
+Clocks                  : "icd2061a_slow"
+Option Flags            :
+RAMDAC                  : Sierra 15/16-bit HiColor
+Submitter               : Peter E. <Peter.Eubert@iwb.mw.tu-muenchen.d400.de>
+Last Edit Date          : October 8, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ELSA
+Card Model		: Winner 1000
+Card Bus (ISA/EISA/VLB)	: EISA
+Chipset			: S3 86C928
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 70ns
+Clock Chip		: ICD2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "icd2061a_slow"
+Option Flags		:
+RAMDAC			: Sierra SC 15025CV 
+Submitter		: Helmut Geyer 	geyer@kalliope.iwr.uni-heidelberg.de
+Last Edit Date		: Oct 12, 1993
+#---------------------------------------------------------------------------#
+Card Vendor             : ELSA
+Card Model              : ELSA Winner 1000
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : S3/928
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : VRAM
+Memory Speed            :
+Clock Chip              : ICD2061A
+Programmable? (Y/N)     : Y
+Number of clocks        : programmable
+Clocks                  : "icd2061a_slow"
+Option Flags            :
+RAMDAC                  :
+Submitter               : Walter Tuppa <tuppa@iue.tuwien.ac.at>
+Last Edit Date          : Oct 11, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Number 9
+Card Model		: GXE Level 11
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: S3 928
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: 1M VRAM, 1M DRAM
+Memory Speed		: 
+Clock Chip		: ICD2061A
+Programmable? (Y/N)	: Y
+Number of clocks	: programmable
+Clocks			: "icd2061a"
+Option Flags		: "Bt485"
+RAMDAC			: BrookTree Bt485
+Submitter		: Marc Evans
+Last Edit Date		:
+#---------------------------------------------------------------------------#
+Card Vendor             : Number Nine
+Card Model              : #9GXE Level 12
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : S3 928 Rev D
+Video Memory            : 3072k
+Memory Type (DRAM/VRAM) : 2MB VRAM, 1MB DRAM
+Memory Speed            : 70ns
+Clock Chip              : ICD2061A
+Programmable? (Y/N)     : Y
+Number of clocks        : programmable
+Clocks                  : "icd2061a"
+Option Flags            : "bt485"
+RAMDAC                  : Bt485KPJ135 
+Submitter               : David Wexelblat <dwex@goblin.org>
+Last Edit Date          : October 16, 1993
+#---------------------------------------------------------------------------#
+Card Vendor             : Number Nine
+Card Model              : #9GXE Level 12
+Card Bus (ISA/EISA/VLB) : VLB
+Chipset                 : S3 928 Rev D [other codes: 1XP1-0001 93295DB 9318101]
+Video Memory            : 3072k
+Memory Type (DRAM/VRAM) : 2MB VRAM, 1MB DRAM
+Memory Speed            : 70ns
+Clock Chip              : ICD2061A
+Programmable? (Y/N)     : Y
+Number of clocks        : programmable
+Clocks                  : "icd2061a"
+Option Flags            : "bt485"
+RAMDAC                  : Bt485KPJ135 [other codes: 006 9320]
+Submitter               : Ed Hall <edhall@rand.org>
+Last Edit Date          : October 15, 1993
+#---------------------------------------------------------------------------#
+# 8514/A                                                                    #
+#---------------------------------------------------------------------------#
+Card Vendor             : Western Digital
+Card Model              : WD9510-AT
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : 8514/A-compatible
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : VRAM
+Memory Speed            :
+Clock Chip              : n/a
+Programmable? (Y/N)     : n/a
+Number of clocks        : n/a
+Clocks                  : n/a
+Option Flags            :
+RAMDAC                  : std
+Submitter               : <andrew@werple.apana.org.au>
+Last Edit Date          : Mon Sep 27 11:11:53 EST 1993
+#---------------------------------------------------------------------------#
+# ATI Mach8                                                                 #
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: 8514 Ultra
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: Mach-8
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 100ns
+Clock Chip		: 18811-0
+Programmable? (Y/N)	: N
+Number of clocks	: 32
+Clocks			: 43.10 48.90 92.90 36.30 50.30 56.60 0.00 44.90
+Clocks (cont)		: 30.30 32.10 0.00 80.50 40.20 44.90 75.40 65.30
+Clocks (cont)		: 21.60 24.40 46.40 18.10 25.10 28.30 0.00 22.40
+Clocks (cont)		: 15.20 16.10 55.40 40.20 20.10 22.40 37.70 32.70
+Option Flags		:
+RAMDAC			: standard
+Submitter		: Tiago Gons <tiago@comosjn.hobby.nl>
+Last Edit Date		: Sept 27, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: Mach8
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: 18811-0
+Programmable? (Y/N)	: No
+Number of clocks	: 32
+Clocks			: 42.95 48.77 92.4 36.0 50.35 56.64 0.0 44.9
+Clocks (cont)		: 30.24 32.0 110.0 80.0 39.91 44.9 75.0 65.0
+Clocks (cont)		: 21.47 24.38 45.2 18.0 25.17 28.32 0.0 22.45
+Clocks (cont)		: 15.12 16.0 55.0 40.0 19.95 22.45 37.5 32.5
+Option Flags		:
+RAMDAC			: Unknown
+Submitter		: Scott Laird (lair@midway.uchicago.edu)
+Last Edit Date		:
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: ATI Mach8
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 80ns
+Clock Chip		: 
+Programmable? (Y/N)	: 
+Number of clocks	: 16
+Clocks			: 43.0 48.8   0.0 36.0 50.4 56.6  0.0 44.9
+Clocks (cont)		: 30.2 32.0 110.0 80.0 40.0 44.9 75.0 65.0
+Option Flags		:
+RAMDAC			: generic 8-bit pseudocolor (says SuperProbe)
+Submitter		: mrex@rz.fht-mannheim.de
+Last Edit Date		: 30-Sep-93
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: Mach8
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: 18811-0
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 43.10  48.90  92.80  36.30  50.30  56.60  0.00  44.90
+Clocks (cont)		: 30.30  32.10 110.70  80.50  40.20  44.90  75.40 65.30
+Option Flags		: 
+RAMDAC			: 
+Submitter		: Hans Nasten <nasten@everyware.se>
+Last Edit Date		: 
+#---------------------------------------------------------------------------#
+Card Vendor             : ATI
+Card Model              : Graphics Ultra  (P/N1041111520, BIOS#1130111513(c)91)
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : Mach8 38800-1 (VGA - VGA Wonder+ 28800-5)
+Video Memory            : 1024k  (VGA - 512k)
+Memory Type (DRAM/VRAM) : VRAM TMS44C251-10  (VGA - DRAM)
+Memory Speed            : 100ns  (VGA - 80ns)
+Clock Chip              : ? 
+Programmable? (Y/N)     : N
+Number of clocks        : 32
+Clocks                  : 43.00 48.80   0.00 36.00 50.30 56.70  0.00 44.90
+Clocks (cont)           : 30.30 32.00 108.40 80.00 40.00 44.90 75.00 65.00 
+Clocks (cont)           : 21.50 24.40   0.00 18.00 25.20 28.30  0.00 22.40
+Clocks (cont)           : 15.10 16.00  55.00 40.00 20.00 22.40 37.50 32.50
+Option Flags            :
+RAMDAC                  : (?) INMOS IMSG176J666     
+Submitter               : Henry Worth (haw30@ras.amdahl.com)
+Last Edit Date          : Oct 3, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics ULTRA
+Card Bus 		: ISA
+Chipset			: ATI 28800-6 and ATI 38800-1
+Video Memory		: 1024k
+Memory Type 		: VRAM
+Memory Speed		: 80ns
+Clock Chip		: ATI 188102
+Programmable? (Y/N)	: don't know
+Number of clocks	: 32
+Clocks			: 43.00 48.80 0.00 36.00 50.30 56.70 0.00 44.90
+Clocks (cont)		: 30.30 32.00 89.50 80.00 40.00 44.90 75.00 65.00
+Clocks (cont)		: 21.50 24.40 0.00 18.00 25.20 28.30 0.00 22.40
+Clocks (cont)		: 15.10 16.00 50.10 40.10 20.00 22.40 37.50 32.50
+Option Flags		:
+RAMDAC			: IMSG176J-S07
+Submitter		: Joergen Haegg <jh@efd.lth.se>
+Last Edit Date		: Oct 13, 1993
+#---------------------------------------------------------------------------#
+# ATI Mach32                                                                #
+#---------------------------------------------------------------------------#
+Card Vendor		:  ATI
+Card Model		:  Ultra Pro
+Card Bus (ISA/EISA/VLB)	:  ISA
+Chipset			:  Mach32
+Video Memory		:  2048k
+Memory Type (DRAM/VRAM)	:  VRAM
+Memory Speed		:  
+Clock Chip		:  18811-1
+Programmable? (Y/N)	:  No
+Number of clocks	:  16
+Clocks			:  100.0 126.0 92.4 36.0 50.35 56.64 0 44.90
+Clocks (cont)		:  135.0 32.0 110.0 80.0 39.91 49.90 75.0 65.0
+Option Flags		:  None
+RAMDAC			:  ATI34075
+Submitter		:  Mike Bernson
+Last Edit Date		:  Sept 26, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: VLB mach32
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: ATI 68800-3 (mach32)
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 80ns
+Clock Chip		: ATI 18811-1
+Programmable? (Y/N)	: N
+Number of clocks	: 16
+Clocks			: 100 126 92.4 36 50.35 56.64 External 44.9
+Clocks (cont)		: 135 32  110  80 39.91 44.9  75       65
+Option Flags		: none
+RAMDAC			: ATI 68875
+Submitter		: Craig E. Groeschel <craig@adikia.sccsi.com>
+Last Edit Date		: Oct 3, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI 
+Card Model		: ATI Ultra Pro (OEM version without mouse)
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: MACH 32
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 80ns
+Clock Chip		: ics2494AM 9236-308
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 51.00 36.00 126.00 25.00 80.00 65.00 45.00 40.00
+Clocks (cont)		: 135.00 32.00 110.00 80.00 45.00 40.00 75.00 65.00
+Option Flags		: 
+RAMDAC			: ATI68875
+Submitter		: Bill Broadley Broadley@neurocog.lrdc.pitt.edu
+Last Edit Date		:
+#---------------------------------------------------------------------------#
+Card Vendor             : ATI
+Card Model              : Mach32 Graphics Ultra Pro
+Card Bus (ISA/EISA/VLB) : VLB
+Chipset                 : 6880006
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : VRAM
+Memory Speed            : 80 ns
+Clock Chip              : ATI1881 (ICS2494)
+Programmable? (Y/N)     : N
+Number of clocks        : 16
+Clocks                  : 18.00 22.00 25.00 28.00 36.00 44.00 50.00 56.00
+Clocks (cont)           : 30.00 32.00 37.00 39.00 40.00 0.00 75.00 65.00
+Option Flags            : 
+RAMDAC                  : ATI68830
+Submitter               : Ed Krohne (krohne@elrond.mcdata.com)
+Last Edit Date          : Sept 30, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI Technologies Inc
+Card Model		: Graphics Ultra Pro VLB
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: Mach32
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: 256Kx4 VRAM; 512-bit serial transfer
+Memory Speed		: ??
+Clock Chip		: 18811-1
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 100.00 126.00 92.40 36.00 50.35 56.64 Ext 44.90
+Clocks (cont)		: 135.00 32.00 110.00 80.00 39.91 44.90 75.00 65.00
+Option Flags		:
+RAMDAC			: ATI68875
+Submitter		: Mark Weaver <Mark_Weaver@brown.edu>
+Last Edit Date		: Oct 3, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra Pro
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: ATI 28800-A / Mach 32
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM) : VRAM
+Memory Speed		: 80ns (according to docs, not actually opened)
+Clock Chip		: 
+Programmable? (Y/N) 	: N
+Number of clocks	: 32
+Clocks			: 100 126 92 36 51 57 0 44 135 32 110 80 39 45 75 65
+Clocks (cont)		: 50 63 46 18 25 28 0 22 67 16 55 40 19 23 37 33
+Option Flags		:
+RAMDAC			:
+Submitter		: Linus Torvalds (Linus.Torvalds@Helsinki.FI)
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: VLB mach32
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: ATI mach32
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 80ns
+Clock Chip		: ?
+Programmable? (Y/N)	: N
+Number of clocks	: 32
+Clocks			: 100.0 126.0  92.0  36.0  51.0  57.0   0.0  44.0
+Clocks (cont)		: 135.0  32.0 110.0  80.0  39.0  45.0  75.0  65.0
+Clocks (cont)		:  50.0  63.0  46.0  18.0  25.0  28.0   0.0  22.0
+Clocks (cont)		:  67.0  16.0  55.0  40.0  19.0  23.0  37.0  33.0
+Option Flags		:
+RAMDAC			: ATI 68875
+Submitter		: Todd Pfaff <todd@flex.eng.mcmaster.ca>
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra Pro
+Card Bus (ISA/EISA/VLB)	: EISA
+Chipset			: Mach32
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: ?
+Clock Chip		: 18811-1
+Programmable? (Y/N)	: No
+Number of clocks	: 16
+Clocks			: 100 126 92 36 50 56 0 45 135 32 110 80 40 45 75 65
+Option Flags		:
+RAMDAC			: ?
+Submitter		: Ari Laakkonen (apl@doc.ic.ac.uk)
+Last Edit Date		: Oct 4, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: ATI
+Card Model		: Graphics Ultra Pro
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: ATI 28800-A/Mach32
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: VRAM
+Memory Speed		: 45ns
+Clock Chip		:
+Programmable? (Y/N)	: No
+Number of clocks	: 32
+Clocks			: 100 126 92 36 51 57 0 44 135 32 110 80 39 45 75 65
+Clocks (cont)		: 50 63 46 18 25 28  0 22 67 16 55 40 19 23 37 33
+Option Flags		:
+RAMDAC			: ATI 68875 RAMDAC
+Submitter		: Dietmar Wolz <dietmar@cs.tu-berlin.de>
+Last Edit Date		: Oct 09, 1993
+#---------------------------------------------------------------------------#
+# SVGA (Cirrus)                                                             #
+#---------------------------------------------------------------------------#
+Card Vendor		: Boca
+Card Model		: SVGAX3
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: Cirrus 5426
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: ?
+Clock Chip		: Built-In
+Programmable? (Y/N)	: No
+Number of clocks	: 12
+Clocks			: 25.23  28.32  41.16  36.08  31.50  39.99  45.08 
+Clocks (cont)		: 49.87 64.98  72.16  75.00  80.01
+Option Flags		:
+RAMDAC			: Cirrus Logic Built-in 15/16/24-bit DAC
+Submitter		: johnsonp@nicco.sscnet.ucla.edu
+Last Edit Date		: Oct 3, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Cirrus Logic 
+Card Model		: MVGA-AVGA3VL
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: CL 5426
+Video Memory		: 2048k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 70ns
+Clock Chip		: internal
+Programmable? (Y/N)	: Y
+Number of clocks	: 12
+Clocks			: 25.23 28.23 42.16 36.08 31.50 39.99 45.08 49.87
+Clocks (cont)		: 64.89 72.16 75.00 80.01
+Option Flags		: 
+RAMDAC			: internal
+Submitter		: woju@keep.fan.bln.sub.org
+Last Edit Date		: Thu Oct  7 10:56:50 MET 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Diamond
+Card Model		: SpeedStar PRO
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: Cirrus 5426
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 70ns (HY534256S-70; 9306A KOREA)
+Clock Chip		: Cirrus built-in
+Programmable? (Y/N)	: Y
+Number of clocks	: 12
+Clocks			: 25.23 28.32 41.16 36.08 31.50 39.99 45.08 49.87
+Clocks (cont)		: 64.98 72.16 75.00 80.01
+Option Flags		: 
+RAMDAC			: Cirrus Logic Built-in 15/16/24-bit DAC
+Submitter		: Chris Metcalf <metcalf@lcs.mit.edu>
+Last Edit Date		: Sun Sep 26 22:12:50 EDT 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Genoa Systems
+Card Model		: WindowsVGA 24 8500VL
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: Cirrus Logic GD5426 (P/N: CL-GD5426-80QC-A)
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: Best guess 70ns (P/N: AAA1M304J-07)
+Clock Chip		: Integrated
+Programmable? (Y/N)	: Y
+Number of clocks	: 12
+Clocks			: 25.20 28.30 41.20 36.10 31.50 40.00 44.90 49.87
+Clocks (cont)		: 65.00 72.20 75.00 80.00 
+Option Flags		: 
+RAMDAC			: Integrated
+Submitter		: scooper@noc.rutgers.edu
+Last Edit Date		: 1993-10-05
+#---------------------------------------------------------------------------#
+Card Vendor		: Genoa
+Card Model		: 8500VL
+Card Bus (ISA/EISA/VLB)	: VLB
+Chipset			: Cirrus CLGD5426
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 70 ns
+Clock Chip		: internal
+Programmable? (Y/N)	: Y
+Number of clocks	: 12
+Clocks			: 25.23 28.32 41.16 36.08 31.50 39.99 45.08 49.87
+Clocks (cont)		: 64.98 72.16 75.00 80.01
+Option Flags		:
+RAMDAC			: internal
+Submitter		: Dave Kochan (slflq@cc.usu.edu)
+Last Edit Date		: Oct. 5, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: TMC Research Corporation
+Card Model		: HG426AV VESA Local(VL) Bus Graphics Card
+Card Bus (ISA/EISA/VLB) : VLB
+Chipset			: Cirrus Logic 5426 BitBLT
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM) : DRAM
+Memory Speed		: 70 ns
+Clock Chip		: Internal
+Programmable?		: Y
+Number of clocks	: 12
+Clocks			: 25.23 28.32 41.16 36.08 31.50 39.99 45.08
+Clocks (cont)           : 49.87 64.98 72.16 75.00 80.01
+Option Flags		:
+RAMDAC			: Internal
+Submitter		: Dilvan de A. Moreira <ddam@ukc.ac.uk>
+Last Edit Date		: Oct 7, 1993
+#---------------------------------------------------------------------------#
+# SVGA (Western Digital)                                                    #
+#---------------------------------------------------------------------------#
+Card Vendor		: DFI Inc
+Card Model		: VG-8000WH
+Card Bus (ISA/EISA/VLB)	: ISA
+Chipset			: WD 90C31
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: DRAM
+Memory Speed		: 60ns
+Clock Chip		: ICS90C64AV
+Programmable? (Y/N)	:
+Number of clocks	: 9
+Clocks			: 25.20 28.32 65.50 36.30 40.30 50.30 32.20 45.00
+Clocks (cont)		: 49.70
+Option Flags		:
+RAMDAC			: AT&T 20C492 15/16/18-bit DAC with gamma correction
+Submitter		: Charlie Brady <charlieb@tplrd.tpl.oz.au>
+Last Edit Date		: Thu Oct  7 19:26:31 EST 1993
+#---------------------------------------------------------------------------#
+Card Vendor             : Diamond
+Card Model              : SpeedStar 24X
+Card Bus (ISA/EISA/VLB) : ISA
+Chipset                 : WD/Paradise 90C31
+Video Memory            : 1024k
+Memory Type (DRAM/VRAM) : DRAM
+Memory Speed            : 
+Clock Chip              : 
+Programmable? (Y/N)     : N
+Number of clocks        : 9
+Clocks                  : 25.20  28.32  77.30  0.00  0.00  28.30  0.00  0.00
+Clocks (cont)           : 50.50
+Option Flags            :
+RAMDAC                  : Diamond SS2410
+Submitter               : Mike Tierney <mjtiern@pepsi.eng.umd.edu>
+Last Edit Date          : Oct 7, 1993
+#---------------------------------------------------------------------------#
+Card Vendor		: Western Digital (on Viglen Motherboard)
+Card Model		: 
+Card Bus (ISA/EISA/VLB)	: Integrated
+Chipset			: WD90C31
+Video Memory		: 1024k
+Memory Type (DRAM/VRAM)	: unknown
+Memory Speed		: unknown
+Clock Chip		: unknwon
+Programmable? (Y/N)	: unknwon
+Number of clocks	: 8
+Clocks			: 25.00  28.00  65.00   0.00  36.00   0.00  44.00
+Option Flags		:
+RAMDAC			:
+Submitter		: row@uk.co.bnr
+Last Edit Date		: Oct 14, 1993
+
+#---------------------------------------------------------------------------#
+# Known clock synthesizer dot-clocks                                        #
+#---------------------------------------------------------------------------#
+ATI 18811-0:
+	 42.95   48.77   92.4   36.0    50.35   56.64    0.0    44.9
+	 30.24   32.00  110.0   80.0    39.91   44.9    75.0    65.0
+ATI 18811-1:
+	100.0   126.0    92.4   36.0    50.35   56.64    0.0    44.9
+	135.0    32.0   110.0   80.0    39.91   44.9    75.0    65.0
+Avasem AV9194-56:
+	 25.175  28.322  40.0    0.0    50.0    77.0    36.0    44.9
+	130.0   120.0    80.0   31.5   110.0    65.0    75.0    72.0
+Avasem AV9194-07, AV9194-11:
+	 25.175  28.322  40.0    0.0    50.0    77.0    36.0    44.9
+	130.0   120.0    80.0   31.5   110.0    65.0    75.0    94.5
+Chrontel CH9294-G:
+	 25.175  28.322  40.0   72.0    50.0    77.0    36.0    44.9
+	130.0   120.0    80.0   31.5   110.0    65.0    75.0    94.5
+ICS ICS2494-256:
+	 25.175  28.322  40.0    0.0    50.0    77.0    36.0    44.889
+	130.0   120.0    80.0   31.5   110.0    65.0    75.0    72.0
+ICS ICS2494-275, ICS2494-305:
+	 25.175  28.322  40.0    0.0    50.0    77.0    36.0    44.889
+	130.0   120.0    80.0   31.5   110.0    65.0    75.0    94.5
+
+#---------------------------------------------------------------------------#
+# Blank form for new supported cards.  Fill this in and mail in everything  #
+# below header section.                                                     #
+#---------------------------------------------------------------------------#
+To: xfree86@physics.su.oz.au
+Subject: New accelerated card database entry.
+
+Card Vendor		: 
+Card Model		: 
+Card Bus (ISA/EISA/VLB)	: 
+Chipset			: 
+Video Memory		: 
+Memory Type (DRAM/VRAM)	: 
+Memory Speed		: 
+Clock Chip		: 
+Programmable? (Y/N)	: 
+Number of clocks	: 
+Clocks			:
+Option Flags		:
+RAMDAC			:
+Submitter		: 
+Last Edit Date		: 
+
+
+
+$XFree86: mit/server/ddx/x386/etc/AccelCards,v 2.1 1993/10/23 04:53:24 dawes Exp $

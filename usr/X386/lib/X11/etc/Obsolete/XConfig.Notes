@@ -1,0 +1,609 @@
+Calculating the X386 Display Numbers
+Bob Crosson, crosson@cam.nist.gov
+920203
+
+This is a description of how I generated my Xconfig file for my
+version of the X-Windows version 11 release 5 X386 server.  It
+may contain inaccuracies in the descriptions of how displays work
+or what fields in Xconfig mean, but the inaccuracies should not
+keep anyone from generating a working Xconfig file.  Read this
+document, then read "Videotiming configuration tutorial", by Chin
+Fang, in the file mit/server/ddx/x386/CONFIG, or vice versa, to
+get the most out of both articles.
+
+Please inform me of mistakes with this document.  Also remember
+that I have experience only with my display and adapter card.  I
+have not worked with any others.  And I am not an expert on video
+displays, so I took a lot of the assumptions in "Videotiming
+configuration tutorial" as valid.  So with those warnings ringing
+in your mind, we begin.
+
+DISPLAY AND ADAPTER BASICS
+
+Knowing how the display works is essential to understanding what
+numbers to put in the various fields in the file Xconfig.  Those
+values are used in the lowest levels of controlling the display
+by the X386 server.  Not so much needs to be known about the
+adapter which the display is connected to.  Obviously the adapter
+must be compatible with the X386 drivers.
+
+The Display
+
+The display generates a picture from a series of dots.  The dots
+are arranged from left to right to form lines.  The lines are
+arranged from top to bottom to form the picture.  The dots emit
+light when they are struck by the electron beam inside the
+display.  To make the beam strike each dot for an equal amount of
+time, the beam is swept across the display in a constant pattern.
+
+The pattern starts at the top left of the screen, goes across the
+screen to the right in a straight line, and stops temporarily on
+the right side of the screen.  Then the beam is swept back to the
+left side of the display, but down one line.  The new line is
+swept from left to right just as the first line was.  This
+pattern is repeated until the bottom line on the display has been
+swept.  Then the beam is moved from the bottom right corner of
+the display to the top left corner, and the pattern is started
+over again.
+
+Starting the beam at the top left of the display is called the
+beginning of a frame.  The frame ends when the beam reaches the
+the top left corner again as it comes from the bottom right
+corner of the display.  A frame is made up of all of the lines
+the beam traced from the top of the display to the bottom.
+
+If the electron beam were on all of the time it was sweeping
+through the frame, all of the dots on the display would be
+illuminated.  There would be no black border around the edges of
+the display.  At the edges of the display the picture would
+become distorted because the beam is hard to control there.  To
+reduce the distortion, the dots around the edges of the display
+are not illuminated by the beam even though the beam may be
+pointing at them.  The viewable area of the display is reduced
+this way.
+
+The time the beam would have been illuminating the side borders
+of the display is used for sweeping the beam back from the right
+edge to the left and moving the beam down to the next line.  The
+time the beam would have been illuminating the top and bottom
+borders of the display is used for moving the beam from the
+bottom-right corner of the display to the top-left corner.
+
+The Adapter Card
+
+The adapter card generates the signals which cause the display to
+turn on the electron beam at each dot to generate a picture.  The
+card also controls when the display moves the beam from the right
+side to the left and down a line by generating a signal called
+the horizontal sync (for synchronization) pulse.  One horizontal
+sync pulse occurs at the end of every line.  The adapter also
+generates a vertical sync pulse which signals the display to move
+the beam to the top-left corner of the display.  A vertical sync
+pulse is generated near the end of every frame.
+
+The display requires that there be short time periods both before
+and after the horizontal and vertical sync pulses so that the
+position of the electron beam can stabilize.  If the beam can't
+stabilize, the picture will not be steady.
+
+The Xconfig File
+
+In the following description of how the various signals are
+generated, I will be describing things in terms related to the
+numbers entered in the Xconfig file.
+
+The Xconfig file Table of Video Modes contains lines of numbers,
+with each line being a complete specification for one mode of
+X-server operation.  The fields are grouped into four
+sections, the name section, the clock frequency section, the
+horizontal section, and the vertical section.
+
+The name section contains one field, the name of the video mode
+specified by the rest of the line.  This name is referred to on
+the "Modes" line of the Graphics Driver Setup section of the
+Xconfig file.  The name field may be omitted if the name of a
+previous line is the same as the current line.
+
+The clock frequency section contains only the clock frequency
+field of the video mode line.  The number in this field specifies
+what clock frequency was used to generate the numbers in the
+following sections.
+
+The horizontal section consists of four fields which specify how
+each horizontal line on the display is to be generated.  The
+first field of the section contains the number of dots per line
+which will be illuminated to form the picture.  The second field
+of the section indicates at which dot the horizontal sync pulse
+will begin.  The third field indicates at which dot the
+horizontal sync pulse will end.  The fourth field specifies the
+total length of the horizontal line in dots.
+
+The vertical section also contains four fields.  The first field
+contains the number of visible lines which will appear on the
+display.  The second field indicates the line number at which the
+vertical sync pulse will begin.  The third field specifies the
+line number at which the vertical sync pulse will end.  The
+fourth field contains the total number of lines in a frame.
+
+Example:
+
+     #Modename    clock  horizontal timing  vertical timing
+
+     "752x564"     40    752 784  944 1088  564 567 569 611
+	           44.5  752 792  976 1240  564 567 570 600
+
+
+The Horizontal line
+
+The basic signal, from which all other horizontal line signals
+are derived, is the adapter card's clock frequency.  Every cycle
+of the adapter card's clock corresponds to one dot on the
+display.  From these dots are formed lines (a series of dots) and
+frames (a series of lines).
+
+The dots in a line are either illuminated (the part that forms
+the picture) or not illuminated (the parts that form the
+borders).  In the Xconfig file the number of illuminated dots is
+specified first.  Then there is a group of dots which correspond
+to the time separating the last illuminated dot and the beginning
+of the horizontal sync pulse.  This is followed a group of dots
+represent the sync pulse itself.  Finally, there is a group of
+dots that represent the delay period after the pulse.
+
+For Xconfig, all of the numbers just mentioned - the number of
+illuminated dots on the line, the number of dots separating the
+illuminated dots from the beginning of the sync pulse, the number
+of dots representing the duration of the pulse, and the number of
+dots after the end of the sync pulse - are added to produce the
+number of dots per line.  The number of dots in each group must
+be evenly divisible by eight.  Probably this is a restriction
+imposed by the circuitry on the adapter card.
+
+Example:
+
+     horizontal numbers: 800 864 1024 1088
+
+     The sample line has the number of illuminated dots
+     (800) followed by the number of the dot when the sync
+     pulse starts (864), followed by the number of the dot
+     when the sync pulse ends (1024), followed by the number
+     of the last dot on the horizontal line (1088).
+
+Note again that all of the horizontal numbers (800, 864, 1024,
+and 1088) are divisible by eight!  This is not required of the
+vertical numbers.
+
+The Vertical Frame
+
+The number of lines from the top of the display to the bottom
+form the frame.  The basic timing signal for a frame is the line.
+A number of lines will contain the picture.  After the last
+illuminated line has been displayed, a delay of a number of lines
+will occur before the vertical sync pulse is generated.  Then the
+sync pulse will last for a few lines, and finally the last lines
+in the frame, the delay required after the pulse, will be
+generated.  The numbers that specify this mode of operation are
+entered in a manner similar to the following example.
+
+Example:
+
+     vertical numbers: 600 603 609 630
+
+     This example indicates that there are 600 visible lines
+     on the display, that the vertical sync pulse starts
+     with the 603rd line and ends with the 609th, and that
+     there are 630 total lines being used.
+
+Note that the vertical numbers don't have to be divisible by
+eight!
+
+How to Calculate the Numbers
+
+To calculate the horizontal and vertical numbers you need to know
+something about the display and the adapter card.  For the
+display, you need to know its maximum vertical and horizontal
+sync rates (or what specific sync rates it requires), and the
+approximate number of visible dots per line and lines per frame
+it can accommodate.  If the display's manual says it can display
+800 dots per line and 600 lines, then it probably can accept 1.33
+x 800 = 1,064 total dots per line and 1.1 x 600 = 660 total lines
+per frame.  You also need to know the clock rates at which your
+adapter card can operate, and the amount of memory installed on
+the card, in bytes.
+
+The emphasis in this procedure will be to get something that
+works, then have you play around with the numbers to get what
+works the best.  To do this some basic assumptions must be made.
+Most of these assumptions come from the article written by Chin
+Fang, "Videotiming configuration tutorial," that is in the file
+mit/server/ddx/x386/CONFIG in the X11R5 release of X-Windows.
+
+From your adapter card documentation, you must find out how much
+video memory (Random-Access Memory, RAM) is installed.  It may
+limit the resolution you can achieve on color or gray-scale
+displays.  It probably isn't a factor on displays that have only
+two colors, white and black with no shades of gray in between.
+
+For color displays, a byte of video memory is usually required
+for each visible dot to be shown.  This byte contains the
+information that determines what mix of red, green, and blue is
+generated for its dot.  To get the amount of memory required,
+multiply the number of visible dots per line by the number of
+visible lines.  For a display with a resolution of 800x600, this
+would be 800 x 600 = 480,000, which is the number of visible dots
+on the display.  This is also, at one byte per dot, the number of
+bytes of video memory that are necessary on your adapter card.
+
+Don't worry if you have more memory than required because X386
+may surprise you and make use of it by allowing you to scroll
+your viewable area.  Remember also that a card with 512K bytes of
+memory really doesn't have 512,000 bytes installed, it has 512 x
+1024 = 524,288 bytes.  So start with something that will fit,
+then twiddle the numbers to get something that you like.  Also,
+if you choose some strange numbers like 752x580, remember that a
+ratio of 4:3 for width to height of the displayed area is usually
+the most pleasing.  (This is the Golden Ratio referred to in the
+other document, and is the same ratio as 800x600, 640x480,
+1024x768, etc.)
+
+To find out what clock rates your adapter card will generate, you
+can look on your adapter card for a little tin can with numbers
+on it like 40000000 Hz.  These tin cans are crystals that
+oscillate at specific frequencies.  The 40000000 in this example
+implies that the crystal oscillates at 40 MHz, so the clock rate
+on the card is at least 40 MHz, and may be other values both
+higher and lower.  If you can't find a crystal on the card (or
+don't want to take a look), look through the manual that came
+with the card for the specifications section.  The clock
+frequencies may be listed there.  If they aren't, there is a
+program called clock.exe, that runs under MS/PC-DOS that is
+supposed to be able to determine what clock rates are available.
+I haven't found this program in the X11R5 release, so it's
+probably in the X11R4 software.
+
+Now you need to find the horizontal sync rate of your display.
+It should be in the manual that came with it.  If your display
+has a range of horizontal sync rates, take the maximum value.
+This rate is the maximum number of sync pulses per second your
+display will tolerate from the adapter card.  Since a sync pulse
+occurs for every line generated by the card, dividing the clock
+rate of the card (the number of dots per second) by the maximum
+sync rate (the number of lines per second) will give us the
+minimum number of dots per line that the display can accommodate
+at that clock frequency.
+
+An adapter card has a 40 MHz clock rate.  A display has a range
+of horizontal sync rates from 30 KHz to 37 KHz.  The minimum number
+of dots per line is 40,000,000/37,000 = 1,081.081, or
+approximately 1,081 dots per line.
+
+We'll use this number of dots per line in the following
+calculations.  So each line on our display must have at least 1081
+dots.  We round this up to 1088 to make it divisible evenly by
+eight.  Now let's assume that the horizontal sync pulse should be
+3.8 microseconds long (see "Videotiming...").  We need to find
+out how many dots it takes to make a 3.8 microsecond pulse.  We
+do this by first finding out how many microseconds are in one
+dot.  Since there are 40,000,000 dots per second, 1/40,000,000 is
+the number of seconds per dot.
+
+     1/40,000,000 = .000000025 = .025 microseconds per dot
+
+
+Thus the number of dots for a 3.8 microsecond sync pulse is
+
+     3.8 microseconds = D dots x .025 microseconds/dot
+
+			or
+
+     D dots = (3.8 microseconds) / (.025 microseconds/dot) =
+						152 dots
+
+So we have 1088 dots per line, 800 of which are the illuminated
+ones, with 152 for the sync pulse.  (Note that 152 is evenly
+divisible by eight.  If it weren't we would round it up until it
+was evenly divisible.)  This leaves us the task of calculating
+the time before and after the sync pulse that is necessary for
+the display.  If you have this information, you can calculate the
+number of dots necessary for each time period by dividing each
+time by .025 microseconds/dot.  If you don't have this
+information, try the numbers in the example at the end of this
+document, use the values given in "Videotiming..." (about 32 dots
+on each side of the sync pulse), or put the pulse in the middle
+of the remaining dots.
+
+This last suggestion results in the timing being 800 dots for the
+viewable area, 152 dots for the pulse, and 1088 - (800 + 152) =
+136 dots to divide between the two other times.  Half of 136 is
+68 dots, so 68 dots are placed between the illuminated dots and
+the sync pulse, and 68 dots are placed after the sync pulse.  The
+horizontal numbers in the Xconfig line then become
+
+	800 (800+68) (800+68+152) (800+68+152+68)
+
+			or
+
+		800 868 1020 1088
+
+Now we want to calculate the vertical numbers.  To begin, we must
+remember that the vertical numbers are not in terms of dots or
+microseconds per dot, but are expressed as numbers of lines!  So
+we have to calculate how much time it takes to display a single
+line.  That's easy, because we know each line is 1088 dots and
+each dot is .025 microsecond.  Each line is, therefore,
+
+     (1088 dots/line) x (.025 microseconds/dot) =
+					27.2 microseconds/line
+
+Since we chose 800 visible dots per line, let's choose the number
+of lines to be such that the ratio of horizontal to vertical is 4
+to 3.  Thus, 800 is 4 x 200, so the number of visible lines
+should be 3 x 200 = 600.  Our target resolution is 800x600.
+
+From "Videotiming...", a vertical sync pulse should be in the
+range of 50 to 300 microseconds.  If we chose 150 microseconds as
+a typical sync pulse, we find how many lines 150 microseconds is
+by dividing 150 by 27.2 microseconds per line.
+
+     (150 microseconds/pulse) / (27.2 microseconds/line) =
+			5.51 lines/pulse
+
+By rounding up (never down) to 6 lines/pulse we now have the
+vertical sync pulse width.
+
+To guess at the total number of lines per frame (illuminated
+lines plus nonilluminated lines in the border) we assume (from
+"Videotiming...") that the total number of lines will be 5% more
+than the number of viewable lines.  So the total number of lines
+is
+
+     (600 lines) x (1.05) = 630 total lines per frame
+
+So now we must place the pulse in the time between the end of the
+illuminated lines and the end of the frame.  Since we have 630
+total lines, 600 illuminated lines, and 6 lines for the pulse, we
+have
+
+		630 - 600 - 6 = 24 lines left
+
+Some displays don't mind if the pulse begins immediately after
+the illuminated lines, but others might want a line or two
+between the last illuminated line and the beginning of the sync
+pulse.  Taking the latter course just to be safe, we add three
+lines between the last illuminated line and the beginning of the
+pulse.  The rest of the lines are added after the pulse ends.  So
+the vertical timing numbers become
+
+	     600 (600+3) (600+3+6) (600+3+6+21)
+
+			or
+
+     		  600 603 609 630
+
+Before we do anything else, we must check that the display can
+handle 630 lines/frame at 27.2 microseconds/line.  We do this by
+calculating how many frames per second our configuration will
+generate, and comparing it to the display manual's entry for
+vertical sync rate.  For 630 lines/frame at 27.2 micro-
+seconds/line, we have 630 x 27.2 = 17,136 microseconds/frame.
+17,136 microseconds/frame is 0.017136 seconds/frame, or
+1/0.017892 frames/second.
+
+	1 / (0.017136 seconds/frame) = 58.4 frames/second
+
+If the manual says the vertical sync rate is 58.4 Hz, or 58.4 Hz
+is in the range of the display's vertical sync rate, we are fine.
+If the display cannot handle this rate, we'll have to change the
+number of lines per frame by adjusting all of the timings
+proportionally.
+
+Now we combine the horizontal and vertical timing numbers
+together with the resolution and clock values to produce a test
+configuration for Xconfig.  Our line becomes
+
+     "800x600"  40  800 868 1020 1088  600 603 609 630
+
+Now we have a configuration of X386 to try.  It may not work if
+any of our assumptions were grossly wrong, but in most cases it
+should at least give us a stable display.  Now it takes a little
+experimentation to produce something pleasing.
+
+Experimentation should begin by varying the assumed timings, such
+as the time between the last illuminated dot on a line and the
+beginning of horizontal sync pulse, the total dots on a line, the
+total number of lines in a frame, etc..  Do this by making your
+calculations for the new timings, then enter the numbers in
+Xconfig under another resolution, such as "800x600t1" and
+"800x600t2" for test1 and test2.  The names of the timing lines
+don't have to reflect the actual resolutions of the timings, they
+are just names used by X386 to differentiate between the timing
+lines.  Although I haven't tried this, you probably could call
+one timing "base", and call other timings "test1" and "test2".
+Then set up your "Modes" line in Xconfig to add the two test
+configurations.
+
+     Modes	"800x600" "800x600t1" "800x600t2"
+
+Note, its probably best to have the first mode on the "Modes"
+line to be some mode that you know works.  The following modes
+should be different from the working mode by only one change.
+That is, for mode "800x600t1", make it different from mode
+"800x600" by changing only the time between the last visible
+dot on a line and the beginning of the sync pulse.  And make mode
+"800x600t2" different from either mode "800x600" or mode
+"800x600t1" in one timing.  Don't change any other timings!  Do
+this so you know how each change affects the display.  If you
+change two timings at once and the display goes crazy, you won't
+be able to tell which change was the bad one.
+
+Also, when you create new timings that work, make notes in the
+Xconfig file as comments so you have a record of what happened
+from one timing to the next.
+
+So that's it!  You're on your way.  The following example is how
+I generated my first Xconfig timing line.  I didn't have to make
+many assumptions because all of the display timing information
+was in my display's manual.  Perhaps the description will be
+informative.
+
+
+My Timing Calculations
+
+My adapter card has a 40 MHz crystal on it so I started with a 40
+MHz clock rate.  My display's maximum horizontal sync rate is 37
+KHz, so the minimum dots per line are 40,000,000/37,000 = 1081.
+My display's vertical sync rate is the range from 50 Hz to 90 Hz.
+
+My display's manual says that the largest horizontal sync pulse
+is 3.92 microseconds.  With 0.025 microseconds per dot, the pulse
+is
+
+	(3.92 microseconds) / (.025 microseconds/dot) =
+						156.8 dots
+
+Rounding this up to the nearest number evenly divisible by eight
+gives 160 dots.
+
+The manual also says that the time between the last illuminated
+dot and the beginning of the sync pulse must be at least 0.67
+microseconds.  The number of dots in 0.67 microseconds at a 40
+MHz clock rate - remember 40 MHz is .025 microseconds/dot - is
+
+	D dots = (0.67 microseconds) / (.025 microseconds/dot) =
+						26.8 dots
+
+Since 26.8 is not evenly divisible by eight, round it up to 32
+dots.
+
+My display's manual says the time after the sync pulse should be
+3.56 microseconds or more.  In dots, 3.56 microseconds is
+
+	D dots = (3.56 microseconds) / (.025 microseconds/dot) =
+						142.4 dots
+
+Round 142.4 up to 144, so that it's evenly divisible by eight.
+
+So now for a horizontal line we have 800 illuminated dots, 32
+dots between the illuminated dots and the sync pulse, 152 dots
+for the sync pulse, and 144 dots after the sync pulse.
+
+	800 + 32 + 160 + 144 = 1136
+
+We now have a line that is 1136 dots long.  This is greater than
+the 1088 we previously calculated, but remember that 1088 was the
+MINIMUM number of dots that could be on a line.  So 1136 dots per
+line is okay for starters.
+
+The numbers to enter on the Xconfig line so far are
+
+	"800x?"  40  800 (800+32) (800+32+160) (800+32+160+144)...
+
+				or
+
+	"800x?"  40  800 832 992 1136...
+
+
+A line of 1136 dots at .025 microsecond/dot means that a line
+represents 1136 x .025 = 28.4 microseconds.
+
+Since we chose 800 dots/line horizontal resolution, we choose 600
+lines/frame as the vertical resolution.
+
+My display's manual says that the vertical sync pulse must be at
+least 64 microseconds long.  In terms of lines, 64 microseconds
+is
+
+	(64 microseconds/pulse) / (28.4 microseconds/line) =
+					2.25 lines/pulse
+
+We round 2.25 up to 3 lines for the vertical sync pulse.
+
+The manual says the time between the last displayed line and the
+start of the sync pulse must be at least 318 microseconds, and
+the delay after the end of the pulse must be at least 630
+microseconds.  We calculate how many lines each of these time
+periods represents as follows.
+
+	(318 microseconds) / (28.4 microseconds/line) =
+					11.20 lines
+
+	(630 microseconds) / (28.4 microseconds/line) =
+					22.18 lines
+
+We round each of the times up to become 12 lines before the sync
+pulse and 23 lines after the pulse.  This makes our vertical
+timing numbers
+
+	600 (600+12) (600+12+3) (600+12+3+23)
+
+			or
+
+		600 612 615 638
+
+Checking the frame rate to see if it falls within the rate of the
+display, we see that 638 lines/frame at 28.4 microseconds/line is
+18,119 microseconds/frame, which is 55.19 frames/second.  My
+display can handle anything from 50 Hz to 90 Hz, so the timing is
+all right.
+
+Putting the resolution, clock, horizontal, vertical timing
+numbers together on a video mode line in Xconfig results in
+
+	"800x600"  40  800 832 992 1136  600 612 615 638
+
+This was the first video mode I tried.  It turned out not to be
+very satisfactory because there was too much flicker.  I tried
+other timings both above and below this setting as shown in the
+following example.  I finally settled on the "784x614" mode as a
+compromise between flicker and resolution.
+
+You'll notice that almost all of the clock frequencies are 40
+MHz.  Through experimentation I found that higher frequencies
+were beyond my adapter card's capabilities, and that lower
+frequencies didn't provide the resolution I wanted.
+
+Example:
+
+     Timings I have tried:
+
+     # the following line works but is right of center
+     "752x564"	40  752  784  944 1088  564 567 569 611
+     #	      44.5  752 792  976 1240  564 567 570 600
+     #
+     # this line fixes the problem with the previous line
+     #"752x564"	40  752  816  976 1088  564 567 569 611
+     #
+     # trying to increase the vertical display size, it works
+     #"752x614"	40  752  816  976 1088  614 617 619 661
+     #
+     # trying to increase the horiz. display size, it works
+     #"784x564"	40  784  816  976 1088  564 567 569 611
+     #
+     # the following works but is to the right of center
+     #"784x614"	40  784  816  976 1088  614 617 619 661
+     #
+     # the following corrects the uncentered problem of the previous one
+     "784x614"	40  784  848 1008 1088  614 617 619 661
+     #
+     # trying to increase the display size
+     # the following works, the display is slightly off center to the left
+     #"800x614"	40  800  864 1024 1088  614 617 619 661
+     #
+     # the following corrects the problem of the previous entry
+     "800x614"	40  800  864 1024 1104  614 617 619 661
+     #
+     # increase the display size, it works
+     "816x614"	40  816  880 1040 1120  614 617 619 661
+     #
+     # increase the display size, it works
+     "800x620"	40  800  864 1024 1104  620 623 625 661
+     #
+     # increase the display size, it works
+     "816x620"	40  816  880 1040 1120  620 623 625 661
+     #
+     # increase the display size, it works
+     "832x630"	40  832  896 1056 1136  630 633 635 661
+     #
+     # change the display size, it works but flickers badly
+     "848x618"	40  848  912 1072 1152  618 621 623 661
+

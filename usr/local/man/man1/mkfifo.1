@@ -1,0 +1,26 @@
+.TH MKFIFO 1L "GNU File Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+mkfifo \- make FIFOs (named pipes)
+.SH SYNOPSIS
+.B mkfifo
+[\-m mode] [\-\-mode=mode] [\-\-help] [\-\-version] path...
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR mkfifo .
+.B mkfifo
+creates a FIFO with each given name.  By default, the mode of
+created FIFOs is 0666 minus the bits set in the umask.
+.SS OPTIONS
+.TP
+.I "\-m, \-\-mode mode"
+Set the mode of created FIFOs to
+.IR mode ,
+which is symbolic as in chmod and uses the default mode as the point of
+departure.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

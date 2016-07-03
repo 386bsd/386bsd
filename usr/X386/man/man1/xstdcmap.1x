@@ -1,0 +1,89 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH XSTDCMAP 1 "Release 5" "X Version 11"
+.SH NAME
+xstdcmap - X standard colormap utility
+.SH SYNOPSIS
+.B xstdcmap
+[-all] [-best] [-blue] [-default] [-delete \fImap\fP] [-display \fIdisplay\fP]
+[-gray] [-green] [-help] [-red] [-verbose]
+.SH DESCRIPTION
+.PP
+The \fIxstdcmap\fP utility can be used to selectively define standard colormap
+properties.  It is intended to be run from a user's X startup script to
+create standard colormap definitions in order to facilitate sharing of
+scarce colormap resources among clients.  Where at all possible, colormaps
+are created with read-only allocations.
+.SH OPTIONS
+.PP
+The following options may be used with \fIxstdcmap\fP:
+.TP 8
+.B \-all
+This option indicates that all six standard colormap properties should be
+defined on each screen of the display.  Not all screens will support 
+visuals under which all six standard colormap properties are meaningful.
+\fIxstdcmap\fP will determine the best 
+allocations and visuals for the colormap properties of a screen. Any
+previously existing standard colormap properties will be replaced.
+.TP 8
+.B \-best
+This option indicates that the RGB_BEST_MAP should be defined.
+.TP 8
+.B \-blue 
+This option indicates that the RGB_BLUE_MAP should be defined.
+.TP 8
+.B \-default
+This option indicates that the RGB_DEFAULT_MAP should be defined.
+.TP 8
+.B \-delete \fImap\fP
+This option specifies that a standard colormap property should be removed.
+\fImap\P may be one of: default, best, red, green, blue, or gray.
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the host and display to use; see \fIX(1)\fP.
+.TP 8
+.B \-gray
+This option indicates that the RGB_GRAY_MAP should be defined.
+.TP 8
+.B \-green
+This option indicates that the RGB_GREEN_MAP should be defined.
+.TP 8
+.B \-help
+This option indicates that a brief description of the command line arguments
+should be printed on the standard error.  This will be done whenever an
+unhandled argument is given to
+.I xstdcmap.
+.TP 8
+.B \-red
+This option indicates that the RGB_RED_MAP should be defined.
+.TP 8
+.B \-verbose
+This option indicates that \fIxstdcmap\fP should
+print logging information as it parses its input and defines the
+standard colormap properties.
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get default host and display number.
+.SH SEE ALSO
+X(1)
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Donna Converse, MIT X Consortium
+
+

@@ -1,0 +1,152 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XPolygonRegion 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XPolygonRegion, XClipBox \- generate regions
+.SH SYNTAX
+.\" $Header: XPolyRegion.f,v 1.1 88/02/26 10:01:56 mento Exp $
+Region XPolygonRegion\^(\^\fIpoints\fP\^, \fIn\fP\^, \fIfill_rule\fP\^)
+.br
+      XPoint \fIpoints[]\fP\^;
+.br
+      int \fIn\fP\^;
+.br
+      int \fIfill_rule\fP\^;	
+.LP
+.\" $Header: XClipBox.f,v 1.2 88/04/07 16:55:50 mento Exp $
+XClipBox\^(\^\fIr\fP\^, \fIrect_return\fP\^)
+.br
+      Region \fIr\fP\^;
+.br
+      XRectangle *\fIrect_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: fill_rule.a,v 1.3 88/05/09 11:57:36 mento Exp $
+.IP \fIfill_rule\fP 1i
+Specifies the fill-rule you want to set for the specified GC.
+You can pass 
+.ZN EvenOddRule
+or
+.ZN WindingRule .
+.\" $Header: n1.a,v 1.1 88/02/26 10:29:03 mento Exp $
+.IP \fIn\fP 1i
+Specifies the number of points in the polygon. 
+.\" $Header: points1.a,v 1.1 88/02/26 10:30:33 mento Exp $
+.IP \fIpoints\fP 1i
+Specifies an array of points.
+.\" $Header: r.a,v 1.1 88/02/26 10:29:50 mento Exp $
+.IP \fIr\fP 1i
+Specifies the region.
+.\" $Header: rect.a,v 1.2 88/04/07 16:56:54 mento Exp $
+.IP \fIrect_return\fP 1i
+Returns the smallest enclosing rectangle.
+.SH DESCRIPTION
+.\" $Header: XPolyRegion.d,v 1.3 88/06/11 07:52:19 mento Exp $
+The
+.ZN XPolygonRegion
+function returns a region for the polygon defined by the points array.
+For an explanation of fill_rule,
+see
+.ZN XCreateGC .
+.LP
+.\" $Header: XClipBox.d,v 1.3 88/04/23 12:41:53 mento Exp $
+The
+.ZN XClipBox
+function returns the smallest rectangle enclosing the specified region.
+.SH "SEE ALSO"
+XCreateGC(3X11),
+XDrawPoint(3X11),
+XDrawRectangle(3X11)
+.br
+\fI\*(xL\fP

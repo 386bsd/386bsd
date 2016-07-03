@@ -1,0 +1,325 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XNextEvent 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XNextEvent, XPeekEvent, XWindowEvent, XCheckWindowEvent, XMaskEvent, XCheckMaskEvent, XCheckTypedEvent, XCheckTypedWindowEvent \- select events by type
+.SH SYNTAX
+.\" $Header: XNextEvent.f,v 1.1 88/02/26 10:01:33 mento Exp $
+XNextEvent\^(\^\fIdisplay\fP, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XPeekEvent.f,v 1.1 88/02/26 10:01:43 mento Exp $
+XPeekEvent\^(\^\fIdisplay\fP, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XWindowEvent.f,v 1.1 88/02/26 10:04:15 mento Exp $
+XWindowEvent\^(\^\fIdisplay\fP, \fIw\fP\^, \fIevent_mask\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      long \fIevent_mask\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XChkWinEvnt.f,v 1.2 88/05/04 06:26:26 mento Exp $
+Bool XCheckWindowEvent\^(\^\fIdisplay\fP, \fIw\fP\^, \fIevent_mask\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      long \fIevent_mask\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XMaskEvent.f,v 1.2 88/05/04 06:27:18 mento Exp $
+XMaskEvent\^(\^\fIdisplay\fP, \fIevent_mask\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      long \fIevent_mask\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XChkMskEvnt.f,v 1.2 88/05/04 06:28:11 mento Exp $
+Bool XCheckMaskEvent\^(\^\fIdisplay\fP, \fIevent_mask\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      long \fIevent_mask\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XChkTypEvnt.f,v 1.1 88/02/26 09:58:39 mento Exp $
+Bool XCheckTypedEvent\^(\^\fIdisplay\fP, \fIevent_type\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fIevent_type\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.LP
+.\" $Header: XChkTypWEvnt.f,v 1.1 88/02/26 09:58:39 mento Exp $
+Bool XCheckTypedWindowEvent\^(\^\fIdisplay\fP, \fIw\fP\^, \fIevent_type\fP\^, \fIevent_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      int \fIevent_type\fP\^;
+.br
+      XEvent *\fIevent_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: eventmask.a,v 1.2 88/05/14 13:04:06 mento Exp $
+.IP \fIevent_mask\fP 1i
+Specifies the event mask.
+.\" $Header: event.a,v 1.4 88/05/14 13:23:54 mento Exp $
+.IP \fIevent_return\fP 1i
+Returns the matched event's associated structure.
+.\" $Header: event_next.a,v 1.1 88/04/08 14:22:34 mento Exp $
+.IP \fIevent_return\fP 1i
+Returns the next event in the queue.
+.IP \fIevent_return\fP 1i
+Returns a copy of the matched event's associated structure.
+.\" $Header: event_type.a,v 1.1 88/02/26 10:26:48 mento Exp $
+.IP \fIevent_type\fP 1i
+Specifies the event type to be compared.
+
+.ds Wi \ whose event uou are interested in
+.\" $Header: w_gen.a,v 1.4 88/08/04 11:21:56 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window \*(Wi.
+.SH DESCRIPTION
+.\" $Header: XNextEvent.d,v 1.2 88/06/11 07:52:01 mento Exp $
+The
+.ZN XNextEvent
+function copies the first event from the event queue into the specified
+.ZN XEvent
+structure and then removes it from the queue.
+If the event queue is empty,
+.ZN XNextEvent
+flushes the output buffer and blocks until an event is received.
+.LP
+.\" $Header: XPeekEvent.d,v 1.2 88/06/11 07:52:05 mento Exp $
+The
+.ZN XPeekEvent
+function returns the first event from the event queue,
+but it does not remove the event from the queue.
+If the queue is empty,
+.ZN XPeekEvent
+flushes the output buffer and blocks until an event is received.
+It then copies the event into the client-supplied
+.ZN XEvent
+structure without removing it from the event queue.
+.LP
+.\" $Header: XWindowEvent.d,v 1.2 88/06/11 07:54:37 mento Exp $
+The
+.ZN XWindowEvent
+function searches the event queue for an event that matches both the specified
+window and event mask.
+When it finds a match,
+.ZN XWindowEvent
+removes that event from the queue and copies it into the specified
+.ZN XEvent
+structure.
+The other events stored in the queue are not discarded.
+If a matching event is not in the queue,
+.ZN XWindowEvent
+flushes the output buffer and blocks until one is received.
+.LP
+.\" $Header: XChkWinEvnt.d,v 1.4 88/06/11 07:49:18 mento Exp $
+The
+.ZN XCheckWindowEvent
+function searches the event queue and then the events available 
+on the server connection for the first event that matches the specified window
+and event mask.
+If it finds a match,
+.ZN XCheckWindowEvent
+removes that event, copies it into the specified
+.ZN XEvent
+structure, and returns
+.ZN True .
+The other events stored in the queue are not discarded.
+If the event you requested is not available,
+.ZN XCheckWindowEvent
+returns
+.ZN False ,
+and the output buffer will have been flushed.
+.LP
+.\" $Header: XMaskEvent.d,v 1.3 88/06/11 07:51:58 mento Exp $
+The
+.ZN XMaskEvent
+function searches the event queue for the events associated with the 
+specified mask.
+When it finds a match,
+.ZN XMaskEvent
+removes that event and copies it into the specified
+.ZN XEvent
+structure.
+The other events stored in the queue are not discarded.
+If the event you requested is not in the queue,
+.ZN XMaskEvent
+flushes the output buffer and blocks until one is received.
+.LP
+.\" $Header: XChkMskEvnt.d,v 1.4 88/06/11 07:49:13 mento Exp $
+The
+.ZN XCheckMaskEvent
+function searches the event queue and then any events available on the
+server connection for the first event that matches the specified mask.
+If it finds a match,
+.ZN XCheckMaskEvent
+removes that event, copies it into the specified
+.ZN XEvent
+structure, and returns
+.ZN True .
+The other events stored in the queue are not discarded.
+If the event you requested is not available,
+.ZN XCheckMaskEvent
+returns
+.ZN False ,
+and the output buffer will have been flushed.
+.LP
+The
+.ZN XCheckTypedEvent
+function searches the event queue and then any events available  
+on the server connection for the first event that matches the specified type.
+If it finds a match,
+.ZN XCheckTypedEvent
+removes that event, copies it into the specified
+.ZN XEvent
+structure, and returns
+.ZN True .
+The other events in the queue are not discarded.
+If the event is not available,
+.ZN XCheckTypedEvent
+returns
+.ZN False ,
+and the output buffer will have been flushed.
+.LP
+The
+.ZN XCheckTypedWindowEvent
+function searches the event queue and then any events available  
+on the server connection for the first event that matches the specified
+type and window.
+If it finds a match,
+.ZN XCheckTypedWindowEvent
+removes the event from the queue, copies it into the specified
+.ZN XEvent
+structure, and returns
+.ZN True .
+The other events in the queue are not discarded.
+If the event is not available,
+.ZN XCheckTypedWindowEvent
+returns
+.ZN False ,
+and the output buffer will have been flushed.
+.SH "SEE ALSO"
+XAnyEvent(3X11),
+XIfEvent(3X11),
+XPutBackEvent(3X11),
+XSendEvent(3X11)
+.br
+\fI\*(xL\fP

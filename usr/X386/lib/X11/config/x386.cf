@@ -1,0 +1,1217 @@
+XCOMM $XFree86: mit/config/x386.cf,v 2.28 1993/10/21 15:48:52 dawes Exp $
+XCOMM platform:  $XConsortium: x386.cf,v 1.7 91/08/16 19:30:10 gildea Exp $
+
+/*****************************************************************************
+ *	            Defaults for Site-specfic parameters                     *
+ *****************************************************************************/
+/*****************************************************************************
+ *                        Do not change anything below                       *
+ *****************************************************************************/
+
+
+/*
+ * If you want to change any of these, do it in the BeforeVendorCF part
+ * of site.def
+ */
+
+#include <xf86_vers.def>
+
+#define WantServerLocks		YES
+#define PartialNetDefault	YES
+
+/* Defaults for SVR3, SVR4 */
+
+#if defined(i386SVR3Architecture) || defined(i386SVR4Architecture)
+# ifndef HasGcc
+#  ifdef i386Ncr
+#   define HasGcc		NO
+#  else
+#   define HasGcc		YES
+#  endif
+# endif
+# ifndef HasGcc2
+#  ifdef i386Ncr
+#   define HasGcc2		NO
+#  else
+#   define HasGcc2		YES
+#  endif
+# endif
+# ifndef GccUsesGas
+#  define GccUsesGas		NO
+# endif
+# ifndef UseGas
+#  define UseGas		NO
+# endif
+# ifndef GnuCpp
+#  define GnuCpp		NO
+# endif
+# ifndef HasSdbm
+#  ifdef i386Isc
+#   define HasSdbm		NO
+#  else
+#   define HasSdbm		YES
+#  endif
+# endif
+# ifndef HasNdbm
+#  ifdef i386Isc
+#   define HasNdbm		NO
+#  else
+#   define HasNdbm		YES
+#  endif
+# endif
+# ifndef HasShadowPasswd
+#  define HasShadowPasswd	YES
+# endif
+# ifndef HasLibCrypt
+#  define HasLibCrypt		NO
+# endif
+# ifndef SCOLocalConnSysv4
+#  if defined(i386SVR4Architecture)
+#   define SCOLocalConnSysv4	YES
+#  else
+#   define SCOLocalConnSysv4	NO
+#  endif
+# endif
+#ifndef HasSVR3mmapDrv
+# define HasSVR3mmapDrv		NO
+#endif
+#if HasSVR3mmapDrv
+# define SVR3mmapFlags		-DHAS_SVR3_MMAPDRV
+#else
+# define SVR3mmapFlags 		/**/
+#endif
+/* Note: this flag has no effect for SVR4 */
+#ifndef FormattedManPages
+# if defined(i386SVR3Architecture)
+#  define FormattedManPages	YES
+# else
+#  define FormattedManPages	NO
+# endif
+#endif
+#ifndef FileManSuffix
+#define FileManSuffix	4
+#endif
+#ifndef FileManDir
+#define FileManDir	$(MANSOURCEPATH)4
+#endif
+#endif
+
+/* Defaults for BSD-like systems */
+
+#if defined(i386BsdArchitecture) || defined(i386MachArchitecture)
+
+# ifndef HasGcc
+#  define HasGcc		YES
+# endif
+# ifndef HasGcc2
+#  if defined(i386NetBsd) || defined(i386FreeBsd)
+#   define HasGcc2		YES
+#  else
+#   define HasGcc2		NO
+#  endif
+# endif
+# ifndef GccUsesGas
+#  define GccUsesGas		YES
+# endif
+# ifndef UseGas
+#  define UseGas		YES
+# endif
+# ifndef GnuCpp
+#  if defined(i386BsdArchitecture)
+#   define GnuCpp		YES
+#  else
+#   define GnuCpp		NO
+#  endif
+# endif
+# ifndef HasSdbm
+#  define HasSdbm		NO
+# endif
+# ifndef HasNdbm
+#  define HasNdbm		YES
+# endif
+# ifndef HasShadowPasswd
+#  define HasShadowPasswd	NO
+# endif
+# ifndef HasLibCrypt
+#  if defined(i386NetBsd) || defined(i386FreeBsd)
+#   define HasLibCrypt		YES
+#  else
+#   define HasLibCrypt		NO
+#  endif
+# endif
+# ifndef SCOLocalConnSysv4
+#  define SCOLocalConnSysv4	NO
+# endif
+# ifndef FormattedManPages
+#  if defined(i386FreeBsd)
+#   define FormattedManPages	NO
+#  else
+#   define FormattedManPages	YES
+#  endif
+# endif
+#endif
+
+/* Defaults for Linux and OSF/1 */
+
+#if defined(LinuxArchitecture) || defined(OsfArchitecture)
+
+# ifndef HasGcc
+#  define HasGcc		YES
+# endif
+# ifndef HasGcc2
+#  define HasGcc2		YES	/* for GCC 2.0 or later */
+# endif
+# ifndef GccUsesGas
+#  define GccUsesGas		YES
+# endif
+# ifndef UseGas
+#  define UseGas		YES
+# endif
+# ifndef GnuCpp
+#  define GnuCpp		YES
+# endif
+# ifndef PreProcessCmd
+#  define PreProcessCmd		/lib/cpp
+# endif
+# ifndef HasSdbm
+#  define HasSdbm		NO
+# endif
+# ifndef HasNdbm
+#  define HasNdbm		YES
+# endif
+# ifndef HasShadowPasswd
+#  define HasShadowPasswd	NO
+# endif
+# ifndef HasLibCrypt
+#  define HasLibCrypt		NO
+# endif
+# ifndef SCOLocalConnSysv4
+#  define SCOLocalConnSysv4	NO
+# endif
+#endif
+
+/* Defaults which are the same for all systems */
+
+#ifndef X386LinkKit
+# define X386LinkKit		NO
+#endif
+#ifndef HasSockets
+# define HasSockets		YES
+#endif
+#ifndef ProjectRoot
+# define ProjectRoot		/usr/X386
+#endif
+#ifndef StripInstalledPrograms
+# define StripInstalledPrograms	YES
+#endif
+#ifndef BuildXTest
+# define BuildXTest		YES
+#endif
+#if BuildXTest
+# define XTestDefines		-DXTEST
+#else
+# define XTestDefines		/**/
+#endif
+#ifndef ExtensionOSDefines
+# define ExtensionOSDefines	-DXTESTEXT1 XTestDefines
+#endif
+#ifndef MotifBC
+# define MotifBC	       	YES
+#endif
+#ifndef Target_486
+# define Target_486		YES
+#endif
+#ifndef CompressAllFonts
+# define CompressAllFonts	YES
+#endif
+#ifndef Build75Dpi
+# define Build75Dpi		YES
+#endif
+#ifndef Build100Dpi
+# define Build100Dpi		NO
+#endif
+#ifndef BuildLargeMiscFonts
+# define BuildLargeMiscFonts	NO
+#endif
+#ifndef BuildSpeedo
+# define BuildSpeedo		YES
+#endif
+#ifndef BuildPex
+# define BuildPex		NO
+#endif
+#ifndef BuildFontServer
+# define BuildFontServer	NO
+#endif
+#ifndef DebuggableServer
+# define DebuggableServer	NO
+#endif
+#ifndef SpecialMalloc
+# define SpecialMalloc		NO
+#endif
+#ifndef GnuMalloc
+# define GnuMalloc		NO
+#endif
+#ifndef LinkKitFlags
+# if X386LinkKit
+#  define LinkKitFlags		-DLINKKIT
+# else
+#  define LinkKitFlags		/**/
+# endif
+#endif
+
+/* Some of these man page defaults are overriden in the above OS sections */
+#ifndef AmoebaConf
+# ifndef ManSuffix
+#  define ManSuffix	1x
+# endif
+# ifndef ManDir
+#  define ManDir	$(MANSOURCEPATH)1
+# endif
+# ifndef LibManSuffix
+#  define LibManSuffix	3x
+# endif
+# ifndef LibmanDir
+#  define LibmanDir	$(MANSOURCEPATH)3
+# endif
+# ifndef FileManSuffix
+#  define FileManSuffix	5x
+# endif
+# ifndef FileManDir
+#  define FileManDir	$(MANSOURCEPATH)5
+# endif
+#endif
+
+#ifndef XF86SVGAServer
+# define XF86SVGAServer		YES
+#endif
+
+#ifndef XF86MonoServer
+# define XF86MonoServer		NO
+#endif
+
+#ifndef XF86VGA16Server
+# define XF86VGA16Server	NO
+#endif
+
+#ifndef XF86S3Server
+# define XF86S3Server		NO
+#endif
+
+#ifndef XF86I8514Server
+# define XF86I8514Server	NO
+#endif
+
+#ifndef XF86Mach8Server
+# define XF86Mach8Server	NO
+#endif
+
+#ifndef XF86Mach32Server
+# define XF86Mach32Server	NO
+#endif
+
+#if XF86S3Server
+# define XF86S3Dir		s3
+#else
+# define XF86S3Dir		/**/
+#endif
+
+#if XF86I8514Server
+# define XF86I8514Dir		ibm8514
+#else
+# define XF86I8514Dir		/**/
+#endif
+
+#if XF86Mach8Server
+# define XF86Mach8Dir		mach8
+#else
+# define XF86Mach8Dir		/**/
+#endif
+
+#if XF86Mach32Server
+# define XF86Mach32Dir		mach32
+#else
+# define XF86Mach32Dir		/**/
+#endif
+
+#undef XF86AccelServerDirs
+#define XF86AccelServerDirs   XF86S3Dir XF86I8514Dir XF86Mach8Dir XF86Mach32Dir
+
+#undef XF86AccelServer
+#if XF86S3Server || XF86I8514Server || XF86Mach8Server || XF86Mach32Server
+# define XF86AccelServer	YES
+#else
+# define XF86AccelServer	NO
+#endif
+
+#ifndef XFree86DefaultServer
+# if XF86SVGAServer
+#  define XFree86DefaultServer XF86_SVGA
+# else
+#  if XF86MonoServer
+#   define XFree86DefaultServer XF86_Mono
+#  endif
+# endif
+#endif
+
+#ifndef BuildServer
+# if !XF86SVGAServer && !XF86VGA16Server && !XF86MonoServer && !XF86AccelServer
+#  define BuildServer		NO
+# endif
+#endif
+
+#ifndef X386Vga256Drivers
+# define X386Vga256Drivers	et4000 et3000 pvga1 gvga ati tvga8900 cirrus \
+				ncr compaq oak
+#endif
+
+#ifndef X386Vga16Drivers
+# define X386Vga16Drivers	et4000 generic
+#endif
+
+#ifndef X386Vga2Drivers
+# define X386Vga2Drivers	et4000 et3000 pvga1 gvga tvga8900 ncr \
+				compaq oak generic
+#endif
+
+#ifndef X386Hga2Drivers
+# define X386Hga2Drivers	/**/
+#endif
+
+#ifndef X386Bdm2Drivers
+# define X386Bdm2Drivers	/**/
+#endif
+
+#ifndef XF86S3Drivers
+# define XF86S3Drivers		mmio_928 s3_generic
+#endif
+
+#ifndef DirtyStartup
+# define DirtyStartup		NO
+#endif
+
+#ifndef BankedMonoVga
+# define BankedMonoVga		YES
+#endif
+
+#if BankedMonoVga
+#define MonoDefines		-DX386MONOVGA -DBANKEDMONOVGA
+#else
+#define MonoDefines		-DX386MONOVGA
+#endif
+
+#ifndef ScoOsMouse
+# define ScoOsMouse		YES
+#endif
+
+/* You must manually compute BootstrapCFlags for initial build */
+
+#if defined(i386SVR3Architecture) || defined(i386SVR4Architecture) || defined(i386FreeBsd)
+# define BootstrapCFlags	OSDefines OSRelease
+#else
+# define BootstrapCFlags	/* nothing */
+#endif
+
+#ifndef StandardDefines
+#define StandardDefines		OSDefines OSRelease
+#endif
+
+#if !defined(i386BsdArchitecture)
+# ifndef LdCombineFlags
+#  define LdCombineFlags		-r
+# endif
+#endif
+
+#if Target_486
+# define Gcc2MOption -m486
+#else
+# define Gcc2MOption -m386
+#endif
+
+#if GccUsesGas
+# define GccGasOption -DGCCUSESGAS
+#else
+# define GccGasOption /**/
+#endif
+
+#ifndef AsmDefines
+# if UseGas
+#  define AsmDefines -DUSE_GAS
+# else
+#  define AsmDefines /**/
+# endif
+#endif
+
+#if GnuCpp
+# define StandardCppDefines -traditional StandardDefines
+#else
+# define StandardCppDefines StandardDefines
+#endif
+
+#if HasGcc2 && !HasGcc
+# undef HasGcc
+# define HasGcc			YES
+#endif
+
+#if SpecialMalloc
+# define MallocFlags		-DCAHILL_MALLOC -I/usr/local/debug_include
+#else
+# define MallocFlags		/**/
+#endif
+
+#if GnuMalloc
+# ifndef GnuMallocLib
+#  if defined(i386BsdArchitecture)
+#   define GnuMallocLib		-lgnumalloc
+#  else
+#   define GnuMallocLib		-lgmalloc
+#  endif
+# endif
+#else
+# undef GnuMallocLib
+# define GnuMallocLib		/**/
+#endif
+
+#if DebuggableServer
+# if HasGcc
+#  define ServerCDebugFlags DebuggableCDebugFlags OptimizedCDebugFlags 
+# else
+#  define ServerCDebugFlags DebuggableCDebugFlags 
+# endif
+#endif
+
+#ifndef AssembleObject
+#define AssembleObject(flags) $(RM) $@                                  @@\
+	$(CPP) AsmDefines $(INCLUDES) flags $*.s > $*.i                 @@\
+	$(AS) -o $*.o $*.i                                              @@\
+	$(RM) $*.i
+#endif
+
+#define NormalAsmObjectRule()                                           @@\
+.s.o:                                                                   @@\
+	AssembleObject($(_NOOP_))
+
+#define ObjectFromSpecialAsmSource(dst,src,flags)                       @@\
+dst.s:  src.s                                                           @@\
+	$(RM) $@                                                        @@\
+	$(LN) $? $@                                                     @@\
+                                                                        @@\
+dst.o:  dst.s                                                           @@\
+	AssembleObject(flags)                                           @@\
+                                                                        @@\
+depend:: dst.s                                                          @@\
+                                                                        @@\
+clean::                                                                 @@\
+	$(RM) dst.s
+
+
+/*
+ * Rules for building config files from scripts
+ */
+
+#ifndef Depend
+# define Depend depend
+#endif
+ 
+#define ConfigTargetLong(target,dep,script,args,extra)                  @@\
+all:: Configure                                                         @@\
+                                                                        @@\
+Configure:: target.o                                                    @@\
+                                                                        @@\
+target.c: script dep                                                    @@\
+	$(MAKE) $(MFLAGS) Makefile                                      @@\
+	$(MAKE) $(MFLAGS) extra Concat(Build,target)                    @@\
+                                                                        @@\
+Concat(Build,target):                                                   @@\
+	$(RM) target.c                                                  @@\
+	$(SHELL) script args                                            @@\
+                                                                        @@\
+clean::                                                                 @@\
+	$(RM) target.c
+
+#define ConfigTarget(target,dep,script,args) ConfigTargetLong(target,dep,script,args,Depend)
+
+#define ConfigTargetNoDepend(target,dep,script,args) ConfigTargetLong(target,dep,script,args,)
+
+
+/*
+ * Rules for installing LinkKit parts (target is install.linkkit)
+ */
+
+#define InstallLinkKitNonExecFile(file,dest)				@@\
+install.linkkit:: file							@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) -c $(INSTDATFLAGS) file $(DESTDIR)dest
+
+#define InstallLinkKitLibrary(libname,dest)				@@\
+install.linkkit:: Concat(lib,libname.a)					@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) -c $(INSTLIBFLAGS) Concat(lib,libname.a) $(DESTDIR)dest @@\
+	RanLibrary($(RANLIBINSTFLAGS) Concat($(DESTDIR)dest/lib,libname.a))
+
+#define InstallLinkKitNamedNonExec(srcname,dstname,dest)		@@\
+install.linkkit:: srcname						@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) -c $(INSTDATFLAGS) srcname $(DESTDIR)dest/dstname
+
+#define InstallLinkKitNamedProg(srcname,dstname,dest)			@@\
+install.linkkit:: srcname						@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) -c $(INSTBINFLAGS) srcname $(DESTDIR)dest/dstname
+
+#define InstallLinkKitSubdirs(dirs) \
+NamedTargetSubdirs(install.linkkit,dirs,"installing link kit",DESTDIR='$(DESTDIR)',install.linkkit)
+
+#ifndef LinkKitDir
+# define LinkKitDir		$(USRLIBDIR)/Server
+#endif
+
+#if HasSdbm && !HasNdbm
+# undef HasNdbm
+# define HasNdbm		YES
+#endif
+
+#if HasNdbm
+#ifndef NdbmDefines
+# if HasSdbm
+#  define NdbmDefines		-DNDBM -DSDBM
+# else
+#  define NdbmDefines		-DNDBM
+# endif
+#endif
+#endif
+
+
+#if defined(i386SVR3Architecture)
+
+#define SystemV			YES
+
+#define NeedBerklib		YES
+
+/*
+ * V/386 Release 3.2
+ */
+#ifdef i386Isc
+/* INTERACTIVE UNIX Version 2.0.2, 2.2.1, 3.0 and 4.0 */
+# if IscVersion == 400
+#  define ISCVerDef -DISC40 -DISC30
+#  define OSVendor		(ISC Version 4.0)
+# else
+#  if IscVersion == 300
+#   define ISCVerDef -DISC30
+#   define OSVendor		(ISC Version 3.0)
+#  else
+#   if IscVersion == 202
+#    define OSVendor		(ISC Version 2.0.2)
+#    define ISCVerDef -DISC202
+#   else
+#    define OSVendor		(ISC Version 2.2.1)
+#    define ISCVerDef -DISC22
+#   endif
+#  endif
+# endif
+# define OSDefines		-DISC ISCVerDef
+# if IscVersion > 202
+#  define LocalLibraries	-lpt
+#  define PosixLibraries	-lcposix
+# else
+#  define LocalLibraries        -lmalloc -lpt
+#  define PosixLibraries
+# endif
+# define SocketLibraries        -linet
+#endif
+
+#ifdef i386Esix
+#define OSVendor		(ESIX Version 3.2D)
+#define OSDefines		-DESIX
+#define LocalLibraries		-lpt -lbsd
+#define SocketLibraries		-lnet -lnsl_s
+#define PosixLibraries		/**/
+#endif
+
+#ifdef i386Sco
+#if ScoVersion == 324
+/*
+ * if your gcc is compiled with STDC_VALUE=0 then change the 1 to 0
+ */
+# define GCC_STDC_VALUE		1
+# if !GCC_STDC_VALUE
+#  define OSDefines		-DSCO -DSCO324 -DBROKEN_FTOL -D_NO_PROTOTYPE \
+					-D_SVID -D__STDC__=1
+#  undef StandardCppDefines
+#  define StandardCppDefines	-DUNIXCPP=1 StandardDefines
+# else
+#  define OSDefines		-DSCO -DSCO324 -DBROKEN_FTOL -D_NO_PROTOTYPE \
+					-D_SVID
+# endif
+# define OSVendor		(SCO Version 3.2.4)
+#else /* ScoVersion == 324 */
+# define OSDefines		-DSCO -DBROKEN_FTOL -DNO_PROTOTYPE -D_SVID
+# define OSVendor		(SCO Version 3.2.2)
+#endif /* ScoVersion == 324 */
+/*
+ *	XBSDLIB is included with the Socket libraries, because SCO
+ *	needs Xbsd as its bcopy routine doesn't handle overlapping
+ *	regions. If HasSockets is false the XINETLIB does it for
+ *	us anyway.
+ */
+#if !X386LinkKit
+# define SocketLibraries	$(XBSDLIB) -lsocket 
+#else
+# define SocketLibraries	-lsocket 
+#endif
+#define PosixLibraries		/**/
+#define ManSourcePath		$(MANPATH)/cat.
+
+#if ScoOsMouse
+# define	ScoExtraServerDefines	-DUSE_OSMOUSE
+# define	LocalLibraries		-lmalloc -lpt -levent
+#else
+# define	LocalLibraries		-lmalloc -lpt
+#endif /* ScoOsMouse */
+
+#endif /* i386Sco */
+
+#ifndef ScoExtraServerDefines
+# define	ScoExtraServerDefines	/**/
+#endif
+
+#ifdef i386Att
+#define OSDefines		-DATT
+#define OSVendor		(AT&T)
+#define LocalLibraries		-lpt
+#define SocketLibraries		-lnet -lnsl_s    /* just a guess */
+#define PosixLibraries		/**/
+#endif
+
+#define OSName			Unix System V/386 Release 3.2
+#define OSMajorVersion		3
+#define OSMinorVersion		2
+#define OSRelease		-DSYSV -DSYSV386
+
+#if HasGcc
+# define CcCmd gcc
+# if HasGcc2
+#  define DefaultCCOptions Gcc2MOption -DNO_ASM -fpcc-struct-return \
+			   -fwritable-strings
+#  define LibraryCCOptions Gcc2MOption -DNO_ASM -fpcc-struct-return
+#  define OptimizedCDebugFlags -O2
+# else
+#  define DefaultCCOptions -DNO_ASM -fpcc-struct-return -fwritable-strings
+#  define LibraryCCOptions -DNO_ASM -fpcc-struct-return
+#  define OptimizedCDebugFlags -O -fstrength-reduce
+# endif
+# define ShlibDefines -D__GNUC__ $(XDMAUTHDEFS)
+#else
+# define ShlibDefines $(XDMAUTHDEFS)
+#endif
+
+# define Malloc0ReturnsNull	YES
+
+#if HasSockets
+# define ConnectionFlags -DCLIENTS_LOCALCONN -DSERVER_LOCALCONN -DTCPCONN
+# define ExtraLibraries SocketLibraries LocalLibraries GnuMallocLib \
+			-lc_s PosixLibraries
+# define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+			-DAVOID_GLYPHBLT ScoExtraServerDefines SVR3mmapFlags
+#else
+# define NeedInetEmulLib	YES
+# define ConnectionFlags -DCLIENTS_LOCALCONN -DSERVER_LOCALCONN
+# define ExtraLibraries $(XINETLIB) LocalLibraries GnuMallocLib \
+			-lc_s PosixLibraries
+/* This turns off XDMCP in the server if no sockets */
+# define ServerExtraDefines	GccGasOption MallocFlags LinkKitFlags \
+			-DAVOID_GLYPHBLT ScoExtraServerDefines SVR3mmapFlags
+#endif
+
+#include <sv3Lib.rules>
+
+/*
+ * Man pages need to be formatted when installed, so override the default
+ * imake rules.
+ */
+
+/* The .DS and .DE macros used in some manual pages are obsolete
+ * in the often used ISC's Textprocessing Workbench 2.1.0 and break it,
+ * so it's better to remove these previously
+ */
+#ifndef RemoveDSDENroffMacros
+#if defined(i386Isc) && IscVersion != 202
+#define RemoveDSDENroffMacros   YES
+#else
+#define RemoveDSDENroffMacros   NO
+#endif
+#endif
+
+/*
+ * Compress manual pages, default on ISC and SCO
+ */
+#ifndef CompressManPages
+#if defined(i386Isc) || defined(i386Sco)
+#define CompressManPages        YES
+#else
+#define CompressManPages        NO
+#endif
+#endif
+
+#if RemoveDSDENroffMacros
+# define RemoveDSDENroffMacrosCmd sed -e '/^\.D[S|E]$$/d' 
+#else
+# define RemoveDSDENroffMacrosCmd cat
+#endif
+
+#ifndef CompressManCmd
+# if CompressManPages
+#  if defined(i386Sco) && (ScoVersion < 324)
+#   define CompressManCmd pack
+#  else
+#   define CompressManCmd $(COMPRESS) -v
+#  endif
+# else
+#  define CompressManCmd @true
+# endif
+#endif
+
+     RMDSDEMACCMD = RemoveDSDENroffMacrosCmd
+   COMPRESSMANCMD = CompressManCmd
+
+#if FormattedManPages
+
+#define InstallGenManPageLong(file,destdir,dest,suffix)                 @@\
+install.man:: file.man                                                  @@\
+        MakeDir($(DESTDIR)destdir)                                      @@\
+        $(RM) $(DESTDIR)destdir/dest.suffix*                            @@\
+        $(RMDSDEMACCMD) file.man | $(NEQN) | $(NROFF) -man >/tmp/file.man  @@\
+        $(INSTALL) -c $(INSTMANFLAGS) /tmp/file.man $(DESTDIR)destdir/dest.suffix @@\
+        -$(COMPRESSMANCMD) $(DESTDIR)destdir/dest.suffix                @@\
+        $(RM) /tmp/file.man
+
+#define InstallManPageLong(file,destdir,dest)				@@\
+	InstallGenManPageLong(file,destdir,dest,$(MANSUFFIX))
+
+
+#define InstallMultipleMan(list,dest)                                   @@\
+install.man:: list                                                      @@\
+	MakeDir($(DESTDIR)dest)						@@\
+        @case '${MFLAGS}' in *[i]*) set +e;; esac; \                    @@\
+        for i in list; do \                                             @@\
+                (set -x; \                                              @@\
+                MNAME=`echo $$i | cut -f1 -d.`; \			@@\
+                $(RM) $(DESTDIR)dest/$${MNAME}*; \                      @@\
+                $(RMDSDEMACCMD) $$i | $(NEQN) | $(NROFF) -man >/tmp/$$i; \ @@\
+                $(INSTALL) -c $(INSTMANFLAGS) /tmp/$$i $(DESTDIR)dest/$${MNAME}.$(MANSUFFIX); \      @@\
+                $(COMPRESSMANCMD) $(DESTDIR)dest/$${MNAME}.$(MANSUFFIX); \  @@\
+                $(RM) /tmp/$$i); \                                      @@\
+        done
+
+/*
+ * InstallManPageAliases - generate rules to install manual page aliases.
+ * (Make hard links on SVR3.)
+ */
+
+#ifdef i386Sco
+/*
+ * due to the extra '.' chars in the file name
+ */
+
+#define InstallManPageAliases(file,destdir,aliases)                     @@\
+install.man::                                                           @@\
+        @(SUFFIX=`echo $(DESTDIR)destdir/file.* | cut -f3,4 -d.`; \     @@\
+        for i in aliases; do (set -x; \                                 @@\
+        $(RM) $(DESTDIR)destdir/$$i.*; \                                @@\
+        $(LN) $(DESTDIR)destdir/file.$${SUFFIX} \                       @@\
+        $(DESTDIR)destdir/$$i.$${SUFFIX}); \                            @@\
+        done)
+
+#else
+
+#define InstallManPageAliases(file,destdir,aliases)                     @@\
+install.man::                                                           @@\
+        @(SUFFIX=`echo $(DESTDIR)destdir/file.* | cut -f2,3 -d.`; \     @@\
+        for i in aliases; do (set -x; \                                 @@\
+        $(RM) $(DESTDIR)destdir/$$i.*; \                                @@\
+        $(LN) $(DESTDIR)destdir/file.$${SUFFIX} \                       @@\
+        $(DESTDIR)destdir/$$i.$${SUFFIX}); \                            @@\
+        done)
+
+#endif
+
+#define InstallGenManPageAliases(file,destdir,suffix,aliases)           @@\
+        InstallManPageAliases(file,destdir,aliases)
+
+#endif
+
+/* If you have trouble with make bombing out in Xlib, try uncommenting this. */
+/* You will not get dependencies as a result, but better than nothing. */
+#ifndef MakeHashTableBug
+#define MakeHashTableBug        NO
+#endif
+#if MakeHashTableBug
+#define DependTarget3(srcs1,srcs2,srcs3)
+#endif
+
+#endif /* i386SVR3Architecture */
+
+
+/*
+ * V/386 Release 4.0
+ */
+#if defined(i386SVR4Architecture)
+
+#define SystemV4		YES
+
+/* No vendor defines required for SVR4 */
+
+#define OSName			Unix System V/386 Release 4.x
+#define OSMajorVersion		4
+#define OSMinorVersion		0
+#define OSRelease		-DSVR4 -DSYSV386
+#define OSDefines		/**/
+#ifdef i386Ncr
+# define OSVendor		(NCR)
+#else
+# define OSVendor		/**/
+#endif
+
+#ifndef HasSharedLibraries
+#define HasSharedLibraries	YES
+#endif
+
+#if HasGcc
+# define CcCmd			gcc
+# define AnsiCCOptions		-ansi
+# if HasGcc2
+#  define DefaultCCOptions	Gcc2MOption -fpcc-struct-return -Di386 
+#  define OptimizedCDebugFlags	-O2
+# else
+#  define DefaultCCOptions	-fpcc-struct-return -fstrength-reduce -Di386
+#  if HasSharedLibraries
+#   define LibraryCcCmd		/bin/cc
+#   define LibraryAnsiCCOptions	-Xc
+#   define LibraryCCOptions	-Di386 -Dasm=__asm
+#  endif
+# endif
+#else
+# define CcCmd			/bin/cc
+# ifdef i386Ncr
+#  define AnsiCCOptions		-Xa
+#  define DefaultCCOptions	-Di386 -Hnocopyr -DNO_SECONDARY
+# else
+#  define AnsiCCOptions		-Xc
+#  define DefaultCCOptions	-Di386 -Dasm=__asm
+# endif
+#endif
+
+/* Make sure we don't use /usr/ucb/ld */
+#ifndef LdCmd
+#define LdCmd			/bin/ld
+#endif
+
+#define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+				-DAVOID_GLYPHBLT
+
+#if SCOLocalConnSysv4
+# define Acp			-DSVR4_ACP
+#else
+# define Acp			/**/
+#endif
+
+#define ConnectionFlags	    -DUNIXCONN -DTCPCONN -DCLIENTS_LOCALCONN \
+			    -DSERVER_LOCALCONN Acp 
+#define NeedBerklib	    YES
+
+#if defined(UseInstalled) && !X386LinkKit
+# define ExtraLibraries		-lsocket -lnsl GnuMallocLib $(XBSDLIB)
+#else
+# define ExtraLibraries		-lsocket -lnsl GnuMallocLib
+#endif
+
+#include <sv4Lib.rules>
+
+#endif /* i386SVR4Architecture */
+
+#if defined(i386BsdArchitecture)
+
+/*
+ * 386BSD, NetBSD, FreeBSD and BSD/386
+ */
+
+#define i386Bsd			YES
+
+#ifdef i386Bsdi
+# define OSName			BSD/386
+#else
+# ifdef i386NetBsd
+#  define OSName		NetBSD
+# else
+#  ifdef i386FreeBsd
+#   define OSName		FreeBSD
+#  else
+#   define OSName		386BSD
+#  endif
+# endif
+#endif
+#define OSMajorVersion		4
+#define OSMinorVersion		3
+#define OSRelease		/* nothing */
+#ifdef i386Bsdi
+# define OSDefines		-D__386BSD__
+#else
+# ifdef i386FreeBsd
+#  define OSDefines		-DFreeBSD
+# else
+#  ifdef i386NetBsd
+#   define OSDefines		-D__386BSD__
+#  else
+#   define OSDefines		/* nothing */
+#  endif
+# endif
+#endif
+#define OSVendor		/* nothing */
+
+#ifdef i386Bsdi
+# define CppCmd			/usr/bin/cpp
+#else
+# define CppCmd			/usr/libexec/cpp
+#endif
+
+#if HasGcc
+# define AnsiCCOptions		/**/
+# if HasGcc2
+#  define CcCmd			gcc
+#  define DefaultCCOptions	Gcc2MOption
+#  define OptimizedCDebugFlags	-O2
+#  define LibraryCCOptions	Gcc2MOption
+# else
+#  define CcCmd			cc
+#  define DefaultCCOptions	/**/
+#  define OptimizedCDebugFlags	-O -fstrength-reduce
+#  define LibraryCCOptions	/**/
+# endif
+#endif
+
+# define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+				-DAVOID_GLYPHBLT
+
+#define ExtraLibraries		GnuMallocLib
+
+#define HasVoidSignalReturn	YES
+#define AvoidNullMakeCommand	YES
+#define HasPutenv		YES
+#define UnalignedReferencesAllowed	YES
+#ifndef InstKmemFlags
+# define InstKmemFlags		-m 2755 -g kmem
+#endif
+#define AdmDir			/var/log
+
+#if OSMajorVersion >= 4 && OSMinorVersion >= 3
+# define SetTtyGroup		YES
+#endif
+
+/* These are used by xdm and can be overriden in the xdm config file */
+
+#define DefaultSystemPath	/sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
+#define DefaultUserPath		:/bin:/usr/bin:/usr/local/bin:$(BINDIR)
+
+#ifdef i386Bsdi
+# define NeqnCmd		eqn
+#endif
+
+#if FormattedManPages
+/*
+ * Rules to install pre-formatted man pages.
+ */
+
+#define ManSourcePath		$(MANPATH)/cat
+
+#define InstallManPageLong(file,destdir,dest)                                @@\
+install.man:: file.man                                                       @@\
+	MakeDir($(DESTDIR)destdir)                                           @@\
+	$(RM) $(DESTDIR)destdir/dest.0                                       @@\
+	cat file.man | $(NEQN) | $(TBL) | $(NROFF) -man >/tmp/file.man       @@\
+	$(INSTALL) -c $(INSTMANFLAGS) /tmp/file.man $(DESTDIR)destdir/dest.0 @@\
+	$(RM) /tmp/file.man
+
+#define InstallGenManPageLong(file,destdir,dest,suffix)			@@\
+	InstallManPageLong(file,destdir,dest)
+
+#define InstallManPageAliases(file,destdir,aliases)                     @@\
+install.man::                                                           @@\
+	@for i in aliases; do (cd $(DESTDIR)destdir; set -x; \          @@\
+        $(RM) $$i.0; \                                                  @@\
+	$(LN) file.0 $$i.0); \                                          @@\
+	done
+#endif
+
+#define InstallGenManPageAliases(file,destdir,suffix,aliases)		@@\
+	InstallManPageAliases(file,destdir,aliases)
+
+#endif /* FormattedManPages */
+
+
+#if defined(i386MachArchitecture)
+
+/*
+ * Mach i386
+ */
+
+#define i386Mach		YES
+
+#define OSName			Mach i386
+#define OSMajorVersion		2
+#define OSMinorVersion		6
+#define OSRelease		/* nothing */
+#define OSDefines		-DMACH386 -DNOSTDHDRS -DX_NOT_STDC_ENV \
+				-DNOT_POSIX
+#define OSVendor		(CMU)
+
+#if HasGcc
+# define CcCmd			gcc
+# define AnsiCCOptions		-traditional
+# if HasGcc2
+#  define DefaultCCOptions	Gcc2MOption -fwritable-strings 
+#  define OptimizedCDebugFlags	-O2
+#  define LibraryCCOptions	Gcc2MOption
+# else
+#  define DefaultCCOptions	-fwritable-strings
+#  define OptimizedCDebugFlags	-O -fstrength-reduce
+#  define LibraryCCOptions	/* nothing */
+# endif
+#endif
+
+#define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+				-DAVOID_GLYPHBLT
+
+#define ExtraLibraries		GnuMallocLib
+
+#define SetTtyGroup		YES
+#define HasBsearch		NO
+#define HasVoidSignalReturn	NO
+#define DirFailPrefix		-
+#define AvoidNullMakeCommand	YES
+
+#endif /* i386MachArchitecture */
+
+/*
+ * linux
+ */
+#if defined(LinuxArchitecture)
+
+#define OSName			Linux
+#define OSVendor		/**/
+#define OSMajorVersion		99
+#define OSMinorVersion		12
+#define OSRelease		-Dlinux
+#define OSDefines		-D_POSIX_SOURCE -D_BSD_SOURCE -D_GNU_SOURCE
+
+#define SystemV			NO
+#define AvoidNullMakeCommand	YES
+
+#if StripInstalledPrograms
+#define InstUidFlags -s -m 4755
+#else
+#define InstUidFlags -m 4755
+#endif
+#define ConnectionFlags		-DUNIXCONN -DTCPCONN
+#define DefaultFontPath		$(FONTDIR)/misc/
+#define YaccCmd			bison -y
+#define LexCmd			flex
+
+#if HasGcc
+# define CcCmd			gcc
+# define CppCmd			/lib/cpp
+# define PreProcessCmd		/lib/cpp
+# define LdCombineFlags		-r
+# define DefaultCCOptions	Gcc2MOption -DNO_ASM -fwritable-strings
+# define LibraryCCOptions	Gcc2MOption -DNO_ASM -fwritable-strings
+# define OptimizedCDebugFlags	-O2
+# define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+				-DAVOID_GLYPHBLT
+# define Malloc0ReturnsNull	YES
+# define NeedConstPrototoypes	YES
+# define NeedFunctionPrototypes	YES
+# define NeedNestedPrototypes	YES
+# define NeedVarargsPrototypes	YES
+# define NeedWidePrototypes	NO
+#endif /* HasGcc */
+
+#define ExtraLibraries		GnuMallocLib
+
+#define HasPutenv		YES
+#define HasShm			YES
+
+#include <lnuxLib.rules>
+
+/*
+ * cross compilation for hlu
+ */
+#ifdef CROSS_COMPILE
+#include <hlu.cf>
+#endif /* CROSS_COMPILE */
+
+#endif /* LinuxArchitecture */
+
+/*
+ * OSF/1
+ */
+#if defined(OsfArchitecture)
+
+#define OSName			OSF/1
+#define OSVendor		(Open Software Foundation)
+#define OSMajorVersion		1
+#define OSMinorVersion		1
+#define OSRelease		/* __osf__ defined by cpp */
+#define OSDefines		/* see /usr/include/standards.h */
+
+#define InstallCmd		installbsd
+#define	InstBinFlags		-m 755 -o bin -g bin
+#define	InstDatFlags		-m 644 -o bin -g bin
+#define	InstIncFlags		-m 644 -o bin -g bin
+#define	InstKmemFlags		-m 4755 -o root -g bin
+#define	InstLibFlags		-m 644 -o bin -g bin
+#define	InstManFlags		-m 644 -o bin -g bin
+#define	InstPgmFlags		-m 755 -o bin -g bin
+#define	InstUidFlags		-m 4755 -g bin
+#define ConnectionFlags		-DUNIXCONN -DTCPCONN
+#define DefaultFontPath		$(FONTDIR)/misc/
+
+#if HasGcc
+#undef PreProcessCmd
+#define CppCmd			/lib/cpp
+#define PreProcessCmd		CppCmd
+#define DefaultCCOptions	Gcc2MOption -pic-lib
+#define LibraryCCOptions	DefaultCCOptions
+#define ServerExtraDefines	GccGasOption -DXDMCP MallocFlags LinkKitFlags \
+				-DAVOID_GLYPHBLT
+#define NeedConstPrototoypes	YES
+#define NeedFunctionPrototypes	YES
+#define NeedNestedPrototypes	YES
+#define NeedVarargsPrototypes	YES
+#define NeedWidePrototypes	YES
+#define CcCmd			gcc -ansi -fwritable-strings
+#define OptimizedCDebugFlags	-O2 -fomit-frame-pointer
+#define ServerCcCmd  		CcCmd
+#define ServerCCOptions		-Di386=1 DefaultCCOptions
+#endif /* HasGcc */
+
+#define	HasShm			NO
+#define HasSharedLibraries	NO /* I haven't debugged this yet */
+#define HasLargeTmp		YES
+#define HasNdbm			YES
+#define HasPutenv		YES
+#define HasSockets		YES
+#define HasVFork		NO
+#define Malloc0ReturnsNull	YES
+#define	ExtraLoadFlags		-L/usr/shlib 
+#define UseCCMakeDepend		NO
+#define ConstructMFLAGS		NO
+
+#define ExtraLibraries		GnuMallocLib
+
+XCOMM (one of these days I'll finish this) #include <osfLib.rules>
+#endif /* OsfArchitecture */
+
+#if !defined(UseInstalled) || X386LinkKit
+#include <X386Conf.tmpl>
+#endif
+
+XCOMM operating system:  OSName OSVendor

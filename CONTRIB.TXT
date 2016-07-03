@@ -1,0 +1,462 @@
+
+
+
+
+
+
+
+                               386BSD Release 1.0
+                                Contributor List
+
+                               Lynne Greer Jolitz
+                               William F. Jolitz
+
+
+          _1._1.  _3_8_6_B_S_D _R_e_l_e_a_s_e _1._0 _R_e_f_e_r_e_n_c_e _C_D
+
+          Annotations, Articles, and 386BSD Materials:
+          William and Lynne Jolitz
+
+          System Software Editorial:
+          William and Lynne Jolitz
+
+          Product Development and Release Engineering:
+          William Jolitz
+
+          Product Design:
+          Jon Erickson
+          Peter Hutchinson
+          William and Lynne Jolitz
+          Manny Sawitt
+          Ray Valdez
+
+          Editorial:
+          Jon Erickson
+          Peter Hutchinson
+          Manny Sawitt
+          Ray Valdez
+
+          Marketing:
+          Stan Barnes
+          Valerie Dow
+          Manny Sawitt
+
+          Liner Notes:
+          Lynne Jolitz
+
+          Marketing Materials:
+          Stan Barnes
+          Lynne Jolitz
+          Mike Kuehl
+
+          Cover and CD Design:
+          Lynn LaRocca
+
+          Contributed Software Collection and Testing:
+          Thos Sumner
+
+          Annotations Copy Editorial:
+          Thos Sumner
+
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           11                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          Windows Production:
+          Stan Barnes
+          William and Lynne Jolitz
+
+          CD Production:
+          Sony Digital Audio Disk Corporation
+
+
+          The _3_8_6_B_S_D _R_e_f_e_r_e_n_c_e _C_D is a production of M&T Publishing, A
+          Miller-Freeman Subsidiary.
+
+          _1._2.   _H_a_r_d_w_a_r_e  _a_n_d   _M_o_n_e_t_a_r_y   _C_o_n_t_r_i_b_u_t_o_r_s   _t_o   _3_8_6_B_S_D
+          _R_e_l_e_a_s_e_s
+
+          Many people and firms have provided hardware and/or money to
+          try and  keep  this  unfunded  project  going  through  many
+          releases  despite  a  recession and hard times -- usually by
+          digging into their own pockets.  Each of these  contributors
+          gave,  not  only because they believed that the continuation
+          of  386BSD  is  vital  to  the  health  of   the   research,
+          educational,  and  development communities, but also because
+          they  realize  that  an  individual  can  and  does  make  a
+          difference!
+
+          Without  the  help  of  the  people listed here, this system
+          software release would simply not have been  possible.   The
+          rest  of  the 386BSD user community should make special note
+          of all these people and firms and  commend  them  for  their
+          generosity and foresight.
+
+          We  hope  that  their  leadership  and  vision will serve as
+          shining examples to the entire 386BSD  user  community,  and
+          serve to encourage others to actively participate in 386BSD.
+
+          _1._2._1.  _3_8_6_B_S_D _R_e_l_e_a_s_e _0._2 _a_n_d _1._0 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          David Abercrombie
+          Othman Ahmad
+          Ikuro Aoki
+          Matt Bonner
+          Compaq Computer Corporation
+          Jose Luiz Cordeiro
+          Robert Dienstknecht
+          Dixon Dick
+          Dr. Dobbs Journal
+          Julian Elisher
+          Martin L. Faltesek
+          Robert B. Fickling III
+          Mark A. Ganter
+          Satoshi Goda
+          Scott Goodwin
+          Bruce Gosse
+          Jack Griffin
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           22                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          Greg Haberland
+          Eberhard Hess
+          Bill Hiley
+          Craig Idler
+          Kurt Jaeger
+          Seiji Kaneko
+          Jun-ichi Koizumi
+          A. Kojima
+          Christopher Kovacs
+          Kyoto University Microcomputer Club
+          Danny Y. Lee
+          Bjorn Lemke
+          Steven Lesh
+          Los Alamos National Laboratories
+          Jui-Lin Lu
+          Alan Lundin
+          Michael MacKenzie
+          Serg. S. Maleyev
+          Charly M. Martel
+          Roberto L. Matos
+          Roy A. McCrory
+          Michael McDonnel
+          Hellmuth Michaelis
+          Dennis and Chris Mikkelson
+          Dave Mischler
+          Mike Mitchell
+          Jesus Monroy
+          Larry N. Moore
+          Rich Murphey
+          Professor Sakurdo Nemoto
+          Bob Nissen
+          Eric Peterson
+          Greg Peterson
+          Alan P. Petrofsky
+          Thad Phetteplace
+          Jochen Plessmann
+          David Pletcher
+          Patrick A. Powell
+          Jeffrey R. Pych
+          Richard F. Quintana
+          Martin Renters
+          Adam J. Richter
+          James Risner
+          Nirmal Saxena
+          Bradley D. Schulz
+          Frank Segner
+          Steve Sizemore
+          Lee Simpson
+          Bill Sommerfeld
+          Wolfgang Stanglmeier
+          Richard T. Stofer
+          Mikhail Sukhar
+          Thos Sumner
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           33                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          Yasuyuki Suzuki
+          Koji Tasyo
+          Mark Tinguely
+          L. Fred Towers II
+          Tetsutaro Uehara
+          F. Ukai
+          Shin Umetsu
+          Dan Welch
+          Robert Withrow
+          Steve Worcester
+          Atsushi Yokoyama
+          Minoru Yoshida
+          M. Zshii
+
+
+          And a Very Special Thanks to Mike Pate  of  Compaq  Computer
+          Company  for the use of a Compaq SystemPro used in the final
+          release engineering and regression testing of the system.
+
+          _1._2._2.  _R_e_l_e_a_s_e _0._1 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          Jan van den Bosch
+          Compaq Computer Corporation
+          Cyrix Corporation
+          Dixon Dick
+          Steven P. Donegan
+          Jon Erickson
+          Eric J. Haug
+          Bob McGhee
+          Jesus Monroy Jr.
+          Andrew Moore
+          Rich Murphey
+          Mark Ng
+          Kenji Okamoto
+          John Plocher
+          Mark R. Riordan
+          John B. Scalia
+          Steve Sizemore
+          Thos Sumner
+          David E. Tweten
+
+
+          _1._2._3.  _R_e_l_e_a_s_e _0._0 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          Compaq Computer Corporation
+          Steve Sizemore
+
+
+          _3_8_6_B_S_D _S_u_p_p_o_r_t _a_n_d _A_d_v_i_c_e _C_o_n_t_r_i_b_u_t_o_r_s
+
+          Many people have continually encouraged us over  the  course
+          of these releases, and provided us with technical advice and
+          guidance.  These people have also  spent  considerable  time
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           44                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          and  energy  getting  this  software  out to the rest of the
+          386BSD community.  While it is impossible  for  us  to  list
+          everyone  who  has  been  supportive  of  386BSD, we wish to
+          personally thank some of the people who have been of special
+          assistance  to  us  directly  over the course of getting the
+          system software out the door.
+
+          _1._2._4.  _R_e_l_e_a_s_e _0._2 _a_n_d _1._0 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          Editorial Suggestions and Advice:
+          Dr. Dobbs Journal - John Erickson, Tami Zemel, Ray Valdez,
+               Monica Berg, Michael Floyd and the rest of the Staff at DDJ.
+          Paul Fromberg
+          Eric Haug
+          IX Magazin - Juergen Fey
+          Brian Kernighan
+          Larry McVoy - "The kernel should look like one guy did it" and other
+               inspiring aphorisms (not all printable).
+          Miller-Freeman - Peter Hutchinson, Manny Sawitt, Stan Barnes
+          Dennis Richie
+          Thos Sumner
+
+          386BSD On-Line Manual Revisions:
+          Thos Sumner
+
+          386BSD System Testing Revisions:
+          Tim Casey
+          Armancio Hasty
+          Thos Sumner
+          Craig Idler
+
+
+          And a special thank you and a sad farewell to Jim Joyce, who
+          very   kindly  encouraged  us  with  his  gentle  humor  and
+          perspective during the darker times, even though he was ill.
+          We shall miss him.
+
+          _1._2._5.  _R_e_l_e_a_s_e _0._1 _S_u_p_p_o_r_t
+
+          Support and Advice Coordination:
+          Dan Kionka
+          Jesus Monroy
+          Rich Murphey
+          Silicon Valley Computer Society
+          Nate Williams
+
+          Unofficial FAQs, Patchkits and Bug Lists for Release 0.1:
+          Jordan Hubbard
+          Terry Lambert
+          Nate Williams
+
+          Japanese Translation for 0.1:
+          Kenji Okamoto
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           55                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          386BSD Newsgroup Organizers:
+          John Cargill
+          Chris Demetriou
+
+
+          _1._2._6.  _R_e_l_e_a_s_e _0._1 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          Bruce Blakely
+          Dave Campbell
+          Free Software Foundation
+          Paul Fromberg
+          Tom Genereaux
+          John Gilmore
+          Dave Harris
+          Jim Joyce
+          Dan Kionka
+          Dory Leifer
+          Per Lindqvist
+          Marshall Midden
+          Rich Morin
+          Silicon Valley Computer Society
+          John Sokol
+          Thos Sumner
+          Karen Trocki
+          Rob Warnock
+
+          and a special thanks to:
+          John Erickson, Tami Zemel, Ray Valdez, Monica Berg, Michael Floyd
+               and everyone else at Dr. Dobbs Journal.
+          Juergen Fey, Rainer Huttenloher, Gerd Oskar Bausewein
+               and everyone else at UNIX Magazin.
+
+          And all of the 386BSD User Community.
+
+
+          _1._2._7.  _R_e_l_e_a_s_e _0._0 _C_o_n_t_r_i_b_u_t_o_r_s
+
+          John Erickson, Tami Zemel, Ray Valdez, Monica Berg, Michael Floyd
+               and everyone else at Dr. Dobbs Journal.
+          Juergen Fey, Rainer Huttenloher, Gerd Oskar Bausewein
+               and everyone else at UNIX Magazin.
+
+
+          _3_8_6_B_S_D _S_y_s_t_e_m _S_o_f_t_w_a_r_e _C_o_n_t_r_i_b_u_t_o_r_s
+
+               The  first public release of 386BSD, 386BSD Release 0.0
+          (March 1992), was based on the source code contained in  the
+          EECS  Department  Networking  2  Release  -- a compendium of
+          software source code done by developers all over  the  world
+          and   contributed   to  the  University  of  California  for
+          redistribution to the public (see source code  listings  for
+          authorship   and   copyright  restrictions).   This  release
+          contained the prior unencumbered  386BSD  source  code  work
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           66                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+          done  by William Jolitz. The missing kernel software modules
+          (some of them major omissions) and release  engineering  was
+          also done solely by William Jolitz. See the two-part article
+          _3_8_6_B_S_D: _M_i_s_s_i_n_g _P_i_e_c_e_s, _D_r. _D_o_b_b_s  _J_o_u_r_n_a_l,  June-July  1992
+          for  information on the methodology and construction of this
+          first complete and unencumbered 386BSD systems release  (the
+          complete series is available as part of the _3_8_6_B_S_D _R_e_f_e_r_e_n_c_e
+          _C_D).
+
+               Since that first release, many people have developed or
+          enhanced  new  software  programs  and modules and conducted
+          ports of popular public domain  user  programs  featured  as
+          part  of  this  release.   While  some  of this software was
+          directly contributed to us, most items were  made  available
+          to  all  users  via  the Internet and been incorporated into
+          many personal variants  of  386BSD.   Occasionally,  several
+          people  came  up  with  a variety of approaches for a single
+          item. In this instance, we tried to choose the one which  we
+          felt  would  best serve the rest of the 386BSD user base for
+          this release.  However, the creativity and  perseverance  of
+          all  the  software contributors trying to make 386BSD better
+          for the entire 386BSD user community was considerable.  Each
+          individual  effort  is  worthy of pride.  386BSD Release 0.1
+          was an attempt to consolidate and set a baseline  for  these
+          changes.  It  consisted of a fully fleshed out stable system
+          based on the older Release 0.0 technology contained  in  the
+          NET/2  release,  coupled  with  the  many popular publically
+          available applications and development packages used in many
+          Unix systems.
+
+               Release  1.0,  in  contrast,  begins a reexamination of
+          this older technology and incorporates some of the new ideas
+          and  paradigm  shifts  contemplated  in BSD operating system
+          design ever since this project began  in  1989  --  some  of
+          which  have  been  discussed  since the early 1980's.  It is
+          humbling to realize that after five years of work, 386BSD is
+          only  now  becoming  the experimental platform for new ideas
+          that was intended, and that there is still much new work  to
+          do.   As  such,  while  scanning  the source files contained
+          within this release, we ask that you make a special note  of
+          the  many  people  who have created new work over the years,
+          for these are the people to watch in the next  five  to  ten
+          years.
+
+               We  wish  to  personally  thank all of these people, as
+          they  have  helped  speed  386BSD  releases  back   to   the
+          contributor  and  all  other  users  of 386BSD. We hope that
+          these contributors and all  the  rest  of  the  386BSD  user
+          community   will   continue   this   cycle   of   new  work,
+          incorporation, testing, and release, in order to make future
+          releases even better!
+
+
+
+
+          338866BBSSDD CCOONNTTRRIIBB LLIISSTT           77                  AAuugguusstt 11999944
+
+
+

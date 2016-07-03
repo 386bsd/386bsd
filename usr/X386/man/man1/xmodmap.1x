@@ -1,0 +1,271 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH XMODMAP 1 "Release 5" "X Version 11"
+.SH NAME
+xmodmap - utility for modifying keymaps in X
+.SH SYNOPSIS
+.B xmodmap
+[-options ...] [filename]
+.SH DESCRIPTION
+.PP
+The \fIxmodmap\fP program is used to edit and display the 
+keyboard \fImodifier map\fP and \fIkeymap table\fP that are used by client 
+applications to convert event keycodes into keysyms.  It is usually run from 
+the user's session startup script to configure the keyboard according to 
+personal tastes.
+.SH OPTIONS
+.PP
+The following options may be used with \fIxmodmap\fP:
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the host and display to use.
+.TP 8
+.B \-help
+This option indicates that a brief description of the command line arguments
+should be printed on the standard error channel.  This will be done whenever an
+unhandled argument is given to
+.I xmodmap.
+.TP 8
+.B \-grammar
+This option indicates that a help message describing the expression grammar 
+used in files and with -e expressions should be printed on the standard error.
+.TP 8
+.B \-verbose
+This option indicates that 
+.I xmodmap
+should print logging information as it parses its input.
+.TP 8
+.B \-quiet
+This option turns off the verbose logging.  This is the default.
+.TP 8
+.B \-n
+This option indicates that 
+.I xmodmap
+should not change the mappings, but should display what it would do, like
+\fImake(1)\fP does when given this option.
+.TP 8
+.B \-e \fIexpression\fB
+This option specifies an expression to be executed.  Any number of expressions
+may be specified from the command line.
+.TP 8
+.B \-pm
+This option indicates that the current modifier map should be printed on the
+standard output.
+.TP 8
+.B \-pk
+This option indicates that the current keymap table should be printed on the
+standard output.
+.TP 8
+.B \-pke
+This option indicates that the current keymap table should be printed on the
+standard output in the form of expressions that can be fed back to
+\fIxmodmap\fP.
+.TP 8
+.B \-pp
+This option indicates that the current pointer map should be printed on the
+standard output.
+.TP 8
+.B \-
+A lone dash means that the standard input should be used as the input file.
+.PP
+The \fIfilename\fP specifies a file containing \fIxmodmap\fP expressions
+to be executed.  This file is usually kept in the user's home directory with
+a name like \fI.xmodmaprc\fP.
+.SH EXPRESSION GRAMMAR
+.PP
+The
+.I xmodmap
+program reads a list of expressions and parses them all before attempting
+to execute any of them.  This makes it possible to refer to keysyms that are
+being redefined in a natural way without having to worry as much about name
+conflicts.
+.TP 8
+.B keycode \fINUMBER\fP = \fIKEYSYMNAME ...\fP
+The list of keysyms is assigned to the indicated keycode 
+(which may be specified in decimal, hex or octal and can be determined by 
+running the 
+.I xev 
+program in the examples directory).
+.TP 8
+.B keysym \fIKEYSYMNAME\fP = \fIKEYSYMNAME ...\fP
+The \fIKEYSYMNAME\fP on the left hand side is translated into matching keycodes
+used to perform the corresponding set of \fBkeycode\fP expressions.
+The list of keysym names may be
+found in the header file \fI<X11/keysymdef.h>\fP (without the \fIXK_\fP prefix)
+or the keysym database \fI/usr/lib/X11/XKeysymDB\fP.
+Note that if the same keysym is bound to multiple keys, the expression is
+executed for each matching keycode.
+.TP 8
+.B clear \fIMODIFIERNAME\fP
+This removes all entries in the modifier map for the given modifier, where 
+valid name are:
+.BR Shift ,
+.BR Lock ,
+.BR Control ,
+.BR Mod1 ,
+.BR Mod2 ,
+.BR Mod3 ,
+.BR Mod4 ,
+and \fBMod5\fP (case 
+does not matter in modifier names, although it does matter for all other
+names).  For example, ``clear Lock'' will remove
+all any keys that were bound to the shift lock modifier.
+.TP 8
+.B add \fIMODIFIERNAME\fP = \fIKEYSYMNAME ...\fP
+This adds all keys containing the given keysyms to the indicated modifier map.
+The keysym names
+are evaluated after all input expressions are read to make it easy to write
+expressions to swap keys (see the EXAMPLES section).
+.TP 8
+.B remove \fIMODIFIERNAME\fP = \fIKEYSYMNAME ...\fP
+This removes all keys containing the given keysyms from the indicated
+modifier map.  Unlike
+.B add,
+the keysym names are evaluated as the line is read in.  This allows you to
+remove keys from a modifier without having to worry about whether or not they
+have been reassigned.
+.TP 8
+.B "pointer = default"
+This sets the pointer map back to its default settings (button 1 generates a 
+code of 1, button 2 generates a 2, etc.).
+.TP 8
+.B pointer = \fINUMBER ...\fP
+This sets to pointer map to contain the indicated button codes.  The list
+always starts with the first physical button.
+.PP
+Lines that begin with an exclamation point (!) are taken as comments.
+.PP
+If you want to change the binding of a modifier key, you must also remove it
+from the appropriate modifier map.
+.SH EXAMPLES
+.PP
+Many pointers are designed such that the first button is pressed using the
+index finger of the right hand.  People who are left-handed frequently find
+that it is more comfortable to reverse the button codes that get generated
+so that the primary button is pressed using the index finger of the left hand.
+This could be done on a 3 button pointer as follows:
+.EX
+%  xmodmap -e "pointer = 3 2 1"
+.EE
+.PP
+Many editor applications support the notion of Meta keys (similar to Control 
+keys except that Meta is held down instead of Control).  However,
+some servers do not have a Meta keysym in the default keymap table, so one
+needs to be added by hand.
+The following command will attach Meta to the Multi-language key (sometimes
+labeled Compose Character).  It also takes advantage of the fact that 
+applications that need a Meta key simply need to get the keycode and don't
+require the keysym to be in the first column of the keymap table.  This
+means that applications that are looking for a Multi_key (including the
+default modifier map) won't notice any change.
+.EX
+%  xmodmap -e "keysym Multi_key = Multi_key Meta_L"
+.EE
+.PP
+One of the more simple, yet convenient, uses of \fIxmodmap\fP is to set the
+keyboard's "rubout" key to generate an alternate keysym.  This frequently
+involves exchanging Backspace with Delete to be more comfortable to the user.
+If the \fIttyModes\fP resource in \fIxterm\fP is set as well, all terminal 
+emulator windows will use the same key for erasing characters:
+.EX
+%  xmodmap -e "keysym BackSpace = Delete"
+%  echo "XTerm*ttyModes:  erase ^?" | xrdb -merge
+.EE
+.PP
+Some keyboards do not automatically generate less than and greater than
+characters when the comma and period keys are shifted.  This can be remedied
+with \fIxmodmap\fP by resetting the bindings for the comma and period with
+the following scripts:
+.EX
+!
+! make shift-, be < and shift-. be >
+!
+keysym comma = comma less
+keysym period = period greater
+.EE
+.PP
+One of the more irritating differences between keyboards is the location of the
+Control and Shift Lock keys.  A common use of \fIxmodmap\fP is to swap these
+two keys as follows:
+.EX
+!
+! Swap Caps_Lock and Control_L
+!
+remove Lock = Caps_Lock
+remove Control = Control_L
+keysym Control_L = Caps_Lock
+keysym Caps_Lock = Control_L
+add Lock = Caps_Lock
+add Control = Control_L
+.EE
+.PP
+The \fIkeycode\fP command is useful for assigning the same keysym to
+multiple keycodes.  Although unportable, it also makes it possible to write
+scripts that can reset the keyboard to a known state.  The following script
+sets the backspace key to generate Delete (as shown above), flushes all 
+existing caps lock bindings, makes the CapsLock
+key be a control key, make F5 generate Escape, and makes Break/Reset be a
+shift lock.
+.EX
+!
+! On the HP, the following keycodes have key caps as listed:
+!
+!     101  Backspace
+!      55  Caps
+!      14  Ctrl
+!      15  Break/Reset
+!      86  Stop
+!      89  F5
+!
+keycode 101 = Delete
+keycode 55 = Control_R
+clear Lock
+add Control = Control_R
+keycode 89 = Escape
+keycode 15 = Caps_Lock
+add Lock = Caps_Lock
+.EE
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get default host and display number.
+.SH SEE ALSO
+X(1), xev(1), \fIXlib\fP documentation on key and pointer events
+.SH BUGS
+.PP
+Every time a \fBkeycode\fP expression is evaluated, the server generates
+a \fIMappingNotify\fP event on every client.  This can cause some thrashing.
+All of the changes should be batched together and done at once.
+Clients that receive keyboard input and ignore \fIMappingNotify\fP events
+will not notice any changes made to keyboard mappings.
+.PP
+.I Xmodmap
+should generate "add" and "remove" expressions automatically
+whenever a keycode that is already bound to a modifier is changed.
+.PP
+There should be a way to have the
+.I remove
+expression accept keycodes as well as keysyms for those times when you really
+mess up your mappings.
+.SH COPYRIGHT
+Copyright 1988, 1989, 1990 Massachusetts Institute of Technology.
+.br
+Copyright 1987 Sun Microsystems, Inc.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium, rewritten from an earlier version by
+David Rosenthal of Sun Microsystems.
+

@@ -1,0 +1,3 @@
+%!
+/Hershey-Gothic-English findfont /CharData get
+/Hershey-Gothic-English-Bold 4290030 2.0 0 MakeHersheyFont

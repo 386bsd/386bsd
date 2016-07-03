@@ -1,0 +1,339 @@
+.TH XPR 1 "Release 5" "X Version 11"
+.SH NAME
+xpr \- print an X window dump
+.SH SYNOPSIS
+.B xpr
+[
+.B \-device
+.I devtype
+] [
+.B \-scale
+.I scale
+] [
+.B \-height
+.I inches
+] [
+.B \-width
+.I inches
+] [
+.B \-left
+.I inches
+] [
+.B \-top
+.I inches
+] [
+.B \-header
+.I string
+] [
+.B \-trailer
+.I string
+] [
+.B \-landscape
+] [
+.B \-portrait
+] [
+.B \-plane
+.I number
+] [
+.B \-gray
+] [
+.B \-rv
+] [
+.B \-compact
+] [
+.B \-output
+.I filename
+] [
+.B \-append
+.I filename
+] [
+.B \-noff
+] [
+.B \-split
+.I n
+] [
+.B \-psfig
+] [
+.B \-density
+.I dpi
+] [
+.B \-cutoff
+.I level
+] [
+.B \-noposition
+] [
+.B \-gamma
+.I correction
+] [
+.B \-render
+.I algorithm
+] [
+.B \-slide
+] [
+.I filename
+]
+.SH DESCRIPTION
+
+.I xpr
+takes as input a window dump file produced by
+.IR xwd(1)
+and formats it for output on PostScript printers, the Digital LN03 or LA100,
+the IBM PP3812 page printer, the HP LaserJet (or other PCL printers),
+or the HP PaintJet.  If no file
+argument is given, the standard input is used.  By default, \fIxpr\fP
+prints the largest possible representation of the window on the
+output page.  Options allow the user to add headers and trailers,
+specify margins, adjust the scale and orientation, and append
+multiple window dumps to a single output file.  Output is to
+standard output unless 
+.B \-output
+is specified.
+.sp 1
+.ne 8
+.B Command Options
+.sp 1
+.IP "\fB\-device\fP \fIdevtype\fP"
+Specifies the device on which the file will be printed.  Currently supported:
+.RS 12
+.PD 0
+.TP
+.B la100
+Digital LA100
+.TP
+.B ljet
+\s-1HP\s+1 LaserJet series and other monochrome PCL devices
+such as ThinkJet, QuietJet, RuggedWriter, \s-1HP\s+12560 series,
+and \s-1HP\s+12930 series printers
+.TP
+.B ln03
+Digital LN03
+.TP
+.B pjet
+HP PaintJet (color mode)
+.TP
+.B pjetxl
+HP HP PaintJet XL Color Graphics Printer (color mode)
+.TP
+.B pp
+IBM PP3812
+.TP
+.B ps
+PostScript printer
+.PD
+.RE
+.IP
+The default is PostScript.
+\fB-device lw\fP (LaserWriter) is equivalent to -device ps and is
+provided only for backwards compatibility.
+.IP "\fB\-scale\fP \fIscale\fP"
+Affects the size of the window on the page.  The PostScript, LN03, and HP
+printers are able to
+translate each bit in a window pixel map into a grid of a specified size.
+For example each bit might translate into a 3x3 grid.  This would be
+specified by \fB\-scale\fP \fI3\fP.  By default a window is printed 
+with the largest scale that will fit onto the page for the specified
+orientation.
+.IP "\fB\-height\fP \fIinches\fP"
+Specifies the maximum height of the page.
+.IP "\fB\-width\fP \fIinches\fP"
+Specifies the maximum width of the page.
+.IP "\fB\-left\fP \fIinches\fP"
+Specifies the left margin in inches.  Fractions
+are allowed.  By default the window is centered in the page.
+.IP "\fB\-top\fP \fIinches\fP"
+Specifies the top margin for the picture in inches.  Fractions are
+allowed.
+.IP "\fB\-header\fP \fIstring\fP"
+Specifies a header string to be printed above the window.
+.IP "\fB\-trailer\fP \fIstring\fP"
+Specifies a trailer string to be printed below the window.
+.IP "\fB\-landscape\fP"
+Forces the window to printed in landscape mode.  By default
+a window is printed such that its longest side follows the long side of
+the paper.
+.IP "\fB\-plane\fP \fInumber\fP"
+Specifies which bit plane to use in an image.  The default is to use the
+entire image and map values into black and white based on color intensities.
+.IP "\fB\-gray\fP \fI 2 | 3 | 4\fP"
+Uses a simple 2x2, 3x3, or 4x4 gray scale conversion on a color image,
+rather than mapping to strictly black and white.  This doubles,
+triples, or quadruples the effective width and height of the image.
+.IP "\fB\-portrait\fP"
+Forces the window to be printed in portrait mode.  By default
+a window is printed such that its longest side follows the long side of
+the paper.
+.IP "\fB\-rv\fP"
+Forces the window to be printed in reverse video.
+.IP "\fB\-compact\fP"
+Uses simple run-length encoding for compact representation of windows
+with lots of white pixels.
+.IP "\fB\-output\fP \fIfilename\fP"
+Specifies an output file name.  If this option is not specified, standard
+output is used.
+.IP "\fB\-append\fP \fIfilename\fP"
+Specifies a filename previously produced by \fIxpr\fP to which the window
+is to be appended.
+.IP "\fB\-noff\fP"
+When specified in conjunction with \fB\-append\fP, the window will appear
+on the same page as the previous window.
+.IP "\fB\-split\fP \fIn\fP"
+This option allows the user to split a window onto several pages.  
+This might be necessary for very large windows that would otherwise
+cause the printer to overload and print the page in an obscure manner.
+.IP "\fB\-psfig\fP"
+Suppress translation of the PostScript picture to the center of the page.
+.IP "\fB\-density\fP \fIdpi\fP"
+Indicates what dot-per-inch density should be used by the HP printer.
+.IP "\fB\-cutoff\fP \fIlevel\fP"
+Changes the intensity level where colors are mapped to either black or
+white for monochrome output on a LaserJet printer.
+The \fIlevel\fP is expressed as percentage of
+full brightness.  Fractions are allowed.
+.IP "\fB\-noposition\fP"
+This option causes header, trailer, and image positioning command
+generation to be bypassed for LaserJet, PaintJet and
+PaintJet XL printers.
+.IP "\fB\-gamma\fP \fIcorrection\fP"
+This changes the intensity of the colors printed by
+PaintJet XL printer. The \fIcorrection\fP is
+a floating point value in the range 0.00 to 3.00.
+Consult the operator's manual to determine the correct value for
+the specific printer.
+.IP "\fB\-render\fP \fIalgorithm\fP"
+This allows PaintJet XL printer to render the
+image with the best quality versus performance tradeoff.
+Consult the operator's manual to determine which \fIalgorithm\fPs
+are available.
+.IP "\fB\-slide\fP"
+This option allows overhead transparencies to be printed
+using the PaintJet and PaintJet XL printers.
+
+.SH SEE ALSO
+xwd(1), xwud(1), X(1)
+.SH LIMITATIONS
+
+The current version of \fIxpr\fP can generally print out on the LN03
+most X windows that are not larger than two-thirds of the screen.
+For example, it will be able to print out a large Emacs window, but
+it will usually fail when trying to print out the entire screen.  The
+LN03 has memory limitations that can cause it to incorrectly print
+very large or complex windows.  The two most common errors
+encountered are ``band too complex'' and ``page memory exceeded.''
+In the first case, a window may have a particular six pixel row that
+contains too many changes (from black to white to black).  This will
+cause the printer to drop part of the line and possibly parts of the
+rest of the page.  The printer will flash the number `1' on its front
+panel when this problem occurs.  A possible solution to this problem
+is to increase the scale of the picture, or to split the picture onto
+two or more pages.  The second problem, ``page memory exceeded,''
+will occur if the picture contains too much black, or if the picture
+contains complex half-tones such as the background color of a
+display.  When this problem occurs the printer will automatically
+split the picture into two or more pages.  It may flash the number
+`5' on its from panel.  There is no easy solution to this problem.
+It will probably be necessary to either cut and paste, or to rework the
+application to produce a less complex picture.
+
+There are several limitations on the LA100 support:
+the picture will always be printed in
+portrait mode, there is no scaling,
+and the aspect ratio will be slightly off.
+
+Support for PostScript output currently cannot handle the \fB-append\fP,
+\fB-noff\fP or \fB-split\fP options.
+
+The \fB-compact\fP option is
+.I only
+supported for PostScript output.
+It compresses white space but not black space, so it is not useful for
+reverse-video windows.
+
+For color images, should map directly to PostScript image support.
+
+.SH "HP PRINTERS"
+
+If no \fB\-density\fP is specified on the command line 300 dots per inch
+will be assumed for \fIljet\fP and 90 dots per inch for \fIpjet\fP.
+Allowable \fIdensity\fP values for a LaserJet printer are 300, 150, 100,
+and 75 dots per inch.  Consult the operator's manual to determine densities
+supported by other printers.
+
+If no \fB\-scale\fP is specified the image will be expanded to fit the
+printable page area.
+
+The default printable page area is 8x10.5 inches. Other paper sizes can
+be accommodated using the \fB\-height\fP and \fB\-width\fP options.
+
+Note that a 1024x768 image fits the default printable area when processed
+at 100 dpi with scale=1, the same image can also be printed using 300 dpi
+with scale=3 but will require considerably more data be transferred to the
+printer.
+
+\fIxpr\fP may be tailored for use with monochrome PCL printers other than
+the LaserJet.  To print on a ThinkJet (\s-1HP\s+12225A) \fIxpr\fP could be
+invoked as:
+.sp
+.RS 4
+xpr -density 96 -width 6.667 \fIfilename\fP
+.RE
+.sp
+or for black-and-white output to a PaintJet:
+.sp
+.RS 4
+xpr -density 180 \fIfilename\fP
+.RE
+
+The monochrome intensity of a pixel is computed as 0.30*R + 0.59*G
++ 0.11*B.
+If a pixel's computed intensity is less than the \fB\-cutoff\fP
+level it will print as white.  This maps light-on-dark display images
+to black-on-white hardcopy.  The default cutoff intensity is 50% of full
+brightness.  Example: specifying \fB\-cutoff 87.5\fP moves the
+white/black intensity point to 87.5% of full brightness.
+
+A LaserJet printer must be configured with sufficient memory to handle the
+image.  For a full page at 300 dots per inch approximately 2MB of printer
+memory is required.
+
+Color images are produced on the PaintJet
+at 90 dots per inch.  The
+PaintJet is limited to sixteen colors from its 330 color palette on each
+horizontal print line.  \fIxpr\fP will issue a warning message if more than
+sixteen colors are encountered on a line.  \fIxpr\fP will program the
+PaintJet for the first sixteen colors encountered on each line and use the
+nearest matching programmed value for other colors present on the line.
+
+Specifying the \fB\-rv\fP, reverse video, option for the PaintJet will
+cause black and white to be interchanged on the output image.  No other
+colors are changed.
+
+Multiplane images must be recorded by \fIxwd\fP in \fIZPixmap\fP format.
+Single plane (monochrome) images may be in either \fIXYPixmap\fP or
+\fIZPixmap\fP format.
+
+Some PCL printers do not recognize image positioning commands.  Output for
+these printers will not be centered on the page and header and trailer
+strings may not appear where expected.
+
+The \fB\-gamma\fP and \fB-render\fP options are supported only on
+the PaintJet XL printers.
+
+The \fB\-slide\fP option is not supported for LaserJet printers.
+
+The \fB\-split\fP option is not supported for HP printers.
+
+The \fB\-gray\fP option is not supported for HP or IBM printers.
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+Copyright 1986, Marvin Solomon and the University of Wisconsin.
+.br
+Copyright 1988, Hewlett Packard Company.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+Michael R. Gretzinger, MIT Project Athena, 
+Jose Capo, MIT Project Athena (PP3812 support),
+Marvin Solomon, University of Wisconsin,
+Bob Scheifler, MIT, Angela Bock and E. Mike Durbin, Rich Inc. (grayscale),
+Larry Rupp, HP (HP printer support).

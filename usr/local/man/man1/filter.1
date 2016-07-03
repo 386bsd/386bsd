@@ -1,0 +1,134 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH FILTER 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+filter - filter incoming messages before adding to mailbox
+.SH SYNOPSIS
+.B filter
+[-q] [-v] [-l] [-o output] [-f rules-file]
+.br
+.B filter
+[-n] [-f rules-file]
+.br
+.B filter
+[-r] [-o output] [-f rules-file]
+.br
+.B filter
+[-c] [-s] [-o output] [-f rules-file]
+.br
+.B filter
+[-c] [-S] [-o output] [-f rules-file]
+.SH DESCRIPTION
+.I Filter
+uses a set of selection rules to process incoming mail messages.
+The format for the rules, located in $HOME/.elm/filter-rules, is;
+.nf
+        
+        \fIrule\fR  ::=  \fBif  (\fIexpression\fP)  then  \fIaction\fR
+
+.fi
+where \fIexpression\fR is:
+.nf
+
+        \fIexpression\fR  ::=  {  \fBnot\fR  }  \fIcondition\fR  \fIexpr2\fR
+
+        \fIexpr2\fR  ::=  \fINULL\fR  |  \fBand\fI  condition  expr2
+
+        \fIcondition\fR  ::=  \fIfield  relationship  value\fR
+                   ::=  \fBlines\fI  relop  numvalue\fR
+or                 ::=  \fBalways\fR
+
+.fi
+These further break down as:
+.nf
+
+        \fIfield\fR  ::=  \fBfrom\fR  |  \fBsubject\fR  |  \fBto\fR  |  \fBlines\fR | \fBsender\fR
+
+        \fIrelationship\fR  ::=  \fB=\fR  |  \fB!=\fR
+                
+        \fIrelop\fR  ::=  \fB=\fR  |  \fB!=\fR  |  \fB<\fR  |  \fB>\fR  |  \fB<=\fR  |  \fB>=\fR
+
+        \fIvalue\fR  ::=  \fIany  quoted  string\fR
+
+        \fInumvalue\fR  ::=  \fIany  integer  value\fR
+
+.fi
+\fIAction\fR can be any of:
+.nf
+
+        \fBdelete\fR
+        \fBsave  \fIfoldername\fR
+        \fBsavecopy \fIfoldername\fR
+        \fBexecute  \fIcommand\fR
+        \fBexecutec  \fIcommand\fR
+        \fBforward  \fIaddress\fR
+        \fBleave\fR
+
+.fi
+For further information about the rules language, please see
+\fIThe Elm Filter Guide\fR.
+.sp
+The flags the \fIfilter\fR program understands are;
+.TP 1.0i
+.B "-c"
+Clear logs.  If this flag is used, the log files will be removed after
+being summarized by either "-s" or "-S" (see below).
+.TP
+\fB-f \fIrules-file\fR
+Get rules from specified file instead of default $HOME/.elm/filter-rules
+.TP
+.B "-l"
+Log actions only.  Do not log information about mailed messages.
+.TP
+.B "-n"
+Not really.  Output what would happen if given message from standard
+input, but don't actually do anything with it.
+.TP
+\fB-o \fIfile\fR
+Redirect stdout messages to the specified file or device.
+Logging of filter actions is not affected.  (This is
+added to more gracefully deal with changes in the file system (since
+sendmail is quite picky about modes of files being redirected into.))
+.TP
+.B "-q"
+Quiet.  Do not log filtering actions.
+.TP
+.B "-r"
+Rules.  List the rules currently being used.
+.TP
+.B "-s"
+Summarize.  List a summary of the message filtering log.
+.TP
+.B "-S"
+This is the same as `-s' but includes message-by-message
+information additionally.
+.TP
+.B "-v"
+Verbose.  Give output on standard out for each message filtered.  Useful
+to have redirected to ``/dev/console'' and such.  (see \fB-o\fR too).
+.SH AUTHOR
+Elm Development Group
+.SH FILES
+$HOME/.elm/filter-rules     Default rules file
+.br
+$HOME/.elm/filterlog        A log of what has been done
+.br
+$HOME/.elm/filtersum        A summary of what has been done
+.br
+/etc/passwd             Used to get users home directory
+.SH SEE ALSO
+.I "The Elm Filter Guide"
+.br
+readmsg(1L), elm(1L), mail(1), mailx(1), sendmail(1,8)
+.SH COMMENTS
+Not really smart about pattern matching.  
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

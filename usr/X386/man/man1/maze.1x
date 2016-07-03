@@ -1,0 +1,81 @@
+.TH MAZE 1 "Release 5" "X Version 11"
+.SH NAME
+maze \- an automated X11 demo repeatedly creating and solving a random maze
+.SH SYNTAX
+.B
+maze 
+[
+.B \-S
+] [
+.B \-r
+] [
+.B \-g 
+.I geometry
+] [
+.B \-d 
+.I display
+]
+.PP
+.SH DESCRIPTION
+The \fImaze\fP program creates a "random" maze and then solves it with 
+graphical feedback. 
+.sp 1
+.B Command Options
+.IP "\fB\-S\fP"
+Full screen window option...
+.IP "\fB\-r\fP"
+Reverse video option...
+.IP "\fB\-g\fP \fIgeometry\fP"
+Specifies the window geometry to be used...
+.IP "\fB\-d\fP \fIdisplay\fP"
+Specifies the display to be used...
+.PP
+The following lists the current functionality of various mouse button clicks;
+.IP "\fBLeftButton\fP"
+Clears the window and restarts maze...
+.IP "\fBMiddleButton\fP"
+Toggles the maze program, 
+first click -> \fIstop\fP, 
+second click -> \fIcontinue\fP...
+.IP "\fBRightButton\fP"
+Kills maze...
+.PP 
+.SH LIMITATIONS
+No color support...
+.br
+Expose events force a restart of maze...
+.br
+Currently, mouse actions are based on "raw" values [ Button1, Button2 and 
+Button3 ] from the ButtonPress event... 
+.br
+[ doesn't use pointer mapping ]
+.SH COPYRIGHT
+.PP
+Copyright 1988 by Sun Microsystems, Inc. Mountain View, CA.
+.PP  
+All Rights Reserved
+.PP
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted, provided that
+the above copyright notice appear in all copies and that both that copyright
+notice and this permission notice appear in supporting documentation, and that
+the names of Sun or MIT not be used in advertising or publicity pertaining to
+distribution of the software without specific prior written permission. Sun
+and M.I.T.  make no representations about the suitability of this software for
+any purpose. It is provided "as is" without any express or implied warranty.
+.PP
+SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. IN
+NO EVENT SHALL SUN BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.SH AUTHOR(s)
+.nf
+Richard Hess	[ X11 extensions ]  	{...}!uunet!cimshop!rhess
+  Consilium, Mountain View, CA
+Dave Lemke	[ X11 version ]		lemke@sun.COM
+  Sun MicroSystems, Mountain View, CA
+Martin Weiss	[ SunView version ]
+  Sun MicroSystems, Mountain View, CA
+.fi

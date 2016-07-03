@@ -1,0 +1,24 @@
+.TH RMDIR 1L "GNU File Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+rmdir \- remove empty directories
+.SH SYNOPSIS
+.B rmdir
+[\-p] [\-\-parents] [\-\-help] [\-\-version] dir...
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR rmdir .
+.B rmdir
+removes each given empty directory.  If any non-option argument
+does not refer to an existing empty directory, it is an error.
+.SS OPTIONS
+.TP
+.I "\-p, \-\-parents"
+Remove any parent directories that are explicitly mentioned in an
+argument, if they become empty after the argument file is removed.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

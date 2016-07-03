@@ -1,0 +1,330 @@
+# file dired.todo					-*-Outline-*-
+
+* Sandy's (sandy@itp.ethz.ch) main point is slowness when omitting
+  (which I use only on demand, and simply don't use if it'd be too
+  slow), so a transaction-free, reversible way of omitting by stashing
+  away the filenames would be good.
+
+  Hiding could be used, but probably selective-display-ellipses should
+  be nil for omitting files, but t for hiding subdirectories, excluding
+  simultaneous use of hiding and omitting.  This would not be a problem
+  if all subdirs had to be hidden together, but one subdir may be hidden
+  while in another the are files to be omitted.
+
+* REALLY have to split large shell commands.
+
+* Try to cope with ls -lF format like this:
+
+  lrwxrwxrwx  1 dsmith          0 Mar 30 16:44 root@
+
+  Note the missing " -> ".
+
+* In dired shell command, provide a way to pass a `*' to the shell,
+  e.g., for grep.
+
+*   kpc> well, here's an example.  i'll have done a recursive find and grep, so
+    kpc> i'll have, say, 61 files out of 450 possible files in the buffer.  if
+    kpc> i want to get them in time order and they are in size or name order,
+    kpc> what do i do?  if i use s, i'll get 450 files!  so much for the
+    kpc> grep....  on the other hand i can't see hitting l or c-u l 61
+    kpc> times....
+
+    I see why you need this.  And `l' or `C-u l' would be no good since it
+    always relists a complete subdirectory.
+
+    kpc> redoing the ls with just the displayed files, if it works, would seem
+    kpc> to be the best.  though i don't know if anytuhing can be done about
+    kpc> the consing.
+
+    Well, if it only happens on demand, it's up to the user to decide
+    whether it's worth an additional garbarge collection or two.  And for
+    your application of find-dired buffers, the list would not be very
+    big.
+
+*    >>> On Tue, 24 Mar 92 09:37:17 EST,
+    >>> pinard%icule.UUCP@Larry.McRCIM.McGill.EDU (Francois Pinard) said: 
+
+    F> All the lines but the last have been hidden by dired-hide-all, while
+    F> the last was first added by dired-maybe-insert-subdir, then hidden by
+    F> dired-hide-subdir.  It seems that dired-hide-all properly removes and
+    F> reinserts white lines when it hides or unhide directories, while
+    F> dired-hide-subdir does nothing about them.  So, let me suggest that
+    F> dired-hide-subdir removes white lines which preceedes a directory
+    F> while hiding it, and that dired-hide-subdir insures one white line
+    F> before any hidden directory it expands.
+
+    I think the problem rather lies with the insertion than the hiding.  A
+    subdirectory extends from column zero of its headerline to just before
+    the next headerline or end-of-buffer*.  This is the region where \r to
+    \n conversion must be done for hiding/unhiding**.  The problem is that
+    when `i' appends something (call it DIR-NEW) after a hidden dir (call
+    it DIR-OLD) at the end of the buffer, that old dir does not end in a
+    blank line like all others do.  So in the process of inserting the
+    contents of DIR-NEW it inserts an additional \n actually belonging to
+    DIR-OLD (that would have been converted to a \r had it been present
+    already when DIR-OLD was hidden).
+
+    So a better fix is to have inserted dirs always end in a blank line,
+    even the one at the end of the buffer.  This will perhaps also fix
+    some problems with nested dired format.  Thank you for bringing this
+    to my attention.  I would appreciate any further comments you have on
+    this.
+
+    -Sebastian
+
+    ----
+    *  This is an axiom.  I programmed dired so that it would be that way,
+       so that the whole buffer would be a disjoint partition of
+       subdirectories.
+
+    ** Minus the last character (a newline) --- or several hidden subdir
+       headerlines would all be in one hidden line.
+
+
+* dired-visit-hooks each time when a dired buffer is visited.  Could
+  be used to revert buffer each time if so desired.
+
+* let shell-command guessing based on regexps just be a special case
+  of classes of files.  Classes would in general be defined by lisp
+  predicates evaluated on the file line in the dired buffer.  Probably
+  they will call dired-get-filename, but they need not.  A class
+  `directory' would be easy, for example.
+
+  With a file class, not only a predicate (for deciding whether this
+  file line belongs to the class) but perhaps also a finder method (to
+  find all files of the class in this buffer) should be associated.
+
+  File classes could be symbols (=names of boolean functions, or
+  rather objects with predicate as one associated method of the
+  object) or strings (regexps).  Symbols should probably be of the
+  form `dired-file-class-*'.
+
+  `File Classes' should perhaps also work in non-dired buffers
+  (->hyperbole!).
+
+  `File Classes' could be a concept unifying omitting, shell command
+  guessing and coloring/highlighting of file names under X11.
+
+* let C-u C-u i prompt for the dir to be inserted (?)
+
+* let `0 ESC (' simply run PREDICATE witout parsing each marked line,
+  in case PREDICATE doesn't need this kind of extra information.
+
+* dired-between-files is not really safe, especially since it doesn't
+  know about find-dired.el's `find' line.
+
+* From: eggert@twinsun.com (Paul Eggert)
+Subject: vc errors and nulldiff
+Date: Tue, 14 Jan 92 15:00:54 PST
+To: vc-friends@snark.thyrsus.com
+
+   There are two questions attached to this topic.  (1) Has anybody come up
+   with a simple robust way to retrieve the status of an Emacs 18 subprocess?  
+
+Instead of invoking a command FOO ARG1 ... ARGn, you could invoke the command
+
+/bin/sh -c '"$0" ${1+"$@"}; echo \
+$?' FOO ARG1 ... ARGn
+
+This behaves just like FOO ARG1 ... ARGn, except instead of exiting with the
+true exit status, it appends the exit status as text to the standard output.
+The backslash-newline covers the case when the command's output does not end
+in newline.
+
+* dired*.texi: use `selected files' for marked or next N files
+
+* get rid of rcs in dired-x, dired-rcs is much faster.
+
+* let dired-current-directory return default-directory if
+  dired-subdir-alist is nil (e.g. outside dired buffers, or in a not
+  yet completed find-dired buffer).
+
+* wildcards are not well integrated with dired, e.g. entries are added
+  to inappropriate buffers.
+
+* Use zero arg to `!' to just toggle a new dired-shell-command-on-each
+  variable for consistency?
+
+* [rms] Put everything for copying, renaming, etc. into a separate file again.
+
+Put just autoloads in this file for that stuff.
+
+Likewise, put everything concerned with inserting, killing, and
+hiding subdirs into a separate file.  For example, dired-tree-lessp
+and dired-split can go there.
+
+These separate files are to make plain dired smaller for most people.
+
+* use map-ynp instead of dired-query.
+
+*
+ (defun dired-advertise ()
+   ;;"Advertise in variable `dired-buffers' what directory we dired."
+   ;; With wildcards we actually advertise too much.
++;; @@ There is no need to do this.
++;; @@ Just check the subdir alist of the current buffer, 
++;; @@ and verify the current buffer is in dired-buffers.
+   (if (memq (current-buffer) (dired-buffers-for-dir default-directory))
+
+* [rms] I have an idea that might simplify dired.
+
+Suppose all nonempty non-file lines start with a particular character.
+A character one would never use as a mark.
+Then it would be very fast and simple to check for file lines.
+No need for the slowness of looking for the filename.
+
+I suggest the character * or > or #.
+
+Thus, inserting a subdir would install this marker on the non-file
+lines created.
+
+* shell command on several sets of markers: "diff A Z"  Need quoting
+  then, and better recognize marker only when embedded in space?
+
+  Separate from `!'?
+
+* let `[' enter a mode where the permission bits can be edited, and
+  let `]' exit that mode.  Recursive edit?  Keep list of filenames
+  where perms were edited?  Or just one file at a time?
+
+* dired-tree-lessp should use file-newer-than-file-p instead of
+  string-lessp if sort on time?
+
+* dired-x: dired-mark-sexp (predicate &optional unflag-p)
+
+  ;; As PREDICATE usually refers to only one or two fields, compiling
+  ;; it instead of computing all fields could be worth while.
+
+* dired-ls should perhaps do file-name-nondirectory by itself, as in
+  the only place where it lists a single file (in dired-add-entry) the
+  basename is constructed afterwards.
+
+* dired-string-replace-match should have a GLOBAL replace flag.
+
+* dired-view-file-other-window? dired-find-file-read-only ?
+
+* Use diff-backup from emacs-19.  Move latest-backup-file into
+  emacs-19.
+
+* emacs-19.el's mkdir/rmdir commands should optionally accept a
+  log-buffer argument.
+
+* [davida%puma@sunic.sunet.se (David Axmark)]
+
+    The things I want most in dired is a way to skip selective parts of
+    the -l listing (I use *long* filenames) from the listing swiches. As
+    think this would require a special 'ls' (a hotted up GNU ls?) and some
+    hacking of the buffer parsing code. It would be very nice to be able
+    to have a format with just date or size or ...
+
+  Yes, I'd like that too (I use **very long** filenames).  Accepting
+  ls switches without -l should not be too hard to implement.  Hmm, no
+  permission bits at the beginning of each line might break some parts
+  of the code...  But "just date" etc. would mean to prefobnicate ls
+  output each time it is inserted...though that might me done
+  efficiently if based on columns instead of regexps.  I'll think
+  about it..
+
+
+* ls switches without -l shouldn't be that hard, though with loss of certain
+  features (like *@/ marking).
+
+  It would clean the screen tremendously.
+ 
+  [This is possible now, but not documented since not everything works
+  without -l, sk 14-May-1992 14:10]  
+
+* move VM and RMAIL back into dired.el
+
+* `^' fails to find hidden parent dirlines.  Other cmds too, probably.
+  Perhaps the goto cmds should optionally unhide their targets.
+
+* M-DEL should mention in the prompt if there are no flags to remove,
+  so it can be used for testing, too.
+
+
+Musings
+=======
+
+* 
+From: jbw@maverick.uswest.com (Joe Wells)
+Newsgroups: gnu.emacs.help,comp.emacs
+Subject: Re: stupid (probably) elisp question
+Date: 2 Aug 91 01:38:08 GMT
+Organization: U S West Advanced Technologies
+In-Reply-To: acevedo@athena.mit.edu's message of Wed, 31 Jul 91 14: 46:22 GMT
+
+(Gabriel) writes:
+
+	 | > [I would like to perform a regexp replacement on a string.
+	 | >  How is this possible short of using an intermediate buffer?]
+	 |
+	 | It's not.  Silly, ain't it?  After all, buffers are just big
+	 | strings, albeit with a lot of state information attached.
+
+	 You could use string-match and concat to do the same thing,
+	 without using buffers:
+
+      Don't do this.  Using a scratch buffer is much more efficient, and
+      results in less garbage collection later.
+
+   Really?  Why is this?
+
+1.  Replacing a substring in the middle of a string involves generating at
+least three strings, possibly more if you're doing something really fancy
+with regexps.  Generating strings is expensive, both at the time they are
+generated and later when they're garbage collected.  Since these strings
+are temporary, they are destined to be garbage collected.
+
+2.  Buffers are really fast.  Once the gap is moved to the correct
+location in the buffer, the replacement involves simply writing the new
+bytes on top of the old bytes, even if the number of bytes changes.
+Moving the gap is actually pretty cheap, especially if the contents of the
+buffer are pretty small, like in this case.
+
+Just don't kill the buffer after you're done with it.  Erase its contents
+instead and leave it around for the next time your function is called.
+
+-- 
+Enjoy,
+
+Joe Wells <jbw@uswest.com>
+
+
+
+
+* [jwz] One thing I miss about Lispms is a function called
+  BALANCE-DIRECTORIES.  What this would do is get a listing of two
+  directories (possibly on different machines) and compare
+  directories' contents and the files' write-dates, and copy files
+  around until both directories were in synch.  There was also an
+  option to tell it to only copy in one direction instead of both, and
+  you could run it on one file (a trivial case) that would copy that
+  file if and only if the destination was not the same or newer.
+
+  I think this would be a terribly useful feature, though you'd have
+  to do it by comparing the textual representation of the date, since
+  ange-ftp doesn't return correct numeric dates.
+
+  [A subset of this is possible with copy-dir.el, sk 14-May-1992 14:11]
+
+* Actually, there are different meaning of prefix args:
+
+  - with m, u and M-m, F: include even directories
+  - with *@/~# : unmark instead mark
+  - with mark-using (instead mark-setting) commands: use current file
+    instead of marked files
+  - with diff commands, it lets you edit the commandline
+
+*
+Perhaps the failed files should be given another mark, e.g. `!'.  Then
+I would have to include the code from dired-x.el (just 40 lines)
+into dired.el to make it possible to switch the current marker
+character.  One could then switch to `!', do something on the `!'
+files, and pop the old marker character off the stack.
+
+* dired-marker-regexp could use "\n" instead "^", is it used in
+  re-search only, never in looking-at.  But the speedup is not
+  measurable (below 5%).
+
+* < and > should skip "." and "..". [No, use -A in switches instead!]

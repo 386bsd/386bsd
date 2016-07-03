@@ -1,0 +1,27 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/ncr/Imakefile,v 2.1 1993/08/12 05:42:11 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = ncr_driver.c ncr_bank.s
+
+OBJS = ncr_driver.o ncr_bank.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(ncr, $(OBJS))
+
+ObjectFromSpecialSource(ncr_driver,$(VGA256DIR)/ncr/ncr_driver,-DMONOVGA)
+ObjectFromSpecialAsmSource(ncr_bank,$(VGA256DIR)/ncr/ncr_bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/ncr)
+
+DependTarget()

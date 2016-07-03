@@ -1,0 +1,17 @@
+#!/bin/csh -f
+# @(#) $Header: ostype,v 1.3 90/10/03 14:23:55 mccanne Exp $ (LBL)
+#
+# Determine os type.
+#
+set os=`awk -f ostype.awk /etc/motd`
+if ($os == "") exit 1
+if ($os == "UNKNOWN") then
+	if ( -f /hp-ux ) then
+		set os="hpux"
+	else if ( -f /etc/uerf ) then
+		set os="ultrix"
+	endif
+endif
+echo $os
+if ($os == "UNKNOWN") exit 1
+exit 0

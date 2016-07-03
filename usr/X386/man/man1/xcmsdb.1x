@@ -1,0 +1,75 @@
+.TH XCMSDB 1 "Release 5" "X Version 11"
+.SH NAME
+xcmsdb \- Xlib Screen Color Characterization Data utility
+.SH SYNOPSIS
+.B xcmsdb
+[\-option ...] [\fIfilename\fP]
+.SH DESCRIPTION
+.I xcmsdb
+is used to load, query, or remove Screen Color Characterization Data 
+stored in properties on the root window of the screen.
+Screen Color Characterization Data is an integral part of Xlib, necessary
+for proper conversion between device-independent and device-dependent
+color specifications.
+Xlib uses the XDCCC_LINEAR_RGB_MATRICES and
+XDCCC_LINEAR_RGB_CORRECTION properties to store color characterization
+data for color monitors.  It uses 
+XDCCC_GRAY_SCREENWWHITEPOINT and XDCCC_GRAY_CORRECTION properties 
+for gray scale monitors.
+Because Xlib allows the addition of Screen Color Characterization Function
+Sets, added function sets may place their Screen Color Characterization Data
+on other properties.
+This utility is unaware of these other properties, therefore, you will
+need to use a similar utility provided with the function
+set, or use the
+.I xprop
+utility.
+.LP
+The ASCII readable contents of
+.I filename
+(or the standard input if no input file is given)
+are appropriately transformed for storage in properties, provided the
+.B \-query 
+or 
+.B \-remove 
+options are not specified.
+.SH "OPTIONS"
+.PP
+.I xcmsdb
+program accepts the following options:
+.TP 8
+.B \-query
+This option attempts to read the XDCCC properties off the screen's root
+window.
+If successful, it transforms the data into a more readable format, then
+sends the data to standard out.  
+.TP 8
+.B \-remove
+This option attempts to remove the XDCCC properties on the screen's root
+window.
+.TP 8
+.B \-color
+This option sets the query and remove options to only check for the
+XDCCC_LINEAR_RGB_MATRICES and XDCCC_LINEAR_RGB_CORRECTION properties.
+If the \fB\-color\fP option is not set then
+the query and remove options check for all the properties.
+.TP 8
+.B \-format 32 | 16 | 8
+Specifies the property format (32, 16, or 8 bits per entry) for the
+XDCCC_LINEAR_RGB_CORRECTION property.
+Precision of encoded floating point values increases with the increase
+in bits per entry.
+The default is 32 bits per entry.
+.SH "SEE ALSO"
+xprop(1), Xlib documentation
+.SH ENVIRONMENT
+.TP 8
+.B DISPLAY
+to figure out which display and screen to use.
+.SH BUGS
+.PP
+Unknown
+.SH COPYRIGHT
+Copyright 1990, Tektronix Inc.
+.SH AUTHOR
+Chuck Adams, Tektronix Inc.

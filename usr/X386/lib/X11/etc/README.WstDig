@@ -1,0 +1,42 @@
+		Information for Western Digital Chipset Users
+		---------------------------------------------
+
+Contents
+--------
+	1) Supported chipsets
+	2) Special considerations
+
+1 - Supported chipsets
+----------------------
+  XFree86 supports the following Western Digital SVGA chipsets: PVGA1,
+WD90C00, WD90C10, WD90C11, WD90C30, WD90C31.  Note that the WD90C2x series
+of LCD-controller chipsets (common on laptops) is still not supported.  
+The WD90C31 is now supported as an accelerated chipset in the SVGA server; 
+the accelerated features are automatically activated when a WD90C31 is 
+detected, or specified in the Xconfig file.
+
+2 - Special considerations
+--------------------------
+  All of the Western Digital chipsets after the PVGA1 support the ability
+to use the memory-refresh clock as an alternate dot-clock for video timing.
+Hence for all of these chipsets, the server will detect NINE clocks, instead
+of the 8 found by the older driver.  What this means is that if you have a
+'Clocks' line in your Xconfig file, you should comment it out, and rerun
+the server with the '-probeonly' option to find all 9 clock values.  The
+first 8 should be the same as what you had before; the 9th will be new.
+  For the WD90C00 chipset, the chipset will only support 640x480 in 256-color
+mode.  Even though 512k of memory should allow better than 800x600, the
+chipset itself cannot do this.  This is stated in the databook (which lists
+1024x768x16 and 640x480x256 for specifications).  We have also witnessed
+this behavior.
+  There is an "Option" flag available for the Xconfig file that is specific
+to the Western Digital chipsets.  This option is "swap_hibit".  We have
+determined via experimentation that the WD90C1x and WD90C3x chipsets need
+the high-order clock-select bit inverted, and the PVGA1 and WD90C00 need it
+non-inverted.  This is hardcoded into the driver.  Since our sample-set was
+rather small, we have provided the "swap_hibit" option to invert this 
+behavior.  If the clocks detected by the server show a very low 9th clock
+(under 28Mhz), then this option is likely needed.
+
+
+$XFree86: mit/server/ddx/x386/etc/README.WstDig,v 2.0 1993/10/18 12:17:59 dawes Exp $

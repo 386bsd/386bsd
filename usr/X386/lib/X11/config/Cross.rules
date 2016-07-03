@@ -1,0 +1,321 @@
+XCOMM -------------------------------------------------------------------------
+XCOMM Cross.rules:  override a number default defines from Imake.rules
+XCOMM to make it possible to cross compile the X11 tree.
+XCOMM $XFree86: mit/config/Cross.rules,v 1.2 1993/03/25 14:16:59 dawes Exp $
+
+#ifndef NormalProgramTarget
+#define	NormalProgramTarget(program,objects,deplibs,locallibs,syslibs)	@@\
+program: objects deplibs						@@\
+	RemoveTargetProgram($@)						@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o $@ objects $(LDOPTIONS) locallibs $(LDLIBS) syslibs $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+clean::									@@\
+	$(RM) program
+#endif /* NormalProgramTarget */
+
+
+#ifndef ComplexProgramTarget
+#define	ComplexProgramTarget(program)					@@\
+        PROGRAM = program						@@\
+									@@\
+AllTarget(program)							@@\
+									@@\
+program: $(OBJS) $(DEPLIBS)						@@\
+	RemoveTargetProgram($@)						@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o $@ $(OBJS) $(LDOPTIONS) $(LOCAL_LIBRARIES) $(LDLIBS) $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+SaberProgramTarget(program,$(SRCS),$(OBJS),$(LOCAL_LIBRARIES),NullParameter) @@\
+									@@\
+InstallProgram(program,$(BINDIR))					@@\
+InstallManPage(program,$(MANDIR))					@@\
+DependTarget()								@@\
+LintTarget()								@@\
+									@@\
+clean::									@@\
+	$(RM) $(PROGRAM)
+#endif /* ComplexProgramTarget */
+
+/* ComplexCrossProgramTarget - generate rules for compiling and linking the 
+ * program specified by $(OBJS) and $(SRCS), installing the program and its
+ * man page, and generating dependencies.  It should only be used in 
+ * Imakefiles that describe a single program.
+ */
+#ifndef ComplexCrossProgramTarget
+#define	ComplexCrossProgramTarget(program)				@@\
+STD_INCLUDES=								@@\
+EXTRA_LOAD_FLAGS=							@@\
+        PROGRAM = program						@@\
+									@@\
+AllTarget(program)							@@\
+									@@\
+program: $(OBJS) $(DEPLIBS)						@@\
+	RemoveTargetProgram($@)						@@\
+	$(CC) -o $@ $(OBJS) $(LDOPTIONS) $(LOCAL_LIBRARIES) $(LDLIBS) $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+SaberProgramTarget(program,$(SRCS),$(OBJS),$(LOCAL_LIBRARIES), /**/)	@@\
+									@@\
+DependTarget()								@@\
+LintTarget()								@@\
+									@@\
+clean::									@@\
+	$(RM) $(PROGRAM)
+#endif /* ComplexProgramTarget */
+
+
+#ifndef ComplexProgramTarget_1
+#define	ComplexProgramTarget_1(program,locallib,syslib)			@@\
+            OBJS = $(OBJS1) $(OBJS2) $(OBJS3)				@@\
+            SRCS = $(SRCS1) $(SRCS2) $(SRCS3)				@@\
+									@@\
+AllTarget($(PROGRAMS))							@@\
+									@@\
+program: $(OBJS1) $(DEPLIBS1)						@@\
+	RemoveTargetProgram($@)						@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o $@ $(LDOPTIONS) $(OBJS1) locallib $(LDLIBS) syslib $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+InstallProgram(program,$(BINDIR))					@@\
+InstallManPage(program,$(MANDIR))					@@\
+									@@\
+SaberProgramTarget(program,$(SRCS1),$(OBJS1),locallib,syslib)		@@\
+									@@\
+DependTarget()								@@\
+LintTarget()								@@\
+									@@\
+clean::									@@\
+	$(RM) $(PROGRAMS)
+#endif /* ComplexProgramTarget_1 */
+
+
+#ifndef ComplexProgramTarget_2
+#define	ComplexProgramTarget_2(program,locallib,syslib)			@@\
+program: $(OBJS2) $(DEPLIBS2)						@@\
+	RemoveTargetProgram($@)						@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o $@ $(LDOPTIONS) $(OBJS2) locallib $(LDLIBS) syslib $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+SaberProgramTarget(program,$(SRCS2),$(OBJS2),locallib,syslib)		@@\
+									@@\
+InstallProgram(program,$(BINDIR))					@@\
+InstallManPage(program,$(MANDIR))
+#endif /* ComplexProgramTarget_2 */
+
+
+#ifndef ComplexProgramTarget_3
+#define	ComplexProgramTarget_3(program,locallib,syslib)			@@\
+program: $(OBJS3) $(DEPLIBS3)						@@\
+	RemoveTargetProgram($@)						@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o $@ $(LDOPTIONS) $(OBJS3) locallib $(LDLIBS) syslib $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+SaberProgramTarget(program,$(SRCS3),$(OBJS3),locallib,syslib)		@@\
+									@@\
+InstallProgram(program,$(BINDIR))					@@\
+InstallManPage(program,$(MANDIR))
+#endif /* ComplexProgramTarget_3 */
+
+
+/* ServerTarget - generate rules to compile, link, and relink an X server
+ * for Amoeba or Minix
+ */
+#if !defined(ServerTarget) && (defined(Amoeba) || defined(Minix))
+#define	ServerTarget(server,subdirs,objects,libs,syslibs)		@@\
+server: subdirs objects libs						@@\
+	-@if [ -f server ]; then echo "	$(MV) server server.bak"; \	@@\
+		$(MV) server server.bak; else exit 0; fi		@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o server objects libs $(EXTRA_LIBRARIES) syslibs $(OS_LIBRARIES) $(EXTRA_LOAD_FLAGS) @@\
+									@@\
+Concat(load,server):							@@\
+	-@if [ -f server ]; then echo "	$(MV) server server.bak"; \	@@\
+		$(MV) server server.bak; else exit 0; fi		@@\
+	$(LD) $(ALDFLAGS) $(HEAD) -o server objects libs $(EXTRA_LIBRARIES) syslibs $(OS_LIBRARIES) $(EXTRA_LOAD_FLAGS)
+#endif /* ServerTarget */
+
+/*
+ * A few dummy Installation rules.
+ */
+
+#ifndef InstallLibrary
+#define	InstallLibrary(libname,dest)					@@\
+install:: Concat(lib,libname.a)						@@\
+	@echo '** Cannot Install Library ' Concat(lib,libname.a)
+#endif /* InstallLibrary */
+
+#ifndef MergeIntoInstalledLibrary
+#define MergeIntoInstalledLibrary(tolib,fromlib)			@@\
+install::  fromlib							@@\
+	@echo '** Cannot merge ' fromlib into tolib
+#endif /* MergeIntoInstalledLibrary */
+
+#ifndef InstallLibraryAlias
+#define	InstallLibraryAlias(libname,alias,dest)				@@\
+install::								@@\
+	@echo '** Install lib alias yourself' libname alias dest
+#endif /* InstallLibraryAlias */
+
+#ifndef InstallLintLibrary
+#define	InstallLintLibrary(libname,dest)				@@\
+install.ln:: Concat(llib-l,libname.ln)					@@\
+	@echo '** Please install lintlib yourself' Concat(llib-l,libname.ln)
+#endif /* InstallLintLibrary */
+
+#ifndef InstallManPageLong
+#define	InstallManPageLong(file,destdir,dest)				@@\
+install.man:: file.man							@@\
+	@echo '** Install man page yourself' file.man
+#endif /* InstallManPageLong */
+
+
+#if Amoeba
+/* Rest of the files is Amoeba specific.  It overrides the installation rules
+ * to cross-install the Amoeba binaries.
+ */
+
+#ifndef InstallManPageAliases
+#define	InstallManPageAliases(file,destdir,aliases)			@@\
+install.man::								@@\
+	@(TMP=/tmp/tmp.$$$$; \						@@\
+	$(RM) $${TMP}; \						@@\
+	echo .so `basename destdir`/file.$(MANSUFFIX) > $${TMP}; \	@@\
+	for i in aliases; do (set -x; \					@@\
+	$(TOB) $${TMP} $(DESTDIR)destdir/$$i.$(MANSUFFIX)); \ 		@@\
+	done; \								@@\
+	$(RM) $${TMP})
+#endif /* InstallManPageAliases */
+
+
+/*
+ * InstallNamedNonExec - generate rules to install a data file
+ */
+#ifndef InstallNamedNonExec
+#define	InstallNamedNonExec(srcname,dstname,dest)			@@\
+install:: srcname							@@\
+	$(MKXDIRHIER) $(DESTDIR)dest					@@\
+	$(TOB) srcname $(DESTDIR)dest/dstname
+#endif /* InstallNamedNonExec */
+
+
+/*
+ * InstallNonExecFile - generate rules to install a data file
+ */
+#ifndef InstallNonExecFile
+#define	InstallNonExecFile(file,dest)					@@\
+install:: file								@@\
+	$(MKXDIRHIER) dest						@@\
+	$(TOB) file dest/file
+#endif /* InstallNonExecFile */
+
+
+/*
+ * InstallNonExec - generate rules to install a data file, but does not
+ * try to create the destination directory (deprecated)
+ */
+#ifndef InstallNonExec
+#define	InstallNonExec(file,dest)					@@\
+install:: file								@@\
+	$(TOB) file dest/file
+#endif /* InstallNonExec */
+
+
+/*
+ * InstallProgramWithFlags - generate rules to install an executable program
+ * using given install flags.
+ */
+#ifndef InstallProgramWithFlags
+#define InstallProgramWithFlags(program,dest,flags)			@@\
+install:: program							@@\
+	$(MKXDIRHIER) dest/program					@@\
+	$(AINSTALL) $(AINSTALLFLAGS) program dest/program/pd.$(ARCH)
+#endif /* InstallProgramWithFlags */
+
+
+/*
+ * InstallScript - install a shell script.
+ */
+#ifndef InstallScript
+#define	InstallScript(program,dest)					@@\
+install:: program.script						@@\
+	$(TOB) program.script dest/program
+#endif /* InstallScript */
+
+
+/*
+ * InstallNamedScript - install a named shell script.
+ */
+#ifndef InstallNamedScript
+#define	InstallNamedScript(srcname,dstname,dest)			@@\
+install:: srcname							@@\
+	$(TOB) srcname dest/dstname
+#endif /* InstallNamedScript */
+
+
+/*
+ * InstallNamedProg - install a program with renaming and no stripping.
+ */
+#ifndef InstallNamedProg
+#define	InstallNamedProg(srcname,dstname,dest)				@@\
+install:: srcname							@@\
+	$(MKXDIRHIER) $(DESTDIR)dest/dstname				@@\
+	$(AINSTALL) $(AINSTALLFLAGS) srcname $(DESTDIR)dest/dstname/pd.$(ARCH)
+#endif /* InstallNamedProg */
+
+/*
+ * InstallMultipleDestFlags - generate rules to install multiple files at
+ * once during a particular step in the build using a specific set of install 
+ * flags.
+ */
+#ifndef InstallMultipleDestFlags
+#define InstallMultipleDestFlags(step,list,dest,flags)			@@\
+step:: list								@@\
+	$(MKXDIRHIER) $(DESTDIR)dest					@@\
+	@case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
+	for i in list; do \						@@\
+		(set -x; $(TOB) $$i dest/$$i); \			@@\
+	done
+#endif /* InstallMultipleDestFlags */
+
+
+/*
+** InstallMultipleProg: same, but for prorgams.
+*/
+#ifndef InstallMultipleProg
+#define InstallMultipleProg(list,dest)					@@\
+install:: list								@@\
+	@case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
+	for i in list; do \						@@\
+	    (set -x; \ 							@@\
+	  	$(MKXDIRHIER) $(DESTDIR)dest/$$i; \			@@\
+		$(AINSTALL) $(AINSTALLFLAGS) $$i dest/$$i/pd.$(ARCH));\	@@\
+	done
+#endif /* InstallMultipleProg */
+
+
+/*
+ * InstallAppDefaults - generate rules to install appliation default files 
+ * if the InstallAppDefFiles configuration parameter is set.
+ */
+#ifndef InstallAppDefaults
+#if InstallAppDefFiles
+#define	InstallAppDefaults(class)					@@\
+install:: class.ad							@@\
+	$(MKXDIRHIER) $(XAPPLOADDIR)					@@\
+	$(TOB) class.ad $(DESTDIR)$(XAPPLOADDIR)/class
+#else
+#define	InstallAppDefaults(class)
+#endif /* InstallAppDefFiles */
+#endif /* InstallAppDefaults */
+
+/*
+ * InstallAppDefaultsLong - generate rules to install appliation default files 
+ * if the InstallAppDefFiles configuration parameter is set.
+ */
+#ifndef InstallAppDefaultsLong
+#if InstallAppDefFiles
+#define	InstallAppDefaultsLong(file,class)				@@\
+install:: file.ad							@@\
+	$(MKXDIRHIER) $(DESTDIR)$(XAPPLOADDIR)				@@\
+	$(TOB) file.ad $(DESTDIR)$(XAPPLOADDIR)/class
+#else
+#define	InstallAppDefaultsLong(file,class)
+#endif /* InstallAppDefFiles */
+#endif /* InstallAppDefaultsLong */
+
+#endif /* Amoeba */
+

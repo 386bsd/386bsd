@@ -1,0 +1,251 @@
+This is Info file ../info/cl, produced by Makeinfo-1.55 from the input
+file cl.texi.
+
+   This file documents the GNU Emacs Common Lisp emulation package.
+
+   Copyright (C) 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the section entitled "GNU General Public License" is included
+exactly as in the original, and provided that the entire resulting
+derived work is distributed under the terms of a permission notice
+identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that the section entitled "GNU General Public License"
+may be included in a translation approved by the author instead of in
+the original English.
+
+
+File: cl,  Node: Function Index,  Next: Variable Index,  Prev: Porting Common Lisp,  Up: Top
+
+Function Index
+**************
+
+* Menu:
+
+* abs:                                  Numerical Functions.
+* acons:                                Association Lists.
+* adjoin:                               Lists as Sets.
+* assert:                               Assertions.
+* assoc*:                               Association Lists.
+* assoc-if:                             Association Lists.
+* assoc-if-not:                         Association Lists.
+* block:                                Blocks and Exits.
+* butlast:                              List Functions.
+* caddr:                                List Functions.
+* callf:                                Modify Macros.
+* callf2:                               Modify Macros.
+* case:                                 Conditionals.
+* ceiling*:                             Numerical Functions.
+* check-type:                           Assertions.
+* cl-float-limits:                      Implementation Parameters.
+* cl-prettyexpand:                      Efficiency Concerns.
+* clrhash:                              Hash Tables.
+* coerce:                               Type Predicates.
+* compiler-macroexpand:                 Macros.
+* concatenate:                          Sequence Functions.
+* copy-list:                            List Functions.
+* copy-tree:                            List Functions.
+* count:                                Searching Sequences.
+* count-if:                             Searching Sequences.
+* count-if-not:                         Searching Sequences.
+* decf:                                 Modify Macros.
+* declaim:                              Declarations.
+* declare:                              Declarations.
+* defalias:                             Function Aliases.
+* define-compiler-macro:                Macros.
+* define-modify-macro:                  Customizing Setf.
+* define-setf-method:                   Customizing Setf.
+* defmacro*:                            Argument Lists.
+* defsetf:                              Customizing Setf.
+* defsetf:                              Customizing Setf.
+* defstruct:                            Structures.
+* defsubst*:                            Argument Lists.
+* deftype:                              Type Predicates.
+* defun*:                               Argument Lists.
+* delete:                               Sequence Functions.
+* delete*:                              Sequence Functions.
+* delete-duplicates:                    Sequence Functions.
+* delete-if:                            Sequence Functions.
+* delete-if-not:                        Sequence Functions.
+* destructuring-bind:                   Macros.
+* do:                                   Iteration.
+* do*:                                  Iteration.
+* do-all-symbols:                       Iteration.
+* do-symbols:                           Iteration.
+* dolist:                               Iteration.
+* dotimes:                              Iteration.
+* ecase:                                Conditionals.
+* endp:                                 List Functions.
+* eql:                                  Equality Predicates.
+* equalp:                               Equality Predicates.
+* etypecase:                            Conditionals.
+* eval-when:                            Time of Evaluation.
+* eval-when-compile:                    Time of Evaluation.
+* evenp:                                Predicates on Numbers.
+* every:                                Mapping over Sequences.
+* expt:                                 Numerical Functions.
+* fill:                                 Sequence Functions.
+* find:                                 Searching Sequences.
+* find-if:                              Searching Sequences.
+* find-if-not:                          Searching Sequences.
+* first:                                List Functions.
+* flet:                                 Function Bindings.
+* floatp-safe:                          Predicates on Numbers.
+* floor*:                               Numerical Functions.
+* function*:                            Argument Lists.
+* gcd:                                  Numerical Functions.
+* gensym:                               Creating Symbols.
+* gentemp:                              Creating Symbols.
+* get*:                                 Property Lists.
+* get-setf-method:                      Customizing Setf.
+* getf:                                 Property Lists.
+* gethash:                              Hash Tables.
+* hash-table-count:                     Hash Tables.
+* hash-table-p:                         Hash Tables.
+* ignore-errors:                        Assertions.
+* incf:                                 Modify Macros.
+* intersection:                         Lists as Sets.
+* isqrt:                                Numerical Functions.
+* labels:                               Function Bindings.
+* last:                                 List Functions.
+* lcm:                                  Numerical Functions.
+* ldiff:                                List Functions.
+* letf:                                 Modify Macros.
+* letf*:                                Modify Macros.
+* lexical-let:                          Lexical Bindings.
+* lexical-let*:                         Lexical Bindings.
+* list*:                                List Functions.
+* list-length:                          List Functions.
+* load-time-value:                      Time of Evaluation.
+* locally:                              Declarations.
+* loop:                                 Iteration.
+* loop:                                 Loop Basics.
+* macrolet:                             Macro Bindings.
+* make-hash-table:                      Hash Tables.
+* make-random-state:                    Random Numbers.
+* map:                                  Mapping over Sequences.
+* mapc:                                 Mapping over Sequences.
+* mapcan:                               Mapping over Sequences.
+* mapcar*:                              Mapping over Sequences.
+* mapcon:                               Mapping over Sequences.
+* maphash:                              Hash Tables.
+* mapl:                                 Mapping over Sequences.
+* maplist:                              Mapping over Sequences.
+* member:                               Lists as Sets.
+* member*:                              Lists as Sets.
+* member-if:                            Lists as Sets.
+* member-if-not:                        Lists as Sets.
+* merge:                                Sorting Sequences.
+* minusp:                               Predicates on Numbers.
+* mismatch:                             Searching Sequences.
+* mod*:                                 Numerical Functions.
+* multiple-value-bind:                  Multiple Values.
+* multiple-value-setq:                  Multiple Values.
+* nbutlast:                             List Functions.
+* nintersection:                        Lists as Sets.
+* notany:                               Mapping over Sequences.
+* notevery:                             Mapping over Sequences.
+* nset-difference:                      Lists as Sets.
+* nset-exclusive-or:                    Lists as Sets.
+* nsublis:                              Substitution of Expressions.
+* nsubst:                               Substitution of Expressions.
+* nsubst-if:                            Substitution of Expressions.
+* nsubst-if-not:                        Substitution of Expressions.
+* nsubstitute:                          Sequence Functions.
+* nsubstitute-if:                       Sequence Functions.
+* nsubstitute-if-not:                   Sequence Functions.
+* nunion:                               Lists as Sets.
+* oddp:                                 Predicates on Numbers.
+* pairlis:                              Association Lists.
+* plusp:                                Predicates on Numbers.
+* pop:                                  Modify Macros.
+* position:                             Searching Sequences.
+* position-if:                          Searching Sequences.
+* position-if-not:                      Searching Sequences.
+* proclaim:                             Declarations.
+* progv:                                Dynamic Bindings.
+* psetf:                                Modify Macros.
+* psetq:                                Assignment.
+* push:                                 Modify Macros.
+* pushnew:                              Modify Macros.
+* random*:                              Random Numbers.
+* random-state-p:                       Random Numbers.
+* rassoc:                               Association Lists.
+* rassoc*:                              Association Lists.
+* rassoc-if:                            Association Lists.
+* rassoc-if-not:                        Association Lists.
+* reduce:                               Mapping over Sequences.
+* rem*:                                 Numerical Functions.
+* remf:                                 Property Lists.
+* remhash:                              Hash Tables.
+* remove:                               Sequence Functions.
+* remove*:                              Sequence Functions.
+* remove-duplicates:                    Sequence Functions.
+* remove-if:                            Sequence Functions.
+* remove-if-not:                        Sequence Functions.
+* remprop:                              Property Lists.
+* remq:                                 Sequence Functions.
+* replace:                              Sequence Functions.
+* rest:                                 List Functions.
+* return:                               Blocks and Exits.
+* return-from:                          Blocks and Exits.
+* rotatef:                              Modify Macros.
+* round*:                               Numerical Functions.
+* search:                               Searching Sequences.
+* set-difference:                       Lists as Sets.
+* set-exclusive-or:                     Lists as Sets.
+* setf:                                 Basic Setf.
+* shiftf:                               Modify Macros.
+* some:                                 Mapping over Sequences.
+* sort*:                                Sorting Sequences.
+* stable-sort:                          Sorting Sequences.
+* sublis:                               Substitution of Expressions.
+* subseq:                               Sequence Functions.
+* subsetp:                              Lists as Sets.
+* subst:                                Substitution of Expressions.
+* subst-if:                             Substitution of Expressions.
+* subst-if-not:                         Substitution of Expressions.
+* substitute:                           Sequence Functions.
+* substitute-if:                        Sequence Functions.
+* substitute-if-not:                    Sequence Functions.
+* symbol-macrolet:                      Macro Bindings.
+* tailp:                                Lists as Sets.
+* the:                                  Declarations.
+* tree-equal:                           List Functions.
+* truncate*:                            Numerical Functions.
+* typecase:                             Conditionals.
+* typep:                                Type Predicates.
+* union:                                Lists as Sets.
+* unless:                               Conditionals.
+* when:                                 Conditionals.
+
+
+File: cl,  Node: Variable Index,  Prev: Function Index,  Up: Top
+
+Variable Index
+**************
+
+* Menu:
+
+* *gensym-counter*:                     Creating Symbols.
+* *random-state*:                       Random Numbers.
+* float-epsilon:                        Implementation Parameters.
+* float-negative-epsilon:               Implementation Parameters.
+* least-negative-float:                 Implementation Parameters.
+* least-negative-normalized-float:      Implementation Parameters.
+* least-positive-float:                 Implementation Parameters.
+* least-positive-normalized-float:      Implementation Parameters.
+* most-negative-fixnum:                 Implementation Parameters.
+* most-negative-float:                  Implementation Parameters.
+* most-positive-fixnum:                 Implementation Parameters.
+* most-positive-float:                  Implementation Parameters.
+
+

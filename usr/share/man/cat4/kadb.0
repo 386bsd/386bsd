@@ -1,0 +1,66 @@
+KADB(4)                   386BSD Programmer's Manual                   KADB(4)
+
+NNAAMMEE
+     kkddbb - kernel debugging facility
+
+SSYYNNOOPPSSIISS
+     ooppttiioonnss
+     KKAADDBB
+
+DDEESSCCRRIIPPTTIIOONN
+     KKddbb is a debugging facility for the kernel based on adb(1).  KKddbb may be
+     used to symbolically examine and modify memory locations, set break-
+     points, and single step the system.
+
+     Several boot time options are used in conjunction with the debugger.  To
+     ``enable'' the debugger, the system must be booted with the RB_KDB flag
+     (0x40) specified in the _b_o_o_t_h_o_w_t_o register.  When the debugger is enabled
+     the system will read in and initialize the symbol table from the booted
+     system.  If the RB_HALT flag (0x08) is also specified, the system will
+     enter the debugger at the earliest possible time to allow breakpoints to
+     be set before the system starts operation.  From that point on, if the
+     RB_NOSYNC flag (0x04) is set, typing `^[k', `^[K', or `^[^K' at the con-
+     sole causes a trap into the debugger.
+
+     KKddbb supports most of the adb command language.  The output formats `f',
+     `F', `Y', are not supported.  The address space maps do not exist, thus
+     the `m', `m', and `m' commands do not exist.  Shell escapes and command
+     files are not supported.  The `r' and `k' commands make no sense and are
+     not recognized.  Finally, the signal arguments to the continue and single
+     step commands are ignored.
+
+NNOOTTEESS
+     KKddbb normally runs at a priority level below the interrupt level of the
+     clock and all devices; the level of the highest priority software inter-
+     rupt.  If the debugger is entered on the kernel's per-process stack at an
+     ipl below its normal operating level it automatically switches to the in-
+     terrupt stack to avoid potential overflow of the kernel stack.  Should
+     the debugger operate on the kernel stack the message `(on kernel stack)'
+     will be printed on entry.
+
+     Note also that because kkddbb uses input from the console to force entry to
+     the debugger it may not be possible to force entry if the system hangs at
+     a priority level higher than the console receiver interrupt.
+
+SSEEEE AALLSSOO
+     adb(1)
+
+HHIISSTTOORRYY
+     The kkddbb debugging facility currently under development.
+
+BSD Experimental                March 28, 1991                               2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

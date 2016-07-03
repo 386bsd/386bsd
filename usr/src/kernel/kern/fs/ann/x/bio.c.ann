@@ -1,0 +1,1928 @@
+iNClude(/etc/ann/listing.m4)
+.if t \
+.po 8n
+.if n \
+.po 0n
+.ll 70n
+.\"$Id: bio.c.ann,v 1.3 94/08/26 13:18:49 bill Exp Locker: bill $
+.he 'Annotation of kern/fs/bio.c''DRAFT'
+.fo 'tRAnslit(`$Revision: 1.3 $',`$') '% 'Copyright (C) 1994 TeleMuse
+.(l C
+.sz 14
+Annotation of the File kernel/kern/fs/bio.c
+William and Lynne Jolitz
+.sz 10
+Copyright (C) 1994 William and Lynne Jolitz. All Rights Reserved.
+.)l
+.uh "Introduction:"
+.pp
+The file 
+.b "fs/bio.c"
+contains the machine independent code used to
+implement the cache management of independent filesystems.
+It corresponds to the middle layer of abstraction of a filesystem which
+maintains the exchange of file data and metadata contents
+read or written to the external storage comprising the physical file. 
+.pp
+Because this interface is shared by many filesystems
+and many processes which are clients of a filesystem (even clients
+of the same exact file), the reference to this information is
+relative to the vnode describing the file and an opaque block offset
+(relative to the filesystem) that describes the contents that are cached.
+While the total resource dedicated to the filesystem is globally
+managed among all clients, the interpretation and management of the
+cached entries themselves is done relative to each filesystem and opaque to
+unrelated filesystems.
+.uh "Buffer Cache in Detail"
+.pp
+This filesystem cache consists of buffer elements, which are transactions
+of file data or metadata. Buffers are comprised of two parts: a
+fixed-sized buffer header that records details of the transaction, and a
+variable-sized data portion that holds the buffer contents associated with the
+transaction. The data portion can be thought of as a side-effect of
+the buffer header, since the buffer cache makes no direct use of it at all.
+.pp
+The cache works by attempting to either
+avoid transactions by reusing buffers and short-circuiting redundant
+transactions, or by
+anticipate new transactions before they happen so that they may
+be overlapped. In addition, the buffer cache provides an interface
+between the synchronous filesystem data transfer requests and the
+asynchronous mechanisms (device driver, network, and so forth) used
+as a basis for transferring the actual data. Finally, the scheduling
+of global I/O is made external to the various filesystems and managed
+at a central point for consistent policy.
+.pp
+The filesystem buffer cache is only called by filesystems; in turn, it
+only interacts with filesystems to affect its actions. It interfaces
+to the basic kernel by obtaining and releasing memory resource for buffer 
+contents
+(see
+.b malloc()
+(***HYPERLINK WHAT IS MALLOC() IN MALLOC.C - POPUP)
+and
+.b free()
+(***HYPERLINK WHAT IS FREE() IN MALLOC.C - POPUP)
+in 
+.b kern/malloc.c
+(***HYPERLINK MALLOC.C TOC - MACRO)
+for further information). It also interfaces to
+to the master VFS by performing generic operations
+on the control of filesystem contents (see
+.b vflushbuf(), 
+.b bgetvp(), 
+.b brelvp(), 
+and
+.b vwakeup()).
+.pp
+One should note that the two write alternatives
+.b bawrite()
+and 
+.b bdwrite ()
+have their different operations cited at the front of the name
+because the decision to write occurs before the operation. This
+contrasts its operation from functions such as
+.b breada(), 
+where in this case the operation of the second asynchronous read operation
+occurs after the first operation.
+.uh "The Life Cycle of a Buffer in the Buffer Cache"
+.pp
+The buffer cache caches I/O transfer requests (either to a device driver
+or to an underlying storage mechanism, such as a network protocol). As such,
+it performs I/O on demand when either a buffer does not contain the appropriate
+contents or when the contents are forced to be written out. I/O goes 
+on independent of the requests to view the buffer cache. This can be 
+considered not only a design feature but also a flaw, since filesystems 
+don't have any control over when I/O might occur as all I/O is lumped 
+together into one set of policies for all filesystems instead of using
+a more sensible mechanism such as a "lookaside" cache arrangement. 
+.pp
+Buffers to be read are generally obtained by the 
+.b bread() 
+(***HYPERLINK WHAT IS BREAD()
+or 
+.b breada()
+(***HYPERLINK WHAT IS BREADA()
+functions which ensure that the contents of a block exist and return
+the buffer containing this contents or an error indicating why an I/O
+operation to a buffer could not obtain the appropriate contents. 
+In the case that contents could not be obtained, the buffer that was
+allocated to receive the contents is left as invalid and will be
+immediately recycled since it has no contents to cache. Since these
+functions had to allocate a buffer, they may block waiting for a usable
+buffer to become available. Either the buffer is the desired one that
+already has contents available without any I/O required (but is still in use by
+another process exclusively; thus, the caller must block until it
+can obtain exclusive access) or it is not. In this case, a free buffer must 
+be obtained for 
+.b bread()
+and 
+.b breada() 
+to obtain contents for it to return.
+.pp
+In the process of writing a buffer, the buffer is obtained from 
+.b getblk()
+which either finds an existing buffer with the cached contents (the
+flag B_CACHE indicates that the buffer was found with contents
+intact in the cache) or allocates a buffer with no contents
+present covering this portion of underlying storage exclusively
+in the buffer cache and marks it as being invalid (B_INVAL). In the
+second case, if a portion of the buffer were to be modified, a read
+is necessary to obtain valid contents before the write of 
+the rest of the buffer could take place. (A 
+.b bread()
+would best provide this since it would ensure that the buffer was read. 
+However, if the entire point of this operation was to ensure that there 
+was only one entry in the buffer cache corresponding to the entry and 
+the contents itself considered irrelevant, a 
+.b getblk() 
+call is sufficient.
+In either case, exclusive access to the portion of that vnode is now
+assured since all other requesters will wait until the buffer has
+been returned to the free pool for use by other processes.
+.pp
+Having now obtained the buffer, its contents can be loaded and passed to
+one of the write routines to be written to storage. The 
+.b bwrite()
+(***HYPERLINK WHAT IS BWRITE()
+function will immediately force the operation to occur and wait for 
+the result (suspending during the operation), while the 
+.b bawrite()
+(***HYPERLINK WHAT IS BAWRITE()
+will issue the operation and arrange for its release to the free pool
+upon completion without waiting. A third variant, 
+.b bdwrite(), 
+(***HYPERLINK WHAT IS BDWRITE()
+will delay the actual write operation until either the buffer must be reused
+for purposes of being used elsewhere in the cache or if forced written
+by either a 
+.b bawrite() 
+or 
+.b bwrite(). 
+.pp
+Reads (when finished) return buffers to the buffer cache with a 
+.b brelse()
+(***HYPERLINK WHAT IS BRELSE()
+function call.
+In the case of an asynchronous operation,
+.b brelse() 
+can also be called from interrupt level by 
+.b biodone()
+(***HYPERLINK WHAT IS BIODONE()
+to release the buffer cache buffer back to the free pool. 
+Other operations waiting for a 
+.b biodone()
+to signal completion of the operation will use the 
+.b biowait() 
+(***HYPERLINK WHAT IS BIOWAIT()
+function, waiting for the operation to complete by suspending 
+(and also recovering the error if any occurred in performing the operation). 
+Note that there is no functional interface externally to see if a 
+buffer is in use, as all operations may block to gain exclusive access 
+to a buffer, however indefinitely long that block may take.
+.pp
+Buffers may be expanded or contracted to hold different sized contents.  The 
+.b allocbuf() 
+(***HYPERLINK WHAT IS ALLOCBUF()
+function expands or contracts the size of a buffer as
+requested. It is used by the filesystem to change the size of the entry
+that is being cached while preserving the contents present in the previously
+sized buffer (throwing away information on a reduction and retaining partial
+contents on an expansion). 
+.uh "Delayed Write and Read-ahead Operations"
+.pp
+Delayed write operations are buffer transactions that are
+recorded as having been written when they actually haven't -- instead,
+they "dwell" in the buffer cache for a period of time.
+This mechanism allows for temporary blocks to appear to be 
+"written" and "read" without any I/O actually occurring before 
+invalidation occurs (as would be the case with compiler 
+temporary files). In addition, delayed write operations allow
+output operations to be queued behind read operations, thus postponing
+their effect until the cache entry is needed by a read operation.
+.pp
+Read-ahead operations, in contrast, are the anodyne
+to delayed write operations, in that read-ahead operations anticipate
+the need for a successive block. Since most I/O on Unix systems is sequential,
+successive read operations can be detected and the operations pre-queued
+for the next successive block to achieve double buffering. 
+.pp
+Note that read-ahead and "write-behind" (e.g. delayed writes) 
+operations create additional traffic for the buffer cache because 
+a certain amount of the buffer cache is tied up in holding the state 
+for both reads and writes that may or may not be of use. 
+This buffer cache memory overhead
+is the price paid for attempting to avoid a more expensive I/O operation. 
+.pp
+One interesting question raised by this approach is that of just who 
+has priority -- read-ahead blocks which haven't
+proved that the information needs to be cached, or write-behind blocks
+which may not ever be reused again and instead be queued for output?
+If priority is given to read-ahead blocks, we tend to commit delayed 
+writes back to disk earlier and effectively perform more write
+operations than might have otherwise been needed. This may be especially
+expensive if we have to read them back in again often, as would be the 
+case with compiler temporaries. On the other hand, if priority is 
+given to delayed write operations, the read-ahead operation can be severely
+impacted by the lack of buffer space necessary to hold its contents. In
+this case, we will end up always synchronously reading from the disk. 
+.pp
+Since the system does more reads than writes, read-ahead operations are
+favored over delayed write operations, resolving this contradiction, 
+but this is a somewhat arbitrary solution. Unfortunately, since this 
+caching operation occurs at a fairly low level of abstraction in the system, 
+there is insufficient information available (e.g. arrival pattern, 
+file persistence duration -- temporary versus permanent) with which to 
+implement a sophisticated policy mechanism (such as one using queuing theory).
+.pp
+For example, when the system does a core dump of a program
+larger than the size of the buffer cache, the buffer cache
+is immediately overrun with contents bound for the disk (or network),
+wiping out all previously held contents in the process. (Ironically,
+this core dump contents may never even be read, especially if this is 
+a system process). If this core dump is sufficiently large it may take 
+several seconds to clear in writing to the disk. During this time, the 
+system will appear to "pause" as the other blocks queued for transfer wait. 
+.pp
+If instead of allowing the buffer cache to be 
+overwritten we possessed the appropriate policy information,
+writes would only be accepted into the cache at the 
+rate at which they were consumed by the underlying transfer mechanism, 
+resulting in a steady-state. Since we cannot satisfy
+the transfer rate any faster than that allowed by the underlying device, 
+it doesn't help if we accept any more transactions into the cache 
+than can possibly be satisfied by the lower levels of the system. 
+.pp
+One area of discussion is determining just "when" 
+persistence in the buffer cache of information should be allowed
+in excess of the ability for the lower level storage mechanism to transfer
+the information. In essence, we must decide when we should reuse the 
+information and that it should persist regardless (the compiler temporary
+case) and when we should constrain the "virtual bandwidth" 
+by the lower level device (as in the core file case).
+.uh "Optimizing Buffer Transactions"
+.pp
+Read-ahead and write behind operations were used in the original 
+Unix buffer cache. In fact, almost all timesharing operating systems
+that had buffered filesystem transfer caches prior to
+Unix, including BTSS and Multics, also used these operations to
+reduce the number of transactions incurred by managing a cache of them 
+and reordering them as necessary to achieve the most optimal time and number
+of transactions necessary, so this concept is not unique to Unix.
+.pp
+Ironically, by allowing read-ahead operations we actually
+increase the number of transactions that occur. However, since the net
+cost of occasionally throwing away a read-ahead block is a low one,
+the overall system efficiency is increased anyways (since on the off 
+chance we did use the read-ahead, an operation that would have otherwise
+been blocked would not need to occur). Some Unix systems 
+defeat read-ahead and aging under the mistaken belief that
+simply reducing the number of operations must increase system efficiency.
+This is not always the case as one must examine the actual 
+delay time reduction of the application programs as well as the
+number of operations to decide if the optimization is successful
+.pp
+For example, in the 386BSD Release 0.1 version of 
+.b bio.c 
+delayed writes and readaheads were not implemented correctly 
+for all cases. After this was rectified, the total number of I/O 
+operations were observed to have increased (which we found surprising).
+However, the time required for the average completion of a kernel 
+build actually dropped! How could this be? We found that
+read-ahead operations would occasionally be successful
+and occasionally not -- those not successful would have to be reissued,
+so the number of operations increased. Why this did not degrade performance but
+instead actually increase it was that when the block was of immediate use, it
+avoided a delay in the utility getting a block of data. However, in the case 
+where it wasn't of any value it would be reused by the delayed write operation
+of a compiler temporary and thus would hold onto the information anyways.  As 
+such, the proper effect of both delayed write and read-ahead operations would 
+result. In addition, the reason why the number of aggregate read/write 
+operations increased was because, while many of the read-ahead blocks were 
+never used, we never had to wait for them anyways, so it did not affect 
+the elapsed time of the running application.
+.uh "File I/O Clustering"
+.pp
+The effect of aggregating read/write operations for greater efficiency is 
+possible not only at the low level of abstraction of
+transfers themselves but also possible at the higher levels of abstraction 
+of whole transfers from the user process's perspective. Consider that a user
+process is performing I/O on an abstract file -- we can collect up all of
+their numerous I/O operations into a much larger aggregate of individual
+operations, coalesce them into a single operation and perform that.
+.pp
+Given this higher level of abstraction, a 
+.i clustered
+read or write operation can be performed based not on the actual 
+buffer transactions but on much larger scale driven by 
+the economies of memory in a system and not by the economies of 
+memory in the buffer cache. Obviously if the memory of a system is so 
+constrained that the buffer cache is a significant portion of memory 
+(as it was in earlier systems), clustered I/O would be no great advantage.
+However, we routinely use PCs that contain many times the 
+amount of memory of that of the programs which they run. 
+Clearly, the efficient use of memory as a resource might now
+allow us to use memory state to transfer larger aggregations of file
+transfers more efficiently. In other words, we exchange memory resource 
+for I/O bandwidth to obtain a larger "virtual" bandwidth. This in a nutshell
+is what file I/O clustering is all about.
+.pp
+Since file I/O clustering lies between the top level view of the system 
+(e.g. reads and writes) and the bottom level view of the system (actually 
+performing the I/O), it is an operation that must invisibly 
+reconcile the semantics of the top level reads and writes independent of 
+the low level operations (in the current system, there is no such layer). 
+Since this mechanism inherently affects the user process's
+address space, the virtual memory system is the logical means through
+which this new layer would be interposed. 
+.pp
+To permit the virtual memory system to make decisions on 
+the size and timing of transfers, additional information 
+(queue sizes and I/O operation completion) must be available,
+so that the virtual memory system can
+properly choose how much resource to dedicate to a particular set of
+virtual transfers. As such, a sufficiently different
+architecture for attaching the lower level of the system to the higher
+level portion of the system is now necessary.
+.uh "fs/bio.c Functions"
+.pp
+Within this file are contained the following functions:
+.(l
+bufinit()
+incore() 
+bread()
+breada()
+bwrite()
+bdwrite()
+bawrite()
+brelse()
+getnewbuf()
+getblk()
+geteblk() 
+allocbuf()
+biowait()
+biodone()
+.)l
+(***HYPERLINK ALL OF THE WHAT IS TO THESE LIST OF FUNCTIONS)
+The names are indicative of the function they provide in the 
+implementation of the buffer cache.
+.b "bread()" 
+and
+.b "bwrite()" 
+provide a virtual read/write interface to the
+buffer cache and the underlying storage, expressed as a filesystem.
+.b "breada()"
+and 
+.b "bawrite()"
+provide asynchronous mechanisms avoiding a wait
+for the operation if the caller decides not to pause to see the outcome
+of the operation. 
+.b "getblk()"
+and
+.b "brelse()"
+allow the buffer contents
+to be probed and released irrespective of any implicit I/O. 
+.b "allocbuf()"
+allows for alteration of buffers to suit the needs of the filesystem.
+.b "biowait()"
+and 
+.b "biodone()"
+provide an interface between underlying asynchronous I/O
+and the filesystem's more orderly synchronous world view. 
+.b "incore()"
+and 
+.b "getnewbuf()"
+are internal support routines used to implement the buffer cache.
+.b "bufinit()"
+is an entrypoint for the kernel to instantiate the buffer
+cache facility.
+.b geteblk()
+is an obsolete interface used to steal
+an empty block from the buffer cache for use in other mechanisms (a
+memory allocator, used prior to mbufs and 
+.b "malloc()").
+(***HYPERLINK WHAT IS MALLOC() IN MALLOC.C - POPUP)
+.uh "Antecedents to the 386BSD Buffer Cache"
+.pp
+Earlier UNIX systems
+used a block-oriented mechanism to buffer physical I/O transactions
+to a disk drive. At this time, there was a single UNIX filesystem
+that used the block buffer cache to interface to disk drivers directly.
+.pp
+The names of the above routines and the function of the buffer cache
+are directly descended from this earlier work.
+However, it is deceptive to assume that they are similar -- a
+myriad of subtle differences exist due to the fact that this buffer
+cache works with variable-sized buffers of independent filesystems,
+caching transactions of the logical contents of the files. Various
+idiosyncrasies of the buffer cache are due to its appendix-like role
+in the anatomy of UNIX systems.
+.uh "Evolution of the 386BSD Buffer Cache"
+.pp
+The 386BSD buffer cache was developed independently
+for the original Release 0.0 in 1992. The first version
+of this file and how it was developed is discussed in the article
+.b "Missing Pieces II"
+(***HYPERLINK TO ARTICLE TOC - MACRO)
+in the section
+.b "Block I/O Cache".
+(***HYPERLINK TO SECTION - POPUP)
+Both the strengths and weaknesses of using this buffer cache
+design were also discussed in this
+article (see
+.b "4.4BSD Demands"
+(***HYPERLINK TO SECTION - POPUP)
+and
+.b "4.4BSD Weaknesses",
+(***HYPERLINK TO SECTION - POPUP)
+respectively).
+.pp
+The reimplementation of the buffer cache code was quite distinct from the
+design of earlier inplementations, primarily by its use of the kernel memory allocator
+in place of a internal memory pool and page table entries to allocate
+buffer contents from. This was done to reduce the code size by relying
+on a common memory allocator, provide uniform memory policy for the kernel
+as a whole (the intent was that memory could always be reclaimable by the
+virtual memory system, and that unused memory (B_INVAL buffers) would always
+be held by the memory allocator for universal use within the kernel), and
+so to reduce memory fragmentation (partial page allocation of buffer contents
+would not require a whole, dedicated page of memory).
+.pp
+The buffer cache code had minor bugs (double allocation of space), unfinished
+implementation (buffer ageing and delayed writes), as well as inefficencies
+(buffer ageing and delayed writes, again). In addition, the design objective
+of returning unused buffer memory contents to the memory allocator was not
+completed. These problems have been
+eliminated from this version, as many of them had stemmed from early,
+abortative attempts to introduce an interim version of the page cache, the
+intended successor to the buffer cache.
+.pp
+This design, however, was intended from the beginning to be only an interim
+functional mechanism until a more modern mechanism -- the 386BSD
+Page Cache -- was ready for release.
+.uh "Future Directions: The 386BSD Page Cache"
+.pp
+While the page cache is conceptually simple, its implementation and
+the replacement of the buffer cache is far from simple. Both performance
+and operational issues dominate the such attempts. Most of these are
+rooted in the dependance of the rest of the kernel on artifacts of the
+buffer cache and its interface.
+.pp
+The buffer cache combines many different functions and features into
+a single mechanism. This concise arrangement was somewhat necessary given
+the tiny memory requirements of the original PDP-11 (and PDP-7 before it)
+environments it ran in. The buffer cache provides many mechanisms:
+.(l L
+* The interface for filesystems to access records (blocks) of storage.
+* A way to achieve I/O on a storage meduim.
+* A way of managing exclusive access to a portion of file contents.
+* A way to avoid redundant reads (transfer cache).
+* A way to schedule sequential read operations allowing overlap (read ahead).
+* A way to postpone/coalesce writes (write behind).
+* A way to resolve file-relative to actual physical record index.
+.)l
+.pp
+In addition, to manage the cache contents, it provides these additional
+mechanisms for the filesystem to use:
+.(l L
+* cache invalidation/ageing.
+* cache probing/statistics.
+* cache resizing.
+.)l
+.pp
+These mechanisms are all implemented by a series of functions that interact
+in an ad-hoc manner to allow these mechanisms to function. Since the
+policies are embedded in a buffer cache used by all filesystems, all
+filesystems are compelled to use the same policies. Also, since I/O is
+implied behind the cache, the buffer cache schedules buffer reuse/writeback
+based on its demands for memory rather then when the filesystem would like
+to see the output operation occur. Finally, even though the buffer cache
+can be made to relinquish memory back to the memory allocators, it still
+must have a notion of a fraction of memory resources dedicated to filesystem
+cache contents, which limits the effectiveness of memory to be used to
+accellerate I/O operations. Inherently, the virtual memory system and buffer
+cache are on a collision course, as both provide fundamentally the same
+operation (access to storage) for different subsystems (filesystem, address
+space). As both must interact (mapped files), and cache state to improve
+operation, each elbows the other for resources.
+.pp
+The resolution of this conflict is that the virtual memory system must
+be the only mediator to storage, and the only manager of memory resource.
+Filesystems should provide methods to perform and mediate I/O. A filesystem
+access to a portion of a file should be treated exactly like a program's
+access to a portion of a file mapped into its address space. A process
+consuming a large number of pages of I/O should compete alongside another
+process consuming a large number of pages to run its program within.
+Actual I/O for either should be managed efficently with the same mechanisms
+(buffering for overlap operation, caching to reduce redundant operations,
+clustering to coalesce multiple operations into a single one,
+reclamation
+to cope with finite memory resources, I/O scheduling to maximize benifit
+of storage transfer mechanism).
+.pp
+The page cache is this universal mechanism that makes possible this
+archetectural arrangement. With this mechanism, file contents are
+only reachable via the virtual memory system. Any memory resources
+used to cache contents are held by the virtual memory system. All I/O
+operations are initiated or scheduled to be initiated by the filesystem. 
+The memory system may attempt to reclaim resources by writing back
+a cached entry, however, the filesystem may chose how, when, or if
+this is to be done. The virtual memory system provides access to memory
+based, logically ordered objects on which I/O may be applied;
+while the filesystem transforms these into physical transfer operations.
+.pp
+Thus, the resolution of the previously mentioned functions cannot all
+be present in the same place as it was in the buffer cache, but instead
+be spread accross both the virtual memory system and filesystem, with
+much of both changing considerably. In effect, the caching mechanism would
+be migrating in the level of abstraction layers:
+.(l L
+Is:
+vm
+filesystem(top)
+buffer cache
+filesystem (bottom)
+drivers | network | ...
+
+Becomes:
+filesystem(top)
+  |	| vm
+  |	| page cache
+filesystem(bottom)
+drivers | network | ...
+.)l
+.pp
+In this new arrangement, the filesystem "top" layer transforms requests for
+file storage into virtual memory system requests (if necessary for the
+filesystem semantics, the virtual memory system may be bypassed entirely
+for non-cachable transfers of information), which may either be found
+in the global page cache, or reloaded on demand by the filesystem "bottom"
+layer. Thus, the net effect of the change is to cache potentially mappable
+memory state to avoid I/O transfers instead of caching the I/O transfers
+themselves.
+.uh "What is bufinit()?"
+.pp
+.b bufinit()
+instantiates the data structures with sane values so that the
+remaining code can use the facility. 
+.uh "What Does the Kernel Expect of bufinit()?"
+.pp
+.b bufinit()
+must bootstrap enough of the buffer cache so that it can
+commence operation. At this point, the memory allocator is active,
+but no disk I/O is yet allowed. The buffer cache will be
+needed to help initialize block devices and to open the root
+filesystem -- its first operations.
+__listing(/usr/src/kernel/kern/fs/bio.c,80,81)
+.lp
+.b bufinit()
+has no arguments and returns nothing.
+Its side-effect is to initialize the statically
+allocated hash table, buffer headers, and free buffer queues.
+.uh "How is bufinit() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,87,91)
+.lp
+With nothing in the hash table, its entries point to themselves. Note
+that there is only one value per hash table header for both the
+beginning and end of the hash table, yet the sentinel itself is never
+allocated. One could have used a single entry, but this 
+identical code allows for greater speed to unlink and link (one case only) 
+a buffer on a queue.
+__listing(/usr/src/kernel/kern/fs/bio.c,94,100)
+.lp
+Likewise, a list of free queues exists on which inactive buffers are present.
+We link them the two ways they can be found (address match or 
+availability on the 
+.i freelist).
+__listing(/usr/src/kernel/kern/fs/bio.c,103,109)
+.lp
+With the list headers established, we place the buffer headers on the
+queues using macros used throughout the rest of the implementation.
+At this point, we take care to mark them as having no contents and 
+matching no address.
+.uh "386BSD bufinit() Design Choices and Trade-Offs"
+.pp
+It is assumed in the 386BSD implementation that the buffer cache is 
+empty to begin with and that the buffer cache code will allocate 
+and fill-in the
+structures as needed, instead of allocating everything here. 
+As such, the key design choice here was to
+place the burden on the rest of the implementation so that the virtual
+memory system, the ultimate memory manager, could reclaim space on-demand
+from the buffer cache. It becomes just one of many clients of memory inside
+the kernel. (N.B. It may eventually be desirable to allow revoking of memory
+as a capability on-demand.)
+.pp
+This implementation of 
+.b bio.c
+still uses the buffer list and queue arrangement found in
+older Berkeley Unix (and traditional Unix) systems, instead of using
+the general purpose queue facility (see 
+.b include/queue.h) 
+used by the entire virtual memory system. 
+Since the buffer cache is scheduled for replacement by the page 
+cache (which uses these queues already), work has not been
+continued in this area.
+.uh "What is incore()?"
+.pp
+Active buffers are linked onto one list of a hash table of lists,
+where the hash function is determined by logical file and block number. The 
+.b incore()
+function, used solely within the buffer cache,
+locates valid cache contents regardless of the status of the buffer.
+Since this function is small and can limit performance for large
+cache sizes, it is inlined to increase speed.
+.uh "What Does the Buffer Cache Expect of incore()?"
+.pp
+.b incore()
+attempts to locate a buffer in the buffer cache.
+If one is present, it returns a pointer to the
+buffer's header; otherwise, it returns a null buffer pointer. 
+__listing(/usr/src/kernel/kern/fs/bio.c,115,116)
+.lp
+.b incore()
+has two arguments: a vnode pointer; and a logical block number.
+The arguments are used to find an exact match from one of the
+buffers holding valid data, regardless of buffer status.
+If it is matched, the buffer pointer is returned;
+otherwise, a null pointer is returned.
+.pp
+.b incore()
+should never block; otherwise, an allocation race could result and the
+wrong answer obtained. Since
+.b incore()
+is used to find buffers that can be in either a locked or unlocked state,
+it should never be used to itself lock or unlock
+buffers; otherwise, a chicken-and-egg recursion could result.
+.uh "How is incore() Implemented on the 386?"
+__listing1(/usr/src/kernel/kern/fs/bio.c,118)
+.lp
+The buffer hash address is located by the hash macro (see 
+.b include/buf.h)
+which folds the value of the vnode pointer and logical block number
+into an index inserted into a fixed-sized hash table of buffer hash headers.
+Buffer hash headers are actually only three words long, and overlay the
+first three fields of the buffer header structure
+.i (b_flags, 
+.i b_forw, 
+and
+.i b_back),
+so the definition for 
+.i bh
+is a bit misleading. The hash header is the
+semaphore that anchors a doublely circularly linked chain of buffer
+headers which contains the buffer we are locating; otherwise, the
+buffer is not present in the buffer cache.
+__listing1(/usr/src/kernel/kern/fs/bio.c,121)
+.lp
+The hash chain is linearly searched for the desired buffer. The
+first buffer is pointed at by the forward pointer (although we could
+just as easily have walked the hash chain backwards via the back pointer). In
+either direction the header itself is chained as the last element, so that
+the empty hash header is an entry with both back and forward pointers
+pointing to itself (see 
+.b bufinit())
+(***HYPERLINK WHAT IS BUFINIT() - POPUP)
+__listing(/usr/src/kernel/kern/fs/bio.c,123,125)
+.lp
+Valid matches are exact matches on the starting logical block number and
+vnode pointer. Note that both the size of each cached buffer and the block
+size associated with the block address (e.g. units of the address) are not
+taken into account by the 
+.b incore() 
+lookup, so it is not possible to locate
+a logical block contained within a cached buffer or locate a buffer
+by an alias of a different block size. The buffer cache effectively
+caches disk transactions of a particular arrangement by a filesystem, and
+does not provide a global view across all filesystems of vnode file
+state present in RAM. Thus, the buffer cache is relative to each of its
+filesystem clients.
+.pp
+This arrangement directly implies that 
+.b bio.c 
+is logically located at the middle layer of abstraction
+of a filesystem, separating the filesystem's top layer (its semantics
+and attachment to the virtual filesystem) from its lower layer (the logical
+to physical mapping, commitment to storage, and storage allocation policies).
+.lp
+A check for the validity of the buffer is made before returning the block.
+Normally, only valid data should be present on the hash chains; however,
+the block may have become invalid if a race condition occurred while 
+removing it from the
+hash (by code running from interrupt level or on another processor). Since
+the unusual case is an invalid buffer, this is only tested prior to returning
+a positive match. Buffers are not locked by this function -- the information
+in the associated buffer header is subject to change prior to use, so other
+callers must take care to discard buffers as needed if they are stale.
+__listing1(/usr/src/kernel/kern/fs/bio.c,127)
+.lp
+In the case of a buffer cache miss, 
+.b incore()
+will return the value of a null buffer pointer.
+.uh "What is bread()?"
+.pp
+.b "bread()"
+is one of the top-level function entry calls for the
+buffer cache. The filesystem top-level code uses this function to access
+their file's contents by performing a virtual read of the
+combined cache and the lower-level of the filesystem.
+.uh "What Does the Filesystem Expect of bread()?"
+.pp
+.b bread() 
+causes a buffer to be created with the contents requested.
+It either obtains this from the buffer cache if it is present, or
+obtains an empty buffer and fills it with the appropriate
+contents by means of the lower-level mechanisms of the filesystem
+memory for further use. 
+__listing(/usr/src/kernel/kern/fs/bio.c,135,137)
+.lp
+.b bread()
+has five arguments (logical file parameters): the vnode pointer; the
+logical block offset; size of transfer; the credentials used in
+performing the read; and a pointer to the buffer returned by this 
+.b bread()
+operation.
+The credentials of the requester
+passed in the buffer are used to associate any lower-level 
+I/O operations. The function will return a buffer at
+the location specified ("*bpp") as well as any error values encountered
+in performing the operation. 
+.pp
+The buffer is returned locked for exclusive
+use, and then returned either to the buffer cache for further use by other
+clients of this block of the file or by the cache to recycle its buffer
+memory for further use.
+.pp
+Since the filesystem code is unaware of any concurrent access of buffers, 
+.b bread()
+must mediate the shared free buffer pool in order to gain exclusive 
+access to the desired buffer to its caller. 
+.b bread()
+can block, since it is only called from the synchronous 
+top-half of the kernel. However, if it does 
+block, it must not hold any locked structures (except the buffer
+it allocates, of course), nor hold references to any global data
+structures across the block. (This is done to avoid deadlocks or circular
+waiting).
+.uh "How is bread() Implemented on the 386?"
+__listing1(/usr/src/kernel/kern/fs/bio.c,142)
+.lp
+.b getblk()
+(***HYPERLINK WHAT IS GETBLK() - POPUP)
+is used to obtain an appropriate buffer for the block requested, by
+either finding it in the cache or freshly allocating an empty buffer.
+__listing1(/usr/src/kernel/kern/fs/bio.c,145)
+.lp
+If the block was cached already, no further work needs to be
+done. However, if the block was either not cached or if the cached
+block is not valid, it must be filled with contents.
+__listing(/usr/src/kernel/kern/fs/bio.c,146,153)
+.lp
+A read operation is then selected and the associated bits are cleared
+prior to starting a read operation. Operations with credentials have
+their reference counts bumped for read and write references, which are
+asserted in case a 
+.b bread() 
+block is later written using
+.b bwrite().
+(***HYPERLINK WHAT IS BWRITE() - POPUP)
+__listing(/usr/src/kernel/kern/fs/bio.c,154,157)
+.lp
+If this process is traced, the read operation is recorded to
+the trace file.
+__listing(/usr/src/kernel/kern/fs/bio.c,158,160)
+.lp
+We tally the number of read requests, and
+then perform each request, by returning
+to the filesystem from which we were called
+and having it satisfy the request from whatever underlies the filesystem.
+__listing(/usr/src/kernel/kern/fs/bio.c,161,165)
+.lp
+The process is suspended until the read request completes. 
+Then the status of the operation
+and the buffer obtained is returned to the caller.
+.uh "What is breada()?"
+.pp
+.b breada(), 
+a special case of 
+.b bread(),
+(***HYPERLINK WHAT IS BREAD() - POPUP)
+is another top-level function entry call for the
+buffer cache. Like 
+.b bread(), 
+a filesystem's top-level code uses this function to access
+the file's contents by performing a virtual read of the
+combined cache and the lower-level of the filesystem.
+.pp
+.b breada()
+allows for double-buffering
+read operations by starting consecutive operations as a side-effect. It
+assumes that by the time the first operation has been consumed, the 
+second will be ready and the third will be started again. 
+If this perfect double buffering was maintained, data would appear 
+to be instantaneously available without delay, even if the file 
+read was larger than the buffer cache size. More commonly, however, 
+the buffer cache simply overlaps two 
+read operations, reducing the synchronous wait to every other 
+.b breada() 
+request in the case where data is demanded faster than the drive can supply.
+.uh "What Does the Filesystem Expect of breada()?"
+.pp
+Like 
+.b bread(),
+(***HYPERLINK WHAT IS BREAD() - POPUP)
+.b breada()
+causes a buffer to be created with the contents requested.
+It either obtains this from the buffer cache if it is present or
+obtains an empty buffer and fills it with the appropriate
+contents by means of the lower-level mechanisms of the filesystem
+memory for further use. 
+.b breada() 
+also has the "side-effect" of starting a read on the next buffer if it is not
+in the buffer cache.
+__listing(/usr/src/kernel/kern/fs/bio.c,172,174)
+.lp
+.b breada() 
+has seven arguments: the logical parameters of vnode pointer; logical
+block offset; size of transfer; the read-ahead block offset; 
+the read-ahead block size; the credentials of the transfer; and the
+pointer to the buffer read in this operation.
+The credentials of the requester are passed in the 
+buffer to associate any lower-level I/O operations.
+.pp
+Like 
+.b bread(),
+this function will return a buffer at the location specified 
+("*bpp"), as well as 
+any error value encountered in performing the operation. The buffer is 
+returned locked for exclusive
+use, and must be returned to the buffer cache either for further use by other
+clients of this block of the file or for the cache to recycle its buffer
+memory for further use.
+.pp
+Since the units of the logical block address are
+unknown to the buffer cache, it is not necessarily the case that
+the next block is one plus the previous (it could be 2 or 4, for example)
+Also, since the block size can be variable in the filesystem, it is also
+not predictable by the buffer cache (as the read-ahead block may be the
+last block, usually a fragment).
+.pp
+Since the filesystem code is unaware of concurrent access of buffers, 
+.b breada()
+(like 
+.b bread())
+must mediate the shared free buffer pool in order to 
+gain exclusive access to the desired buffer to its caller. 
+.b breada()
+can block, since it is only called from the
+synchronous top-half of the kernel. However, if this function
+does block, it must not hold any locked structures (except the buffer
+it allocates, of course) nor hold references to any global data
+structures across the block.
+.uh "How is breada() Implemented on the 386?"
+__listing1(/usr/src/kernel/kern/fs/bio.c,179)
+.lp
+The
+.b getblk()
+(***HYPERLINK WHAT IS GETBLK() - POPUP)
+function is used to obtain an appropriate buffer for the block requested,
+either by finding it in the cache or by freshly allocating an empty buffer.
+__listing1(/usr/src/kernel/kern/fs/bio.c,182)
+.lp
+If the block was cached, no further work needs to be
+done. However, if the block was either not cached, or if the cached
+block is not valid, it must be filled with contents.
+__listing(/usr/src/kernel/kern/fs/bio.c,183,190)
+.lp
+A read operation is selected and the associated bits are cleared
+prior to starting a read operation. Operations with credentials have
+their reference counts bumped for read and write references, which are
+asserted in case a 
+.b breada()
+block is later written with
+.b bwrite()
+(***HYPERLINK WHAT IS BWRITE() - POPUP)
+__listing(/usr/src/kernel/kern/fs/bio.c,191,194)
+.lp
+If this process is traced, the read operation is recorded to the trace file.
+__listing(/usr/src/kernel/kern/fs/bio.c,195,197)
+.lp
+The number of read requests are next tallied.
+We then perform the requests, by going back to the filesystem from
+which we were called
+and having it satisfy the request from whatever underlies the filesystem.
+__listing(/usr/src/kernel/kern/fs/bio.c,198,199)
+.lp
+At this point the implementation of
+.b breada()
+diverges from that of
+.b bread().
+Instead of waiting for the read
+operation to complete, we instead note that an operation is outstanding.
+__listing(/usr/src/kernel/kern/fs/bio.c,201,207)
+.lp
+We then check to see if the next block is already in the cache.
+If it is not in the cache, we arrange to schedule an asynchronous read by
+obtaining a new buffer using
+.b getnewbuf().
+(***HYPERLINK WHAT IS GETNEWBUF() - POPUP) 
+If none was present and 
+.b getnewbuf()
+was forced to wait (as conditions may be difficult), we need to go
+back and look in the cache again.
+__listing(/usr/src/kernel/kern/fs/bio.c,208,209)
+.lp
+We then associate the buffer with this vnode and read-ahead block offset. To
+signal that we haven't calculated the underlying address for this block,
+the lower level address for the buffer is set to the logical address. (The
+.b bgetvp() 
+function in
+.b fs/vnode.c
+associates this buffer with this vnode.)
+__listing(/usr/src/kernel/kern/fs/bio.c,210,214)
+.lp
+We insert the buffer into the hash table so that it can be found by
+.b incore(). 
+(***HYPERLINK WHAT IS INCORE() - POPUP)
+The buffer is held busy so that if others find
+it, they must first wait for it to be released before using it.
+__listing(/usr/src/kernel/kern/fs/bio.c,217,230)
+.lp
+We request that an asynchronous read be performed and that the buffer be
+released to the "aged" free queue.
+Because the buffer has not yet been requested, we consider it aged 
+and a candidate for reuse; otherwise, we handle this just like a 
+.b bread() 
+without a 
+.b biowait().
+(***HYPERLINK WHAT IS BIOWAIT() - POPUP)
+.lp
+Both read and write credentials for the read-ahead block are obtained. 
+Tracing is then accounted for (if desired) and it is recorded that the transfer 
+has occurred against this particular process. We then perform the transfer
+via the 
+.i vop_strategy
+operation.
+__listing(/usr/src/kernel/kern/fs/bio.c,234,245)
+.lp
+If the read-ahead block was in the cache, we prolong its life a bit more. 
+If the age bit is still set and the buffer is in use we clear 
+the age bit (so it won't be aged).
+However, if it is not in use, we force it to the tail of the age queue so that
+it won't be reused before being referenced.
+__listing(/usr/src/kernel/kern/fs/bio.c,248,252)
+.lp
+Finally, we wait for the result if the original operation required a
+read operation.
+The buffer used for the requested read operation is returned to the
+supplied address of the caller and the value of this successful
+or failed operation is also returned.
+.uh "What is bwrite()?"
+.pp
+.b bwrite() 
+takes a previously busy buffer obtained from either
+.b getblk(), 
+(***HYPERLINK WHAT IS GETBLK() - POPUP)
+.b bread(),
+(***HYPERLINK WHAT IS BREAD() - POPUP)
+or 
+.b breada(),
+(***HYPERLINK WHAT IS BREADA() - POPUP)
+and forces it to be immediately written to the underlying storage 
+below the current filesystem.  Like 
+.b bread(),
+.b bwrite()
+waits for the operation to finish, and returns the status
+of the operation as a value. The buffer passed is then released
+back to the freelist for use by other clients of the buffer cache.
+.uh "What Does the Filesystem Expect of bwrite()?"
+.pp
+.b bwrite()
+forces the buffer to be immediately written and the invoked
+operation synchronously completed before the function returns.
+Delayed writes are taken into account by this function as well.
+__listing(/usr/src/kernel/kern/fs/bio.c,259,260)
+.lp
+.b bwrite()
+has one argument: the buffer to be synchronously written. It returns
+the success or failure of the write operation.
+Since 
+.b bwrite() 
+will block waiting for completion of the I/O operation, it can
+only be called from the top half of the kernel. 
+.uh "How is bwrite() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,264,267)
+.lp
+If the supplied buffer's contents is invalid, no operation is performed
+and the buffer is immediately released for reuse on the free list. 
+__listing(/usr/src/kernel/kern/fs/bio.c,270,279)
+.lp
+If the buffer is not currently marked "busy", then 
+.b bwrite() 
+panics because it does not have exclusive use of the buffer. In general,
+a block has been obtained that has been already associated with a vnode
+for exclusive use -- thus, this is a "impossible" error. 
+.lp
+If the buffer has already been virtually written by a delayed write
+operation, the buffer is reassociated with the vnode of the file to which
+it belongs and its contents are marked "aged" so that 
+they may be reclaimed more quickly and not dwell on the free list.
+Otherwise, an output operation is accounted for by the process that calls 
+.b bwrite(). 
+Note that the output operation for a delayed write
+was already accounted for in the process where the delayed write had
+occurred. 
+__listing(/usr/src/kernel/kern/fs/bio.c,281,282)
+.lp
+The block is marked as a "dirty" block that must be cleaned before
+this vnode may be reused, and the number of output operations in progress
+on this vnode is increased. This counter will keep the vnode from being
+recycled or altered prior to all of its operations completing.
+__listing(/usr/src/kernel/kern/fs/bio.c,288,292)
+.lp
+The output operation is engaged for this filesystem by calling its
+vnode strategy operation and the operation is waited upon until it completes.
+After completion, the buffer is released back into the free buffer cache
+for potential reuse by other processes and the value of a successful
+or failed operation is returned to the caller. Note that the buffer has been 
+returned to the buffer cache and is no longer used by the caller.
+.uh "What is bdwrite()?"
+.pp
+Like 
+.b "bwrite()", 
+(***HYPERLINK WHAT IS BWRITE() - POPUP)
+.b bdwrite()
+is used to return the buffer back to the buffer
+cache with the contents written back to the file. However, unlike
+.b bwrite()
+(which immediately writes the buffer back and waits for it), 
+.b bdwrite()
+does a 
+.i lazy 
+write by marking the buffer to be written before reuse, releasing it to
+the free list, and then returning. 
+.uh "What Does the Filesystem Expect of bdwrite()?"
+.pp
+.b bdwrite()
+virtually writes the buffer into the buffer cache. The function
+in effect disassociates the operation from the file to which it is attached
+so that the buffer may "dwell" for a period of time until the 
+buffer space needs to be reused for another purpose in the buffer cache 
+or until the block is requested by another process to be read or written.
+__listing(/usr/src/kernel/kern/fs/bio.c,306,307)
+.lp
+.b bdwrite()
+has two arguments: the buffer to be written; and the vnode to which it 
+is associated. It returns nothing. The side-effect of this function
+is to virtually write the buffer into the buffer cache.
+.lp
+In order for the buffer to be written, it must be exclusive to the process
+performing the write. 
+.b bdwrite() 
+occurs in the context of the writer. However,
+the operation for performing the write (when it actually occurs) may come in
+from yet another process or in no process at all (as the process may have 
+terminated by the time the actual I/O operation is performed). 
+.uh "How is bdwrite() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,310,320)
+.lp
+If the buffer is not marked for exclusive use (busy) 
+.b bdwrite() 
+panics as it has been called on a nonexclusive buffer. If the information 
+in the buffer is invalid, the buffer is immediately released, since there is no
+write operation to be performed on this buffer and it is returned to the 
+free list for reassignment. 
+.lp
+If the buffer is associated with a tape device upon which a write
+should be performed, a synchronous write is substituted for this delayed
+write. Note that the return value for the write operation is thrown away as 
+.b bdwrite() 
+does not expect anything but success. However, the error
+is still recorded in the buffer's structure for later examination.
+__listing(/usr/src/kernel/kern/fs/bio.c,322,330)
+.lp
+The buffer's flags are changed to indicate that a write operation
+is present but has not yet been done for this buffer. If this is the first
+delayed write that has occurred, the process is accounted for as a single
+physical write (that may occur later) and marked as a delayed
+write with the dirty bit. Its buffer is then assigned to the vnode
+associated with this operation. Note that multiple delayed writes may
+occur, as a partial write to the buffer associated with the vnode may
+successively fill the contents of this buffer with many
+.b bdwrite()'s.
+The buffer is then released back to the free list where it may later be found
+associated with this vnode.
+__listing(/usr/src/kernel/kern/fs/bio.c,332,341)
+.lp
+An optional portion of this 
+.b bio.c
+implementation incorporates a mechanism to only allow a single 
+outstanding delayed write buffer per every vnode. 
+(This is an example of how to deal with the so-called
+core file problem discussed earlier -- see
+.b "Delayed Write and Read-ahead Operations"
+(**HYPERLINK TO SECTION). 
+Delayed writes are controlled and kept from overrunning the contents
+of the buffer cache by delaying the top level application program
+when it attempts to write on more than one buffer. (This is not normally
+done because this mechanism does not discriminate for the 
+default temporary file characteristics implemented in this
+file with delayed writes.)
+.lp
+The buffer is checked to see if it is the only block
+present on a chain of dirty blocks attached to the vnode. If there
+is more than one dirty block present, a 
+.b bawrite()
+(with an embedded sleep operation) is forced by calling the
+vnode 
+.b vflushbuf() 
+operation (see 
+.b fs/vnode.c) 
+for all but the current outstanding delayed write buffer. Note that in
+the case where a preponderance of temporary file operations occur on the 
+system, this operation will actually slow the system down by reducing the 
+amount of write-behinds (delayed writes). However, it will speed up a system
+that had previously been dominated by cache flooding. It is the lack
+of information on making the decision whether or not to issue this
+operation that requires this conditional portion of this implementation.
+.uh "386BSD bdwrite() Design Choices and Trade-Offs"
+.pp
+.b bdwrite()
+presumes that the buffer is going to be reused and so procrastinates.
+This method works well when a buffer is
+fractionally written in succession or when the buffer cache can hold
+the entire contents of a temporary file that gets reused and removed
+prior to being rewritten. In this second case, the I/O can be entirely avoided,
+as the file ceases to exist before the buffers ever age out. 
+This is the principle upon which log-based filesystems 
+(like LFS) rely. Sequential devices
+like tapes cannot postpone or reorder writes, so delayed writes to such devices
+are turned into immediate writes. 
+.uh "What is bawrite()?"
+.pp
+Like 
+.b bwrite()
+(***HYPERLINK WHAT IS BWRITE() - POPUP)
+.b bawrite() 
+takes a previously busy buffer obtained from either
+.b getblk(), 
+(***HYPERLINK WHAT IS GETBLK() - POPUP)
+.b bread(),
+(***HYPERLINK WHAT IS BREAD() - POPUP)
+or 
+.b breada(),
+(***HYPERLINK WHAT IS BREADA() - POPUP)
+and forces it to be immediately written to the underlying storage 
+below the current filesystem.  However, unlike
+.b bwrite()
+no wait for status is done. 
+.uh "What Does the Filesystem Expect of bawrite()?"
+.pp
+.b bawrite()
+performs the write operation on the buffer and then
+immediately returns. No wait for the status is done. Instead, the
+buffer is marked to be released when the write operation completes.
+In this case, no status information can be conveyed back to the
+writer because the operation is completed from the writer's perspective,
+before the operation can produce a status for the completed operation.
+Only the next reference to a buffer can discover the status of the
+buffer following a 
+.b bawrite() 
+(or analogously the read-ahead blocks scheduled by 
+.b breada()). 
+__listing(/usr/src/kernel/kern/fs/bio.c,349,350)
+.lp
+.b bawrite() 
+has one argument: the buffer being written. It returns nothing.
+.pp
+Note that by assigning a procedure, 
+.b b_iodone(*)(),
+to be called on conclusion of the I/O
+operation and setting the call bit (B_CALL), a
+call from interrupt level may be done to a function to indicate an
+operation has been completed and the status may be checked on an
+asynchronous write. Note also that buffers remain locked from view 
+during any I/O operations, so that even subsequent read operations
+will be delayed until the asynchronous write completes.
+.uh "How is bawrite() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,353,358)
+.lp
+The buffer is checked to see that it is exclusively accessed by checking
+for the busy (B_BUSY) bit; otherwise, it panics as the buffer must
+be obtained for exclusive access for this function to be called.
+If the buffer being written has an invalid flag, the buffer is immediately
+released without any I/O performed on it as it has no valid contents.
+__listing(/usr/src/kernel/kern/fs/bio.c,361,371)
+.lp
+If the buffer was previously a delayed buffer, it is reassigned to the 
+vnode and aged as a delayed write is finally converted into an
+asynchronous write buffer. In this case, since the operation of the write 
+had previously been accounted, it is not be done so here upon the delayed write
+conversion; otherwise, it will be done for an initial 
+.b bawrite(). 
+.lp
+The buffer's flags are changed to be appropriate for that of a buffer 
+about to be written which has not had any I/O done to it yet and 
+no errors have been found.  Since the buffer is being written, the dirty 
+bit and the asynchronous flag are set for this buffer and the number 
+of write transactions to the vnode are increased.
+__listing(/usr/src/kernel/kern/fs/bio.c,372,377)
+.lp
+If the process is tracing 
+.b bio.c 
+operations, a trace record is generated
+to indicate that either an asynchronous write or a delayed write
+converted to an asynchronous write is occurring for this vnode's block. 
+__listing(/usr/src/kernel/kern/fs/bio.c,378,379)
+.lp
+The write operation is requested via a vnode operation on the filesystem
+associated with this buffer's vnode, and the function is complete. The
+caller can either 
+.b biowait() 
+(***HYPERLINK WHAT IS BIOWAIT() - POPUP)
+(in the case that many asynchronous operations
+are started before we wait for any of them) or continue requiring the
+block later (when necessary) to determine the status of the operation.
+.uh "What is brelse()?"
+.pp
+.b "brelse()" 
+relinquishes exclusive access to a buffer and returns it
+to the global free buffer pool for potential use by other clients
+of the buffer cache. 
+.uh "What Does the Filesystem Expect From brelse()?"
+.pp
+.b brelse()
+passes exclusive use of the buffer back to the kernel's
+free pool. Anyone waiting for this particular buffer or a free
+buffer in general is then notified.
+__listing(/usr/src/kernel/kern/fs/bio.c,386,387)
+.lp
+.b brelse()
+has one argument: the buffer to be released. It returns nothing.
+The side-effect of this function is that the buffer is placed in the free pool.
+.pp
+This function is implemented as an artifact of 
+how exclusive access is maintained in the buffer cache.
+If any other clients of the buffer cache either
+desire this buffer or are waiting for any buffer for reuse, they
+will be awakened and allowed to compete for access to the desired
+resource (since there may be many waiting for exclusive access to
+a single buffer). Buffers are directed to free lists that determine
+the policy for reclamation and reuse with a different vnode/offset.
+.uh "How is brelse() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,391,398)
+.lp
+If kernel tracing is present, a trace record is written that indicates
+whether the buffer is being invalidated, modified, or simply released
+for reuse. Note that as currently implemented the tracing facility can
+only write records from the top level -- thus, if
+.b brelse()
+is called from interrupt level
+(as occurs from 
+.b biodone() 
+as the conclusion of an asynchronous operation), it will not be recorded because 
+of the block that may result. This function is currently finessed in 
+.b ktrbio() 
+(see 
+.b opt/ktrace/ktrace.c)
+as a special case as this trace package may be later changed to remove 
+the current restriction.
+__listing(/usr/src/kernel/kern/fs/bio.c,400,416)
+.lp
+To avoid contention for the busy bit, all block I/O devices are masked
+from interrupts (primarily because 
+.b biodone()
+invokes
+.b brelse()).
+The age queue is examined to see if its associated wanted bit is set
+(indicating that any the buffer wanted request is present). If it is,
+the bit is cleared and a wakeup issued for those processes still waiting
+for any buffer to become available. Note that only the first of the possibly
+many processes waiting for a free buffer will get the newly freed buffer
+with the others returned to the queue to wait for another buffer to become 
+available. Thus, there is no guarantee of when a buffer will 
+be assigned to a particular process.
+.lp
+Similarly, if the wanted bit is set on this particular buffer header's flag,
+a wakeup will be issued for the buffer header and the bit cleared. If the
+buffer has an error, invalid contents, or has been specifically disallowed
+from being cached by the filesystem, its contents are rendered meaningless
+and it is disassociated from any vnode to which it might be attached.
+__listing(/usr/src/kernel/kern/fs/bio.c,418,437)
+.lp
+The buffer flags indicating cache status and aging are erased prior to
+enqueuing the buffer on the appropriate of the four free lists. If the
+buffer corresponds only to a header and has no contents whatsoever, it
+is passed back to the empty queue for use when assigning new storage.
+Otherwise, if the buffer contains no valid contents, it is inserted 
+at the beginning of the age queue which indicates that it will be the
+first to be reused when a new buffer needs to be allocated.
+.lp
+If the buffer has aged but not been found in the cache, it will be installed
+at the tail of the age queue, where it will be reused before the rest of
+the contents of the buffer cache but after any invalid or empty queues that
+could be constituted into new buffers are used. Aged buffers are 
+ones that have either not demonstrated their reason for holding a place
+in a cache or have lost their reason for being cached, as determined
+by the filesystem's use of the buffer. All other buffers will be placed
+on the LRU queue awaiting reuse. 
+.lp
+In general, as buffers are found and released back to their free lists, 
+they tend to migrate towards the head of the particular queue that 
+they reside upon; thus, the less recently referenced entries move towards 
+the front of the queue. No indication is kept
+on how frequently a buffer is reused but one is kept on the last time it was
+reused. Thus, we use a LRU algorithm (LIFO).
+.lp
+The busy bit is then removed from the buffer, allowing it to be claimed
+by another requester and the interrupt level mask is removed.
+.uh "What is getnewbuf()?"
+.pp
+.b getnewbuf() 
+constitutes a new buffer by acquiring a buffer header and
+contents. 
+.uh "What Does the Buffer Cache Expect From getnewbuf()?"
+.pp
+.b getnewbuf() 
+obtains a buffer and stores in it the
+.i sz 
+sized contents. These items either come from an
+undedicated resource (empty buffer headers and underutilized buffer
+contents space) or by recycling a free buffer and adjusting it
+to suit the desired size. If the recycled buffer is a delayed write,
+the write is forced before allowing reuse.
+.pp
+If a new buffer is still not available for use, 
+the condition is signalled and the
+process sleeps until a free buffer is available. At this point, the
+function returns a null buffer pointer to signal that a sleep has
+occurred. If the conditions have changed and the buffer
+desired allocated to yet another racing process, any uses of 
+.b incore() 
+(***HYPERLINK WHAT IS INCORE - POPUP)
+may be stale.
+__listing(/usr/src/kernel/kern/fs/bio.c,450,451)
+.lp
+.b getnewbuf() 
+has one argument: the size of the contents allocated with the buffer
+header. It returns a pointer to the allocated buffer header or zero
+if no buffer header could be allocated.
+.pp
+.b getnewbuf() 
+returns a buffer that is entirely unassociated
+from the buffer cache. It is up to the caller to either associate the
+buffer with a vnode/offset so that it can be found or make
+temporary use of the buffer and return it to a free list. In its
+unassociated state, the buffer plays no role in the global view of buffer state.
+.uh "How is getnewbuf() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,456,474)
+.lp
+Buffers are first constituted from the empty list of buffer headers, as long
+as space is allocatable in the amount of memory reserved for buffer space
+and an empty header is available. 
+In general, memory not used for cache contents is always returned to the
+primary memory allocator 
+.b malloc() 
+(***HYPERLINK WHAT IS MALLOC IN MALLOC.C - POPUP)
+(see 
+.b kern/malloc()) 
+(***HYPERLINK MALLOC.C TOC - MACRO)
+for generic use in the kernel. This is the sole purpose of 
+the empty buffer free list.
+.lp
+Because buffers may have their status changed from exclusive to nonexclusive
+at interrupt level (see 
+.b biodone()),
+(***HYPERLINK WHAT IS BIODONE - POPUP)
+any block device interrupts are masked
+to prevent contention for buffers at interrupt level (as 
+.b brelse()
+(***HYPERLINK WHAT IS BRELSE - POPUP)
+may change the contents of the free lists).
+.lp
+If a new buffer can be constituted, memory is allocated from the memory
+allocator and assigned to a formerly empty buffer header detached
+from the empty free list of buffers and marked for exclusive use with
+invalid contents (since it has yet to be filled). Two global variables,
+.i allocbufspace
+and
+.i freebufspace
+record the amount of buffer space present in the buffer cache 
+and the amount remaining for use by new buffers, respectively. Remaining
+portions of the buffer header are filled prior to passing it back 
+to the caller.
+__listing(/usr/src/kernel/kern/fs/bio.c,476,489)
+.lp
+If all buffer space is in use or no empty buffer headers are available,
+the other free lists are checked to find a buffer for reuse. The age
+queue is consulted before the LRU queue. If either queue has no entry
+it will point back to its free queue pointer (indicating empty status);
+otherwise, the first buffer at the head of the queue will be chosen
+for use and removed from that free list.
+.lp
+If none of the buffer free queues has a buffer that can be used (all
+buffers are busy), the age queue's buffer queue header is marked with
+a wanted bit to indicate that any buffer header is requested. The
+process then sleeps waiting for 
+.b brelse() 
+to find it a new buffer.  Upon being awakened, 
+it will return to its caller to indicate that it
+could not find a buffer. In this case, the caller must examine the buffer
+cache again to see if someone else had allocated a buffer already for the
+vnode and block offset for which the caller was requesting a buffer. This
+procedure is followed rather than immediately branching back to 
+the beginning of the search for a buffer because many of the assumptions 
+of the caller may have changed during the sleep.
+__listing(/usr/src/kernel/kern/fs/bio.c,492,496)
+.lp
+If the buffer selected for reuse is one that has a delayed write
+outstanding on it, the buffer is acquired for exclusive access by
+asserting its busy bit and transformed into an asynchronous write by calling 
+.b bawrite(). 
+(***HYPERLINK WHAT IS BAWRITE() - POPUP)
+This forces a stale delayed write out upon reuse.
+.lp
+After starting the write operation, the function is restarted at its
+beginning to search for another buffer or, if all buffers are busy,
+suspend waiting for a free buffer until the asynchronous write completes.
+Now freed of its contents (written back to disk),
+the cleaned buffer is inserted onto the free list where it
+may be allocated by this routine.
+__listing(/usr/src/kernel/kern/fs/bio.c,498,502)
+.lp
+If kernel tracing is enabled for this process, a recycle record is
+written to indicate that the buffer has been assigned to the new vnode
+from an old contents. 
+__listing(/usr/src/kernel/kern/fs/bio.c,504,528)
+.lp
+The buffer is prepared for reuse by disassociating it from any vnode
+it may have been associated with before and removing any credentials
+that had been attached by prior operation. Its contents are marked
+invalid and busy and its moved from the hash lookup queues so that it
+will not be found by 
+.b incore() 
+since it does not yet have associated with
+it a sensible name and address (vnode and block number). 
+.lp
+The interrupt mask is removed and all remaining operations performed
+without holding the interrupts masked. The buffer is associated with
+no device and no vnode or logical block, and other fields in the buffer
+header are similarly default initialized to avoid unpredictable behavior
+by functions calling this routine which do not fill them out completely.
+The buffer is adjusted so that the size of its contents 
+.i b_bufsize 
+matches those of the requested size 
+.i sz by the function 
+.b allocbuf().
+The buffer pointer is then returned as a successfully allocated 
+buffer header and contents.
+.uh "What is getblk()?"
+.pp
+.b getblk()
+returns a buffer of the appropriate vnode, offset, and size
+to the caller. 
+.uh "What Does the Buffer Cache Expect From getblk()?"
+.pp
+.b getblk()
+locates the buffer with valid contents in the buffer cache; otherwise, 
+the function creates a buffer with empty (invalid) contents.
+__listing(/usr/src/kernel/kern/fs/bio.c,539,540)
+.lp
+.b getblk()
+has three arguments: the vnode and logical block number of the contents
+sought; and the size of the buffer to be allocated. It returns a pointer
+to the buffer associated with this vnode and contents.
+.pp
+.b getblk()
+may block awaiting allocation of a buffer or waiting for
+a buffer that is in use by another process. The function
+does not read the buffer's contents from the underlying storage; 
+.b bread() 
+(***HYPERLINK WHAT IS BREAD- POPUP)
+or 
+.b breada() 
+(***HYPERLINK WHAT IS BREADA- POPUP)
+are used instead. Instead, 
+.b getblk() 
+is used to read the contents of the cache.
+.uh "How is getblk() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,545,548)
+.lp
+The function endlessly loops searching for a buffer in the cache. It
+uses the inline function 
+.b incore() 
+(***HYPERLINK WHAT IS INCORE - POPUP)
+in its search, using a hash table for
+the requested buffer in the buffer cache associated with a vnode and logical
+block number. If the block is found, the processor's interrupts are masked
+to prevent a race with the buffer's mutual exclusion bit (B_BUSY) which
+is examined to determine if the buffer is in current use by another process.
+__listing(/usr/src/kernel/kern/fs/bio.c,549,553)
+.lp
+If kernel tracing is enabled, a trace record is written to indicate that
+a busy buffer has been found for this 
+.b getblk() 
+operation. 
+__listing(/usr/src/kernel/kern/fs/bio.c,554,559)
+.lp
+The age bit associated with the buffer (if present) is cleared to ensure
+that the buffer will not be released onto the age queue because we already
+know it will be reused. The wanted bit is then set for this buffer header
+so our process will be awakened when the buffer becomes available.
+We then sleep waiting for the buffer to become available. 
+.lp
+Upon conclusion of the sleep, the interrupt mask is removed and the 
+function is reentered by again checking the 
+.b incore() 
+status of this buffer (since it may have
+actually been invalidated and thus is no longer present in the cache).
+__listing(/usr/src/kernel/kern/fs/bio.c,560,564)
+.lp
+If kernel tracing is enabled, a reference trace record is sent to indicate
+that the buffer has been rereferenced without it being busy.
+__listing(/usr/src/kernel/kern/fs/bio.c,565,570)
+.lp
+The buffer's age bit is removed to indicate that this buffer has
+proven its worth, and the buffer is then removed from the free list. Its
+size is adjusted according to the size required by this call to
+.b getblk(). 
+Note that this may alter the contents of the buffer. All the
+cases dealing with a found buffer have now been dealt with.
+__listing(/usr/src/kernel/kern/fs/bio.c,571,581)
+.lp
+Since no extant buffer has been found,
+a new buffer header and contents are obtained by calling 
+.b getnewbuf().
+(***HYPERLINK WHAT IS GETNEWBUF() - POPUP)
+If no buffer is available, 
+.b getnewbuf() 
+blocks and then returns zero.
+Since a buffer may have been created by another process at the same location
+during the pause, this function will restart itself from the beginning.
+If no buffer is found, it again calls 
+.b getnewbuf() 
+and the procedure repeats.
+.lp
+When a buffer is available, it is assigned to the logical block
+associated with this vnode. Because the physical block associated with
+the logical block has not yet been determined, the physical and logical
+block fields are identical, signalling that translation needs to be done.
+All block devices have their interrupts masked and the buffer is
+inserted into the hash table and marked for exclusive use by setting its
+buffer flags busy. 
+.lp
+In either case of finding the block or not finding the block and having
+to create one, we now have a buffer in the buffer cache associated with
+the vnode and its offset. The interrupts are unmasked and
+the buffer returned, terminating the loop.
+.uh "What is geteblk()?"
+.pp
+.b geteblk()
+allocates an empty buffer from the buffer cache that will
+not be associated with a vnode. It is used to allocate
+buffers for special purposes (usually those not associated with the 
+filesystem).
+.uh "What Does the Buffer Cache Expect From geteblk()?"
+.lp
+.b geteblk()
+isolates a buffer from the buffer cache and returns after it is allocated.
+__listing(/usr/src/kernel/kern/fs/bio.c,591,592)
+.lp
+.b geteblk()
+has one argument: the size of the buffer requested. It returns a buffer
+when allocated.
+.pp
+In earlier Unix systems that had no general purpose
+memory allocator, buffers were used in their stead
+to gain control of a portion of memory for temporary use.
+In the current release of 386BSD, 
+.b geteblk() 
+is present here only for compatibility with
+older systems and to allow the 
+.b disklabel 
+feature of the UFS filesystem to function.
+.uh "How is geteblk() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,597,603)
+.lp
+.b getnewbuf() 
+is used to obtain a free buffer of the requested size. If
+one is not available, it is called until one is available. The buffer
+is inserted into a free list on the off-chance that the busy bit might be left
+off before being released, so the assumption of it already being on
+a free list is itself invalid. This is done in the case the buffer header
+is corrupted before passing it back. Since contents of the queues and
+hash tables may be altered by interrupt level calls to 
+.b biodone() (which
+(***HYPERLINK WHAT IS BIODONE - POPUP)
+calls 
+.b brelse()), 
+(***HYPERLINK WHAT IS BRELSE - POPUP)
+the interrupts are masked on manipulation of the hash table.
+The buffer is then returned to the caller.
+.uh "What is allocbuf()?"
+.pp
+.b allocbuf()
+adjusts the buffer size to the desired size while preserving
+buffer contents. It is used by both the buffer cache and the filesystem
+clients to revise the size characteristics of the buffer after it is
+present in the buffer cache if it has expanded or contracted in size.
+.uh "What Does the Buffer Cache Expect From allocbuf()?"
+.pp
+.b allocbuf()
+allocates a region of memory of the appropriate
+size and exchanges it for the one the buffer had before, freeing the
+old contents. Before freeing the old contents, it copies as much of the
+buffer as will fit.
+__listing(/usr/src/kernel/kern/fs/bio.c,616,617)
+.lp
+.b allocbuf()
+has two arguments: the pointer to the buffer header: and the size of the data
+contents that the buffer should contain. It returns nothing. The side-effect 
+of this function is that it adjusts the size of the buffer contents.
+.uh "How is allocbuf() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,622,636)
+.lp
+.b allocbuf() 
+first calls 
+.b malloc() 
+(***HYPERLINK WHAT IS MALLOC() IN MALLOC.C - POPUP)
+to obtain a new portion of memory of the appropriate
+size and copies the old contents into place in the new buffer space.
+The function takes care to only copy as much of the old buffer contents 
+that will fit or is present in the old buffer. It then frees the contents 
+of the old buffer. 
+.lp
+Note that 
+.b allocbuf() 
+may block on waiting for 
+.b malloc() 
+to provide it with
+the new buffer contents. This differs from the companion routine in 
+.b getnewbuf(), 
+which cannot block since 
+.b getnewbuf() 
+may need to constitute a buffer from a
+pagein operation when memory is resource-restricted and the system can
+not risk deadlock by blocking.
+.lp
+After obtaining the new buffer resource, 
+.b allocbuf() 
+adjusts for the change
+in buffer size against free buffer space and allocated buffer space. Note
+that intentionally no check is made as to overage of allocated buffer space
+(in fact,
+.i freebufspace 
+can actually be negative), since its effect will only
+be felt for a short time period. As such, this is a soft limit check 
+and not a hard limit check.
+.lp
+The buffer header is now updated to hold its new contents and size. Two fields
+in the buffer header,
+.i b_bufsize
+and
+.i b_bcount,
+hold the allocated size of the buffer
+and the currently used portion of buffer size, respectively.
+Filesystems may alter the latter but never the former. 
+Note that in the case of expanding the buffer, there is no guarantee
+as to the contents of the expanded region of the buffer. It is left up
+to the caller to clear or otherwise initialize buffer contents.
+.uh "What is biowait()?"
+.pp
+.b biowait()
+waits for the buffer to finish an outstanding I/O operation and return 
+the status of the operation.
+.uh "What Does the Buffer Cache Expect From biowait()?"
+.pp
+.b biowait() 
+suspends waiting for an I/O operation to complete on
+the supplied buffer. After the buffer I/O operation is finished and
+.b biodone() 
+(***HYPERLINK WHAT IS BIODONE() - POPUP)
+is called, 
+.b biowait() 
+will obtain the error or success and return it to the caller.
+__listing(/usr/src/kernel/kern/fs/bio.c,645,646)
+.lp
+.b biowait()
+has one argument: the pointer to the buffer header to be waited for.
+It returns the success value (0) or error code of the I/O
+operation. If no error code is present, yet an error indication was
+present on the buffer, the generic I/O error (EIO) will be returned.
+.uh "How is biowait() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,650,657)
+.lp
+.b biowait() 
+masks interrupts for its operation as it examines
+bits in the flags set by interrupt service routines from block devices
+and manipulates contents of the hash tables and state of the buffer.
+The function checks for the presence of the done bit to indicate
+that the operation has completed. If the done bit (set by
+.b biodone())
+is not present, it sleeps on the buffer header's address waiting
+for I/O to complete. Note that the sleep is uninterruptible because there
+is no way with the current interface to block devices and inform the
+device driver to abort the I/O and return.
+.lp
+The significance of this uninterruptible wait is that if an I/O operation
+is started on a file or block device and that device either loses the 
+interrupt or forgets to signal a 
+.b biodone(), 
+it is up to the device driver
+to timeout and abort the transfer for the block to be cleared -- otherwise,
+it would wait forever, as occurs in the case with taking out a floppy 
+while reading a file off of it. 
+.lp
+Some devices become ready immediately upon doing the I/O operation, 
+so that by the time 
+.b biowait() 
+is reached the done bit is already set. In this case, no sleep operation 
+need be performed and this phase is bypassed completely.
+.lp
+if the process that has called 
+.b biowait() 
+is being traced,
+a trace record is written indicating that a wait has completed for a block.
+__listing(/usr/src/kernel/kern/fs/bio.c,658,673)
+.lp
+The buffer header's flags are checked to see if an error is present
+or if the error field in the buffer header holds an error code. If
+so, the buffer header is evaluated to return an error code and make
+its contents consistent. If the contents of the buffer have not yet
+been marked as invalid, the buffer is marked as invalid and
+allowed to persist on the age queue where it may be reclaimed after
+a short dwell time. 
+.lp
+If there is no error present in the error code
+field, a generic I/O error (EIO) is signalled in its place. Otherwise, the 
+.i berror 
+bit is forced present in the buffer flags so that if either the 
+.b berror 
+field or the BERROR flag is set by the calling code, the
+error will be properly signalled. In either the case of returning an
+error or success, the interrupt mask is removed and the value of
+success or error returned to the caller.
+.uh "What is biodone()?"
+.pp
+.b biodone()
+signals the completion of an I/O operation on a buffer,
+so that the exclusive user of the buffer can resume use of the
+buffer after its operation has completed. 
+.uh "What Does the Buffer Cache Expect From biodone()?"
+.pp
+.b biodone()
+is called by both interrupt level and top level code.
+It processes completion of I/O from the perspective of the buffer
+cache, checking to see if an optional function should be called to
+do additional processing prior to either releasing a buffer that
+has had asynchronous I/O performed on it or informing the kernel that the
+I/O operation has been completed on the buffer.
+.lp
+If the operation is not being waited for (ASYNC), the buffer is 
+released onto the free lists. If subsystems (such as swap) would like 
+to be made aware
+of I/O completion (asynchronous paging wants to reclaim resources
+immediately), a function call is optionally processed.
+.lp
+If a dirty buffer has been cleaned, the vnode layer is informed so
+as to move the buffer from a dirty list to a clean list. This 
+ensures that the file contents of the buffer cache are forced to disk upon
+file synchronization (fsync) operations.
+__listing(/usr/src/kernel/kern/fs/bio.c,683,684)
+.lp
+.b biodone()
+has one argument: the pointer to the buffer header. It returns nothing.
+The side effect of this function is to inform the buffer cache that 
+an I/O operation has been completed on the buffer header.
+.pp
+One possible alternative to this mechanism would be to have
+.b biowait()
+(***HYPERLINK WHAT IS BIOWAIT() - POPUP)
+remove B_ASYNC and let all
+.b bwrite()'s 
+(***HYPERLINK WHAT IS BWRITE() - POPUP)
+become 
+.b bawrite()s.
+(***HYPERLINK WHAT IS BAWRITE() - POPUP)
+.b biowait()
+would then reacquire them to recover the status information.
+.uh "How is biodone() Implemented on the 386?"
+__listing(/usr/src/kernel/kern/fs/bio.c,688,702)
+.lp
+Since 
+.b biodone()
+is an interrupt level function that may affect the status
+of the buffer field, all other block interrupts are masked during
+operation. A flag is examined (B_CALL) to see if an optional I/O done field
+.i b_iodone is called from the buffer's header. 
+If it is, the function will be called with the buffer header pointer provided
+and the flag bit cleared to indicate that the call had been performed.
+.lp
+If the buffer corresponds to a write of a dirty buffer, the dirty bit
+is removed from the buffer and the vnode layer is informed that the buffer
+has been cleaned by a write operation. If the buffer was an asynchronous
+operation, it is released by calling 
+.b brelse() 
+(***HYPERLINK WHAT IS BRELSE() - POPUP)
+since there is no top level routine that is waiting for it. All of the 
+interrupt level masks and top level routines occur because of this 
+call from potentially interrupt level.
+.lp
+The flags are adjusted to eliminate the indication of asynchronous I/O
+since the operation was performed (if present) and the flags are updated
+to indicate the I/O operation was performed successfully. Any processes
+sleeping for the buffer are awakened, the masked interrupts are unmasked,
+and the function completes. Note that the interrupt masks are frequently
+redundant, since interrupt routines mask the block devices anyways.
+The reason that this must be done for top level calls to 
+.b biodone() 
+is that they do not mask interrupts.
+.uh "Design Perspective on Bio.c"
+.pp
+Once upon a time the buffer cache in a Unix system was an exciting concept.
+Until a buffer cache was added,
+the earliest Unix systems at Bell Labs did not allow overlap of I/O operation
+with other processes executing. 
+.b bio
+allowed multiprogramming operation in these early systems, so 
+that when a reference was made to a block where I/O operation
+had not yet been performed the operation could be queued and another process
+run while the disk subsystem located and returned
+the appropriate block.
+.pp
+.b bio 
+is an example of a kind of superdriver which allowed queued
+I/O requests to be processed without blocking the processor from operating.
+Given the resources of small machines like the PDP-11, this was a perfectly
+appropriate mechanism. 
+.b bio
+became even more desireable with the addition of
+delayed writes and read-ahead operations, which allowed more decoupling
+of synchronous operation between disks and processes accessing the filesystem.
+.pp
+The buffer cache was especially useful to early unix systems because
+of their use of hierarchical filesystems (then unusual in any small system).
+A single pathname lookup 
+(see 
+.b fs/lookup.c)
+(***HYPERLINK LOOKUP.C TABLE OF CONTENTS - MACRO)
+could require many I/O operations be performed.  With caching, however, 
+many of these I/O operations would be avoided. 
+.pp
+Nowadays, I/O performance enhancement requires more than the old
+buffer cache mechanism can provide. 
+Besides handling name evaluation, this mechanism now must provide the 
+ability to manage mass I/O systems so that they are always operating 
+at peak transfer rate. It must also
+possess the ability to shift granularities of information back and 
+forth that are larger than the size of the filesystem blocks themselves.
+.pp
+Because of these modern day requirements, we can no longer cache 
+low level I/O transfers -- instead, we must cache regions of 
+address space associated with files. In sum, we must
+work at a higher level of abstraction where we
+direct an I/O operation to be performed that far exceeds the size
+of the actual low level atomic transactions. 
+.pp
+Why we cannot accomplish this at the lower level of filesystem blocks 
+is simply because the information regarding
+the characteristics of the transfer is managed only at the top level
+of abstraction. While it is possible to devise an architecture which always
+"sends" this information down to the lower levels whenever any operation
+may be performed, this would still be inadequate since we may
+be required to manage at the top level of abstraction the timing (e.g. arrival
+and service times) in order to use the resource most effectively -- this
+requirement is not easily worked into our communications mechanism
+to the lower layers.
+.pp
+Perhaps even more importantly, in the future our operating system may
+wish to make high level changes in allocation strategies, independent
+of the lower levels which actually implement the transfers. Again,
+the burden of synchronizing lower and upper levels in a dogmatic
+way could easily prove too costly.
+.pp
+Another future consideration for future design is that the buffer
+cache mechanism provides one set of policies for all filesystems
+that make use of the buffer cache and does not allow for per-filesystem
+management of such policies. One example of this is the method by which
+filesystem metadata (inodes, disk indirect blocks, cylinder groups)
+must be synchronized when performing a file update operation. Currently
+in BSD systems, this is handled by forcing the association
+of metadata with the file's actual data on block lists and disassociating
+them when an I/O operation needs to be performed. 
+This is done so that when a file is forced written to the disk (fsync), 
+all of the related blocks can be found, including the indirect blocks which 
+don't actually belong to the address space of the file itself. 
+Thus, there is no general purpose way currently to make these 
+associations other than by implementing the buffer cache to 
+provide a callout to the vnode layer when this is necessary.
+.pp
+An alternative design is to avoid the implied I/O involved with the filesystem
+cache, by implementing a lookaside cache which
+does I/O directly to the lower layers of the filesystem. Prior 
+to initiating the I/O, it checks to see if the
+block is present in the filesystem cache and then chooses to use the 
+contents of the cache rather than doing the transfer. Such a mechanism
+is simpler and avoids the need for the knowledge of interrupt level
+operation or much in the way of semantic information regarding the contents
+of the buffers.

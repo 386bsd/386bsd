@@ -1,0 +1,79 @@
+.\" $XConsortium: xmag.man,v 1.6 91/07/31 22:40:50 dave Exp $
+.TH XMAG 1 "Release 5" "X Version 11"
+.SH NAME
+xmag \- magnify parts of the screen
+.SH SYNOPSIS
+.B xmag
+[
+.B \-mag
+.I magfactor
+] [
+.B \-source
+.I geom
+] [
+.I \-toolkitoption
+\&.\|.\|. ]
+.SH DESCRIPTION
+The \fIxmag\fP program allows you to magnify portions of an X screen.  If no 
+explicit region is specified, a square with the pointer in the upper left 
+corner is displayed indicating the area to be enlarged.  The area can be 
+dragged out to the desired size by pressing Button 2.  Once a region has 
+been selected, a window is popped up showing a blown up version of the region 
+in which each pixel in the source image is represented by a small square of 
+the same color.  Pressing Button1 in the enlargement window 
+shows the position and RGB value
+of the pixel under the pointer until the button is released.  Typing ``Q'' 
+or ``^C'' in the enlargement window exits the program.  The application has
+5 buttons across its top.
+\fIClose\fP deletes this particular magnification instance.
+\fIReplace\fP brings up the rubber band selector again to select another
+region for this magnification instance.
+\fINew\fP brings up the rubber band
+selector to create a new magnification instance.
+\fICut\fP puts the magnification image into the primary selection.
+\fIPaste\fP copies the primary selection buffer into \fIxmag\fP.
+Note that you can cut and paste between \fIxmag\fP and the \fIbitmap\fP
+program.  Resizing \fIxmag\fP resizes the magnification area.
+\fIxmag\fP preserves
+the colormap, visual, and window depth of the source.
+.SH WIDGETS
+\fIxmag\fP uses the X Toolkit and the Athena Widget Set.
+The magnified image is displayed in the Scale widget.  
+For more information, see the Athena Widget Set documentation.
+Below is the widget structure of the \fIxmag\fP application.
+Indentation indicates hierarchical  structure.  The widget class
+name is given first, followed by the widget instance name.
+.sp
+.nf
+	Xmag xmag
+		RootWindow root
+		TopLevelShell xmag
+			Paned pane1
+				Paned pane2
+					Command close
+					Command replace
+					Command new
+					Command select
+					Command paste
+					Label xmag label
+				Paned pane2
+					Scale scale
+		OverrideShell pixShell 
+			Label pixLabel
+		
+.fi
+.SH OPTIONS
+.TP 15
+.B \-source\fI geom\fP
+This option specifies the size and/or location of the source region 
+on the screen.  By default, a 64x64 square is provided for the user to select 
+an area of the screen.
+.TP 15
+.B \-mag\fI integer\fP
+This option indicates the magnification to be used.  5 is the default.
+.SH COPYRIGHT
+Copyright 1991, Massachusetts Institute of Technology.
+.br
+See \fIX\fP(1) for a full statement of rights and permissions.
+.SH AUTHORS
+Dave Sternlicht and Davor Matic, MIT X Consortium.

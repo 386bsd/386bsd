@@ -1,0 +1,344 @@
+XCOMM $XFree86: mit/server/ddx/x386/LinkKit/Imakefile.LK,v 2.15 1993/10/02 07:13:55 dawes Exp $
+/*
+ * Server Makefile for Link Kit
+ */
+
+#include <Server.tmpl>
+
+#define StdLibs $(DIX) $(OS) $(MI) $(EXTENSIONS)
+#define NoMFBLibs $(DIX) $(OS) $(FONT) $(MI) $(EXTENSIONS)
+#define NoMFBBareLibs $(DIX) $(OS) $(FONT) $(MI)
+#define MFBBareLibs $(DIX) $(OS) $(FONT) $(MFB) $(MI)
+#define MFBLibs MFBBareLibs $(EXTENSIONS)
+#define CFBBareLibs $(DIX) $(OS) $(FONT) $(CFB) $(MFB) $(MI)
+#define CFBLibs CFBBareLibs $(EXTENSIONS)
+
+#if BuildPexExt
+         PEXLIBS = lib/libdidipex.a \
+                   lib/libdiswapex.a \
+                   lib/libdiobpex.a \
+                   lib/libdidipex.a \
+                   lib/libddpex4.a \
+                   lib/libddpex3.a \
+                   lib/libddpexs.a \
+                   lib/libddpex2.a \
+                   lib/libddpex1.a \
+		   lib/libospex.a 
+#endif
+#if BuildXInputExt
+      OTHEREXTS = lib/libxinput.a
+#endif
+
+     NONPEXEXTS = $(OTHEREXTS) lib/libext.a
+     EXTENSIONS = $(NONPEXEXTS) $(PEXLIBS)
+         XAULIB = lib/libXau.a
+       XDMCPLIB = lib/libXdmcp.a
+             OS = lib/libos.a $(XAULIB) $(XDMCPLIB)
+        BSDEMUL = lib/Berklib.o
+           FONT = lib/libfont.a $(RENDERERLIBS)
+            DIX = lib/libdix.a
+             MI = lib/libmi.a
+            MFB = lib/libmfb.a
+            CFB = lib/libcfb.a
+#if i386Mach
+#ifdef i386Mach_BsdTree
+   EXTRASYSLIBS = /usr/lib/libmach.a
+#else
+   EXTRASYSLIBS = /usr/misc/.mach/lib/libmach.a
+#endif
+#endif
+#if HasSdbm
+         DBMLIB = -lsdbm
+#else
+#if !i386Bsd
+         DBMLIB = -ldbm
+#endif
+#endif
+#if NeedLibGcc
+         GCCLIB = -lgcc
+#endif
+        SYSLIBS = -lm $(DBMLIB) $(MALLOCLIBS) $(EXTRASYSLIBS) $(GCCLIB)
+           CBRT = lib/cbrt.o
+
+       IRULESRC = $(CONFIGDIR)
+
+  IMAKE_DEFINES = -DX386LinkKit=1
+      IMAKE_CMD = $(IMAKE) -DUseInstalled -I$(TOP)/$(NEWTOP) -I$(IRULESRC) \
+                  $(IMAKE_DEFINES)
+   ICONFIGFILES = $(IRULESRC)/Imake.tmpl $(IRULESRC)/Imake.rules \
+		  $(IRULESRC)/Project.tmpl $(IRULESRC)/site.def \
+			$(IRULESRC)/$(MACROFILE) $(EXTRA_ICONFIGFILES)
+EXTRA_ICONFIGFILES = site.def X386Conf.tmpl
+       INCLUDES = -Iinclude -Idrivers
+
+all: xf86all
+
+Configure:
+	$(RM) Makefile.x386
+	$(IMAKE_CMD) -DMakefileX386 -DInit -s Makefile.x386
+	$(MAKE) $(MFLAGS) -f Makefile.x386 X386Conf.tmpl
+	$(MAKE) $(MFLAGS) Makefile
+	$(RM) Makefile.x386
+
+#ifdef MakefileX386
+#if XF86MonoServer
+# define X386Vga2Args VGA2DRIVER X386Vga2Drivers
+# define X386Hga2Args HGA2DRIVER X386Hga2Drivers
+# define X386Bdm2Args BDM2DRIVER X386Bdm2Drivers
+#else
+# define X386Vga2Args /**/
+# define X386Hga2Args /**/
+# define X386Bdm2Args /**/
+#endif
+#if XF86VGA16Server
+# define X386Vga16Args VGA16DRIVER X386Vga16Drivers
+#else
+# define X386Vga16Args /**/
+#endif
+#if XF86SVGAServer
+# define X386VgaArgs VGADRIVER X386Vga256Drivers
+#else
+# define X386VgaArgs /**/
+#endif
+#if XF86S3Server
+# define XF86S3Args S3DRIVER XF86S3Drivers
+#else
+# define XF86S3Args /**/
+#endif
+X386Conf.tmpl::
+	$(RM) $@
+	$(SHELL) x386config.sh \
+	  X386VgaArgs X386Vga16Args X386Vga2Args X386Hga2Args X386Bdm2Args \
+	  XF86S3Args RENDERER FontRenderers
+#endif
+
+#ifndef Init
+
+/* Common stuff */
+
+#include <xf86.rules>
+
+#ifdef XFree86DefaultServer
+XF86DEFSERVER = XFree86DefaultServer
+#endif
+
+#ifdef i386SVR3Architecture
+    XF86SYSLIBS = $(CBRT) $(BSDEMUL)
+#endif
+#ifdef LinuxArchitecture
+    XF86SYSLIBS = $(CBRT)
+#endif
+
+#if SpecialMalloc
+     MALLOCLIBS = -ldbmalloc
+#endif
+
+INSTPGMFLAGS = $(INSTUIDFLAGS)     /* server must be suid root  */
+
+XF86COMMONLIB = lib/libx386.a
+    XF86OSLIB = lib/libxf86_os.a
+    XF86HWLIB = lib/libxf86_hw.a
+XF86COMMONOBJ = $(RENDERERCONFOBJ) xf86_Option.o
+
+    RENDERERS = FontRenderers
+
+rendererConf.c: $(ICONFIGFILES) configrend.sh
+	$(RM) $@
+	$(SHELL) configrend.sh $(RENDERERS)
+
+clean::
+	$(RM) rendererConf.c
+
+/*****************************************************************************
+ *		  Build rule blocks, add one for each server                 *
+ *****************************************************************************/
+
+#if XF86SVGAServer
+XCOMM
+XCOMM XFree86 SVGA server
+XCOMM
+
+       SUBDIRS1 = drivers/vga256
+
+   XF86SVGADIRS = $(SUBDIRS1)
+SVGASPECIALOBJS = lib/x386Init.o lib/dixfonts.o lib/mibitblt.o
+   XF86SVGALIBS = drivers/libvga256.a MFBLibs
+     VGADRIVERS = X386Vga256Drivers
+
+vga256Conf.c: $(ICONFIGFILES) confvga256.sh
+	$(RM) $@
+	$(SHELL) confvga256.sh $(VGADRIVERS)
+
+clean::
+	$(RM) vga256Conf.c
+
+XFree86Server(XF86_SVGA,$(XF86SVGADIRS),$(XF86SVGALIBS),$(SVGASPECIALOBJS),$(VGAOBJS),$(XF86SVGADIRS),$(X386CONFOBJS),/**/)
+
+#endif /* XF86SVGAServer */
+
+
+#if XF86VGA16Server
+XCOMM
+XCOMM XFree86 16 Colour (largely generic) VGA server
+XCOMM
+
+          SUBDIRS5 = drivers/vga16
+
+     XF86VGA16DIRS = $(SUBDIRS5)
+  VGA16SPECIALOBJS = lib/x386Init_m.o lib/dixfonts_m.o lib/mibitblt16.o \
+		     lib/mipushpx16.o
+XF86_VGA16CONFDEFS = $(X386SCREENFLAGS)
+
+     XF86VGA16LIBS = drivers/libvga16.a NoMFBBareLibs $(NONPEXEXTS)
+      VGA16DRIVERS = X386Vga16Drivers
+
+vga16Conf.c: $(ICONFIGFILES) confvga16.sh
+	$(RM) $@
+	$(SHELL) confvga16.sh $(VGA16DRIVERS)
+
+clean::
+	$(RM) vga16Conf.c
+
+XFree86Server(XF86_VGA16,$(XF86VGA16DIRS),$(XF86VGA16LIBS),$(VGA16SPECIALOBJS),$(VGA16OBJS),$(XF86VGA16DIRS),$(VGA16CONFOBJS),/**/)
+
+#endif /* XF86VGA16Server */
+
+
+#if XF86MonoServer
+XCOMM
+XCOMM XFree86 Mono server
+XCOMM
+
+#if BuildVga2
+       SUBDIRS2 = drivers/vga2
+#endif
+#if BuildHga2
+       SUBDIRS3 = drivers/hga2
+#endif
+#if BuildBdm2
+       SUBDIRS4 = drivers/bdm2
+#endif
+   XF86MONODIRS = $(SUBDIRS2) $(SUBDIRS3) $(SUBDIRS4)
+MONOSPECIALOBJS = lib/x386Init_m.o lib/dixfonts_m.o lib/mibitblt_m.o
+XF86_MonoCONFDEFS = $(X386SCREENFLAGS)
+
+#if BuildVga2
+        VGA2LIB = drivers/libvga2.a
+#endif
+#if BuildHga2
+        HGA2LIB = drivers/libhga2.a
+#endif
+#if BuildBdm2
+        BDM2LIB = drivers/libbdm2.a
+#endif
+
+   XF86MONOLIBS = $(VGA2LIB) $(HGA2LIB) $(BDM2LIB) NoMFBBareLibs $(NONPEXEXTS)
+    VGA2DRIVERS = X386Vga2Drivers
+    HGA2DRIVERS = X386Hga2Drivers
+    BDM2DRIVERS = X386Bdm2Drivers
+
+vga2Conf.c: $(ICONFIGFILES) configvga2.sh
+	$(RM) $@
+	$(SHELL) configvga2.sh $(VGA2DRIVERS)
+
+clean::
+	$(RM) vga2Conf.c
+
+hga2Conf.c: $(ICONFIGFILES) confhga2.sh
+	$(RM) $@
+	$(SHELL) confhga2.sh $(HGA2DRIVERS)
+
+clean::
+	$(RM) hga2Conf.c
+
+bdm2Conf.c: $(ICONFIGFILES) confbdm2.sh
+	$(RM) $@
+	$(SHELL) confbdm2.sh $(BDM2DRIVERS)
+
+clean::
+	$(RM) bdm2Conf.c
+
+XFree86Server(XF86_Mono,$(XF86MONODIRS),$(XF86MONOLIBS),$(MONOSPECIALOBJS),$(VGA2OBJS) $(HGA2OBJS) $(BDM2OBJS),$(XF86MONODIRS),$(X386MCONFOBJS),/**/)
+
+#endif /* XF86MonoServer */
+
+#if XF86S3Server
+XCOMM
+XCOMM XFree86 S3 server
+
+       SUBDIRS6 = drivers/s3
+
+     XF86S3DIRS = $(SUBDIRS6)
+  S3SPECIALOBJS = lib/x386Init.o lib/dixfonts.o lib/mibitblt.o
+     XF86S3LIBS = drivers/libs3mmio.a drivers/libs3.a CFBLibs
+      S3DRIVERS = XF86S3Drivers
+
+s3Conf.c: $(ICONFIGFILES) confS3.sh
+	$(RM) $@
+	$(SHELL) confS3.sh $(S3DRIVERS)
+
+clean::
+	$(RM) s3Conf.c
+
+XFree86Server(XF86_S3,$(XF86S3DIRS),$(XF86S3LIBS),$(S3SPECIALOBJS),$(S3OBJS),$(S3DRIVERSRC),$(S3CONFOBJ),/**/)
+
+#endif /* XF86S3Server */
+
+#if XF86I8514Server
+XCOMM
+XCOMM XFree86 8514 server
+X8514SPECIALOBJS = lib/x386Init.o lib/dixfonts.o lib/mibitblt.o
+   XF86I8514LIBS = drivers/lib8514.a CFBLibs
+
+XFree86ServerNoDrv(XF86_8514,/**/,$(XF86I8514LIBS),$(X8514SPECIALOBJS))
+
+#endif /* XF86I8514Server */
+
+#if XF86Mach8Server
+XCOMM
+XCOMM XFree86 Mach8 server
+MACH8SPECIALOBJS = lib/x386Init.o lib/dixfonts.o lib/mibitblt.o
+   XF86MACH8LIBS = drivers/libmach8.a CFBLibs
+
+XFree86ServerNoDrv(XF86_Mach8,/**/,$(XF86MACH8LIBS),$(MACH8SPECIALOBJS))
+
+#endif /* XF86Mach8Server */
+
+#if XF86Mach32Server
+XCOMM
+XCOMM XFree86 Mach32 server
+MACH32SPECIALOBJS = lib/x386Init.o lib/dixfonts.o lib/mibitblt.o
+   XF86MACH32LIBS = drivers/libmach32.a CFBLibs
+
+XFree86ServerNoDrv(XF86_Mach32,/**/,$(XF86MACH32LIBS),$(MACH32SPECIALOBJS))
+
+#endif /* XF86Mach32Server */
+
+
+InstallMultipleFlags($(ALL),$(BINDIR),$(INSTPGMFLAGS))
+
+#ifdef XFree86DefaultServer
+install::
+	-(cd $(DESTDIR)$(BINDIR); $(RM) X; $(LN) $(XF86DEFSERVER) X)
+#endif
+
+/* Only these servers have subdirs */
+#if XF86SVGAServer || XF86MonoServer
+
+SUBDIRS = $(SUBDIRS0) $(SUBDIRS1) $(SUBDIRS2) $(SUBDIRS3) $(SUBDIRS4) $(SUBDIRS5) $(SUBDIRS6)
+
+#define IHaveSubdirs
+
+DependSubdirs($(SUBDIRS))
+MakeLintLibSubdirs($(SUBDIRS))
+LintSubdirs($(SUBDIRS))
+
+ForceSubdirs($(SUBDIRS))
+
+#else
+
+DependTarget()
+
+#endif /* XF86SVGAServer || XF86MonoServer */
+
+#endif /* Init */

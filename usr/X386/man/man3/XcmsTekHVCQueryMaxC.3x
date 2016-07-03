@@ -1,0 +1,227 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XcmsTekHVCQueryMaxC 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XcmsTekHVCQueryMaxC, XcmsTekHVCQueryMaxV, XcmsTekHVCQueryMaxVC, XcmsTekHVCQueryMaxVSamples, XcmsTekHVCQueryMinV \- obtain the TekHVC coordinates
+.SH SYNTAX
+Status XcmsTekHVCQueryMaxC\^(\^\fIccc\fP\^, \fIhue\fP\^, \fIvalue\fP\^, \fIcolor_return\fP\^)
+.br
+      XcmsCCC \fIccc\fP\^;
+.br
+      XcmsFloat \fIhue\fP\^;
+.br
+      XcmsFloat \fIvalue\fP\^;
+.br
+      XcmsColor *\fIcolor_return\fP\^;
+.LP
+Status XcmsTekHVCQueryMaxV\^(\^\fIccc\fP\^, \fIhue\fP\^, \fIchroma\fP\^, \fIcolor_return\fP\^)
+.br
+      XcmsCCC \fIccc\fP\^;
+.br
+      XcmsFloat \fIhue\fP\^;
+.br
+      XcmsFloat \fIchroma\fP\^;
+.br
+      XcmsColor *\fIcolor_return\fP\^;
+.LP
+Status XcmsTekHVCQueryMaxVC\^(\^\fIccc\fP\^, \fIhue\fP\^, \fIcolor_return\fP\^)
+.br
+      XcmsCCC \fIccc\fP\^;
+.br
+      XcmsFloat \fIhue\fP\^;
+.br
+      XcmsColor *\fIcolor_return\fP\^;
+.LP
+Status XcmsTekHVCQueryMaxVSamples\^(\^\fIccc\fP\^, \fIhue\fP\^, \fIcolors_return\fP\^, \fInsamples\fP\^)
+.br
+      XcmsCCC \fIccc\fP\^;
+.br
+      XcmsFloat \fIhue\fP\^;
+.br
+      XcmsColor \fIcolors_return[]\fP\^;
+.br
+      unsigned int \fInsamples\fP\^;
+.LP
+Status XcmsTekHVCQueryMinV\^(\^\fIccc\fP\^, \fIhue\fP\^, \fIchroma\fP\^, \fIcolor_return\fP\^)
+.br
+      XcmsCCC \fIccc\fP\^;
+.br
+      XcmsFloat \fIhue\fP\^;
+.br
+      XcmsFloat \fIchroma\fP\^;
+.br
+      XcmsColor *\fIcolor_return\fP\^;
+.SH ARGUMENTS
+.IP \fIccc\fP 1i
+Specifies the CCC.
+Note that the CCC's Client White Point and White Point Adjustment procedures
+are ignored.
+.ds Ch maximum Value (MaxV)
+.IP \fIchroma\fP 1i
+Specifies the chroma at which to find \*(Ch.
+.IP \fIcolors_in_out\fP 1i
+Returns nsamples of color specifications in XcmsTekHVC
+such that the Chroma is the maximum attainable for the Value and Hue.
+The white point associated with the returned
+color specification is the Screen White Point.
+The value returned in the pixel member is undefined.
+.ds Lc maximum Chroma along with the actual Hue and Value (MaxC), \
+maximum Value along with the Hue and Chroma (MaxV), \
+color specification in XcmsTekHVC for the maximum Chroma, \
+the Value at which that maximum Chroma is reached and actual Hue (MaxVC) \
+or minimum Value and the actual Hue and Chroma (MinL)
+.ds lC maximum Chroma (MaxC and MaxVC), maximum Value (MaxV), or \
+minimum Value (MinL)
+.IP \fIcolor_return\fP 1i
+Returns the \*(Lc at which the \*(lC was found.
+The white point associated with the returned
+color specification is the Screen White Point.
+The value returned in the pixel member is undefined.
+.ds Hu in which to find the maximum Chroma (MaxC and MaxVC), \
+maximum Value (MaxV), the maximum Chroma/Value samples (MaxVSamples), \
+or the minimum Value (MinL)
+.IP \fIhue\fP 1i
+Specifies the Hue \*(Hu.
+.IP \fInsamples\fP 1i
+Specifies the number of samples.
+.ds Va maximum Chroma (MaxC) or minimum Value (MinL)
+.IP \fIvalue\fP 1i
+Specifies the Value in which to find the \*(Va.
+.SH DESCRIPTION
+The
+.ZN XcmsTekHVCQueryMaxC
+function, given a Hue and Value,
+determines the maximum Chroma in TekHVC color space
+displayable by the screen.
+Note that it returns the maximum Chroma along with the actual Hue
+and Value at which the maximum Chroma was found.
+.LP
+The
+.ZN XcmsTekHVCQueryMaxV
+function, given a Hue and Chroma,
+determines the maximum Value in TekHVC color space
+displayable by the screen.
+Note that it returns the maximum Value and the actual Hue and Chroma
+at which the maximum Value was found.
+.LP
+The
+.ZN XcmsTekHVCQueryMaxVC
+function, given a Hue,
+determines the maximum Chroma in TekHVC color space displayable by the screen
+and the Value at which that maximum Chroma is reached.
+Note that it returns the maximum Chroma,
+the Value at which that maximum Chroma is reached,
+and the actual Hue for which the maximum Chroma was found.
+.LP
+The
+.ZN XcmsTekHVCQueryMaxVSamples
+returns nsamples of maximum Value, Chroma at which that maximum Value
+is reached, and the actual Hue for which the maximum Chroma was found.
+These sample points may then be used to plot the maximum Value/Chroma
+boundary of the screen's color gamut for the specified Hue in TekHVC color
+space.
+.LP
+The
+.ZN XcmsTekHVCQueryMinV
+function, given a Hue and Chroma,
+determines the minimum Value in TekHVC color space displayable by the screen.
+Note that it returns the minimum Value and the actual Hue and Chroma at which
+the minimum Value was found.
+.SH "SEE ALSO"
+XcmsCIELabQueryMaxC(3X11),
+XcmsCIELuvQueryMaxC(3X11),
+XcmsQueryBlack(3X11)
+.br
+\fI\*(xL\fP

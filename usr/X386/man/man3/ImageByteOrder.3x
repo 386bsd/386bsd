@@ -1,0 +1,202 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH ImageByteOrder 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+ImageByteOrder, BitmapBitOrder, BitmapPad, BitmapUnit, DisplayHeight, DisplayHeightMM, DisplayWidth, DisplayWidthMM, XListPixmapFormats, XPixmapFormatValues \- image format functions and macros
+.SH SYNTAX
+XPixmapFormatValues *XListPixmapFormats\^(\^\fIdisplay\fP, \fIcount_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int *\fIcount_return\fP\^;
+.LP
+ImageByteOrder\^(\^\fIdisplay\fP\^)
+.LP
+BitmapBitOrder\^(\^\fIdisplay\fP\^)
+.LP
+BitmapPad\^(\^\fIdisplay\fP\^)
+.LP
+BitmapUnit\^(\^\fIdisplay\fP\^)
+.LP
+DisplayHeight\^(\^\fIdisplay\fP\^, \^\fIscreen_number\fP\^)
+.LP
+DisplayHeightMM\^(\^\fIdisplay\fP\^, \^\fIscreen_number\fP\^)
+.LP
+DisplayWidth\^(\^\fIdisplay\fP\^, \^\fIscreen_number\fP\^)
+.LP
+DisplayWidthMM\^(\^\fIdisplay\fP\^, \^\fIscreen_number\fP\^)
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.ds Cn pixmap formats that are supported by the display
+.IP \fIcount_return\fP 1i
+Returns the number of \*(Cn.
+.IP \fIscreen_number\fP 1i
+Specifies the appropriate screen number on the host server.
+.SH DESCRIPTION
+The
+.ZN XListPixmapFormats
+function returns an array of
+.ZN XPixmapFormatValues
+structures that describe the types of Z format images supported
+by the specified display.
+If insufficient memory is available,
+.ZN XListPixmapFormats
+returns NULL.
+To free the allocated storage for the
+.ZN XPixmapFormatValues
+structures, use
+.ZN XFree .
+.LP
+The
+.ZN ImageByteOrder
+macro specifies the required byte order for images for each scanline unit in
+XY format (bitmap) or for each pixel value in Z format.
+.LP
+The
+.ZN BitmapBitOrder
+macro returns 
+.ZN LSBFirst
+or
+.ZN MSBFirst
+to indicate whether the leftmost bit in the bitmap as displayed
+on the screen is the least or most significant bit in the unit.
+.LP
+The
+.ZN BitmapPad
+macro returns the number of bits that each scanline must be padded.
+.LP
+The
+.ZN BitmapUnit
+macro returns the size of a bitmap's scanline unit in bits.
+.LP
+The
+.ZN DisplayHeight
+macro returns the height of the specified screen in pixels.
+.LP
+The
+.ZN DisplayHeightMM
+macro returns the height of the specified screen in millimeters.
+.LP
+The
+.ZN DisplayWidth
+macro returns the width of the screen in pixels.
+.LP
+The
+.ZN DisplayWidthMM
+macro returns the width of the specified screen in millimeters.
+.SH STRUCTURES
+The
+.ZN XPixmapFormatValues
+structure provides an interface to the pixmap format information
+that is returned at the time of a connection setup.
+It contains:
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	int depth;
+	int bits_per_pixel;
+	int scanline_pad;
+} XPixmapFormatValues;
+.De
+.SH "SEE ALSO"
+AllPlanes(3X11),
+BlackPixelOfScreen(3X11),
+IsCursorKey(3X11),
+XFree(3X11)
+.br
+\fI\*(xL\fP

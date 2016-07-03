@@ -1,0 +1,374 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XGetWindowAttributes 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XGetWindowAttributes, XGetGeometry, XWindowAttributes \- get current window attribute or geometry and current window attributes structure
+.SH SYNTAX
+.\" $Header: XGetAttr.f,v 1.1 88/02/26 10:00:23 mento Exp $
+Status XGetWindowAttributes\^(\^\fIdisplay\fP, \fIw\fP\^, \fIwindow_attributes_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      XWindowAttributes *\fIwindow_attributes_return\fP\^;
+.LP
+.\" $Header: XGetGeometry.f,v 1.1 88/02/26 10:00:34 mento Exp $
+Status XGetGeometry\^(\^\fIdisplay\fP, \fId\fP\^, \^\fIroot_return\fP\^, \fIx_return\fP\^, \fIy_return\fP\^, \fIwidth_return\fP\^, 
+.br
+                      \fIheight_return\fP\^, \fIborder_width_return\fP\^, \fIdepth_return\fP\^)
+.br
+        Display *\fIdisplay\fP\^;
+.br
+        Drawable \fId\fP\^;
+.br
+        Window *\fIroot_return\fP\^;
+.br
+        int *\fIx_return\fP\^, *\fIy_return\fP\^;
+.br
+        unsigned int *\fIwidth_return\fP\^, *\fIheight_return\fP\^;
+.br
+        unsigned int *\fIborder_width_return\fP\^;
+.br
+        unsigned int *\fIdepth_return\fP\^;
+.SH ARGUMENTS
+.IP \fIborder_width_return\fP 1i
+Returns the border width in pixels. 
+.ds Dr , which can be a window or a pixmap
+.\" $Header: d_gen.a,v 1.2 88/08/04 11:09:21 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable\*(Dr. 
+.IP \fIdepth_return\fP 1i
+Returns the depth of the drawable (bits per pixel for the object).
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: root.a,v 1.2 88/05/08 10:54:56 mento Exp $
+.IP \fIroot_return\fP 1i
+Returns the root window.
+.ds Wi whose current attributes you want to obtain
+.\" $Header: w_gen.a,v 1.4 88/08/04 11:21:56 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window \*(Wi.
+.IP \fIwidth_return\fP 1i
+.br
+.ns
+.IP \fIheight_return\fP 1i
+Return the drawable's dimensions (width and height).
+.\" $Header: windatt.a,v 1.1 88/02/26 10:32:38 mento Exp $
+.IP \fIwindow_attributes_return\fP 1i
+Returns the specified window's attributes in the
+.ZN XWindowAttributes
+structure.
+.\" $Header: getxy.a,v 1.5 88/08/17 09:00:47 mento Exp $
+.IP \fIx_return\fP 1i
+.br
+.ns
+.IP \fIy_return\fP 1i
+Return the x and y coordinates that define the location of the drawable.
+For a window, 
+these coordinates specify the upper-left outer corner relative to
+its parent's origin.
+For pixmaps, these coordinates are always zero.
+.SH DESCRIPTION
+.\" $Header: XGetAttr.d,v 1.1 88/02/26 10:42:12 mento Exp $
+The
+.ZN XGetWindowAttributes
+function returns the current attributes for the specified window to an
+.ZN XWindowAttributes
+structure.
+.LP
+.ZN XGetWindowAttributes
+can generate
+.ZN BadDrawable
+and
+.ZN BadWindow
+errors.
+.LP
+.\" $Header: XGetGeometry.d,v 1.3 88/06/11 07:51:01 mento Exp $
+The
+.ZN XGetGeometry
+function returns the root window and the current geometry of the drawable.
+The geometry of the drawable includes the x and y coordinates, width and height,
+border width, and depth.
+These are described in the argument list.
+It is legal to pass to this function a window whose class is
+.ZN InputOnly .
+.SH STRUCTURES
+The
+.ZN XWindowAttributes
+structure contains:
+.LP
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+typedef struct {
+	int x, y;	/* location of window */
+	int width, height;	/* width and height of window */
+	int border_width;	/* border width of window */
+	int depth;	/* depth of window */
+	Visual *visual;	/* the associated visual structure */
+	Window root;	/* root of screen containing window */
+	int class;	/* InputOutput, InputOnly*/
+	int bit_gravity;	/* one of the bit gravity values */
+	int win_gravity;	/* one of the window gravity values */
+	int backing_store;	/* NotUseful, WhenMapped, Always */
+	unsigned long backing_planes;	/* planes to be preserved if possible */
+	unsigned long backing_pixel;	/* value to be used when restoring planes */
+	Bool save_under;	/* boolean, should bits under be saved? */
+	Colormap colormap;	/* color map to be associated with window */
+	Bool map_installed;	/* boolean, is color map currently installed*/
+	int map_state;	/* IsUnmapped, IsUnviewable, IsViewable */
+	long all_event_masks;	/* set of events all people have interest in*/
+	long your_event_mask;	/* my event mask */
+	long do_not_propagate_mask;	/* set of events that should not propagate */
+	Bool override_redirect;	/* boolean value for override-redirect */
+	Screen *screen;	/* back pointer to correct screen */
+} XWindowAttributes;
+.De
+.LP
+The x and y members are set to the upper-left outer
+corner relative to the parent window's origin.
+The width and height members are set to the inside size of the window, 
+not including the border.
+The border_width member is set to the window's border width in pixels.
+The depth member is set to the depth of the window 
+(that is, bits per pixel for the object).
+The visual member is a pointer to the screen's associated
+.ZN Visual
+structure.
+The root member is set to the root window of the screen containing the window.
+The class member is set to the window's class and can be either
+.ZN InputOutput
+or
+.ZN InputOnly .
+.LP
+The bit_gravity member is set to the window's bit gravity
+and can be one of the following:
+.LP
+.TS
+lw(1.5i) lw(1.5i).
+T{
+.ZN ForgetGravity
+T}	T{
+.ZN EastGravity
+T}
+T{
+.ZN NorthWestGravity
+T}	T{
+.ZN SouthWestGravity
+T}
+T{
+.ZN NorthGravity
+T}	T{
+.ZN SouthGravity
+T}
+T{
+.ZN NorthEastGravity
+T}	T{
+.ZN SouthEastGravity
+T}
+T{
+.ZN WestGravity
+T}	T{
+.ZN StaticGravity
+T}
+.ZN CenterGravity
+.TE
+.LP
+The win_gravity member is set to the window's window gravity
+and can be one of the following:
+.LP
+.TS
+lw(1.5i) lw(1.5i).
+T{
+.ZN UnmapGravity
+T}	T{
+.ZN EastGravity
+T}
+T{
+.ZN NorthWestGravity
+T}	T{
+.ZN SouthWestGravity
+T}
+T{
+.ZN NorthGravity
+T}	T{
+.ZN SouthGravity
+T}
+T{
+.ZN NorthEastGravity
+T}	T{
+.ZN SouthEastGravity
+T}
+T{
+.ZN WestGravity
+T}	T{
+.ZN StaticGravity
+T}
+.ZN CenterGravity
+.TE
+.LP
+For additional information on gravity,
+see section 3.3.
+.LP
+The backing_store member is set to indicate how the X server should maintain
+the contents of a window 
+and can be 
+.ZN WhenMapped ,
+.ZN Always ,
+or
+.ZN NotUseful .
+The backing_planes member is set to indicate (with bits set to 1) which bit 
+planes of the window hold dynamic data that must be preserved in backing_stores 
+and during save_unders.
+The backing_pixel member is set to indicate what values to use 
+for planes not set in backing_planes.
+.LP
+The save_under member is set to 
+.ZN True
+or
+.ZN False .
+The colormap member is set to the colormap for the specified window and can be
+a colormap ID or 
+.ZN None .
+The map_installed member is set to indicate whether the colormap is 
+currently installed and can be 
+.ZN True
+or
+.ZN False .
+The map_state member is set to indicate the state of the window and can be
+.ZN IsUnmapped ,
+.ZN IsUnviewable ,
+or
+.ZN IsViewable .
+.ZN IsUnviewable
+is used if the window is mapped but some ancestor is unmapped.
+.LP
+The all_event_masks member is set to the bitwise inclusive OR of all event 
+masks selected on the window by all clients.
+The your_event_mask member is set to the bitwise inclusive OR of all event 
+masks selected by the querying client.
+The do_not_propagate_mask member is set to the bitwise inclusive OR of the 
+set of events that should not propagate.
+.LP
+The override_redirect member is set to indicate whether this window overrides
+structure control facilities and can be 
+.ZN True
+or
+.ZN False .
+Window manager clients should ignore the window if this member is
+.ZN True .
+.LP
+The screen member is set to a screen pointer that gives you a back pointer 
+to the correct screen.
+This makes it easier to obtain the screen information without
+having to loop over the root window fields to see which field matches.
+.SH DIAGNOSTICS
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XQueryPointer(3X11),
+XQueryTree(3X11)
+.br
+\fI\*(xL\fP

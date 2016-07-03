@@ -1,0 +1,47 @@
+.TH PUZZLE 1 "Release 5" "X Version 11"
+.SH NAME
+puzzle \- 15-puzzle game for X
+.SH SYNOPSIS
+.B puzzle 
+[-option ...]
+.SH OPTIONS
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the display to use; see \fIX(1)\fP.
+.TP 8
+.B \-geometry \fIgeometry\fP
+This option specifies the size and position of the puzzle window;
+see \fIX(1)\fP.
+.TP 8
+.B \-size \fIWIDTH\fPx\fIHEIGHT\fP
+This option specifies the size of the puzzle in squares.
+.TP 8
+.B \-speed \fInum\fP
+This option specifies the speed in tiles per second for moving tiles
+around.
+.TP 8
+.B \-picture \fIfilename\fP
+This option specifies an image file containing the picture to use on the
+tiles.  Try ``mandrill.cm.''  This only works on 8-bit pseudo-color
+screens.
+.TP 8
+.B \-colormap
+This option indicates that the program should create its own colormap
+for the picture option.
+.SH DESCRIPTION
+.I Puzzle
+with no arguments plays a 4x4 15-puzzle.  The control bar has two boxes in
+it.  Clicking in the left box scrambles the puzzle.  Clicking in the right
+box solves the puzzle.  Clicking the middle button anywhere else in the 
+control bar causes puzzle to exit.
+Clicking in the tiled region moves the empty spot to that
+location if the region you click in is in the same row or column as the
+empty slot. 
+.SH "SEE ALSO"
+X(1)
+.SH BUGS
+The picture option should work on a wider variety of screens.
+.SH COPYRIGHT
+Copyright 1988, Don Bennett.
+.SH AUTHOR
+Don Bennett, HP Labs

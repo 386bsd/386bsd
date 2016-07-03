@@ -1,0 +1,174 @@
+.\" $XFree86: mit/server/ddx/x386/XF86_VGA16.man,v 2.3 1993/10/18 12:16:13 dawes Exp $
+.\" $XConsortium: X386.man,v 1.3 91/08/26 15:31:19 gildea Exp $
+.TH XF86_VGA16 1 "Version 2.0"  "XFree86"
+.SH NAME
+XF86_VGA16 - 4 bit non-accelerated X Window System server for UNIX on
+x86 platforms
+.SH SYNOPSIS
+.B XF86_VGA16
+[:displaynumber] [ option ] ...
+.SH DESCRIPTION
+.I XFree86
+is a package of bug-fixes, enhancements, and ports of X11R5 to new OSs,
+for Intel Unix-like OSs. See the XFree86(1) manpage for details.
+.I XF86_VGA16
+is a 4-bit PseudoColor server for VGA cards.
+.PP
+The
+.I XFree86
+servers support all MIT-supplied extensions except the X Input Extension.
+.I PEX
+is not supported on 4-bit hardware.
+.PP
+.B NOTE:
+This server is new and experimental.  It is not as well tested as the
+other XFree86 servers.
+.SH CONFIGURATIONS
+.PP
+The
+.I XF86_VGA16
+server supports the following popular SVGA chipset in 16-colour mode.
+.RS .5i
+.TP 4
+Tseng:
+ET4000
+.RE
+.PP
+Additionally it
+supports generic VGA cards.
+.PP
+.I XF86_VGA16
+will use up to 256Kb of display memory which yields a
+maximum virtual resolution of (approximately) 800x650.
+.I XF86_VGA16
+does not support the accelerated functions of the supported chipsets.
+.SH OPTIONS
+In addition to the normal server options described in the \fIXserver(1)\fP
+manual page, \fIXF86_VGA16\fP accepts some more command line switches,
+as described in the 
+.I XFree86(1) 
+manpage.
+.SH "KEYBOARD"
+\fIXFree86\fP provides several capabilities for easing the use of international
+keyboards, and generating non-ASCII Latin-1 keysyms.  Refer to the
+.I XFree86kbd(1)
+manual page for more information.
+.SH SETUP
+.I XFree86
+uses a configuration file called \fBXconfig\fP for its initial setup.  
+See the 
+.I Xconfig(4/5) 
+manpage for general details. Here only the
+.I XF86_VGA16
+specific parts are explained.
+.PP
+The \fBGRAPHICS DRIVER SETUP\fP section for the 16 colour server starts
+with the keyword \fBvga16\fP.
+After this keyword a variety of options may be specified:
+.br
+.ne 3i
+.TP 8
+.B chipset \fI"name"\fP
+specifies a chipset so the correct driver can be used.  Possible chipsets
+are:
+.sp
+.RS 1.5i
+.TP 4
+Tseng:
+et4000
+.TP 4
+Generic VGA:
+generic 
+.RE
+.TP 8
+.B clocks \fIclock\fP  ...
+specifies the dotclocks that are on your graphics board.  The clocks are
+in MHz, and may be specified as a floating point number.  The value is
+stored internally to the nearest kHz.  The ordering of the clocks
+is important.  It must match the order in which they are selected on the
+graphics board.  Multiple \fBclocks\fP lines may be specified.
+.TP 8
+.B option \fI"optionstring"\fP
+allows the user to select certain options provided by the drivers.  Currently 
+the following strings are recognized:
+.sp
+\fBlegend\fP - for Sigma Legend ET4000-based boards.  This option enables
+a special clock-selection algorithm used on Legend boards, and MUST be
+specified for these boards to function correctly.
+.ig
+.sp
+\fBswap_hibit\fP - for Western Digital/PVGA1 chipsets.  Some Western Digital
+based boards require the high-order clock-select lead to be inverted.  It
+is not possible for the server to determine this information at run-time.
+If the 9th clock in the list of clocks detected by the server is less than
+30Mhz, this option likely needs to be set.
+..
+.sp
+\fBhibit_low\fP, \fBhibit_high\fP - for Tseng ET4000 chipsets.  With
+some ET4000 cards, the server has difficulty getting the state of the
+high-order clocks select bit right when started from a high-resolution text
+mode.  These options allow the correct initial state of that bit to be
+specified.  To find out what the correct initial state is, start the server
+from an 80x25 text mode.  This option is only needed if the clocks reported
+by the server when started from a high-resolution text mode differ from
+those reported when it is started from an 80x25 text mode.
+.ig
+.sp
+\fB8clocks\fP - for the PVGA1 chipset the default is 4 clocks.  Some
+cards with this chipset may support 8 clocks.  Specifying this option
+will allow the driver to detect and use the extra clocks.
+.sp
+\fB16clocks\fP - for Trident TVGA8900B and 8900C chipsets.  Some newer boards
+using 8900B and 8900C chipsets actually support 16 clocks rather than the
+standard 8 clocks.  Such boards will have a "TCK9002" or "TCK9004" chip
+on them.  Specifying this option will allow the driver to detect and use
+the extra 8 clocks.
+..
+.ig
+intern_disp (use internal display for laptops -- WD90C2x)
+extern_disp (use external display for laptops -- WD90C2x)
+..
+.PP
+Note that \fIXFree86\fP has some internal capabilities to determine
+what hardware
+it is running on. Thus normally the keywords \fIchipset\fP, \fIclocks\fP,
+and \fIvideoram\fP don't have to be specified.  But there
+may be occasions when this autodetection mechanism fails, (for example, too
+high of load on the machine when you start the server).  For cases like this,
+one should first run \fIXF86_VGA16\fP on an unloaded machine, look at the
+results of the autodetection (that are printed out during server startup)
+and then explicitly specify these parameters in the configuration file.
+\fBIt is recommended that all parameters, especially Clock values,
+be specified in the Xconfig file.\fP
+.PP
+The last section is the \fBTABLE OF VIDEO MODES\fP which starts with the
+keyword \fBmodedb\fP.  This is covered in the
+.I Xconfig(4/5) 
+manpage. For details on how to build your own video modes please refer
+to the tutorial written by Eric Raymond.
+.SH FILES
+.TP 30
+/usr/X386/bin/XF86_VGA16
+The 16 colour X server
+.TP 30
+/usr/X386/lib/X11/Xconfig
+Server configuration file
+.SH "SEE ALSO"
+X(1), Xserver(1), XFree86kbd(1), XFree86(1), Xconfig(4/5), xdm(1), xinit(1)
+.SH BUGS
+.PP
+This server contains a number of known graphics bugs.  It is still in the
+early stages of development.
+.SH CONTACT INFO
+\fIXFree86\fP source is available from the FTP servers 
+\fIftp.physics.su.oz.au\fP and \fIftp.x.org\fP.  Send email to
+\fIXFree86@physics.su.oz.au\fP for details.
+.SH AUTHORS
+.PP
+The primary developer of this server is
+.PP
+Gertjan Akkerman,  \fIakkerman@dutiba.twi.tudelft.nl\fP
+.PP
+See also the
+.I XFree86(1)
+manual page.

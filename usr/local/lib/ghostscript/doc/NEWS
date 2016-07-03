@@ -1,0 +1,2024 @@
+   Copyright (C) 1989, 1992, 1993 Aladdin Enterprises.  All rights reserved.
+
+This file is part of Ghostscript.
+
+Ghostscript is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY.  No author or distributor accepts responsibility
+to anyone for the consequences of using it or for whether it serves any
+particular purpose or works at all, unless he says so in writing.  Refer
+to the Ghostscript General Public License for full details.
+
+Everyone is granted permission to copy, modify and redistribute
+Ghostscript, but only under the conditions described in the Ghostscript
+General Public License.  A copy of this license is supposed to have been
+given to you along with Ghostscript so you can know your rights and
+responsibilities.  It should be in a file named COPYING.  Among other
+things, the copyright notice and this notice must be preserved on all
+copies.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+This file, NEWS, describes the changes in the most recent releases of
+Ghostscript.  Changes in older releases are described in history.doc.
+
+For an overview of Ghostscript and a list of the documentation files, see
+README.
+
+Version 2.6.1 (5/28/93)
+=============
+
+This is primarily a bug-fix release for 2.6, with a couple of minor
+additions.
+
+Documentation
+-------------
+
+Adds proper `man' pages ansi2knr.1 and gs.1.
+
+Procedures
+----------
+
+Fixes bugs:
+	- The Unix makefile produced an incorrect linker command if
+EXTRALIBS was not empty.
+	- The Unix install commands didn't copy devices.doc,
+ps2epsi.doc, and xfonts.doc to the documentation directory.
+	- echogs.c didn't include <sys/types.h>, which is needed for
+time_t on some systems.
+	- malloc_.h used <malloc.h> rather than <stdlib.h> on
+NeXTStep systems.
+
+Changes the configuration procedure to use a C program rather than
+complex shell scripts.
+
+Utilities
+---------
+
+Fixes bugs:
+	- The boilerplate produced by ps2image used the 'max'
+operator, which is not a standard PostScript operator.
+	- The winmaps.ps utility had 'floring' instead of 'florin' in
+the OEMEncoding table.
+	- quit.ps was omitted from the PC distribution.
+
+Changes the name of the dicttomark procedure to .dicttomark.
+
+Renames gs_2asc.ps as ps2ascii.ps, so it matches the names of the
+script files.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The pbmraw driver was writing out RGG instead of RGB values.
+	- The X11 driver used NULL in a place where it should have
+used None.
+	- For multi-file output, the GIF driver didn't write a header
+at the beginning of each file.
+	- The Epson driver didn't honor the -A4 compilation switch,
+didn't put (0,0) at the physical corner of the page, and was too
+liberal about using tabs instead of spaces.
+
+Replaces the color handling algorithms in the X Windows driver with
+new, much better ones.
+
+Makes the PC display drivers recognize the -A4 compilation switch,
+like the printer drivers.
+
+Adds new user-contributed drivers:
+	- A driver for Epson printers that use the ESC/P 2 control
+language, such as the Stylus 800.
+	- A driver for the Apple Dot Matrix Printer and Imagewriter.
+
+Adds a new get_xfont_device driver procedure.  This is a
+backward-compatible change, since there is a sensible default.
+
+Platforms
+---------
+
+Fixes bugs:
+	- On VMS, gconfig.h didn't have #include "gsconfig.h" as its
+first line.
+	- gconfig.c compiled incorrectly on the RS/6000 because the
+compiler evaluated a constant of the form (x<<y)+z incorrectly.
+	- Quite a few files that used the mem... functions didn't
+include memory_.h, which caused trouble on some bsd4.2 systems.
+	- The definition of zfont_char_xglyph confused one of the AIX
+compilers.
+	- On VMS, DEC C allows extra arguments for fopen, but gcc doesn't.
+	- On the MS Windows platform, 2.6 used gdevwddb rather than
+gdevwdib; the latter is almost always faster.
+	- The PC .zip files didn't include the Windows .ICO and .RES
+files in either GSEXE.ZIP or GSFILES.ZIP.
+
+On PC platforms, adds an option (FPU_TYPE=-1) to optimize for
+machines lacking a floating point processor.
+
+Fonts
+-----
+
+Adds 4 new fonts contributed by URW.  These have a URW copyright and
+are governed by the GNU License.
+
+Documents the fact that font names in Fontmap can be strings, not
+only names.
+
+Adds DingbatsEncoding as a predefined encoding (in addition to
+Standard, ISOLatin1, and Symbol).
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- memchr (used in zfile.c) isn't available on all platforms.
+	- languagelevel was defined as an operator rather than an
+integer.
+	- iccfont.c referred to name_StandardEncoding instead of
+#include'ing font.h and referring just to StandardEncoding.
+	- The CCITTFaxDecode filter didn't work on 32- (or 64-) bit
+machines, because of a bug in more_bits().
+	- The structures recording an allocation within the scope of
+a save could get allocated unnecessarily, because they weren't
+properly marked as free when an array was freed.
+
+Renames the following Ghostscript-specific operators by adding a '.'
+at the front: makeoperator, setdebug, setmaxlength, stringmatch,
+type1decrypt, type1encrypt.
+
+Adds a real implementation of glyphshow.
+
+Library
+-------
+
+Fixes bugs:
+	- Discarding fractional character coordinates in the Type 1
+rasterizer led to some rendering anomalies (e.g., characters 1 pixel
+too high).
+	- If a font had a non-standard encoding (i.e., not
+StandardEncoding, ISOLatin1Encoding, or SymbolEncoding), Ghostscript
+would never invoke the platform font code.
+	- The RGB to HSB color conversion algorithms produced
+nonsensical values.
+	- struct cached_char_s was defined redundantly in gxcdir.h,
+causing compilation problems on some systems.
+	- 32-bit color devices didn't work properly on little-endian
+machines (arrange_bytes in gdevmem2 was wrong).
+	- The scaled font cache could confuse two fonts with the same
+UniqueID and different Encodings.
+	- Under many common circumstances (first use of a character
+was with stringwidth, the font was renamed, the font encoding was
+changed), xfonts would not be used.
+
+Adds gs_glyphshow.
+
+Version 2.6 (5/9/93)
+===========
+
+The main new feature in this release is the ability to use platform
+fonts.  It also adds many more Level 2 PostScript facilities.
+
+Documentation
+-------------
+
+Corrects some errors in the documentation of the makeimagedevice operator.
+
+Adds operand and result types to the comments at the beginning of all the
+operators.
+
+Adds new sections on installation in use.doc.
+
+Reinstates history.doc as a repository for old and no longer interesting
+history information.
+
+Adds a new file, devices.doc, with documentation for specific devices.
+
+Points out that font2c must be run with a Fontmap that includes the fonts
+being converted, and that its arguments must be quoted with "" on VMS
+systems.
+
+Notes that the font name in the Fontmap must be the same as the FontName
+in the font.
+
+Adds a list of the Level 2 facilities not provided by Ghostscript.
+
+Identifies bug-ghostscript@prep.ai.mit.edu as an alias for the
+gnu.ghostscript.bug newsgroup.
+
+Points out explicitly that -sOutputFile=- sends output to stdout, and
+requires using the -q switch.
+
+Documents the use of tar_cat to construct the Unix makefiles.
+
+Adds a new file, xfonts.doc, that describes the external font interface.
+
+Documents the fact that drivers must use gs_malloc and gs_free rather than
+malloc and free.
+
+Documents the *.sh (shell script) files.
+
+Adds brief documentation on some additional development tool .ps files.
+
+Documents the TEMP and GS_OPTIONS environment variable.
+
+Points out the need to run Windows in 386 Enhanced mode on machines
+that have less than 6 Mb of RAM.
+
+Consolidates documentation on compiler switches in make.doc (some of
+it had been in the unix*.mak files).
+
+Procedures
+----------
+
+Fixes bugs:
+	- \'s in arguments following -- were doubled.
+
+Includes the full set of filters automatically if the level2 feature
+is selected.
+
+Extends DEVICE_DEVS... up to DEVS9.  Adds DEVICE_DEVS1 as well.
+
+Renames turboc.mak and tbcplus.mak as tc.mak and bc.mak.
+
+Makes @-files use the library path (GS_LIB, -I).
+
+Changed the Unix install script to use install <file> <destfile>
+rather than install <file> <directory>.
+
+Adds a GS_OPTIONS environment variable that acts like an implicit @-file
+at the beginning of the command line (i.e., may contain switches and
+initialization files).
+
+Renames sym__enc.ps as gs_sym_e.ps.
+
+Adds a user-contributed shell script for using Ghostscript with an
+H-P printer spooler.
+
+Adds level1.ps to the set of installed utility files.
+
+Extends the TEMP environment variable (the directory for scratch
+files) to work on Unix as well as MS-DOS.
+
+Changes the MS Windows makefile to generate gswin.exe rather than
+gs.exe, and the Watcom makefile to generate gs386.exe.
+
+Moves the "product" string from gs_init.ps to iinit.c.
+
+Adds a GS macro to the makefiles, to allow choosing the name of the
+executable.
+
+Utilities
+---------
+
+Fixes bugs:
+*	- font2c did the wrong thing (still) for fonts that didn't
+use StandardEncoding, ISOLatin1Encoding, or SymbolEncoding.
+*	- impath.ps had a fatal bug (wrong operand order for
+charstack_write) that caused bdftops to fail.
+	- gslp didn't wrap or truncate lines.
+	- gslp didn't handle tabs in a second or subsequent column
+properly.
+	- The definition of ashow in gs_2asc.ps incorrectly undid the
+increment following the last character.
+	- The definition of awidthshow in gs_2asc.ps failed to pop
+two entries from the stack, and also tested the character against the
+wrong value.
+
+Adds a shell script (sysvlp.sh) that interfaces Ghostscript with the
+System V 3.2 lp interface.
+
+Adds ps2ascii and ps2epsi script/batch files.
+
+Adds a new utility, mergeini.ps, for concatenating all the
+Ghostscript initialization files into a single file, optionally
+removing comments and blank lines.
+
+Adds new switches to gslp:
+	-q: suppress all printed output.
+	--detect: check whether the file begins with %!, and if so,
+	    interpret it directly as a PostScript file.
+	--first-page <page#>: replaces the former -P switch.
+	--last-page <page#>: replaces the former -Q switch.
+	--(heading|footing)-(left|center|right) <string>: define
+	    headers/footers.  # inserts the page number.
+	--margin-(top|bottom|left|right) <inches>: define margins.
+	--spacing <n>: for double, triple, etc. spacing.
+Also makes gslp ignore all the enscript flags it doesn't implement.
+
+Adds an option to wrfont.ps to do encryption at read-in time.  (This
+allows much better compression of the standard Ghostscript fonts.)
+Changes bdftops to use this option.
+
+Changes gslp to accept wild cards in file names.
+
+Replaces landscap.ps with a new one contributed by a user.
+
+Changes the compression scheme used in ps2image to a much more
+effective one.  Writing images is much slower than with the previous
+scheme, but reading is not.
+
+Platforms
+---------
+
+Fixes bugs:
+	- SCFDTAB and SCFTAB were omitted from the VMS module lists.
+	- Function prototypes were not being used with the Watcom
+compiler.
+	- On MS-DOS platforms, if the value of the TEMP variable had
+a trailing : or \, Ghostscript appended a \ anyway.
+	- Under Windows, changing the size or resolution of the image
+closed and reopened the window.
+	- Ghostscript would not build correctly with the Watcom compiler
+if DOS4G=quiet was not set, because the DOS4GW copyright message was sent
+to stdout.
+*	- Finally gets Ghostscript to run properly on the RS/6000, by
+adding a compiler bug workaround to arc_add and arc_either.
+*	- Finally gets Ghostscript to compile properly on Sun SPARC
+systems, by adding a compiler bug workaround in scan_number.
+
+Changes the default MS-DOS configuration from 8086/8088 to 80286.
+
+Adds all the SuperVGA drivers to the BC++ and Watcom executables
+(except for the VESA driver in the Watcom executable).
+
+Adds a makefile (msc.mak) for the Microsoft C/C++ 7.0 platform.  This
+is currently a MS-DOS, not a MS Windows, platform.
+
+Changes gp_enumerate_files_init so it takes a gs_memory_procs *, not
+separate proc_alloc_t and proc_free_t arguments; also, it must
+enumerate precisely the requested set of files, not a superset.  THIS
+IS A NON-BACKWARD-COMPATIBLE-CHANGE.  It affects all gp_*.c files.
+
+Adds the P*M drivers and bit.dev to the standard configuration on
+Unix platforms.
+
+Changes the Watcom makefile so it uses the WATCOM environment variable (by
+default) as the base directory for the Watcom executables.
+
+Adds the MS Windows COMMDLG.DLL and SHELL.DLL files to the set of
+files incorporated in GSEXE.ZIP, since the new MS Windows code uses
+them, and they aren't provided with Windows 3.0.
+
+Makes major revisions to the MS Windows platform and driver code, to
+support the gsview front end, and also to remove the dependence on the
+Borland EasyWin library.  NOTE: Compiling the MS Windows code now requires
+Borland C++ 3.1 (not 3.0).
+
+Changes time_.h so that Ghostscript will compile and run on A/UX.
+
+Changes the MS-DOS implementation of file enumeration so it always
+treats \s in the file name as literal characters, not escapes, unless
+there are two \\s in a row.  This does the most sensible thing given
+the DOS file naming conventions.
+
+Adds a %pipe% file device under Unix.
+
+Adds a makefile for Watcom C under MS Windows.  This is very preliminary;
+in particular, NO display output is supported.
+
+Fonts
+-----
+
+Fixes bugs:
+	- fonts.mak referred to ncri and puti rather than ncrri and
+putri.
+	- cyr and cyri had the wrong protection.
+	- The Hershey fonts left the font on the stack when they were
+loaded.
+*	- The FontName of an aliased font was the original FontName
+from the file, not the alias.
+*	- Fontmap.BTS had incorrect entries for AvantGarde-Demi and
+AvantGarde-DemiOblique.
+	- Ghostscript pushed userdict, rather than an empty writable
+dictionary, onto the stack when loading a font, leading to name clashes.
+
+Adds a new cfonts.mak with a full set of rules for compiling all the
+standard Ghostscript fonts (except the Hershey fonts) into C.
+
+Adds UniqueIDs to the Hershey fonts, and removes the UniqueIDs from
+the Hershey entries in the Fontmap.
+
+Adds a new Fontmap for VAX/VMS with DECWindows/Motif.
+
+Changes MakeHersheyFont so it takes the encoding as an additional
+parameter, and changes the Hershey-Symbol font to use SymbolEncoding.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The !@*&^%#@$ PCL drivers *still* didn't do the right thing
+about vertical spacing: the <ESC>*p+<n>Y command works on all PCL 3,
+4, and 5 printers *except* the LaserJet IIp.
+	- The cdj driver used recursive macros (height, t_margin,
+b_margin) that not all compilers handled correctly.
+	- The djtc driver used some assignments including =*, which
+some compilers dislike.
+	- The S3 driver wouldn't compile correctly with the Watcom
+compiler.
+	- The makefile entry for the S3 driver was wrong.
+	- The SuperVGA drivers returned an error, rather than using
+the highest available resolution, if a too-high resolution was
+requested.
+	- The GIF driver produced an incorrect header for images
+wider or taller than 32K pixels.
+	- The GIF driver wasn't able to handle multi-page documents
+correctly.
+	- The margins on the DeskJet were still not correct.
+	- Some ANSI C compilers rejected a complex expression in
+gdevpccm.c.
+	- Printer drivers didn't recover cleanly from problems in
+opening the scratch files.
+	- The BJ-10e driver used the same name `out' for a label and
+a variable.
+	- The SCO ODT compiler couldn't handle sizeof(ppdev->fname).
+	- The Epson driver used the wrong value for ESC in the
+initialization string.
+
+Adds new drivers:
+	- Drivers to produce MS Windows .BMP format output.
+	- A new ATI Wonder display driver (800x600, 16 colors) and a
+1024x768 mode for the existing driver.
+
+Adds new user-contributed drivers:
+	- A driver for the Tektronix 4693d color printer.  This carries a
+university copyright.
+	- A driver for the SPARCprinter.
+	- A driver for the Canon BJ200 printer.
+	- A driver for the IBM ProPrinter.
+	- A driver for the DEC LJ250 printer, which has a
+PaintJet-compatible mode.
+	- A replacement driver for the Sony NWP533.
+	- A driver that writes TIFF/F (Group 3 fax) files.  This carries
+an external copyright.
+	- A driver for the C.Itoh M8510 printer.
+	- A driver for the Okidata MicroLine 182 9-pin dot-matrix printer.
+	- A Hercules Graphics driver.
+	- A driver for printers under MS Windows.
+	- A driver for direct frame buffer addressing under SCO Unix
+and Xenix and AT&T SVR4.
+
+Changes the get_bits driver procedure so it always reads a single
+scan line, and optionally does not copy the data.  THIS IS A
+NON-BACKWARD-COMPATIBLE CHANGE.  However, this change does not affect
+any existing printer driver, since these all go through intermediate
+routines in gdevprn.c.
+
+Changes gdevprn.h, and the relevant printer drivers, so that -DA4
+will change the default paper size for any printer driver.
+
+Allows the use of NULL or 0 for default procedures in the driver
+procedure vector.
+
+Adds an optional map_cmyk_color procedure to the driver procedure
+vector.
+
+Changes the Epson driver so that the minimum amount of white space
+required to use a tab is an easily changed parameter.
+
+Changes the BGI driver to use separate segments for the Borland
+device drivers, to reduce the risk of overflowing a segment.
+
+Adds an optimization option (normally enabled) to the PGM and PPM drivers
+such that they revert to PBM or (for PPM) PGM if the page can be
+represented that way.
+
+Adds a new (optional) driver procedure to get the procedure vector
+for external fonts.
+
+Adds an argument to gp_open_printer to indicate whether the file should be
+opened in binary or text mode.  THIS IS A NON-BACKWARD-COMPATIBLE CHANGE.
+However, this change does not affect any existing printer driver, since
+these all go through intermediate routines in gdevprn.c.
+
+Changes the LN03/LA50/LA75 driver so it uses a text record mode to open
+the output file under VMS (by adding an argument to gp_open_printer to
+indicate this.)
+
+Allows (indeed, encourages) drivers to use far_data to declare the device
+structure, primarily to avoid overflowing the 64K data segment under MS
+Windows.  Changes the file output drivers and many of the printer drivers
+to declare their device structures as far_data.
+
+Replaces the AT&T 3B1 driver with an updated version (from the same
+contributor).
+
+Changes the Epson BJ driver and the SPARCprinter driver so they align
+the (0,0) point of the page with the physical corner of the paper
+rather than with the origin of the printable area.
+
+Removes the EIZO MDB-10 driver, since it caused complications for the
+EGA and VGA drivers and is not a widely used device.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- The entry for the copydevice operator in the operator table
+was initialized incorrectly.
+	- printobject and writeobject didn't handle nested arrays.
+	- restore didn't properly close the current file (if
+appropriate), causing an invalidaccess error.
+	- buildfont required the presence of a valid, 4-element
+FontBBox.  (The Red Books say it's required, but Adobe interpreters
+don't require it; some DEC software generates a 3-element FontBBox.)
+	- resourceforall had several bugs; it didn't do even
+approximately the right thing.  There were quite a few other problems
+with the implementation of resources.
+	- setfont, makefont, and scalefont would accept a font with
+no FID entry.
+*	- Loading a .PFB font left the file open (until the next
+restore or quit).
+	- The default (null) font didn't include a PaintType entry,
+which some PostScript files expected.
+*	- The ASCIIHexDecode filter sometimes thought the underlying
+stream was at EOF even when there was (at most one buffer's worth of)
+data left.
+	- iscan.c included <ctype.h> before std.h, causing type name
+clashes on some systems.
+*	- save and restore didn't handle the pointers in the graphics
+state correctly; for example, the current font wasn't restored
+properly.
+	- Binary object sequences at the top interpreter level didn't
+get executed immediately.
+	- On high-resolution devices, the default transfer function
+converted almost-white grays to very light grays rather than white.
+	- The `string' operator was checking the string length
+against max_uint rather than max_ushort, which could cause invalid
+lengths to be accepted.
+*	- deviceinfo caused a stackunderflow error.
+*	- idiv could give incorrect results for quotients or
+remainders that didn't fit in 24 bits.
+*	- The ASCII85Encode filter padded trailing bytes with 1's
+rather than 0's.
+*	- The ASCII85Decode filter had a typo that produced incorrect
+results if there were exactly 2 trailing bytes.
+	- findlibfile didn't push a copy of the file name if it was
+the name of a special (%) file.
+	- setduplexmode was not defined in statusdict, causing
+/undefined errors from some poorly designed input files.
+*	- The CCITTFaxDecode filter had several bugs in 2-D decoding.
+*	- The ASCII85Decode filter didn't read ahead to detect EOD if
+it fell precisely on a buffer boundary.
+	- If a file mentioned on the command line redefined `start',
+Ghostscript would run the new definition rather than the built-in one
+after processing all the files on the command line.
+	- The SCO ODT compiler couldn't handle the conditionals in the
+ngetc (iscan.c) and sgetc* (stream.h) macros.
+	- makefont and scalefont didn't cache the PostScript dictionaries
+for scaled fonts.
+	- Changing the elements of the Encoding of a font dynamically
+didn't take effect if the character was already cached.
+	- makefont and scalefont didn't add the (undocumented) OrigFont
+and ScaleMatrix entries to the new font.
+*	- findfont insisted that the font name be a string or a name.
+	- filenameforall could cause an incorrect transfer of control
+if no files matched the pattern.
+*	- ISOLatin1Encoding had hyphen instead of minus at code 45.
+	- restore didn't reset saved_cbot and saved_ctop correctly;
+as a result, some freed blocks could get abandoned rather than put on
+the free list.
+	- Some numerical constants in zarith.c assumed that longs
+occupied 32 bits.
+
+Implements additional Level 2 features:
+	- %device%file names (only the "os" device is provided).
+	- <~ ~> for ASCII-85 strings.
+	- Binary error messages.
+	- BuildGlyph.
+	- CCITTFaxDecode filter entries EndOfBlock, Rows, and
+	(undocumented) FirstBitLowOrder.
+	- {set/current}{color/colorspace/overprint/colorrendering/
+	blackgeneration/undercolorremoval}.  (See below under library
+	for limitations.)
+	- Decode for the dictionary form of image.
+	- File access modes a, r/w/a+.
+	- Font entries CDevProc, Metrics2, and WMode.
+	- Font operators cshow, findencoding, rootfont, and
+	setcachedevice2.
+	- glyphshow (emulated with PostScript code).
+	- languagelevel.
+	- realtime.
+	- setbbox.
+	- (Subset of) system and user parameters.
+	- xshow, yshow, and xyshow.
+	- XUIDs for fonts.
+
+Moves the installation of systemdict and the initial allocation of
+globaldict (if relevant) and userdict from gs_init.ps to iinit.c.
+
+Makes Level 2 features dynamically selectable through the
+.setlanguagelevel operator; disables all Level 2 features
+(specifically including automatic dictionary expansion) unless the
+level2 feature is included and active.
+
+Adds the .knownget operator for speeding up system procedures.
+
+Renames the type1addpath operator as .type1addpath; adds an optional
+left side bearing argument; changes it so it does not do the
+setcachedevice, fill, or stroke, but does do a moveto for the
+character width.  Changes Type1BuildChar appropriately.  (All this is
+needed to make WMode work.)
+
+Removes the .setmetrics operator, which is no longer needed.
+
+* Changes the meaning of the user_errors argument to gs_run_file and
+gs_run_string so that -1 means always return on an error, 0 means
+only return on an error not within a `stopped'.
+
+Adds all the necessary checks and operators for local/global VM, but
+doesn't actually implement local/global mode.
+
+Changes setcachedevice back so that it requires 4 numbers on the
+stack rather than a 4-element array.  (It was changed to be the other
+way in release 2.0, but that was because I didn't realize that fonts
+had to have an executable FontBBox, and some of the Ghostscript fonts
+didn't.)
+
+Changes all the filter operators from .filterxxx to .filter_xxx, and
+removes the need to enumerate them in gs_init.ps.
+
+Adds .oserrno and .oserrorstring operators for getting the last OS
+error (in the current context).
+
+Changes gs_finit similarly to gp_exit.  Adds gs_exit_with_code that
+takes both an exit status and a Ghostscript error code.
+
+Changes the name of name.h to iname.h.
+
+Adds support for the `interrupt' error (but doesn't provide any standard
+way of generating one, other than through the gp_check_interrupts polling
+function).
+
+Adds copyright to systemdict.
+
+Changes the spot halftone screen to an elliptical screen supplied by
+Berthold K. P. Horn.
+
+Adds a check that the first token in gs_init.ps is an integer.  In
+conjunction with other code in gs_init.ps, this should catch all attempts
+to run Ghostscript with a gs_init.ps that doesn't match the executable.
+
+Changes all relevant occurrences of sizeof to size_of in order to
+work with the buggy SVR4.2 C compiler.
+
+Changes gp_exit so it is passed both the Ghostscript error code and
+the exit status code as arguments.  This is backward-compatible for
+all but the pickiest compilers.
+
+Adds a call on gp_check_interrupts() after fwrite calls in the stream
+machinery.  This prevents lengthy console output from locking out
+other programs.
+
+Changes a couple of occurrences of op_def_ptr in iinit.c to work around a
+`const' bug in Sun's SC1.0 compiler.
+
+Adds a special hack in the 'where' operator to work around a bug in Aldus
+Freehand 2.x.
+
+Changes all empty argument lists from () to (void), which is the ANSI
+C syntax.
+
+Adds a hack to ignore ^[ and ^D^[ tokens, to work around the prologue
+and epilogue emitted by the MS Windows LaserJet IV driver.
+
+Defines the processcolors operator, which should not be needed, but
+is required because of bugs in Lotus 1-2-3 and Adobe PhotoShop.
+
+Changes the allocator (ialloc) to fill all allocated and/or freed
+blocks with a marker if gs_alloc_debug is set, as gs_malloc and
+gs_free already do.
+
+Library
+-------
+
+Fixes bugs:
+	- 16-bit memory devices stored the bytes of each pixel in the
+wrong order.
+	- copy_mono did the wrong thing when copying 1 source chunk
+to 2 destination chunks with polarity inverted.  (This probably
+didn't affect any actual uses of Ghostscript.)
+*	- The compile-time check for ints being 2 or 4 bytes used the
+#error directive, which most compilers don't recognize.
+	- arc and arcn didn't do the right thing for degenerate
+(single-point) arcs, or for arcs drawn in the "wrong" direction that
+were multiples of 360 degrees.
+	- charpath did the wrong thing with Type 3 fonts.
+	- copyscanlines gave an error if the buffer was too large.
+	- The copy_mono procedure (used for text and halftones) for
+2- and 4-bit-per-pixel memory and printer devices incorrectly
+incremented the destination pointer after every pixel, instead of
+only after every byte.
+	- The fill_rectangle procedure (used for graphics) for 2- and
+4-bit-per-pixel memory and printer devices, if given any color other
+than all 0's or all 1's, multiplied the X coordinate and width by 2
+or 4, thereby filling the wrong area.
+	- The use of 'data' in both gs_type1_data and gs_font upset
+the VMS compiler.
+	- The `Flex' feature wasn't implemented for Type 1 fonts,
+which caused serious errors in rendering some fonts that use it.
+(Unfortunately, some Adobe fonts violate the specification, so we had
+to implement Flex to always use a curve.)
+*	- Stem width adjustment was too eager, producing very strange
+effects on small characters with tight curves (a curve point could
+get snapped to the other side of the open area).
+	- The allocator didn't align structures adequately on
+machines where sizeof(long) or sizeof(char *) was 8 bytes.
+	- The test for IEEE floating point gave an incorrect
+(negative) result on machines where sizeof(long) was 8 bytes.
+	- genarch.c assumed that the result of subtracting two
+pointers was an int, leading to a garbage arch.h file on systems
+where this was false.
+*	- The Type 1 font interpreter incorrectly reset the adjusted
+path position to be the same as the unadjusted path position whenever
+it returned control to the client (in particular, for callothersubr),
+leading to discontinuities and distortions in the character shapes.
+*	- Accented characters in Type 1 fonts often misplaced the
+accent to the left.
+	- gsmisc.c wouldn't compile on machines with 64-bit pointers,
+because _pad was 0, and ANSI compilers don't accept 0-length arrays.
+	- pathforall got confused if the client procedures modified
+the path.
+	- The command list file representation limited X and Y
+coordinates to 15 bits.
+*	- stroke could produce spikes or other garbage for mitered
+joins as a result of stroke adjustment.
+	- The params_size field of the null device was wrong, so
+scaling the null device produced unpredictable results.
+
+Changes monobit memory devices to always store data big-endian.  This
+eliminates byte-swapping, at the cost of slightly slower rendering.
+
+Removes the memswab* routines, since they are no longer needed.
+
+Implements gs_cshow_[n_]init, which provides support for cshow, and
+gs_xyshow_[n_]init, which provides support for {x,y,xy}show.
+
+Adds an optional left side bearing argument to gs_type1_interpret.
+
+Changes gs_type1_interpret so it does not do a setcachedevice, fill,
+or stroke, but only appends the character outline to the path
+(including a moveto for the character width.)
+
+Removes gs_setmetrics, which is no longer needed.
+
+Implements gs_setcachedevice2, which provides support for
+setcachedevice2.
+
+Speeds up gsave/grestore by allocating, deallocating, and copying as
+much as possible of the graphics state in a single operation.
+
+Implements gs_{set/current}{color/colorspace/overprint/colorrendering/
+blackgeneration/undercolorremoval}.  Device, indexed (with table, not
+with procedure), CIE, and (substituted) separation colors are
+supported; some of the setup code for patterns is also present.
+
+Increases the size of temporary file names in gdevprn.h from 30
+characters to 60.
+
+Changes the character cache to be allocated dynamically in chunks.
+
+Splits gxcache.c into gxccache.c (fast "hit" code) and gxccman.c (all
+other code).
+
+Changes all occurrences of sizeof to size_of in order to work with the
+buggy SVR4.2 C compiler.
+
+Adds a new concept of "external fonts", which allow a driver to
+substitute its own fonts for the ones obtained through the normal
+font machinery.
+
+Changes all empty argument lists from () to (void), which is the ANSI
+C syntax.
+
+Version 2.5.2 (9/20/92)
+=============
+
+This is yet another bug fix release to (finally!) get the PCL drivers
+working again.
+
+Procedures
+----------
+
+Fixes bugs:
+	- The comment in devs.mak for cdjcolor said it used 8 bits
+per pixel, rather than the correct 24.
+
+Adds gsbj/dj/lj/lp and gslp.ps to the installed files on Unix
+systems.
+
+Removes dps.dev and level2.dev from the standard configurations on
+all platforms, since the presence of the setcolor operator was
+causing the output of some common applications to fail.
+
+Utilities
+---------
+
+Fixes bugs:
+	- font2c produced invalid output for any font that didn't use
+StandardEncoding or ISOLatin1Encoding.
+
+Platforms
+---------
+
+Fixes bugs:
+	- gp_sysv.c required an extern long timezone.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The PCL drivers were *still* doing the wrong thing about
+zeroing the seed row for Mode 3 compression.
+	- Setting the resolution with -r didn't work under Windows.
+	- The Windows driver got a stack overflow if it was ever
+asked to display a bit image wider than 32 pixels.
+	- The Tseng driver didn't sense the model (ET3000 vs. ET4000)
+correctly.
+
+Adds the eps9high device to the standard MS-DOS makefiles.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- gs_run_string used gs_user_errors (a global) rather than
+user_errors (its argument) to control error handling.  (This does not
+affect normal operation of Ghostscript, only use as a server.)
+	- eexec popped the top element of the dictionary stack
+afterwards even if the encrypted code had pushed something onto it.
+This caused problems for some badly written PostScript code.
+	- The printed form of real numbers didn't always include a
+decimal point, causing compatibility problems.
+
+Makes -s and -d work for device properties.
+
+Increases the cache limit on large-memory systems.
+
+Adds a check to ensure that the revision of gs_init.ps matches that
+of the interpreter.
+
+Adds the .knownget operator.
+
+Library
+-------
+
+Fixes bugs:
+	- The raster computation in clist_render_init, and the
+computation of state_size in clist_open, didn't widen an operand to
+long, leading to possibly incorrect operation for 24-bit-per-pixel
+printers on MS-DOS systems.
+	- The flatness was set too large for Type 1 characters,
+leading to visible straight edges instead of curves at large sizes.
+	- Type 1 fonts that contained out-of-range coordinates would
+produce garbled output.  (This was not a problem with the standard
+Ghostscript fonts, or with Adobe Type Manager fonts.)
+	- gschar0.c wouldn't compile, because it referred to a
+non-existing structure member penum->chr.  (This had no effect on
+Ghostscript's operation.)
+	- The curve flattener required line segments to be no more
+than 8 x the flatness in length, leading to an enormous number of
+segments.
+	- pathforall would cause an addressing fault if the path
+consisted of only a moveto.
+
+Refactors some header files so that std.h is always included before
+any system header file that might include sys/types.h.
+
+Adds logic for removing top and bottom blank rows in cached
+characters.  (This is the beginning of compression for the cache.)
+
+Changes the arguments of memswab2/4 from char * to byte *, for more
+accurate type conformance.
+
+Version 2.5.1 (9/11/92)
+=============
+
+This is the usual bug fix re-release.
+
+Procedures
+----------
+
+Fixes bugs:
+	- The makefile rules for compiled fonts had a circular
+dependency.
+	- `make begin' didn't work properly on all platforms.
+
+Ensures that all batch files end with a newline.  (The absence of the
+newline was confusing the GNU diff program.)
+
+Documents the fact that the -dASCIIOUT switch no longer exists.
+
+Utilities
+---------
+
+Fixes bugs:
+	- pstoppm didn't `bind' its internal procedures.
+	- grestoreall would undo the output device selected by
+pstoppm.
+
+Changes the utilities for reading and writing Type 1 character
+outlines so they can work with stack representations as well as
+arrays.
+
+Removes the pfbtogs.ps, phonbook.ps, and showpbm.ps utilities from
+the distribution.
+
+Adds a gslj utility to parallel gslp and gsdj.
+
+Platforms
+---------
+
+Adds the DeskJet 500C drivers (cdeskjet/cdj*) to the MS-DOS / Borland
+C++, MS-DOS / Watcom C/386, and MS-Windows configurations.
+
+Removes the PCX file driver from the MS Windows executable, because
+the static data segment exceeded 64K.
+
+Makes some changes in the Unix System V platform file (gp_sysv.c) and
+in time_.h and unixtail.mak to accommodate the 3B1.
+
+Fonts
+-----
+
+Fixes bugs:
+	- The Charter-Italic font was named bchi.pfa rather than
+bchri.pfa.
+	- The Cyrillic fonts (cyr.gsf, cyri.gsf) were omitted from
+the fileset.
+	- Ghostscript incorrectly assumed that all Type 1 fonts had a
+FontInfo dictionary.
+	- .loadfont used false PFBDecode, so a few .PFB fonts would
+get errors because the first eexec byte would be whitespace.
+
+Changes font2c and its supporting code so that compiled fonts are
+location-independent.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The margins for the H-P printers were still wrong.
+	- The H-P drivers accidentally cleared the compression seed
+row when switching compression modes.
+	- Some of the H-P drivers used the wrong control codes for
+skipping blank lines.
+
+Adds user-supported drivers for the AT&T 3B1 console device, and for
+the NEC P6+ printer.
+
+Updates the SunView driver with a new version supplied by a(nother)
+user.
+
+Changes the X Windows driver so the Ghostscript window doesn't get
+input focus.
+
+Changes the common code for the printer drivers so that if it can
+allocate a full bitmap but there isn't at least a minimum amount of
+memory left afterwards, it switches to banding.
+
+Changes the Windows driver so it handles devices with more than 8
+bits per pixel.  (We haven't been able to test this.)
+
+Adds a read-only PageCount device property (for printer devices
+only).
+
+Changes all Aladdin-supported drivers to clip drawing requests to the
+((0,0), (width,height)) rectangle of device space.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- Closing a NullEncode filter always gave an ioerror.
+	- If a single-character name occurred 1 character before the
+end of an input buffer, the character would be doubled.
+	- The procedures in gs_statd.ps didn't use "bind".
+	- Setting the page size didn't work properly with devices
+with rotated coordinate systems.
+	- If an error occurred, and the error object wasn't the last
+element of its procedure, the interpreter would re-execute the error
+object after running the error handler.
+	- Memory devices didn't get resized if HWSize was changed,
+leading to out-of-bounds memory accesses.
+
+Moves revision and revisiondate from gs_init.ps to iinit.c.  Adds a
+-v switch that just prints these out.
+
+Arranges things so that if Ghostscript is reading from a pipe (`-'
+switch on the command line) and encounters an error, it exits with
+status 1 rather than 0.
+
+Changes the interpreter interface so the caller explicitly passes a
+pointer for storing an error object.
+
+Library
+-------
+
+Fixes bugs:
+	- The automatic adjustment of the scaling for variant paper
+sizes caused the image to get expanded when it should have been
+contracted, and vice versa.
+	- The curve flattener insisted that each line segment be no
+more than 2 x the flatness in length, leading to an enormous number
+of segments even when not necessary for accuracy.
+	- flattenpath and strokepath discarded a trailing moveto.
+	- strokepath treated "0-width" lines as really having a width
+of zero, rather than one pixel.
+	- Buffered devices weren't closed and reopened if the amount
+of buffer space was changed.
+	- stroke used the line cap at the beginning of each subpath
+even if the subpath was closed.
+
+Removes the requirement that the clipping rectangle fall in the
+non-negative quadrant of device space.  (This was causing problems
+for Ghostview, but removing it required adding the extra clipping
+step to the drawing routines in the drivers.)
+
+Version 2.5 (8/18/92)
+===========
+
+This version adds Type 1 hinting, CCITTFax encoding and decoding, and
+Microsoft Windows support, as well as the usual minor improvements
+and bug fixes.
+
+Procedures
+----------
+
+Fixes bugs:
+	- GSIMPATH, SLZWD, and SLZWE were omitted from the VMS
+makefiles, and GSIM2OUT was not removed.
+	- landscap.ps messed up the current path.
+
+Adds new switches:
+	-dSAFER disables file writing and directory modification.
+	-dESTACKPRINT causes errors to print the execution stack with
+== instead of =.
+	-sOutputFile=<string> replaces -sOUTPUTFILE (which is still
+recognized) for setting the output file or pipe for the default
+(printer) device.
+	-sPAPERSIZE=<sizename> initializes the paper size.
+	-dBufferSpace=<number> sets the buffer size for the default
+(printer) device.
+
+For Unix systems, changes the directories in GS_LIB_DEFAULT from
+`pwd` to $(gsdatadir), i.e., normally $(datadir)/ghostscript, where
+datadir is normally /usr/local/lib.
+
+Adds a note in the header file to the effect that the X Windows
+driver expects to find header files in $(XINCLUDE)/X11, not in
+$(XINCLUDE).
+
+Changes -q so it defines QUIET as true instead of null (so it can be
+used in the middle of the command line as well as at the beginning).
+
+Renames the history.doc file as NEWS.
+
+Utilities
+---------
+
+Platforms
+---------
+
+Fixes bugs:
+	- The stack size was not getting increased on the Watcom
+platform.
+
+Removes "b" from the scratch file opening modes in gp_unix.c and
+(conditionally) in gdevprn.c, to pacify the DECstation Ultrix system.
+
+Adds a makefile (bcwin.mak) and a platform file (gp_mswin.c) for
+Microsoft Windows.
+
+On MS-DOS platforms (including Windows), uses the TEMP environment
+variable to designate the directory for scratch files.
+
+Changes std.h so that the VMS C compiler uses function prototypes and
+'const'.
+
+Changes the VMS cc makefile so it doesn't use ansi2knr.
+
+Fonts
+-----
+
+Fixes bugs:
+	- findfont left an extra entry on the stack if it couldn't
+find the default font.
+
+Renames bchi, ncri, and puti as bchri, ncrri, and putri, to conform
+with the naming scheme for other fonts.
+
+Adds $(CCFLAGS) to the command line used for compiling fonts.
+
+Converts the .pfa fonts (CharterBT, IBM Courier, and Utopia) to .gsf,
+by removing eexec encryption and also removing some mysterious
+unmapped characters from Courier.  This makes these fonts work with
+DISKFONTS.
+
+Changes the implementation of compiled fonts so they are read-only
+and sharable (no external references).  (They are, however, not
+position-independent.)
+
+Provides a way to use compiled fonts on platforms that limit the
+number of characters in an identifier.
+
+Adds public-domain Cyrillic and Cyrillic-Italic fonts.
+
+Adds a 'userdict begin' to .loadfont, because Type 3 fonts produced
+by Fontographer expect a writable dictionary on the top of the stack.
+
+Changes definefont for Type 1 fonts to insert UnderlinePosition and
+UnderlineThickness entries in FontInfo if they are absent, because
+many word processors incorrectly assume these entries are present.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The documentation in use.doc said that the densities for
+9-pin Epson printers were 60x60 to 240x60, rather than 60x72 to
+240x72.
+	- gdevprn.c smashed one byte beyond the end of the string
+given as the OutputFile device property.
+	- The X11 driver used XVisualIDFromVisual, which is not
+defined in X11R3.
+	- The SunView driver modified the input data, which was
+declared as const.
+	- The LaserJet IIP and III drivers shifted the page 185
+pixels to the left and 0.25" down, because the initialization string
+was incorrect.
+	- The PCX driver wrote 16-bit values using the byte ordering
+of the platform, rather than always LSB first.
+	- For vertical spacing, the LaserJet and DeskJet drivers used
+a command that spaces N/300", rather than N scan lines, but gave it a
+parameter in scan lines.
+	- The VESA driver didn't allocate a full 256-byte buffer for
+reading the mode information from the BIOS, causing the stack to get
+smashed by newer VESA implementations.
+	- The VESA driver didn't use the scan line length returned by
+the BIOS, causing garbage output for some cards and some resolutions.
+	- The generic printer driver didn't free the bitmap when
+closing the device, if it fit entirely in memory.
+	- The PaintJet driver allocated its data areas on the stack
+instead of with gs_malloc.
+	- The generic printer driver didn't attempt to increase the
+buffer size if it was too small.
+	- The band list driver didn't split large bitmaps properly,
+leading to garbled characters at high resolutions.
+	- The GIF and PCX drivers used a color map that often turned
+gray colors into non-grays.
+
+Changes the default put_props procedure so that if the device is
+open, setting HWSize and/or HWResolution closes the device and
+reopens it.
+
+Adds a driver for Microsoft Windows 3.n.
+
+Updates the 'cdj' and 'dj500c' DeskJet 500C drivers with new versions.
+(This are user-contributed drivers.)
+
+Changes gdev_prn_put_props so OutputFile can be changed dynamically.
+
+Updates the DEC LN03 driver to also handle the LA50 and LA75.  (This
+is a user-contributed driver with a FSF copyright.)
+
+Changes the LaserJet/DeskJet driver so that -DA4 in the makefile
+makes A4 paper the default.  The driver now also sends an appropriate
+page size selection command to the printer if the printer supports it.
+
+Changes all the Aladdin-supported drivers to return appropriate error
+codes rather than -1.
+
+Adds a driver for the S3 86C911, a PC graphics accelerator used in
+the popular Diamond Stealth board.  This is the first driver that
+uploads character bitmaps to a device; others will probably follow.
+
+Adds user-supplied code to the Epson driver so it will do triple
+passes on 9-pin printers for higher resolution.
+
+Adds user-supplied code for the PaintJet XL to the PaintJet driver.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- zdps1.c didn't include alloc.h.
+	- On 32-bit systems, if maxlength of a dictionary was less
+than the actual allocated space, length could become larger than
+maxlength.
+	- flushfile didn't actually flush data when reading.
+	- The ASCII85Decode filter signalled EOF prematurely.
+	- The scanner interpreted .3D.glorp as the number 0.3, rather
+than as a name.
+	- Closing a file freed the stream structure, creating
+dangling references if there were other file objects pointing to the
+same stream.
+	- eexec called handleerror if an error occurred, instead of
+letting the error propagate to an enclosing stopped.
+	- gs.h made perror illegal, instead of defining it in terms
+of strerror.
+	- One-character names weren't being allocated at
+initialization, so they could be left dangling after a restore.
+	- Internal gsaves (i.e., the ones in show and setcachedevice)
+didn't also save istate, so setfont inside a BuildChar procedure
+might cause the font outside to get changed.
+	- The allocator incorrectly freed objects in the current
+chunk that were older than the current save.
+	- mark was just an object, rather than an operator, so 'bind'
+didn't bind it.  (This is theoretically a problem for null, true, and
+false also, but even more unlikely to be a problem in practice.)
+	- packed_get didn't cast packed integers to int, so negative
+integer elements of packed arrays came out wrong.
+	- quit just did a gs_exit, instead of returning to the driver
+in an orderly way.
+	- Because check_type_access checked for errors in the wrong
+order, sometimes type errors were reported as access errors.
+	- eq didn't check for stack underflow.
+	- Some of the stream_procs structures weren't properly
+declared const, leading to link errors on VMS.
+
+Implements currentcolor, currentcolorspace, setcolor, and
+setcolorspace (for DeviceGray, DeviceRGB, and DeviceCMYK only).
+
+Implements the dictionary form of image and imagemask.  All the pairs
+in the Decode array must be the same; Interpolate is ignored.  The
+only supported color spaces are DeviceGray, DeviceRGB, and
+DeviceCMYK.
+
+Implements files as allowable sources for the image operators.
+
+Removes the index field from the name structure, moving it to the
+'size' field of name refs.
+
+Changes the unread/sungetc operation to require that the character be
+the same as the last one read from the file.
+
+Adds fflush calls to some debugging printout routines, because Unix
+sometimes buffers terminal output.
+
+Implements the CCITTFaxEncode and CCITTFaxDecode filters.  Implements
+the general case of the SubFileDecode filter.
+
+Changes definefont to treat a UniqueID of 0 as equivalent to no
+UniqueID, because Fontographer output apparently often violates the
+specification in this way.
+
+Changes the default printer screen from 32.5 to 46 cells/inch.  (The
+old value was appropriate for a hand-rotated cell with two spots in
+it.)
+
+Changes the utility routines to allow an integral real wherever an
+integer parameter is expected in a dictionary, because Fontographer
+produces fonts that violate the Adobe specification in this way.
+
+Adds a `dosio' feature that provides direct access to memory and to
+I/O ports under MS-DOS.  (This feature is not included in the
+standard executables, of course.)
+
+Changes the default character cache limit to a 1/4" x 1/4" character
+at the default resolution, rather than basing it on the preallocated
+cache size.
+
+Removes support for t_color objects, which haven't actually been used
+for several releases.
+
+Implements setcmykcolor and currentcmykcolor as operators, so they
+will interact properly with setcolorspace and currentcolorspace.
+
+Changes the name of the file.h header file to files.h, to work around
+a bug in the VMS header library.
+
+Adds command line switches @file (to treat file as more command line,
+to get around the DOS 128-character command line limit) and -ffile
+(so one can specify file names that begin with - or @).
+
+Changes the PFBDecode filter so it takes an additional boolean that
+says whether or not to convert binary packets to hex.  (Conversion to
+hex and back to binary accounted for a substantial amount of the time
+required to load .PFB fonts.)
+
+Splits off `copydevice' as a separate operator again.
+
+Library
+-------
+
+Fixes bugs:
+	- In the VMS environment, string_.h used its own prototypes
+for the str... and mem... functions instead of <string.h>
+	- gx_alloc_char_bits declared cdsize as long, but didn't
+shorten it when passing it to shorten_cached_char.
+	- Stroking didn't suppress fattening of the lines.
+	- kshow didn't update the cached CTM information in the show
+enumerator when returning from the callout, so further characters
+could get drawn in the wrong place.
+	- When a memory device returned its initial matrix, it
+smashed the padding fields, which contained the interpreter's type
+information.
+	- setcachedevice didn't set the initial matrix in the cache
+memory device.
+	- image_set_rgb (in the image operators) didn't do a
+gx_color_from_rgb, so in principle one could sometimes get incorrect
+colors in an image.
+	- The decision about whether or not to cache a character
+bitmap incorrectly compared the character size against cmax rather
+than cdata_size.
+	- show didn't reset the in_cachedevice flag in the graphics
+state, so characters rendered by a recursive show were never cached.
+	- clip and eoclip didn't release the intermediate flattened
+clip path, causing memory to be lost.
+	- The tile_diff routine didn't handle the case of two
+identical tiles properly; this produced garbage in the band list
+file.
+	- stringwidth didn't round the character origin to an
+integral pixel; this interacted badly with hinting, causing
+improperly hinted characters to wind up in the cache.
+	- Bitmaps (including characters) were displaced, as well as
+being clipped, if they intersected the top of a clipping region.
+	- In gxclist and gdevmem1, the raster computation (although
+not the result) could overflow an int on 16-bit machines.
+
+Implements decoding (sample mapping) for image and imagemask.
+
+Implements hinting for Type 1 fonts, based on (but not copying) the
+algorithms from the X11R5 tape.
+
+Changes curve rasterizing to use sampling, rather than recursive
+subdivision, for characters.  This produces noticeably better output.
+Speed penalty for non-cached characters is less than 10% at display
+resolutions, up to 50% for 300 dpi printers.
+
+Implements gs_setcmykcolor and gs_currentcmykcolor.  These are
+semi-fake, since they simply convert the color to and from RGB, but
+the former does set the current color space properly.
+
+Changes clipping regions so they use the any-part-of-pixel rule
+rather than the center-of-pixel rule.  This helps avoid dropouts when
+using very small regions.
+
+Implements stroke adjustment.
+
+Version 2.4.2 (5/8/92)
+=============
+
+This is another quick release.  It finally fixes rotated halftone
+screens, and cleans up a few minor problems from 2.4.1.
+
+This release is being distributed only to beta testers and commercial
+licensees, since I don't want to be distracted from working on 2.5.
+
+Procedures
+----------
+
+Fixes bugs:
+	- UTRACE still appeared in the VMS makefiles.
+	- The support files (*.bat, *.doc, *.gsf, *.ps, Fontmap,
+COPYING, README) weren't included in the MS-DOS tar file.
+	- The Unix install script didn't install landscap.ps.
+
+Replaces the type1imagepath operator with PostScript code (impath.ps,
+type1ops.ps) based on the new .imagepath operator.
+
+Renames LICENSE as COPYING.
+
+Utilities
+---------
+
+Fixes bugs:
+	- pcharstr.ps had an occurrence of Subrs rather than /Subrs,
+causing it to not print the Subrs, or to get an error if there were
+none.
+	- font2c.ps didn't get the const declarations for string
+dictionaries quite right.
+	- The missing newline at the end of gsbj.bat confused GNU
+diff.
+	- ansi2knr would go into an infinite loop if a statement
+exceeded its internal buffer size.
+	- Compiled fonts would get processed by ansi2knr, which
+messed them up.
+
+Platforms
+---------
+
+Fixes bugs:
+	- Ghostscript didn't supply equivalents for rename and
+gettimeofday, which some System V platforms lack.
+	- The missing newline at the end of gp_dosfb.c confused GNU
+diff.
+
+Changes the Borland makefiles so that stack checking is only enabled
+if DEBUG or TDEBUG is set.
+
+Fonts
+-----
+
+Changes the names of the Utopia fonts from utrg/utb/utbi/uti to
+putr/putb/putbi/puti, for consistency with the rest of the font names.
+Changes cour/courb/courbi/couri to ncrr/ncrb/ncrbi/ncri likewise.
+
+Replaces the Charter fonts with the CharterBT fonts donated by
+Bitstream to the X11R5 distribution.
+
+Adds font aliasing capability to Fontmap.  Replaces
+Courier-[Bold]Oblique and ZapfChancery-MediumItalic by aliases.
+
+Changes the FontBBox of the Hershey fonts to be an executable, rather
+than a literal, array.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The GIF driver omitted a `private' on the definition of
+gif_print_page.
+	- The GIF driver wrote 16-bit values using the byte ordering
+of the platform, rather than always LSB first.
+	- George Cameron's DeskJet 500C driver had an incorrect
+control sequence for skipping blank lines.
+
+Adds 'const' in many places, including the tile and bitmap arguments
+of the tile_rectangle, copy_mono, and copy_color driver routines.
+THIS IS A DRIVER INTERFACE CHANGE.  (Printer drivers are not
+affected, since they don't implement these routines.)
+
+Adds a driver for the Trident TVGA.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- alloc_free sometimes incorrectly chose to put an unaligned
+block in an old segment on a freelist.
+	- The default undercolor removal function returned its
+argument rather than returning 0.
+
+Adds NullEncode and SubFileDecode to the standard filters, since
+bdftops uses the latter.
+
+Adds RunLengthEncode and RunLengthDecode to the optional filters.
+
+Removes the type1imagepath operator.  (It is still available as
+PostScript code, impath.ps.)  Replaces it with a simpler outline
+tracing operator .imagepath.
+
+Adds 'const' in many places.
+
+Makes fileposition (but not setfileposition) legal for NullEncode
+filters.
+
+Changes the default transfer function for high-resolution devices
+from the identity function to the square root function.
+
+Moves array_get from zgeneric.c to iutil.c.
+
+Changes uses of fopen to add a "b" to the access mode, rather than
+relying on the _fmode global variable on MS-DOS platforms.
+
+Allows use of the -Z switch even when gsmain.c wasn't compiled with
+-DDEBUG, since other modules might have been.
+
+Reorganizes gs.c and gsmain.c so that the latter can be used in
+server environments.
+
+Replaces all uses of stdin/out/err with gs_stdin/out/err.
+
+Makes the number of permanent entries on the dictionary stack a
+parameter, to allow inserting globaldict in the future.
+
+Changes BlueShift in the Type 1 font Private dictionary to allow real
+numbers.  (This differs from the Adobe specification, but at least
+one commercial font has a real number for BlueShift.)
+
+Library
+-------
+
+Fixes bugs:
+	- The doubling check in init_ht (gxht.c) still sometimes
+thought there was enough room to double the tile when there actually
+wasn't.
+	- Rotated halftone screens didn't work.
+	- gxarith.h used #ifdef vax, rather than #if
+!arch_floats_are_IEEE, to test whether IEEE floats were being used.
+	- pathforall didn't report a trailing moveto.
+
+Replaces gs_type1imagepath with gs_imagepath.
+
+Allows sOUTPUTFILE=-, meaning output to stdout.
+
+Adds 'const' in many places.
+
+Replaces all uses of stdin/out/err with gs_stdin/out/err.
+
+Version 2.4.1 (4/21/92)
+=============
+
+This is a quick release to fix minor problems discovered in 2.4, and
+to add a few improvements that didn't quite make it into 2.4.  It
+also adds GIF and PCX file support.
+
+Procedures
+----------
+
+Fixes bugs:
+	- Some makefile dependencies, and the ccgs script, caused trouble
+for parallel versions of `make'.
+	- Compiling genarch with -O with gcc on the RS/6000 produced a
+buggy executable.
+
+Fixes some minor problems in make.doc.
+
+Adds DEVICE_DEVS2..5 to handle long device lists.
+
+Removes the need to set GS_RUN_EXE when using the Watcom compiler on
+MS-DOS systems.
+
+Gets rid of gs_ccfnt.ps, merging its function into gs_fonts.ps.
+
+Gets rid of gconfig.ps; this information is now compiled in gconfig.c.
+
+Utilities
+---------
+
+Fixes bugs:
+	- The palette for pstoppm in 8-bit mode didn't contain all 8
+primary colors.
+	- font2c used just values_ to mean &values_[0]; some compilers
+couldn't handle this.
+
+Makes font2c insert `const' in many appropriate places.
+
+Drivers
+-------
+
+Fixes bugs:
+	- The SunView driver had not been updated properly for 2.4 and was
+pretty thoroughly broken.
+	- None of the printer drivers worked properly with the Watcom
+compiler, because stdprn was doing \n -> \r\n substitution.
+	- If the generic printer driver couldn't allocate the requested
+size command list buffer, it gave up rather than trying to allocate a
+smaller buffer.
+	- The SuperVGA drivers (except for the VESA driver) didn't
+work with the Watcom compiler, because a couple of places in the
+drivers weren't truncating the offset of "segmented" pointers
+properly.
+	- Some of the H-P used <esc>*b#Y rather than <esc>*p+#Y for
+vertical positioning; this apparently is wrong, at least for the
+LJIIp.
+
+Removes the dependence of the X Windows driver on Xt, Xext, and Xmu.  As a
+result, Ghostscript will not install a standard colormap itself, but it
+will use one if one is already installed.
+
+Adds a set of drivers for Portable Bitmap, Graymap, and Pixmap file
+formats.
+
+Adds drivers for monochrome, EGA/VGA-style, and SuperVGA-style PCX
+file formats.
+
+Adds drivers for monochrome and 256-color GIF file formats.
+
+Fonts
+-----
+
+Adds ZapfChancery-MediumItalic as a copy of ZapfChancery-Oblique.
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- A value with l_new set could 'escape' to save level 0 on a
+stack; if stored, it prevented the slot from being saved and restored
+properly.
+	- 16#7fffffff + 1 gave the floating point equivalent of -2^31, not
+2^31.
+	- The PFBDecode filter computed the packet length incorrectly if
+the 0x8000-bit of the length was set.
+	- 5-byte numbers in Type 1 CharStrings complained of a rangecheck
+if they exceeded 16 bits, rather than if they exceeded the integer part of
+a fixed.
+	- (, ), and \ appearing in file name arguments in the command
+line did not work properly.
+
+Adds 'const' in many places.
+
+Changes the random number generator to be the same as the one used in
+Level 2 PostScript (as reported by Ed Taft on comp.lang.postscript).
+
+Exits with code 1 rather than code 0 on an unrecoverable error detected at
+the PostScript level.
+
+Makes dictionaries expand automatically when they fill up.
+
+Adds gp_exit to complement gp_init.
+
+Changes dictionaries to always allocate a power of 2 entries on
+32-bit machines.  Changes the name table to allocate indices
+scattered, so dictionary lookup doesn't have to do a multiply to
+scramble the index.
+
+Changes the handling of currentfile to do "shallow binding" so stack
+searching is almost never required.
+
+Library
+-------
+
+Fixes bugs:
+	- arc and arcn got a numeric exception if the radius was zero.
+	- The undocumented 15 opcode in Type 1 fonts wasn't ignored.
+	- PaintType 3 wasn't allowed.  (It isn't clear what it should
+mean; we treat it as equivalent to 0.)
+	- The VAX/VMS C compiler was generating incorrect code for the
+chi_bits and cmask macros in gdevmem, producing incorrect output.
+	- If the result of the slow algorithm for intersecting clipping
+paths was a rectangle, the wrong thing happened (cbox didn't get set).
+	- gx_path_is_rectangle didn't recognize open rectangles.
+	- clist_change_tile didn't check properly whether the tile
+size had changed, so changing the screen could produce invalid band
+files.
+	- The image operators did the wrong thing in the 1-for-1
+case, interleaving N bytes of data with 7*N bytes of garbage.
+	- stroke sometimes handled bevel and miter joins wrong in
+reflected coordinate systems.
+	- init_ht checked incorrectly whether there was enough room
+to Y-replicate tiles, so sometimes it did it when it shouldn't have.
+	- stroke sometimes thought lines were thin when they weren't.
+
+Adds 'const' in many places.
+
+Adds support for 2- and 4-bit-per-pixel memory devices.
+
+Version 2.4 (3/25/92)
+===========
+
+This is a major release that adds SuperVGA support, support for Metrics,
+settable device properties, and incremental font loading.  It also
+includes important performance improvements, based on rewrites of some key
+algorithms, and quite a few new Level 2 / Display PostScript facilities.
+
+Procedures
+----------
+
+Fixes bugs:
+	- The rule for compiling gconfig.c didn't include the -I switches.
+	- .bat files were being distributed with a \n line terminator
+rather than \r\n.
+	- A CLOSE MODULE_LIST was needed after END_COMPILE: in the VMS
+command files.
+	- Unix systems couldn't handle multiple drivers with overlapping
+sets of files.
+	- -s<name> defined <name> as a null, rather than as an empty string.
+
+Adds gconfig.ps to the list of needed configuration files.
+
+Changes the way that the makefile handles nested .h files, so that it
+doesn't have to `touch' them.
+
+Adds the loadallfonts procedure to gs_fonts.ps.
+
+Changes the standard DOS configuration to include VGA, EGA, VESA, Epson,
+BubbleJet, and H-P printer drivers.
+
+Renames ghost.mak as gs.mak, and gdevs.mak as devs.mak.
+
+Adds a USE_ASM flag so that one can build a DOS version of Ghostscript
+without having an assembler.
+
+Splits off common code from the two MS-DOS makefiles into tccommon.mak.
+
+Replaces the COPYING and LICENSE files with a new LICENSE file containing
+version 2 of the GNU General Public License.
+
+Removes DEVICES and DEVICE_OBJS from the makefiles, since they are no
+longer needed.
+
+Adds a GS_DEVICE environment variable to supply a default device name if
+desired.
+
+Adds ansihead.mak and unix-ansi.mak, to parallel [g]cc-head.mak and
+unix-[g]cc.mak, for other ANSI C compilers.
+
+Changes the way that optional features are defined in the makefiles, so
+that they actually work.
+
+Adds support for the Watcom C/386 compiler.
+
+Allows # in the command line as equivalent to =, to compensate for
+brain-damaged MS-DOS shell.
+
+Adds -sOUTPUTFILE= to set the output file or pipe.
+
+Adds -dWRITESYSTEMDICT to leave systemdict writable.
+
+Utilities
+---------
+
+Fixes bugs:
+	- pcharstr.ps insisted on having Subrs be present in the font.
+	- pcharstr.ps decoded negative numbers between -108 and -1131
+incorrectly.
+	- pfbtogs.ps didn't handle packets longer than 64K correctly.
+
+Changes the bdftops utility so that it makes entries for UnderlinePosition
+and UnderlineThickness in FontInfo, and so that it always records a
+FullName (the FontName if no other is provided).
+
+Changes the name of the pfbtops utility to pfbtogs, because groff already
+includes a program called pfbtops.
+
+Adds the gslp utility for doing "line printing" of text files, similar to
+enscript + lpr.
+
+Adds a new variable DITHERPPI that enables a different dither pattern,
+claimed to be better for printers.
+
+Adds the font2c utility for compiling Type 1 fonts into C, so they can be
+linked into an executable rather than loaded dynamically.
+
+Drivers
+-------
+
+Fixes bugs:
+	- gdev_prn_copy_scan_lines was erroneously masking the last byte
+of data even on color printers, as was paintjet_print_page.
+	- The TruFax driver had a couple of compilation errors, since it
+hadn't been compiled in a while.
+	- The BGI driver sometimes didn't consult BGIPATH when looking for
+.BGI files.
+	- initclip did the wrong thing with memory devices.
+	- The BGI driver didn't look in BGIDIR for .BGI files.
+	- The Epson driver didn't set the right margin properly with
+ESC+Q.
+	- The BJ-10e driver was badly broken.
+	- gdev_prn_open/close_printer didn't reset the command list file,
+so it was taking quadratic time to print multi-page documents.
+
+Adds color to the SunView driver.
+
+Adds selectable resolution (75, 100, 150, or 300 DPI) to the
+DeskJet/LaserJet driver.
+
+Changes gssetdev so that drivers can specify special libraries to be
+loaded, as well as object files.
+
+Adds a driver for VESA-compliant SuperVGA displays.  This driver handles
+all resolutions from 640 x 400 up to 1280 x 1024, in 256-color mode.  The
+default is VGA resolution (640 x 480).
+
+Adds a driver for the ATI Wonder SuperVGA card, and for SuperVGA cards
+using the Tseng Labs ET3000 or ET4000 chip such as the STB VGA EM-16 and
+the Orchid ProDesigner II (256-color modes only).
+
+Adds a driver for Trident and Tseng Labs SuperVGA cards in 800 x 600,
+16-color modes (for cards with only 256K of memory).
+
+Adds user-contributed drivers for the Ricoh 4081, DEC LN03, Canon LBP-8II,
+and H-P DeskJet 500C printers.
+
+Adds Tim Theisen's Ghostview changes to the X11 driver.
+
+MAKES NON-BACKWARD-COMPATIBLE CHANGES TO THE DRIVER PROCEDURE INTERFACE as
+follows:
+
+	- Changes map_rgb_color and map_color_rgb to always work in a
+	    16-bit color value space, rather than a space defined by the
+	    maximum number of distinct colors provided by the device.
+
+	- Adds an argument to the output_page procedure to indicate
+	    whether the procedure is being called for copypage or
+	    showpage, and a num_copies argument.
+
+	- Adds a gx_bitmap_id to the copy_ and tile_ procedures, so that
+	    drivers can cache bitmaps in the server or device if they want
+	    to.
+
+	- Removes fill_trapezoid and tile_trapezoid.
+
+	- Adds a new get_bits procedure for reading the bits back from the
+	    driver buffer (when possible), replacing copy_scan_lines.
+	    This procedure takes a new argument describing padding and
+	    byte swapping, and returns a different value from
+	    copy_scan_lines.
+
+	- Adds get_props and put_props procedures for accessing arbitrary
+	    additional properties of devices.  The interface is quite
+	    complex, but provides a great deal of flexibility.
+
+See drivers.doc for details.
+
+Changes gdev_mem_bytes_per_scan_line to gdev_prn_bytes_per_scan_line.
+
+Adds a user-contributed driver for DigiBoard, Inc.'s fax software.
+
+Fonts
+-----
+
+Changes Type1BuildChar so it uses the information from the Metrics
+dictionary in the font, if Metrics is present.
+
+Changes findfont (.loadfont) so it recognizes .PFB fonts and can load them
+directly.  Also changes .loadfont to disable packing temporarily, because
+some fonts rely on procedures being writable (!).
+
+Interpreter
+-----------
+
+Fixes bugs:
+	- The hypot function is not available on some Unix systems.
+	- Ghostscript didn't flush and close files when exiting.
+	- In statusdict, the /margins procedure used .leftmargin, but
+/setmargins used .lmargin.
+	- An out-of-range putinterval would simply do nothing, rather than
+reporting an error.
+	- If an attempt to allocate a block larger than the allocator's
+chunk size (20K) failed, the allocator would erroneously think it had
+succeeded.
+	- The bind operator made the top-level procedure read-only, as
+well as interior procedures.
+	- gs.c copied 1 extra character for the value of strings defined
+on the command line with -s...=, which could smash the first byte of the
+next object in memory.
+	- copying a dictionary erroneously required the maxlength of the
+destination to be greater than or equal to the maxlength of the source,
+rather than the length of the source.
+	- undef didn't correctly decide when to mark a deleted entry as
+deleted vs. free; as a result, some keys couldn't be looked up properly
+after an undef.
+	- type1encrypt and type1decrypt didn't set the size of the result
+properly.
+	- cvi and cvr didn't allow leading or trailing whitespace in
+strings.
+	- cvs didn't cause an error if the destination string was too
+short.
+	- Many operators didn't check correctly for stack underflow (off
+by 1).
+	- `for' used reals, rather than integers, if the limit was a real,
+even if the initial value and increment were integers.
+	- `restore' didn't properly invalidate copies of the save object
+being restored from; `save dup restore restore' would crash.
+	- `restore' sometimes didn't undo stores into matrices that were
+stored into by operators.  (The identity matrix always had l_new set.)
+	- readline gave a rangecheck if the input line exactly filled the
+string.
+	- `--' as the last switch on the command line caused a crash
+rather than an error message.
+	- On MS-DOS systems, filenameforall didn't handle patterns with a
+drive or directory specifier properly.
+	- stroke sometimes called gz_draw_line_fixed even if the line went
+outside the clipping box by 1 pixel.
+
+Changes the loop that binds procedure "operators" to entirely disable the
+handling of the typecheck error, rather than to use stopped.  This cuts
+initialization time significantly, and also eliminates about 35K of wasted
+space (for saving the stacks).
+
+Changes the version "operator" so it returns 47.0.  Adds "revision" to
+define the Ghostscript version # x 100.
+
+Adds gscurrentresolution and gssetresolution procedures for getting and
+setting the device resolution.
+
+Adds -r<res> and -r<xres>x<yres> as command line options for setting
+device resolution.
+
+Adds a facility for incrementally loading the individual CharStrings of a
+Ghostscript font from the disk.  This can save a lot of memory, at the
+expense of slower rendering.  (It is intended primarily for MS-DOS
+systems.)
+
+Changes findlibfile to return the name of the file that was actually
+opened, as well as the file itself, when the operation succeeds.
+
+Changes the name of the main entry to the interpreter from interpret to
+gs_interpret, because of a conflict with a Data General library procedure.
+
+Adds the .setmetrics operator to set the metrics for the current
+character for Type 1 fonts.
+
+Adds more LaserWriter-specific entries to statusdict.
+
+Gives names to all the internal `operators', so they will print out
+reasonably when an error occurs.
+
+Extends the status operator to accept a string and return file
+information, as defined for Level 2 PostScript.
+
+Adds the filter operator and some specific filters: ASCII85Encode,
+ASCII85Decode, ASCIIHexEncode, ASCIIHexDecode, eexecDecode, NullEncode,
+PFBDecode, and the null case of SubFileDecode.
+
+Extends the scanner to recognize the Level 2 << and >> tokens.
+
+Adds a facility for extracting the text strings from a PostScript file and
+writing them out in a simple format (selected by -dASCIIOUT, implemented
+by gs_2asc.ps).
+
+Implements all of the remaining Display PostScript facilities that are
+also in Level 2 (i.e., everything in section A.1.3 of the PostScript
+Language Reference Manual, Second Edition, that is not also in section
+A.1.2).  The virtual memory operations are all stubs; the new halftone
+options are not fully implemented.
+
+Changes makeimagedevice to use a string of gray or RGB values, rather than
+an array of color objects, to specify the palette.  Removes
+currentgscolor and setgscolor from the interpreter, but leaves t_color
+objects in, since they may be useful later.
+
+Adds getdeviceprops and putdeviceprops for manipulating device properties.
+Currently defined properties for all devices: InitialMatrix, HWResolution,
+HWSize, Name.  Currently defined properties for printers: BufferSpace,
+MaxBitmap, OutputFile.  OutputFile allows |command for piping on Unix
+systems.
+
+Removes deviceparams and makedevice.  Adds devicedefaultmatrix.
+
+Implements reversepath.
+
+Makes copy work on devices.
+
+MS-DOS specific
+- - - - - - - -
+
+Fixes bugs:
+	- iutilasm.asm wouldn't assemble with newer versions of MASM if
+CPU_TYPE was set to 286 or above.
+	- CPU_TYPE=386 didn't properly substitute the faster
+multiply/divide routines under Turbo C++ or Borland C++, only under the
+original Turbo C.
+
+Library
+-------
+
+Fixes bugs:
+	- A curve whose first and last points were the same wouldn't get
+drawn at all.
+	- A bug in the Turbo C++ compiler generated bad code when shifting
+a long right by 1 bit.
+	- If stroking a dashed line ever encountered a segment that was
+completely blank, Ghostscript would indirect through a null pointer.
+	- arc and arcn gave an error if the radius was negative.
+	- stroke always used the general algorithm, even if the line was
+guaranteed to be thin.
+	- arc and arcn erroneously reduced the angles mod 360.
+	- Very large or negative 32-bit numbers in Type 1 fonts didn't
+work properly on MS-DOS systems (the ff0000 bits got set to zero). 
+	- Color printer devices rendering entirely in memory only
+allocated a monochrome-sized bitmap.
+	- clip and eoclip didn't intersect the paths properly in the
+general case.
+	- charpath erroneously rounded the current point to an integral
+value, causing characters to be spaced improperly.
+	- The definition of max_color_param got some compilers confused.
+	- charpath always used quadratic time and space, and dropped all
+but the last character when used with a Type 3 font.
+	- Stroking a path with a 180 degree angle would incorrectly miter
+instead of beveling.
+	- Type 1 fonts used the current flatness for curves, which could
+produce bad (and inconsistent) results.
+	- Stroking a degenerate line segment produced incorrect results.
+
+Changes the character cache to use the UniqueID as the key, when
+available, instead of the font pointer.  This dramatically improves
+performance when fonts are getting removed and reloaded because of page
+isolation with save/restore.
+
+Removes some unnecessary casts to (float) from gsmatrix.c and gscoord.c.
+
+Changes the Type 1 interpreter so that it rounds line and curve endpoints
+to the center of the nearest half-pixel, and omits null line segments.
+This both speeds up rendering at small sizes and improves output quality.
+
+Changes gs_deviceparams to return resolution as well as extent; changes
+gs_makedevice to accept resolution as well as extent.
+
+Replaces the algorithm for approximating circular arcs with curves with a
+more accurate one.
+
+Changes gs_point and gs_rect to use doubles rather than floats.
+
+Adds gs_setmetrics, for overriding Type 1 font metrics for the current
+character.
+
+Changes clipping to use lists of rectangles rather than path intersection.
+ This makes a big difference when clipping bitmaps (including characters).
+
+Changes the character cache to discard entries incrementally, rather than
+clearing the entire cache when it fills up.
+
+Changes the implementation of transfer functions to use a cached map,
+built when the transfer function is set.  This makes transfer functions
+work properly in all situations, including images.
+
+Defines a .quit operator that takes an exit code, and redefines quit in
+terms of it.
+
+Adds support for 16-bit-per-pixel devices in gdevmem.
+
+Adds gs_copydevice and gs_deviceinitialmatrix; removes gs_deviceparams and
+gs_makedevice.
+
+Changes setscreen to ensure that the cell is always at least 4x4 pixels in
+size.
+
+Versions before 2.4
+===================
+
+See the file history.doc.

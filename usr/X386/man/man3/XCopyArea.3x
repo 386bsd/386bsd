@@ -1,0 +1,296 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XCopyArea 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XCopyArea, XCopyPlane \- copy areas
+.SH SYNTAX
+.\" $Header: XCopyArea.f,v 1.1 88/02/26 09:58:59 mento Exp $
+XCopyArea\^(\^\fIdisplay\fP, \fIsrc\fP\^, \fIdest\fP\^, \fIgc\fP\^, \fIsrc_x\fP\^, \fIsrc_y\fP\^, \fIwidth\fP\^, \fIheight\fP\^,  \fIdest_x\fP\^, \fIdest_y\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fIsrc\fP\^, \fIdest\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIsrc_x\fP\^, \fIsrc_y\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.br
+      int \fIdest_x\fP\^, \fIdest_y\fP\^;
+.LP
+.\" $Header: XCopyPlane.f,v 1.1 88/02/26 09:59:06 mento Exp $
+XCopyPlane\^(\^\fIdisplay\fP, \fIsrc\fP\^, \fIdest\fP\^, \fIgc\fP\^, \fIsrc_x\fP\^, \fIsrc_y\fP\^, \fIwidth\fP\^, \fIheight\fP\^, \fIdest_x\fP\^, \fIdest_y\fP\^, \fIplane\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fIsrc\fP\^, \fIdest\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIsrc_x\fP\^, \fIsrc_y\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.br
+      int \fIdest_x\fP\^, \fIdest_y\fP\^;
+.br
+      unsigned long \fIplane\fP\^;
+.SH ARGUMENTS
+.ds Dx , which are relative to the origin of the destination rectangle \
+and specify its upper-left corner
+.\" $Header: dstxy_gen.a,v 1.2 88/08/04 11:09:55 mento Exp $
+.IP \fIdest_x\fP 1i
+.br
+.ns
+.IP \fIdest_y\fP 1i
+Specify the x and y coordinates\*(Dx. 
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: plane.a,v 1.3 88/05/13 13:48:24 mento Exp $
+.IP \fIplane\fP 1i
+Specifies the bit plane.
+You must set exactly one bit to 1.
+.\" $Header: srcdest.a,v 1.1 88/02/26 10:31:20 mento Exp $
+.IP \fIsrc\fP 1i
+.br
+.ns
+.IP \fIdest\fP 1i
+Specify the source and destination rectangles to be combined. 
+.\" $Header: srcxy.a,v 1.3 88/05/13 07:40:32 mento Exp $
+.IP \fIsrc_x\fP 1i
+.br
+.ns
+.IP \fIsrc_y\fP 1i
+Specify the x and y coordinates, 
+which are relative to the origin of the source rectangle
+and specify its upper-left corner.
+.ds Wh , which are the dimensions of both the source \
+and destination rectangles
+.\" $Header: w+h_gen.a,v 1.2 88/08/04 11:21:28 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height\*(Wh.
+.SH DESCRIPTION
+.\" $Header: XCopyArea.d,v 1.4 88/09/08 19:12:40 mento Exp $
+The
+.ZN XCopyArea
+function combines the specified rectangle of src with the specified rectangle 
+of dest.
+The drawables must have the same root and depth,
+or a
+.ZN BadMatch
+error results.
+.LP
+If regions of the source rectangle are obscured and have not been
+retained in backing store 
+or if regions outside the boundaries of the source drawable are specified, 
+those regions are not copied. 
+Instead, the 
+following occurs on all corresponding destination regions that are either
+visible or are retained in backing store.  
+If the destination is a window with a background other than 
+.ZN None , 
+corresponding regions
+of the destination are tiled with that background
+(with plane-mask of all ones and
+.ZN GXcopy 
+function).
+Regardless of tiling or whether the destination is a window or a pixmap,
+if graphics-exposures is 
+.ZN True ,
+then
+.ZN GraphicsExpose
+events for all corresponding destination regions are generated.
+If graphics-exposures is 
+.ZN True 
+but no
+.ZN GraphicsExpose
+events are generated, a
+.ZN NoExpose 
+event is generated.
+Note that by default graphics-exposures is
+.ZN True
+in new GCs.
+.LP
+This function uses these GC components: function, plane-mask, 
+subwindow-mode, graphics-exposures, clip-x-origin,
+clip-y-origin, and clip-mask.
+.LP
+.ZN XCopyArea
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+and
+.ZN BadMatch 
+errors.
+.LP
+.\" $Header: XCopyPlane.d,v 1.3 88/08/18 08:34:53 mento Exp $
+The
+.ZN XCopyPlane
+function uses a single bit plane of the specified source rectangle
+combined with the specified GC to modify the specified rectangle of dest.
+The drawables must have the same root but need not have the same depth.
+If the drawables do not have the same root, a
+.ZN BadMatch
+error results.
+If plane does not have exactly one bit set to 1 and the values of planes
+must be less than %2 sup n%, where \fIn\fP is the depth of src, a
+.ZN BadValue
+error results.
+.LP
+Effectively, 
+.ZN XCopyPlane
+forms a pixmap of the same depth as the rectangle of dest and with a
+size specified by the source region. 
+It uses the foreground/background pixels in the GC (foreground
+everywhere the bit plane in src contains a bit set to 1,
+background everywhere the bit plane in src contains a bit set to 0)
+and the equivalent of a 
+.ZN CopyArea
+protocol request is performed with all the same exposure semantics.
+This can also be thought of as using the specified region of the source 
+bit plane as a stipple with a fill-style of
+.ZN FillOpaqueStippled
+for filling a rectangular area of the destination.
+.LP
+This function uses these GC components: function, plane-mask, foreground,
+background, subwindow-mode, graphics-exposures, clip-x-origin, clip-y-origin,
+and clip-mask.
+.LP
+.ZN XCopyPlane
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+.ZN BadMatch ,
+and
+.ZN BadValue 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badgc.e,v 1.1 87/09/04 08:23:02 mento Locked $
+.TP 1i
+.ZN BadGC
+A value for a GContext argument does not name a defined GContext.
+.\" $Header: badmatch1.e,v 1.3 87/09/09 18:18:54 mento Exp $
+.TP 1i
+.ZN BadMatch
+An
+.ZN InputOnly
+window is used as a Drawable.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XClearArea(3X11)
+.br
+\fIXlib \- C Language X Interface\fP

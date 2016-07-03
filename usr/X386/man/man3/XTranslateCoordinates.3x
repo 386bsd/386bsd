@@ -1,0 +1,170 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XTranslateCoordinates 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XTranslateCoordinates \- translate window coordinates
+.SH SYNTAX
+.\" $Header: XTranCoords.f,v 1.2 88/04/05 14:44:04 mento Exp $
+Bool XTranslateCoordinates\^(\^\fIdisplay\fP, \fIsrc_w\fP\^, \fIdest_w\fP\^, \fIsrc_x\fP\^, \fIsrc_y\fP\^, \fIdest_x_return\fP\^, 
+.br
+                            \fIdest_y_return\fP\^, \fIchild_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIsrc_w\fP\^, \fIdest_w\fP\^;
+.br
+      int \fIsrc_x\fP\^, \fIsrc_y\fP\^;
+.br
+      int *\fIdest_x_return\fP\^, *\fIdest_y_return\fP\^;
+.br
+      Window *\fIchild_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: child.a,v 1.1 88/02/26 10:05:43 mento Exp $
+.IP \fIchild_return\fP 1i
+Returns the child if the coordinates are contained in a mapped child of the
+destination window.
+.\" $Header: dw.a,v 1.2 88/05/07 13:20:18 mento Exp $
+.IP \fIdest_w\fP 1i
+Specifies the destination window.
+.\" $Header: destxy.a,v 1.2 88/05/07 13:21:31 mento Exp $
+.IP \fIdest_x_return\fP 1i
+.br
+.ns
+.IP \fIdest_y_return\fP 1i
+Return the x and y coordinates within the destination window.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: sw.a,v 1.2 88/05/07 13:19:45 mento Exp $
+.IP \fIsrc_w\fP 1i
+Specifies the source window.
+.\" $Header: srcxy1.a,v 1.1 88/02/26 10:31:23 mento Exp $
+.IP \fIsrc_x\fP 1i
+.br
+.ns
+.IP \fIsrc_y\fP 1i
+Specify the x and y coordinates within the source window.
+.SH DESCRIPTION
+.\" $Header: XTranCoords.d,v 1.5 88/08/17 08:32:02 mento Exp $
+If
+.ZN XTranslateCoordinates
+returns
+.ZN True ,
+it takes the src_x and src_y coordinates relative
+to the source window's origin and returns these coordinates to 
+dest_x_return and dest_y_return
+relative to the destination window's origin.
+If
+.ZN XTranslateCoordinates
+returns 
+.ZN False , 
+src_w and dest_w are on different screens,
+and dest_x_return and dest_y_return are zero.
+If the coordinates are contained in a mapped child of dest_w,
+that child is returned to child_return.
+Otherwise, child_return is set to
+.ZN None .
+.LP
+.ZN XTranslateCoordinates
+can generate a
+.ZN BadWindow 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+\fI\*(xL\fP

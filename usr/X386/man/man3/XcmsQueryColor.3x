@@ -1,0 +1,250 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XcmsQueryColor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XcmsQueryColor, XcmsQueryColors, XcmsLookupColor \- obtain color values
+.SH SYNTAX
+Status XcmsQueryColor\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \fIcolor_in_out\fP\^, \fIresult_format\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      XcmsColor *\fIcolor_in_out\fP\^;
+.br
+      XcmsColorFormat \fIresult_format\fP\^;
+.LP
+Status XcmsQueryColors\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \fIcolors_in_out\fP\^, \fIncolors\fP\^, \fIresult_format\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      XcmsColor \fIcolors_in_out\fP\^[\^]\^;
+.br
+      unsigned int \fIncolors\fP\^;
+.br
+      XcmsColorFormat \fIresult_format\fP\^;
+.LP
+Status XcmsLookupColor\^(\^\fIdisplay\fP, \fIcolormap\fP\^, \fIcolor_string\fP\^, \fIcolor_exact_return\fP\^, \fIcolor_screen_return\fP\^,
+.br
+			 \fIresult_format\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      char *\fIcolor_string\fP\^;
+.br
+      XcmsColor *\fIcolor_exact_return\fP\^, *\fIcolor_screen_return\fP\^;
+.br
+      XcmsColorFormat \fIresult_format\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: cmap.a,v 1.2 88/05/09 06:39:13 mento Exp $
+.IP \fIcolormap\fP 1i
+Specifies the colormap.
+.\" $Header$
+.IP \fIcolor_exact_return\fP 1i
+Returns the color specification parsed from the color string
+or parsed from the corresponding string found in a color name database.
+.IP \fIcolor_in_out\fP 1i
+Specifies the pixel member that indicates the color cell to query,
+and the color specification stored for the color cell is returned in this
+.ZN XcmsColor
+structure.
+.IP \fIcolor_screen_return\fP 1i
+Returns the color that can be reproduced on the 
+.ZN Screen .
+.ds St
+.\" $Header$
+.IP \fIcolor_string\fP 1i
+Specifies the color string\*(St.
+.\" $Header$
+.IP \fIresult_format\fP 1i
+Specifies the color format for the returned color
+specifications (color_screen_return and color_exact_return arguments).
+If format is
+.ZN XcmsUndefinedFormat
+and the color string contains a
+numerical color specification,
+the specification is returned in the format used in that numerical
+color specification.
+If format is
+.ZN XcmsUndefinedFormat
+and the color string contains a color name,
+the specification is returned in the format used 
+to store the color in the database.
+.IP \fIncolors\fP 1i
+Specifies the number of 
+.ZN XcmsColor
+structures in the color specification array.
+.SH DESCRIPTION
+The
+.ZN XcmsQueryColor
+function obtains the RGB value
+for the pixel value in the pixel member of the specified
+.ZN XcmsColor
+structure, and then
+converts the value to the target format as
+specified by the result_format argument.
+If the pixel is not a valid index into the specified colormap, a
+.ZN BadValue
+error results.
+The
+.ZN XcmsQueryColors
+function obtains the RGB values
+for pixel values in the pixel members of
+.ZN XcmsColor
+structures, and then
+converts the values to the target format as
+specified by the result_format argument.
+If a pixel is not a valid index into the specified colormap, a
+.ZN BadValue
+error results.
+If more than one pixel is in error,
+the one that gets reported is arbitrary.
+.LP
+.ZN XcmsQueryColor
+and
+.ZN XcmsQueryColors
+can generate
+.ZN BadColor
+and
+.ZN BadValue
+errors.
+.LP
+The
+.ZN XcmsLookupColor
+function looks up the string name of a color with respect to the screen
+associated with the specified colormap.
+It returns both the exact color values and
+the closest values provided by the screen 
+with respect to the visual type of the specified colormap.
+The values are returned in the format specified by result_format.
+If the color name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+.ZN XcmsLookupColor
+returns
+.ZN XcmsSuccess
+or
+.ZN XcmsSuccessWithCompression
+if the name is resolved, otherwise it returns
+.ZN XcmsFailure .
+If
+.ZN XcmsSuccessWithCompression
+is resturned, then the color specification
+in \fIcolor_screen_return\fP is the result of gamut compression.
+.SH DIAGNOSTICS
+.\" $Header: badcolor.e,v 1.1 87/09/04 08:22:57 mento Exp $
+.TP 1i
+.ZN BadColor
+A value for a Colormap argument does not name a defined Colormap.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XcmsAllocColor(3X11),
+XcmsStoreColor(3X11),
+XQueryColor(3X11)
+.br
+\fI\*(xL\fP

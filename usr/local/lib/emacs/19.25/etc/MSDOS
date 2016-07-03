@@ -1,0 +1,57 @@
+This file describes use of Emacs 19 on MS-DOG.
+
+* The commands `mode25' and `mode4350' change the number of 
+lines of the screen.  You get 43 lines on an EGA monitor, 50 on
+a VGA monitor.
+
+* Ctrl-Break takes the place of C-g.  Using compilers prior to
+djgpp 1.11 maint 5, you should not use Ctrl-Break unless you
+run under DPMI (i.e., you are using Windows, Qdpmi, ...)
+
+Actually, if Emacs is in an endless loop, you might as well go
+ahead and try.  Usually it works, but sometimes Emacs crashes
+with a stack trace.  This is not an Emacs bug.
+
+* Character codes 0200-0237 are self-inserting.
+
+* The keyboard support is made as X-like as possible.  This means
+that events like M-S-f1 will be generated (by Shift + Alt + f1).
+
+* Mouse support is partially implemented.
+
+* The `compile' command works on MS-DOG, but it waits for the
+compilation to finish before letting you edit again.  There's no other
+way to do it, given the lack of asynchronous processes.
+
+* The function `expand-file-name' maps upper case letters to lower
+case letters, since MS-DOG does not distinguish.
+
+* The new buffer-local variable `buffer-file-type' controls whether a
+file contains text (newlines will be written as CR+LF) or binary data
+(newlines written as LF).  Text is specified by nil, and binary by t.
+The status of a buffer can be seen in the mode line as "T:" or "B:"
+before the major mode.
+
+Normally `buffer-file-type' is set automatically from the variable
+`file-name-buffer-file-type-alist' which is an alist mapping regexps
+to file types.
+
+You can visit a file explicitly as text, or as binary, using the
+commands `find-file-binary' and `find-file-text'.
+
+* New variables `binary-process-input' and `binary-process-output'
+control whether temporary files are opened as binary or as text
+files.  nil means text, and t means binary.  The difference is
+translation of CR+LF to LF and C-z handling.
+
+* Environment variables "HOME", "EMACSPATH", "TERM", "SHELL",
+"USER", "NAME", and "TZ" are given default values as suitable
+for a single user system.  See src/msdos.c for details.
+
+* The function `substitute-in-file-name' disregards case in
+environment variables, as the MS-DOG SET command does.
+
+* The variable `msdos-shells' contains a list of commands that
+are shells.  This variable is used to convert to map Unix-like
+commands like "$SHELL -c /some/command" to MS-DOG commands
+like "$SHELL /c \some\command".

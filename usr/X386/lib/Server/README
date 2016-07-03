@@ -1,0 +1,74 @@
+                    Readme for the Xfree86 2.0 LinkKit
+                    ----------------------------------
+
+0. For systems which don't use gcc-2, you may need to install libgcc.a if
+   the binary distribution you are using was built with gcc-2.
+
+1. Edit the site.def file to define which servers you want to build, and
+   the drivers and font renderers you want included.
+
+    - Set HasGcc and HasGcc2 to match the compiler you are using if
+      the defaults aren't correct.
+    - If the linkkit was built with gcc-2.x and you are using some other
+      compiler, you must install libgcc.a and set NeedLibGcc to YES.
+
+    - To build the 256 colour server, set XF86SVGAServer to YES.
+    - To build the 256 colour server:   set XF86SVGAServer to YES.
+    - To build the 16 colour server:    set XF86VGA16Server to YES.
+    - To build the monochrome server:   set XF86MonoServer to YES.
+    - To build the S3 server:           set XF86S3Server to YES.
+    - To build the Mach8 server:        set XF86Mach8Server to YES.
+    - To build the Mach32 server:       set XF86Mach32Server to YES.
+    - To build the IBM 8514/A server:   set XF86I8514Server to YES.
+
+    - Set X386Vga256Drivers to the list of drivers you want to include in
+      the 256 colour server.
+    - Set X386Vga16Drivers to the list of drivers you want to include in
+      the 16 colour server.
+    - Set X386Vga2Drivers to the list of drivers you want to include in the
+      monochrome vga server.  The vga2 driver can be disabled by defining
+      this list to be empty.
+    - Set X386Hga2Drivers to hga6845 to enable the hga2 driver in the
+      monochrome server. The hga2 driver can be disabled by defining this
+      to be empty.
+    - Set X386Bdm2Drivers to hgc1280 to enable the Hyundai bdm2 driver in
+      the monochrome server. The bdm2 driver can be disabled by defining
+      this to be empty.
+    - Set XF86S3Drivers to the list of drivers you want to include in the
+      S3 server.
+    - Set FontRenderers to the list of font renderers you want to include
+      in the server.
+
+   Note: the ordering of drivers determines the order in which the probing
+   is done.  The 'generic' driver should be the last one included in the
+   monochrome and 16 colour servers because its probe always succeeds.  The
+   'generic_s3' driver should be the last one included in the S3 servers
+   for similar reasons.
+
+2. If you are including a driver that it not part of the standard
+   distribution, make a directory in drivers/vga256 (drivers/vga2 if it is
+   for the monochrome server, drivers/vga16 if it is for the 16 colour
+   server, or drivers/bdm2 if it is for the bdm2 monochrome server's bdm2
+   screen) and copy either the source or .o file and a suitable Imakefile
+   into that directory.  The name of the directory should be the same as
+   the name of the driver (refer to the documentation in the VGADriverDoc
+   directory for more details).  If you are adding an additional font
+   renderer, put the library in renderers/.
+
+3. To build the Makefile, run
+
+     ./mkmf
+
+4. Run 'make' to link the server(s) as configured.
+
+5. Run 'make install' to install the new server(s).
+
+6. Run 'make clean' to remove the files that were created by this
+   procedure.
+
+7. It is possible to see which drivers are included in the server by
+   running it with the '-showconfig' flag.
+
+
+
+$XFree86: mit/server/ddx/x386/LinkKit/README,v 2.1 1993/10/23 04:34:27 dawes Exp $

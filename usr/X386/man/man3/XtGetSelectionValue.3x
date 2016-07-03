@@ -1,0 +1,193 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtGetSelectionValue 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtGetSelectionValue, XtGetSelectionValues \- obtain selection values
+.SH SYNTAX
+void XtGetSelectionValue(\fIw\fP, \fIselection\fP, \fItarget\fP, \
+\fIcallback\fP, \fIclient_data\fP, \fItime\fP)
+.br
+      Widget \fIw\fP;
+.br
+      Atom \fIselection\fP;
+.br
+      Atom \fItarget\fP;
+.br
+      XtSelectionCallbackProc \fIcallback\fP;
+.br
+      XtPointer \fIclient_data\fP;
+.br
+      Time \fItime\fP;
+.LP
+void XtGetSelectionValues(\fIw\fP, \fIselection\fP, \fItargets\fP, \
+\fIcount\fP, \fIcallback\fP, \fIclient_data\fP, \fItime\fP)
+.br
+      Widget \fIw\fP;
+.br
+      Atom \fIselection\fP;
+.br
+      Atom *\fItargets\fP;
+.br
+      int \fIcount\fP;
+.br
+      XtSelectionCallbackProc \fIcallback\fP;
+.br
+      XtPointer \fIclient_data\fP;
+.br
+      Time \fItime\fP;
+.SH ARGUMENTS
+.ds Cb \ that is to be called when the selection value has been obtained
+.IP \fIcallback\fP 1i
+Specifies the callback procedure\*(Cb.
+.ds Cd it is called
+.IP \fIclient_data\fP 1i
+Specifies the argument that is to be passed to the specified procedure
+when \*(Cd.
+.IP \fIclient_data\fP 1i
+Specifies the client data (one for each target type)
+that is passed to the callback procedure when it is called for that target.
+.IP \fIcount\fP 1i
+Specifies the length of the targets and client_data lists.
+.IP \fIselection\fP 1i
+Specifies the particular selection desired (that is, primary or secondary).
+.IP \fItarget\fP 1i
+Specifies the type of the information that is needed about the selection.
+.IP \fItargets\fP 1i
+Specifies the types of information that is needed about the selection.
+.ds Ti value is desired
+.IP \fItime\fP 1i
+Specifies the timestamp that indicates when the selection \*(Ti.
+.ds Wi that is making the request
+.IP \fIw\fP 1i
+Specifies the widget \*(Wi.
+.SH DESCRIPTION
+The
+.ZN XtGetSelectionValue
+function requests the value of the selection that has been converted to 
+the target type. 
+The specified callback will be called some time after 
+.ZN XtGetSelectionValue 
+is called;
+in fact, it may be called before or after 
+.ZN XtGetSelectionValue 
+returns.
+.LP
+The
+.ZN XtGetSelectionValues
+function is similar to
+.ZN XtGetSelectionValue 
+except that it takes a list of target types and a list of client data 
+and obtains the current value of the selection converted to each of the targets.
+The effect is as if each target were specified in a separate call to
+.ZN XtGetSelectionValue .
+The callback is called once with the corresponding client data for each target.
+.ZN XtGetSelectionValues
+does guarantee that all the conversions will use the same selection value
+becaues the ownership of the selection cannot change in the middle of the list,
+as would be when calling
+.ZN XtGetSelectionValue
+repeatedly.
+.SH "SEE ALSO"
+XtAppGetSelectionTimeout(3Xt),
+XtOwnSelection(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

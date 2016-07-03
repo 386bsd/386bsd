@@ -1,0 +1,28 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/et3000/Imakefile,v 2.1 1993/08/12 05:41:54 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:27 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driver3.c bank3.s
+
+OBJS = driver3.o bank3.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(et3000, $(OBJS))
+
+ObjectFromSpecialSource(driver3,$(VGA256DIR)/et3000/driver,-DMONOVGA)
+ObjectFromSpecialAsmSource(bank3,$(VGA256DIR)/et3000/bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/et3000)
+
+DependTarget()
+

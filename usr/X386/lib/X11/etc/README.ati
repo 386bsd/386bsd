@@ -1,0 +1,234 @@
+This is the README for the XFree86 ATI SVGA driver.
+
+Last Revised: Mon May 10 15:17:57 1993 by faith@cs.unc.edu
+
+NOTE: Users of boards with the ATI Mach8 or Mach32 chipsets should be
+      using the accelerated servers (XF86_Mach8 or XF86_Mach32).  The
+      SVGA server still works, but this is a waste of capabilities.
+
+
+Q. What's new?
+
+For XFree86 version 1.2 (and later versions), there are two changes to the
+extregPlusXLAndOrMasks table:
+
+1) ER_B0 was changed from 0x28 to 0x31.  (In the Linux world, this was
+distributed as a binary patch long ago.)
+
+2) ER_BE was changed from 0x08, but only for cards EARLIER than the
+28800-5.
+
+Both of these changes allow more 28800-4 cards to work, although either one
+may be sufficient for any one card.  You can find these changes in the
+driver by searching for the Feb 3 timestamps.
+
+
+
+Q. What is the ATI SVGA driver?
+
+The ATI SVGA driver is a 256 color driver for the XFree86 server.  The
+driver was written for the ATI WONDER series of graphics adapters.  In
+general, the following modes are supported for cards with 512kb of memory:
+
+640x480x256
+600x800x256
+
+The following modes are supported for cards with 1024kb of memory:
+
+1024x768x256
+
+
+
+Q. What is the ATI SVGA driver *NOT*?
+
+The ATI SVGA driver is *NOT* a black and white (2 bit) driver.  Therefore,
+it will *NOT* work with the XFree86 monoserver.
+
+The ATI SVGA driver is *NOT* a 16 color driver.  Even though your manual
+says that your graphics adapter has a 1024x768x16 mode, the ATI SVGA driver
+will *NOT* use this mode.  If you want to use 1024x768, you *MUST* have 1MB
+of memory on your board and use the 1024x768x256 mode.
+
+The ATI SVGA driver will *NOT* support more than 8 bits of pixel depth.
+Therefore, even though your manual says that your graphics adapter supports
+modes using more than 256 colors, the ATI SVGA driver will *NOT* use these
+modes.
+
+The ATI SVGA driver is *NOT* an accelerated driver.  If you have an ATI
+GRAPHICS ULTRA series card, the ATI SVGA driver will *NOT* use the
+accelerated hardware.  It will only use the SVGA hardware.  This will
+probably not be any faster than a VGA WONDER card, unless the card is on a
+local bus (and then, it won't be faster than a VGA WONDER card on a local
+bus, if a card of this type existed).
+
+
+
+Q. What cards will the driver work with?
+
+This is a difficult question, because there are many different ATI video
+cards, and it is sometimes difficult to tell them apart.  The best way is
+to look on the card itself for the ATI chip numbers.  Here is a partial
+list of ATI VGA WONDER cards.  The MOST IMPORTANT number is the CHIP
+VERSION.
+
+Adapter version     Dot clock       Chip version
+
+VGA WONDER V3                       ATI18800        NOT SUPPORTED
+VGA WONDER V4                       ATI18800-1      NOT SUPPORTED
+VGA WONDER V5       ATI18810        ATI18800-1      NOT SUPPORTED
+VGA WONDER + (V6)   ATI18810        ATI28800-2      ? MAY WORK ?
+VGA WONDER (1 MB)   ATI18810        ATI28800-4      SUPPORTED
+VGA WONDER (1 MB)   ATI18810        ATI28800-5      SUPPORTED
+VGA WONDER XL       ATI18810        ATI28800-5      SUPPORTED
+
+Note that the ATI SVGA driver code has hooks and some support for all of
+the cards listed.  However, with the earlier cards, there are serious
+differences in the programmer's interface.  The only people who have ever
+worked on the code have had 28800-4 and 28800-5 chips, so these chips are
+the only ones that are actually known to work.
+
+The ATI GRAPHICS ULTRA chips seem to have SVGA support which is equivalent
+to the 28800-4, 28800-5, and 28800-a, although I can find no documentation
+on this in the technical manuals provided by ATI.  The ULTRA PLUS and ULTRA
+PRO boards have been tested to some extent, and seem to work fine, but the
+original ULTRA may have some problems at greater than 640x480 resolution.
+
+
+
+Q. What should I put in my Xconfig file?
+
+THE MOST IMPORTANT LINE IS THE CLOCKS LINE:
+
+  Clocks        18 22 25 28 36 44 50 56
+                30 32 37 39 40 0  75 65
+
+The first row of clocks is usable on all VGA Wonder cards.  The second row
+is usable only on V5, PLUS, and XL cards (28800-2, 28800-4, and 28800-5).
+However, you should include *BOTH* rows for *ALL* cards.
+
+The specification is different from the specification used with the ET-4000
+cards.  Programs with claim to detect the clocks usually work only with
+ET-4000 based cards.  No such program exists for the ATI cards, since it
+isn't needed.  THE CLOCKS LINE SHOULD NEVER BE CHANGED.  The order of
+numbers in the clocks line *is* significant.
+
+The actual frequencies, which can be used to calculate the ModeDB lines,
+are as follows:
+
+18 = 18.000
+22 = 22.450
+25 = 25.175
+28 = 28.320
+36 = 36.000
+44 = 44.900
+50 = 50.350
+56 = 56.640
+
+30 = 30.240
+32 = 32.000
+37 = 37.500
+39 = 39.000
+40 = 40.000
+ 0 = 56.640
+75 = 75.000
+65 = 65.000
+
+The Chipset will be automatically detected.  The chipset name for this
+driver is "ati".
+
+Here is a sample Xconfig (which I use):
+
+RGBPath		"/usr/lib/X11/rgb"
+FontPath	"/usr/lib/X11/fonts/misc/,/usr/lib/X11/fonts/75dpi/"
+
+Keyboard
+  AutoRepeat 500 5
+  ServerNumLock
+
+#Microsoft	"/dev/mouse"
+#MouseSystems	"/dev/mouse"
+#MMSeries	"/dev/mouse"
+#Logitech	"/dev/mouse"
+#MouseMan	"/dev/mouse"
+Busmouse	"/dev/mouse"
+#  BaudRate	1200
+  SampleRate	150
+#  Emulate3Buttons
+
+
+vga256
+  ViewPort      0 0
+  #Modes	 "1024x768v" "800x600v"
+  Modes	        "800x600v"
+  Clocks        18 22 25 28 36 44 50 56
+                30 32 37 39 40 0  75 65
+  Displaysize   260 184
+
+ModeDB
+
+# From NEC MultiSync 3FGx manual (copied by faith@cs.unc.edu)
+# active_area front_porch pulse_width back_porch for horiz and vert
+# VESA 640x480 at 72Hz (37.860kHz)
+# 20.317us 0.762us 1.270us 4.603us; 12.678ms 0.238ms 0.079ms 0.740ms
+# (I couldn't find a good clock rate for this one)
+# VESA 800x600 at 72Hz (48.077kHz)
+# 16.000us 1.120us 2.400us 1.280us; 12.480ms 0.770ms 0.125ms 0.478ms
+"800x600v"   50      800  856  976 1040    600  637  643  693
+# VESA 1024x768 at 60Hz (48.363kHz)
+# 15.754us 0.369us 2.092us 2.462us; 15.880ms 0.062ms 0.124ms 0.600ms
+"1024x768v"  65    1024 1048 1184 1344    768  771  777  806
+
+
+
+Q. What is the history of the driver?
+
+The complete history of the driver is cloudy.  I have tried to reconstruct
+the history from several email messages from a few of the people involved.
+The history is probably incomplete and inaccurate.
+
+Apparently, Per Lindqvist (pgd@compuram.bbt.se) first got an ATI driver
+working with an early ATI card under X386 1.1a.  (This original driver may
+have actually been based on an non-functional ATI driver written by Roell.)
+Then Doug Evans (dje@cygnus.com) ported the driver to the ATI XL, trying in
+the process to make the driver work with all other ATI cards.
+
+I (Rik Faith) obtained the X11R4 driver from Doug Evans in the summer of
+1992, and ported the code to the X386 part of X11R5.  This subsequently
+became part of XFree86.  Per and Doug did the majority of work, making the
+port somewhat trivial.  I am grateful for their contribution.
+
+The port to X11R5 required writing the ATIProbe and ATIEnterLeave routines,
+and re-organizing the ATISave and ATIRestore routines.  Someone else added
+the operating system specific code, but I don't know who.
+
+The major reference that I used was manual from ATI:
+
+"VGA WONDER Programmer's Reference"
+ATI Technologies, 1991.
+Release 1.2 -- Reference #PRG28800
+(Part No. 10709B0412)
+
+However, Chapter 11 (ATI 18800 ATI VGAWONDER) of George Sutty and Steve
+Blair's "Advanced Programmer's Guide to SuperVGAs" (Brady/Simon & Schuster,
+1990) was also useful.  Further, someone e-mailed be a random document from
+the ATI BBS which was dated 3Jul91 and which may have been named
+PROGINFO.DOC.
+
+
+
+Q. What is the future of the driver?
+
+I no longer use an ATI Wonder card and have no interest in this driver.
+Since I have received no bug reports or patches for the driver during the
+past 3 months, I think it is about as stable as it is going to get.  (I
+suspect that support for the 28800-2, 28800-4, and 28800-5 chips can be
+made more robust, but I doubt that the other chips will ever be fully
+supported.)
+
+I have absolutely *NO* intention of porting the code to the mono or 16
+color servers.  If *you* want ATI support in the mono or 16 color servers,
+they *you* should do the port.  (Since I no longer use my ATI Wonder card,
+please feel free to take over the current driver as well.)
+
+
+$XFree86: mit/server/ddx/x386/etc/README.ati,v 2.0 1993/10/18 12:18:00 dawes Exp $

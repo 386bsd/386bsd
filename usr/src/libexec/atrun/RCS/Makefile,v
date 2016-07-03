@@ -1,0 +1,37 @@
+head     1.1;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @# @;
+
+
+1.1
+date     94.07.29.19.55.11;  author root;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@
+PROG=	atrun
+BINDIR=	/usr/libexec
+MAN8=	atrun.0
+LDADD=	-lutil
+DPADD=	${LIBUTIL}
+
+BINOWN=	root
+
+CFLAGS+= -I${.CURDIR}/../../usr.bin/at
+
+.include <bsd.prog.mk>
+@

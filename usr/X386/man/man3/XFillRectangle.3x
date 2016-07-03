@@ -1,0 +1,422 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XFillRectangle 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XFillRectangle, XFillRectangles, XFillPolygon, XFillArc, XFillArcs \- fill rectangles, polygons, or arcs
+.SH SYNTAX
+.\" $Header: XFillRect.f,v 1.1 88/02/26 10:00:09 mento Exp $
+XFillRectangle\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIwidth\fP\^, \fIheight\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIx\fP\^, \fIy\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.LP
+.\" $Header: XFillRects.f,v 1.1 88/02/26 10:00:10 mento Exp $
+XFillRectangles\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIrectangles\fP\^, \fInrectangles\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      XRectangle *\fIrectangles\fP\^;
+.br
+      int \fInrectangles\fP\^;
+.LP
+.\" $Header: XFillPoly.f,v 1.1 88/02/26 10:00:08 mento Exp $
+XFillPolygon\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIpoints\fP\^, \fInpoints\fP\^, \fIshape\fP\^, \fImode\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      XPoint *\fIpoints\fP\^;
+.br
+      int \fInpoints\fP\^;
+.br
+      int \fIshape\fP\^; 
+.br
+      int \fImode\fP\^; 
+.LP
+.\" $Header: XFillArc.f,v 1.1 88/02/26 10:00:01 mento Exp $
+XFillArc\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^,  \fIx\fP\^, \fIy\fP\^, \fIwidth\fP\^, \fIheight\fP\^, \fIangle1\fP\^, \fIangle2\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIx\fP\^, \fIy\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.br
+      int \fIangle1\fP\^, \fIangle2\fP\^;
+.LP
+.\" $Header: XFillArcs.f,v 1.1 88/02/26 10:00:02 mento Exp $
+XFillArcs\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIarcs\fP\^, \fInarcs\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      XArc *\fIarcs\fP\^;
+.br
+      int \fInarcs\fP\^;
+.SH ARGUMENTS
+.\" $Header: angle1.a,v 1.2 88/05/13 09:05:46 mento Exp $
+.IP \fIangle1\fP 1i
+Specifies the start of the arc relative to the three-o'clock position
+from the center, in units of degrees * 64.
+.\" $Header: angle2.a,v 1.1 88/02/26 10:04:51 mento Exp $
+.IP \fIangle2\fP 1i
+Specifies the path and extent of the arc relative to the start of the
+arc, in units of degrees * 64.
+.\" $Header: arcs.a,v 1.1 88/02/26 10:04:53 mento Exp $
+.IP \fIarcs\fP 1i
+Specifies an array of arcs.
+.\" $Header: d.a,v 1.1 88/02/26 10:04:25 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable. 
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: mode.a,v 1.4 88/05/18 07:53:37 mento Exp $
+.IP \fImode\fP 1i
+Specifies the coordinate mode. 
+You can pass
+.ZN CoordModeOrigin
+or
+.ZN CoordModePrevious .
+.\" $Header: narcs.a,v 1.1 88/02/26 10:29:11 mento Exp $
+.IP \fInarcs\fP 1i
+Specifies the number of arcs in the array.
+.\" $Header: npoints.a,v 1.1 88/02/26 10:29:46 mento Exp $
+.IP \fInpoints\fP 1i
+Specifies the number of points in the array.
+.\" $Header: nrectangles.a,v 1.1 88/02/26 10:29:47 mento Exp $
+.IP \fInrectangles\fP 1i
+Specifies the number of rectangles in the array.
+.\" $Header: points.a,v 1.1 88/02/26 10:30:33 mento Exp $
+.IP \fIpoints\fP 1i
+Specifies an array of points.
+.\" $Header: rectangles.a,v 1.1 88/02/26 10:30:50 mento Exp $
+.IP \fIrectangles\fP 1i
+Specifies an array of rectangles.
+.\" $Header: shape.a,v 1.4 88/04/23 09:30:27 mento Exp $
+.IP \fIshape\fP 1i
+Specifies a shape that helps the server to improve performance.
+You can pass 
+.ZN Complex , 
+.ZN Convex , 
+or 
+.ZN Nonconvex .
+.ds Wh , which are the dimensions of the rectangle to be filled \
+or the major and minor axes of the arc
+.\" $Header: w+h_gen.a,v 1.2 88/08/04 11:21:28 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height\*(Wh.
+.ds Xy , which are relative to the origin of the drawable \
+and specify the upper-left corner of the rectangle
+.\" $Header: xy_gen.a,v 1.2 88/08/04 11:22:37 mento Exp $
+.IP \fIx\fP 1i
+.br
+.ns
+.IP \fIy\fP 1i
+Specify the x and y coordinates\*(Xy.
+.SH DESCRIPTION
+.\" $Header: XFillRect.d,v 1.5 88/06/11 07:50:18 mento Exp $
+The
+.ZN XFillRectangle
+and
+.ZN XFillRectangles
+functions fill the specified rectangle or rectangles
+as if a four-point 
+.ZN FillPolygon
+protocol request were specified for each rectangle:
+.LP
+.Ds
+[x,y] [x+width,y] [x+width,y+height] [x,y+height]
+.De
+.LP
+Each function uses the x and y coordinates,
+width and height dimensions, and GC you specify.
+.LP
+.ZN XFillRectangles
+fills the rectangles in the order listed in the array.  
+For any given rectangle,
+.ZN XFillRectangle
+and
+.ZN XFillRectangles
+do not draw a pixel more than once.  
+If rectangles intersect, the intersecting pixels are
+drawn multiple times.
+.LP
+Both functions use these GC components: 
+function, plane-mask, fill-style, subwindow-mode, 
+clip-x-origin, clip-y-origin, and clip-mask.
+They also use these GC mode-dependent components: 
+foreground, background, tile, stipple, tile-stipple-x-origin, 
+and tile-stipple-y-origin.
+.LP
+.ZN XFillRectangle
+and
+.ZN XFillRectangles
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+and
+.ZN BadMatch 
+errors.
+.LP
+.\" $Header: XFillPoly.d,v 1.2 88/06/11 07:50:18 mento Exp $
+.ZN XFillPolygon 
+fills the region closed by the specified path.
+The path is closed
+automatically if the last point in the list does not coincide with the
+first point.
+.ZN XFillPolygon
+does not draw a pixel of the region more than once.
+.ZN CoordModeOrigin
+treats all coordinates as relative to the origin,
+and
+.ZN CoordModePrevious
+treats all coordinates after the first as relative to the previous point.
+.LP
+Depending on the specified shape, the following occurs: 
+.IP \(bu 5
+If shape is
+.ZN Complex , 
+the path may self-intersect. 
+Note that contiguous coincident points in the path are not treated 
+as self-intersection.
+.IP \(bu 5
+If shape is
+.ZN Convex , 
+for every pair of points inside the polygon,
+the line segment connecting them does not intersect the path.
+If known by the client,
+specifying 
+.ZN Convex 
+can improve performance.  
+If you specify
+.ZN Convex 
+for a path that is not convex, 
+the graphics results are undefined.
+.IP \(bu 5
+If shape is
+.ZN Nonconvex , 
+the path does not self-intersect, but the shape is not
+wholly convex. 
+If known by the client, 
+specifying 
+.ZN Nonconvex 
+instead of
+.ZN Complex 
+may improve performance.  
+If you specify
+.ZN Nonconvex 
+for a self-intersecting path, the graphics results are undefined.
+.LP
+The fill-rule of the GC controls the filling behavior of 
+self-intersecting polygons.
+.LP
+This function uses these GC components: 
+function, plane-mask, fill-style, fill-rule, subwindow-mode, clip-x-origin, 
+clip-y-origin, and clip-mask.
+It also uses these GC mode-dependent components: 
+foreground, background, tile, stipple, tile-stipple-x-origin, 
+and tile-stipple-y-origin.
+.LP
+.ZN XFillPolygon
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+.ZN BadMatch ,
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XFillArc.d,v 1.2 88/06/11 07:50:17 mento Exp $
+For each arc, 
+.ZN XFillArc
+or
+.ZN XFillArcs
+fills the region closed by the infinitely thin path
+described by the specified arc and, depending on the 
+arc-mode specified in the GC, one or two line segments. 
+For 
+.ZN ArcChord , 
+the single line segment joining the endpoints of the arc is used.  
+For 
+.ZN ArcPieSlice ,
+the two line segments joining the endpoints of the arc with the center
+point are used.  
+.ZN XFillArcs
+fills the arcs in the order listed in the array.  
+For any given arc,  
+.ZN XFillArc
+and
+.ZN XFillArcs
+do not draw a pixel more than once.  
+If regions intersect, 
+the intersecting pixels are drawn multiple times.
+.LP
+Both functions use these GC components: 
+function, plane-mask, fill-style, arc-mode, subwindow-mode, clip-x-origin, 
+clip-y-origin, and clip-mask.
+They also use these GC mode-dependent components: 
+foreground, background, tile, stipple, tile-stipple-x-origin, 
+and tile-stipple-y-origin.
+.LP
+.ZN XFillArc
+and
+.ZN XFillArcs
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+and
+.ZN BadMatch 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badgc.e,v 1.1 87/09/04 08:23:02 mento Locked $
+.TP 1i
+.ZN BadGC
+A value for a GContext argument does not name a defined GContext.
+.\" $Header: badmatch1.e,v 1.3 87/09/09 18:18:54 mento Exp $
+.TP 1i
+.ZN BadMatch
+An
+.ZN InputOnly
+window is used as a Drawable.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XDrawArc(3X11),
+XDrawPoint(3X11),
+XDrawRectangle(3X11)
+.br
+\fI\*(xL\fP

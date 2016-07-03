@@ -1,0 +1,624 @@
+! X WAIStation resources
+
+Xwais.defaultsInstalled:		True
+
+Xwais.filters:				GIF,/proto/arch/wais/bin/wais-gif-display;TIFF,/proto/arch/wais/bin/wais-tiff-display;PICT,/proto/arch/wais/bin/wais-pict-display
+
+Xwais*removeSeekerCodes:		On
+
+# for example...
+Xwais*font:				-*-courier-medium-r-*-*-14-*-*-*-*-*-*-*
+Xwais*fontList:				-*-courier-medium-r-*-*-14-*-*-*-*-*-*-*
+Xwais*MyAsciiSink.altfont: 		-*-courier-bold-r-*-*-14-*-*-*-*-*-*-*
+
+xwais.minWidth:				400
+xwais.minHeight:			300
+
+xwaisq.minWidth:			620
+xwaisq.minHeight:			425
+
+Xwais*foreground:			black
+Xwais*background:			white
+
+Xwais*sourcepopup.minWidth:		400
+Xwais*sourcepopup.minHeight:		300
+
+Xwais*savereqpopup.minWidth:		300
+Xwais*savereqpopup.minHeight:		350
+
+! check source and question directories once a second
+Xwais*rescanInterval:			1
+
+! these can be changed for user specific directories.
+!Xwais*questionDirectory:		~/wais-questions/
+!Xwais*userSourceDirectory:		~/wais-sources/
+
+! set this for your site.
+Xwais*commonSourceDirectory:		/proto/arch/wais/wais-sources/
+
+! set this according to where you put the distribution
+xwais*helpFile:				/proto/arch/wais/x/XwaisHELP
+xwaisq*helpFile:			/proto/arch/wais/x/XwaisqHELP
+
+Xwais*questionsource.visibleItemCount:  3
+Xwais*questiondoc.visibleItemCount:	3
+Xwais*questionsource.width:		300
+Xwais*questiondoc.width:		410
+Xwais*questionresults.width:		640
+Xwais*questionresults.visibleItemCount:10
+Xwais*sourceWindow.visibleItemCount:	8
+Xwais*fileWindow.visibleItemCount:	8
+
+Xwais*questions.top:			ChainTop
+Xwais*questions.left:			ChainLeft
+Xwais*questions.right:			ChainRight
+
+Xwais*questionlabel.top:		ChainTop
+Xwais*questionlabel.bottom:		ChainTop
+Xwais*questionlabel.left:		ChainLeft
+Xwais*questionlabel.right:		ChainLeft
+
+Xwais*qview.fromVert:			questionlabel
+Xwais*qview.width:			450
+Xwais*qview.height:			50
+Xwais*qview.top:			ChainTop
+Xwais*qview.bottom:			ChainBottom
+Xwais*qview.left:			ChainLeft
+Xwais*qview.right:			ChainRight
+
+Xwais*qadd.label:			New
+Xwais*qadd.labelString:			New
+Xwais*qadd.top:				ChainBottom
+Xwais*qadd.bottom:			ChainBottom
+Xwais*qadd.left:			ChainLeft
+Xwais*qadd.right:			ChainLeft
+
+Xwais*qedit.fromHoriz:			qadd
+Xwais*qedit.label:			Open
+Xwais*qedit.labelString:		Open
+Xwais*qedit.top:			ChainBottom
+Xwais*qedit.bottom:			ChainBottom
+Xwais*qedit.left:			ChainLeft
+Xwais*qedit.right:			ChainLeft
+
+Xwais*qdelete.fromHoriz:		qedit
+Xwais*qdelete.label:			Delete
+Xwais*qdelete.labelString:		Delete
+Xwais*qdelete.top:			ChainBottom
+Xwais*qdelete.bottom:			ChainBottom
+Xwais*qdelete.left:			ChainLeft
+Xwais*qdelete.right:			ChainLeft
+
+Xwais*tsources.fromVert:		questions
+Xwais*tsources.bottom:			ChainBottom
+Xwais*tsources.left:			ChainLeft
+Xwais*tsources.right:			ChainRight
+
+Xwais*sourcelabel.top:			ChainTop
+Xwais*sourcelabel.bottom:		ChainTop
+Xwais*sourcelabel.left:			ChainLeft
+Xwais*sourcelabel.right:		ChainLeft
+
+Xwais*tsview.fromVert:			sourcelabel
+Xwais*tsview.width:			450
+Xwais*tsview.height:			50
+Xwais*tsview.top:			ChainTop
+Xwais*tsview.bottom:			ChainBottom
+Xwais*tsview.left:			ChainLeft
+Xwais*tsview.right:			ChainRight
+
+Xwais*sadd.label:			New
+Xwais*sadd.labelString:			New
+Xwais*sadd.top:				ChainBottom
+Xwais*sadd.bottom:			ChainBottom
+Xwais*sadd.left:			ChainLeft
+Xwais*sadd.right:			ChainLeft
+
+Xwais*sedit.fromHoriz:			sadd
+Xwais*sedit.label:			Open
+Xwais*sedit.labelString:		Open
+Xwais*sedit.top:			ChainBottom
+Xwais*sedit.bottom:			ChainBottom
+Xwais*sedit.left:			ChainLeft
+Xwais*sedit.right:			ChainLeft
+
+Xwais*sdelete.fromHoriz:		sedit
+Xwais*sdelete.label:			Delete
+Xwais*sdelete.labelString:		Delete
+Xwais*sdelete.top:			ChainBottom
+Xwais*sdelete.bottom:			ChainBottom
+Xwais*sdelete.left:			ChainLeft
+Xwais*sdelete.right:			ChainLeft
+
+xwais*help.label:			Help
+xwais*help.labelString:			Help
+xwais*help.fromVert:			tsources
+xwais*help.top:				ChainBottom
+xwais*help.bottom:			ChainBottom
+xwais*help.left:			ChainLeft
+xwais*help.right:			ChainLeft
+
+Xwais*quit.label:			Quit
+Xwais*quit.labelString:			Quit
+Xwais*quit.fromVert:			tsources
+Xwais*quit.top:				ChainBottom
+Xwais*quit.bottom:			ChainBottom
+Xwais*quit.left:			ChainLeft
+Xwais*quit.right:			ChainLeft
+
+Xwais*mainstatuslabel.fromVert:		tsources
+Xwais*mainstatuslabel.fromHoriz:	quit
+Xwais*mainstatuslabel.top:		ChainBottom
+Xwais*mainstatuslabel.bottom:		ChainBottom
+Xwais*mainstatuslabel.left:		ChainLeft
+Xwais*mainstatuslabel.right:		ChainLeft
+
+Xwais*messageWindow.fromVert:		mainstatuslabel
+Xwais*messageWindow.top:		ChainBottom
+Xwais*messageWindow.bottom:		ChainBottom
+Xwais*messageWindow.left:		ChainLeft
+Xwais*messageWindow.right:		ChainRight
+Xwais*messageWindow.width:		450
+Xwais*messageWindow.height:		50
+Xwais*messageWindow.autoFill:		True
+Xwais*messageWindow.scrollVertical:	Never
+
+Xwais*textWindow.width:			790
+Xwais*textWindow.height:		300
+Xwais*textWindow.autoFill:		True
+Xwais*textWindow.scrollVertical:	WhenNeeded
+Xwais*textWindow.scrollHorizontal:	WhenNeeded
+Xwais*textWindow.top:			ChainTop
+Xwais*textWindow.bottom:		ChainBottom
+Xwais*textWindow.left:			ChainLeft
+Xwais*textWindow.right:			ChainRight
+
+Xwais*sourcenamelabel.top:		ChainTop
+Xwais*sourcenamelabel.bottom:		ChainTop
+Xwais*sourcenamelabel.left:		ChainLeft
+Xwais*sourcenamelabel.right:		ChainLeft
+
+Xwais*sourcename.width:			500
+Xwais*sourcename.top:			ChainTop
+Xwais*sourcename.bottom:		ChainTop
+Xwais*sourcename.left:			ChainLeft
+Xwais*sourcename.right:			ChainRight
+
+Xwais*serverlabel.top:			ChainTop
+Xwais*serverlabel.bottom:		ChainTop
+Xwais*serverlabel.left:			ChainLeft
+Xwais*serverlabel.right:		ChainLeft
+
+Xwais*server.width:			500
+Xwais*server.top:			ChainTop
+Xwais*server.bottom:			ChainTop
+Xwais*server.left:			ChainLeft
+Xwais*server.right:			ChainRight
+
+Xwais*servicelabel.top:			ChainTop
+Xwais*servicelabel.bottom:		ChainTop
+Xwais*servicelabel.left:		ChainLeft
+Xwais*servicelabel.right:		ChainLeft
+
+Xwais*service.width:			500
+Xwais*service.top:			ChainTop
+Xwais*service.bottom:			ChainTop
+Xwais*service.left:			ChainLeft
+Xwais*service.right:			ChainRight
+
+Xwais*dblabel.top:			ChainTop
+Xwais*dblabel.bottom:			ChainTop
+Xwais*dblabel.left:			ChainLeft
+Xwais*dblabel.right:			ChainLeft
+
+Xwais*database.width:			500
+Xwais*database.top:			ChainTop
+Xwais*database.bottom:			ChainTop
+Xwais*database.left:			ChainLeft
+Xwais*database.right:			ChainRight
+
+Xwais*costlabel.top:			ChainTop
+Xwais*costlabel.bottom:			ChainTop
+Xwais*costlabel.left:			ChainLeft
+Xwais*costlabel.right:			ChainLeft
+
+Xwais*cost.width:			500
+Xwais*cost.top:				ChainTop
+Xwais*cost.bottom:			ChainTop
+Xwais*cost.left:			ChainLeft
+Xwais*cost.right:			ChainRight
+
+Xwais*unitlabel.top:			ChainTop
+Xwais*unitlabel.bottom:			ChainTop
+Xwais*unitlabel.left:			ChainLeft
+Xwais*unitlabel.right:			ChainLeft
+
+Xwais*costunit.width:			500
+Xwais*costunit.top:			ChainTop
+Xwais*costunit.bottom:			ChainTop
+Xwais*costunit.left:			ChainLeft
+Xwais*costunit.right:			ChainRight
+
+Xwais*maintlabel.top:			ChainTop
+Xwais*maintlabel.bottom:		ChainTop
+Xwais*maintlabel.left:			ChainLeft
+Xwais*maintlabel.right:			ChainLeft
+
+Xwais*maintainer.width:			500
+Xwais*maintainer.top:			ChainTop
+Xwais*maintainer.bottom:		ChainTop
+Xwais*maintainer.left:			ChainLeft
+Xwais*maintainer.right:			ChainRight
+
+Xwais*desclabel.top:			ChainTop
+Xwais*desclabel.bottom:			ChainTop
+Xwais*desclabel.left:			ChainLeft
+Xwais*desclabel.right:			ChainLeft
+
+Xwais*description.width:		700
+Xwais*description.height:		100
+Xwais*description.scrollVertical:	WhenNeeded
+Xwais*description.scrollHorizontal:	WhenNeeded
+Xwais*description.top:			ChainTop
+Xwais*description.bottom:		ChainBottom
+Xwais*description.left:			ChainLeft
+Xwais*description.right:		ChainRight
+
+Xwais*sdone.label:			Save
+Xwais*sdone.labelString:		Save
+Xwais*sdone.top:			ChainBottom
+Xwais*sdone.bottom:			ChainBottom
+Xwais*sdone.left:			ChainLeft
+Xwais*sdone.right:			ChainLeft
+
+Xwais*cancel.label:			Cancel
+Xwais*cancel.labelString:		Cancel
+Xwais*cancel.top:			ChainBottom
+Xwais*cancel.bottom:			ChainBottom
+Xwais*cancel.left:			ChainLeft
+Xwais*cancel.right:			ChainLeft
+
+Xwais*save.label:			Save
+Xwais*save.labelString:			Save
+
+Xwais*view.label:			\ View\ \ 
+Xwais*view.labelString:			\ View\ \ 
+Xwais*wsearch.label:			Search
+Xwais*wsearch.labelString:		Search
+Xwais*wsearch.height:			33
+Xwais*addresponse.label:		Add to Question
+Xwais*addresponse.labelString:		Add to Question
+
+Xwais*text.fromVert:			responses
+
+Xwais*keywords.width:			720
+Xwais*keywords.height:			33
+Xwais*keywords.autoFill:		True
+!Xwais*keywords.scrollVertical:		WhenNeeded
+!Xwais*keywords.scrollHorizontal:	WhenNeeded
+
+Xwais*qreslabel.fromVert:		qaddsource
+
+Xwais*qsourcelabel.fromVert:		keywords
+
+Xwais*sview.height:			50
+Xwais*sview.width:			285
+Xwais*sview.fromVert:			qsourcelabel
+
+Xwais*savereq.height:			200
+Xwais*savereq.width:			285
+Xwais*fileview.height:			200
+Xwais*fileview.width:			285
+
+Xwais*dirlabel.label:			Directory
+Xwais*dirlabel.labelString:		Directory
+Xwais*dirbox.width:			285
+Xwais*dirbox.height:			35
+Xwais*dirbox.fromVert:			dirlabel
+!Xwais*dirbox.scrollHorizontal:		Always
+Xwais*fileview.fromVert:		dirbox
+Xwais*filelabel.label:			File
+Xwais*filelabel.labelString:		File
+Xwais*filelabel.fromVert:		fileview
+Xwais*filebox.width:			285
+Xwais*filebox.fromVert:			filelabel
+Xwais*fileset.fromVert:			filebox
+Xwais*filecancel.label:			Cancel
+Xwais*filecancel.labelString:		Cancel
+Xwais*filecancel.fromHoriz:		fileset
+Xwais*filecancel.fromVert:		filebox
+Xwais*filequit.label:			Quit (No Save)
+Xwais*filequit.labelString:		Quit (No Save)
+Xwais*filequit.fromHoriz:		filecancel
+Xwais*filequit.fromVert:		filebox
+
+Xwais*ssview.height:			200
+Xwais*ssview.width:			285
+
+Xwais*qdoclabel.fromVert:		keywords
+Xwais*qdoclabel.fromHoriz:		sview
+Xwais*qadddoc.fromHoriz:		sview
+
+Xwais*dview.width:			500
+Xwais*dview.height:			50
+
+Xwais*dview.fromHoriz:			sview
+Xwais*dview.fromVert:			qdoclabel
+
+Xwais*Abort.label:			\ Abort\ 
+Xwais*Abort.labelString:		\ Abort\ 
+Xwais*Prefs.label:			\ Prefs\ 
+Xwais*Prefs.labelString:		\ Prefs\ 
+
+! Chaining
+
+Xwais*keywordlabel.top:			ChainTop
+Xwais*keywordlabel.bottom:		ChainTop
+Xwais*keywordlabel.left:		ChainLeft
+Xwais*keywordlabel.right:		ChainLeft
+Xwais*keywords.top:			ChainTop
+Xwais*keywords.bottom:			ChainTop
+Xwais*keywords.left:			ChainLeft
+Xwais*keywords.right:			ChainRight
+Xwais*wsearch.top:			ChainTop
+Xwais*wsearch.bottom:			ChainTop
+Xwais*wsearch.left:			ChainRight
+Xwais*wsearch.right:			Chainright
+Xwais*qsourcelabel.top:			ChainTop
+Xwais*qsourcelabel.bottom:		ChainTop
+Xwais*qsourcelabel.left:		ChainLeft
+Xwais*qsourcelabel.right:		ChainLeft
+Xwais*sview.top:			ChainTop
+Xwais*sview.bottom:			ChainTop
+Xwais*sview.left:			ChainLeft
+Xwais*sview.right:			ChainLeft
+Xwais*qdoclabel.top:			ChainTop
+Xwais*qdoclabel.bottom:			ChainTop
+Xwais*qdoclabel.left:			ChainLeft
+Xwais*qdoclabel.right:			ChainLeft
+Xwais*dview.top:			ChainTop
+Xwais*dview.bottom:			ChainTop
+Xwais*dview.left:			ChainLeft
+Xwais*dview.right:			ChainRight
+Xwais*qaddsource.top:			ChainTop
+Xwais*qaddsource.bottom:		ChainTop
+Xwais*qaddsource.left:			ChainLeft
+Xwais*qaddsource.right:			ChainLeft
+Xwais*qdeletesource.top:		ChainTop
+Xwais*qdeletesource.bottom:		ChainTop
+Xwais*qdeletesource.left:		ChainLeft
+Xwais*qdeletesource.right:		ChainLeft
+Xwais*qadddoc.top:			ChainTop
+Xwais*qadddoc.bottom:			ChainTop
+Xwais*qadddoc.left:			ChainLeft
+Xwais*qadddoc.right:			ChainLeft
+Xwais*qdeletedoc.top:			ChainTop
+Xwais*qdeletedoc.bottom:		ChainTop
+Xwais*qdeletedoc.left:			ChainLeft
+Xwais*qdeletedoc.right:			ChainLeft
+Xwais*help.top:				ChainTop
+Xwais*help.bottom:			ChainTop
+Xwais*help.left:			ChainLeft
+Xwais*help.right:			ChainLeft
+Xwais*Abort.top:			ChainTop
+Xwais*Abort.bottom:			ChainTop
+Xwais*Abort.left:			ChainLeft
+Xwais*Abort.right:			ChainLeft
+Xwais*Prefs.top:			ChainTop
+Xwais*Prefs.bottom:			ChainTop
+Xwais*Prefs.left:			ChainLeft
+Xwais*Prefs.right:			ChainLeft
+Xwais*qsave.top:			ChainTop
+Xwais*qsave.bottom:			ChainTop
+Xwais*qsave.left:			ChainLeft
+Xwais*qsave.right:			ChainLeft
+Xwais*qdone.top:			ChainTop
+Xwais*qdone.bottom:			ChainTop
+Xwais*qdone.left:			ChainLeft
+Xwais*qdone.right:			ChainLeft
+Xwais*qreslabel.top:			ChainTop
+Xwais*qreslabel.bottom:			ChainTop
+Xwais*qreslabel.left:			ChainLeft
+Xwais*qreslabel.right:			ChainLeft
+Xwais*view.top:				ChainTop
+Xwais*view.bottom:			ChainTop
+Xwais*view.left:			ChainLeft
+Xwais*view.right:			ChainLeft
+Xwais*rview.top:			ChainTop
+Xwais*rview.bottom:			ChainBottom
+Xwais*rview.left:			ChainLeft
+Xwais*rview.right:			ChainRight
+Xwais*statuslabel.top:			ChainBottom
+Xwais*statuslabel.bottom:		ChainBottom
+Xwais*statuslabel.left:			ChainLeft
+Xwais*statuslabel.right:		ChainLeft
+Xwais*statusWindow.top:			ChainBottom
+Xwais*statusWindow.bottom:		ChainBottom
+Xwais*statusWindow.left:		ChainLeft
+Xwais*statusWindow.right:		ChainRight
+
+Xwais*rview.height:			200
+Xwais*rview.width:			685
+Xwais*rview.fromVert:			qdeletedoc
+Xwais*rview.fromHoriz:			qreslabel
+
+Xwais*findKeywords.top:			ChainBottom
+Xwais*findKeywords.bottom:		ChainBottom
+Xwais*findKeywords.left:		ChainLeft
+Xwais*findKeywords.right:		ChainLeft
+Xwais*addSection.top:			ChainBottom
+Xwais*addSection.bottom:		ChainBottom
+Xwais*addSection.left:			ChainLeft
+Xwais*addSection.right:			ChainLeft
+Xwais*filesave.top:			ChainBottom
+Xwais*filesave.bottom:			ChainBottom
+Xwais*filesave.left:			ChainLeft
+Xwais*filesave.right:			ChainLeft
+Xwais*tdone.top:			ChainBottom
+Xwais*tdone.bottom:			ChainBottom
+Xwais*tdone.left:			ChainLeft
+Xwais*tdone.right:			ChainLeft
+Xwais*textStatus.top:			ChainBottom
+Xwais*textStatus.bottom:		ChainBottom
+Xwais*textStatus.left:			ChainLeft
+Xwais*textStatus.right:			ChainRight
+
+Xwais*textstatuslabel.top:		ChainBottom
+Xwais*textstatuslabel.bottom:		ChainBottom
+Xwais*textstatuslabel.left:		ChainLeft
+Xwais*textstatuslabel.right:		ChainLeft
+
+Xwais*showNext.top:			ChainBottom
+Xwais*showNext.bottom:			ChainBottom
+Xwais*showNext.left:			ChainLeft
+Xwais*showNext.right:			ChainLeft
+
+Xwais*showPrevious.top:			ChainBottom
+Xwais*showPrevious.bottom:		ChainBottom
+Xwais*showPrevious.left:		ChainLeft
+Xwais*showPrevious.right:		ChainLeft
+
+Xwais*textStatus.fromHoriz:		textstatuslabel
+Xwais*textStatus.fromVert:		addSection
+Xwais*textStatus.height:		20
+Xwais*textStatus.width:			700
+Xwais*textStatus.scrollVertical:	WhenNeeded
+
+Xwais*findKeywords.label:		Find Key
+Xwais*findKeywords.labelString:		Find Key
+Xwais*addSection.label:			Add Section
+Xwais*addSection.labelString:		Add Section
+Xwais*showNext.label:			Next
+Xwais*showNext.labelString:		Next
+Xwais*showPrevious.label:		Previous
+Xwais*showPrevious.labelString:		Previous
+Xwais*filesave.label:			Save To File
+Xwais*filesave.labelString:		Save To File
+Xwais*tdone.label:			Done
+Xwais*tdone.labelString:			Done
+
+Xwais*statuslabel.fromVert:		rview
+
+Xwais*statusWindow.width:		713
+Xwais*statusWindow.height:		50
+Xwais*statusWindow.fromVert:		rview
+Xwais*statusWindow.fromHoriz:		statuslabel
+Xwais*statusWindow.scrollVertical:	Never
+
+Xwais*qadddoc.label:			Add Document
+Xwais*qadddoc.labelString:			Add Document
+!Xwais*qadddoc.fromHoriz:		qsourcelabel
+Xwais*qdeletedoc.label:			Delete Document
+Xwais*qdeletedoc.labelString:			Delete Document
+Xwais*qaddsource.label:			Add Source
+Xwais*qaddsource.labelString:			Add Source
+Xwais*qdeletesource.label:		Delete Source
+Xwais*qdeletesource.labelString:		Delete Source
+Xwais*qsave.label:			Save...
+Xwais*qsave.labelString:		Save...
+Xwais*qdone.label:			\ Quit\ \ 
+Xwais*qdone.labelString:		\ Quit\ \ 
+Xwais*qcancel.label:			Cancel
+Xwais*qcancel.labelString:		Cancel
+Xwais*help.label:			\ Help\ \ 
+Xwais*help.labelString:			\ Help\ \ 
+
+
+Xwais*savename.width:			300
+Xwais*savedone.label:			Save
+Xwais*savedone.labelString:		Save
+Xwais*savecancel.label:			Don't Save
+Xwais*savecancel.labelString:		Don't Save
+Xwais*tsavename.width:			300
+Xwais*tsavedone.label:			Save
+Xwais*tsavedone.labelString:		Save
+Xwais*tsavecancel.label:		Don't Save
+Xwais*tsavecancel.labelString:		Don't Save
+
+Xwais*sourceditlabel.width:		450
+Xwais*sourceditlabel.justify:		Center
+Xwais*sourceditlabel.top:		ChainTop
+Xwais*sourceditlabel.bottom:		ChainTop
+Xwais*sourceditlabel.left:		ChainLeft
+Xwais*sourceditlabel.right:		ChainRight
+
+Xwais*qsadd.label:			Ok
+Xwais*qsadd.labelString:		Ok
+Xwais*qsadd.top:			ChainBottom
+Xwais*qsadd.bottom:			ChainBottom
+Xwais*qsadd.left:			ChainLeft
+Xwais*qsadd.right:			ChainLeft
+
+Xwais*prefmaxdoclabel.top:		ChainBottom
+Xwais*prefmaxdoclabel.bottom:		ChainBottom
+Xwais*prefmaxdoclabel.left:		ChainLeft
+Xwais*prefmaxdoclabel.right:		ChainLeft
+
+Xwais*maxdoc.top:			ChainBottom
+Xwais*maxdoc.bottom:			ChainBottom
+Xwais*maxdoc.left:			ChainLeft
+Xwais*maxdoc.right:			ChainRight
+
+Xwais*sourcepathlabel.top:		ChainBottom
+Xwais*sourcepathlabel.bottom:		ChainBottom
+Xwais*sourcepathlabel.left:		ChainLeft
+Xwais*sourcepathlabel.right:		ChainLeft
+
+Xwais*sourcepath.top:			ChainBottom
+Xwais*sourcepath.bottom:		ChainBottom
+Xwais*sourcepath.left:			ChainLeft
+Xwais*sourcepath.right:			ChainRight
+Xwais*sourcepath.width:			300
+Xwais*sourcepath.height:		50
+!Xwais*sourcepath.scrollHorizontal:	WhenNeeded
+
+Xwais*filterlabel.top:			ChainBottom
+Xwais*filterlabel.bottom:		ChainBottom
+Xwais*filterlabel.left:			ChainLeft
+Xwais*filterlabel.right:		ChainLeft
+
+Xwais*filters.top:			ChainBottom
+Xwais*filters.bottom:			ChainBottom
+Xwais*filters.left:			ChainLeft
+Xwais*filters.right:			ChainRight
+Xwais*filters.width:			300
+Xwais*filters.height:			50
+
+Xwais*pdone.label:			Use
+Xwais*pdone.labelString:		Use
+Xwais*pdone.top:			ChainBottom
+Xwais*pdone.bottom:			ChainBottom
+Xwais*pdone.left:			ChainLeft
+Xwais*pdone.right:			ChainLeft
+
+Xwais*pcancel.label:			Discard
+Xwais*pcancel.labelString:		Discard
+Xwais*pcancel.top:			ChainBottom
+Xwais*pcancel.bottom:			ChainBottom
+Xwais*pcancel.left:			ChainLeft
+Xwais*pcancel.right:			ChainLeft
+
+!
+! Keep CR in string windows from confusing the user.
+!
+
+Xwais*sourcename.translations:	#override \
+				<Key>Return: end-of-line()
+Xwais*server.translations:	#override \
+				<Key>Return: end-of-line()
+Xwais*service.translations:	#override \
+				<Key>Return: end-of-line()
+Xwais*database.translations:	#override \
+				<Key>Return: end-of-line()
+xwaisq*keywords.translations:	#override \
+				<Key>Return: waissearch()
+Xwais*dirbox.translations:	#override \
+				<Key>Return: setdir()
+Xwais*filebox.translations:	#override \
+				<Key>Return: save()
+Xwais*maxdoc.translations:	#override \
+				<Key>Return: dopsave()
+Xwais*sourcepath.translations:	#override \
+				<Key>Return: dopsave()
+Xwais*filters.translations:	#override \
+				<Key>Return: dopsave()

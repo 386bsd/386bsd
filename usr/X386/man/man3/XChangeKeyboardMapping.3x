@@ -1,0 +1,451 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XChangeKeyboardMapping 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XChangeKeyboardMapping, XGetKeyboardMapping, XDisplayKeycodes, XSetModifierMapping, XGetModifierMapping, XNewModifiermap, XInsertModifiermapEntry, XDeleteModifiermapEntry, XFreeModifierMap XModifierKeymap \- manipulate keyboard encoding and keyboard encoding structure
+.SH SYNTAX
+XChangeKeyboardMapping(\^\fIdisplay\fP, \fIfirst_keycode\fP, \fIkeysyms_per_keycode\fP, \fIkeysyms\fP, \fInum_codes\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fIfirst_keycode\fP\^;
+.br
+      int \fIkeysyms_per_keycode\fP\^;
+.br
+      KeySym *\fIkeysyms\fP\^;
+.br
+      int \fInum_codes\fP\^;
+.LP
+KeySym *XGetKeyboardMapping(\^\fIdisplay\fP, \fIfirst_keycode\fP, \fIkeycode_count\fP, 
+.br
+                            \fIkeysyms_per_keycode_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      KeyCode \fIfirst_keycode\fP\^;
+.br
+      int \fIkeycode_count\fP\^;
+.br
+      int *\fIkeysyms_per_keycode_return\fP\^;
+.LP
+XDisplayKeycodes\^(\^\fIdisplay\fP\^, \fImin_keycodes_return\fP\^, \
+\fImax_keycodes_return\fP\^)
+.br
+        Display *\^\fIdisplay\fP\^;
+.br
+        int *\^\fImin_keycodes_return\fP\^, *\^\fImax_keycodes_return\fP\^;
+.LP
+int XSetModifierMapping(\^\fIdisplay\fP, \fImodmap\fP\^)
+.br
+        Display *\fIdisplay\fP\^;
+.br
+        XModifierKeymap *\fImodmap\fP\^;
+.LP
+XModifierKeymap *XGetModifierMapping(\^\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+
+.LP
+XModifierKeymap *XNewModifiermap(\^\fImax_keys_per_mod\fP\^)
+.br
+        int \fImax_keys_per_mod\fP\^;
+.LP
+XModifierKeymap *XInsertModifiermapEntry\^(\^\fImodmap\fP, \
+\fIkeycode_entry\fP, \fImodifier\fP\^)
+.br
+     XModifierKeymap *\fImodmap\fP\^;
+.br
+     KeyCode \fIkeycode_entry\fP\^;
+.br
+     int \fImodifier\fP\^;
+.LP
+XModifierKeymap *XDeleteModifiermapEntry\^(\^\fImodmap\fP, \
+\fIkeycode_entry\fP, \fImodifier\fP\^)
+.br
+     XModifierKeymap *\fImodmap\fP\^;
+.br
+     KeyCode \fIkeycode_entry\fP\^;
+.br
+     int \fImodifier\fP\^;
+.LP
+XFreeModifiermap(\^\fImodmap\fP\^)
+.br
+        XModifierKeymap *\fImodmap\fP;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.ds Kc changed or returned
+.IP \fIfirst_keycode\fP 1i
+Specifies the first KeyCode that is to be \*(Kc.
+.IP \fIkeycode_count\fP 1i
+Specifies the number of KeyCodes that are to be returned.
+.IP \fIkeycode_entry\fP 1i
+Specifies the KeyCode. 
+.IP \fIkeysyms\fP 1i
+Specifies an array of KeySyms.
+.IP \fIkeysyms_per_keycode\fP 1i
+Specifies the number of KeySyms per KeyCode.
+.IP \fIkeysyms_per_keycode_return\fP 1i
+Returns the number of KeySyms per KeyCode.
+.IP \fImax_keys_per_mod\fP 1i
+Specifies the number of KeyCode entries preallocated to the modifiers
+in the map.
+.IP \fImax_keycodes_return\fP 1i
+Returns the maximum number of KeyCodes.
+.IP \fImin_keycodes_return\fP 1i
+Returns the minimum number of KeyCodes.
+.IP \fImodifier\fP 1i
+Specifies the modifier.
+.IP \fImodmap\fP 1i
+Specifies the 
+.ZN XModifierKeymap
+structure.
+.IP \fInum_codes\fP 1i
+Specifies the number of KeyCodes that are to be changed.
+.SH DESCRIPTION
+.\" $Header: XCKMap.d,v 1.6 88/08/19 20:53:42 mento Exp $
+The
+.ZN XChangeKeyboardMapping
+function defines the symbols for the specified number of KeyCodes
+starting with first_keycode.
+The symbols for KeyCodes outside this range remain unchanged.  
+The number of elements in keysyms must be:
+.LP
+.Ds
+num_codes * keysyms_per_keycode
+.De
+.LP
+The specified first_keycode must be greater than or equal to min_keycode 
+returned by
+.ZN XDisplayKeycodes ,
+or a 
+.ZN BadValue 
+error results.
+In addition, the following expression must be less than or equal to 
+max_keycode as returned by
+.ZN XDisplayKeycodes ,
+or a
+.ZN BadValue 
+error results:
+.LP
+.Ds
+first_keycode + num_codes \- 1
+.De
+.LP
+KeySym number N, counting from zero, for KeyCode K has the following index
+in keysyms, counting from zero: 
+.LP
+.Ds 
+(K \- first_keycode) * keysyms_per_keycode + N
+.De
+.LP
+The specified keysyms_per_keycode can be chosen arbitrarily by the client
+to be large enough to hold all desired symbols. 
+A special KeySym value of 
+.ZN NoSymbol 
+should be used to fill in unused elements 
+for individual KeyCodes.  
+It is legal for 
+.ZN NoSymbol 
+to appear in nontrailing positions
+of the effective list for a KeyCode.
+.ZN XChangeKeyboardMapping
+generates a 
+.ZN MappingNotify 
+event.
+.LP
+There is no requirement that the X server interpret this mapping. 
+It is merely stored for reading and writing by clients.
+.LP
+.ZN XChangeKeyboardMapping
+can generate
+.ZN BadAlloc 
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XGetKeyMap.d,v 1.5 88/07/10 11:18:06 mento Exp $
+The
+.ZN XGetKeyboardMapping
+function returns the symbols for the specified number of KeyCodes
+starting with first_keycode.
+The value specified in first_keycode must be greater than 
+or equal to min_keycode as returned by
+.ZN XDisplayKeycodes ,
+or a
+.ZN BadValue 
+error results.
+In addition, the following expression must be less than or equal 
+to max_keycode as returned by
+.ZN XDisplayKeycodes :
+.LP
+.Ds 
+first_keycode + keycode_count \- 1
+.De
+.LP
+If this is not the case, a 
+.ZN BadValue 
+error results. 
+The number of elements in the KeySyms list is:
+.LP
+.Ds 
+keycode_count * keysyms_per_keycode_return
+.De
+.LP
+KeySym number N, counting from zero, for KeyCode K has the following index
+in the list, counting from zero: 
+.Ds
+(K \- first_code) * keysyms_per_code_return + N
+.De
+.LP
+The X server arbitrarily chooses the keysyms_per_keycode_return value 
+to be large enough to report all requested symbols. 
+A special KeySym value of 
+.ZN NoSymbol 
+is used to fill in unused elements for
+individual KeyCodes.
+To free the storage returned by 
+.ZN XGetKeyboardMapping ,
+use
+.ZN XFree .
+.LP
+.ZN XGetKeyboardMapping
+can generate a
+.ZN BadValue 
+error.
+.LP
+The
+.ZN XDisplayKeycodes
+function returns the min-keycodes and max-keycodes supported by the
+specified display.
+The minimum number of KeyCodes returned is never less than 8,
+and the maximum number of KeyCodes returned is never greater than 255.
+Not all KeyCodes in this range are required to have corresponding keys.
+.LP
+.\" $Header: XSetModMap.d,v 1.6 88/08/19 20:58:48 mento Exp $
+The
+.ZN XSetModifierMapping
+function specifies the KeyCodes of the keys (if any) that are to be used 
+as modifiers.
+If it succeeds,
+the X server generates a
+.ZN MappingNotify
+event, and
+.ZN XSetModifierMapping
+returns
+.ZN MappingSuccess .
+X permits at most eight modifier keys.
+If more than eight are specified in the
+.ZN XModifierKeymap
+structure, a
+.ZN BadLength
+error results.
+.LP
+The modifiermap member of the 
+.ZN XModifierKeymap
+structure contains eight sets of max_keypermod KeyCodes, 
+one for each modifier in the order 
+.ZN Shift , 
+.ZN Lock , 
+.ZN Control , 
+.ZN Mod1 , 
+.ZN Mod2 , 
+.ZN Mod3 , 
+.ZN Mod4 , 
+and 
+.ZN Mod5 .
+Only nonzero KeyCodes have meaning in each set, 
+and zero KeyCodes are ignored.
+In addition, all of the nonzero KeyCodes must be in the range specified by 
+min_keycode and max_keycode in the 
+.ZN Display 
+structure,
+or a 
+.ZN BadValue 
+error results.
+.LP
+An X server can impose restrictions on how modifiers can be changed, 
+for example,
+if certain keys do not generate up transitions in hardware,
+if auto-repeat cannot be disabled on certain keys,
+or if multiple modifier keys are not supported.  
+If some such restriction is violated, 
+the status reply is
+.ZN MappingFailed ,
+and none of the modifiers are changed.
+If the new KeyCodes specified for a modifier differ from those
+currently defined and any (current or new) keys for that modifier are
+in the logically down state, 
+.ZN XSetModifierMapping
+returns
+.ZN MappingBusy , 
+and none of the modifiers is changed.
+.LP
+.ZN XSetModifierMapping
+can generate
+.ZN BadAlloc
+and 
+.ZN BadValue
+errors.
+.LP
+.\" $Header: XGetModMap.d,v 1.3 88/08/19 21:00:28 mento Exp $
+The
+.ZN XGetModifierMapping
+function returns a pointer to a newly created
+.ZN XModifierKeymap
+structure that contains the keys being used as modifiers.
+The structure should be freed after use by calling
+.ZN XFreeModifiermap .
+If only zero values appear in the set for any modifier, 
+that modifier is disabled.
+.LP
+.\" $Header: XNewModMap.d,v 1.5 88/08/19 20:54:43 mento Exp $
+The
+.ZN XNewModifiermap
+function returns a pointer to
+.ZN XModifierKeymap
+structure for later use.
+.LP
+The
+.ZN XInsertModifiermapEntry
+function adds the specified KeyCode to the set that controls the specified
+modifier and returns the resulting
+.ZN XModifierKeymap
+structure (expanded as needed).
+.LP
+The
+.ZN XDeleteModifiermapEntry
+function deletes the specified KeyCode from the set that controls the
+specified modifier and returns a pointer to the resulting
+.ZN XModifierKeymap
+structure.
+.LP
+.\" $Header: XFreeModMap.d,v 1.3 88/04/23 10:21:33 mento Exp $
+The
+.ZN XFreeModifiermap
+function frees the specified
+.ZN XModifierKeymap
+structure.
+.SH STRUCTURES
+The
+.ZN XModifierKeymap
+structure contains:
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	int max_keypermod;	/* This server's max number of keys per modifier */
+	KeyCode *modifiermap;	/* An 8 by max_keypermod array of the modifiers */
+} XModifierKeymap;
+.De
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XFree(3X11),
+XSetPointerMapping(3X11) 
+.br
+\fI\*(xL\fP

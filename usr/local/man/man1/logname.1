@@ -1,0 +1,22 @@
+.TH LOGNAME 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+logname \- print user's login name
+.SH SYNOPSIS
+.B logname [\-\-help] [\-\-version]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR logname .
+.B logname
+prints the calling user's name, as found in the file /etc/utmp, and
+exits with a status of 0.  If there is no /etc/utmp entry for the
+calling process,
+.B logname
+prints an error message and exits with a status of 1.
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

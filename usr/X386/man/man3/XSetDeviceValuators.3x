@@ -1,0 +1,68 @@
+.ds xL Programming with Xlib
+.TH XSetDeviceValuators 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XSetDeviceValuators \- initialize the valuators on an extension input device
+.SH SYNTAX
+XSetDeviceValuators\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIvaluators\fP\^, \fIfirst_valuator\fP\^, \fInum_valuators\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      int *\fIvaluators\fP\^; 
+.br
+      int \fIfirst_valuator\fP\^; 
+.br
+      int \fInum_valuators\fP\^; 
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device whose valuators are to be initialized.
+.TP 12
+.I valuators
+Specifies a pointer to an array of integer values to be used to initialize the
+device valuators.
+.TP 12
+.I first_valuator
+Specifies the first valuator to be set.  Valuators are numbered beginning with
+zero.
+.TP 12
+.I num_valuators
+Specifies the number of valuators to be set.
+.SH DESCRIPTION
+The
+\fIXSetDeviceValuators\fP
+request sets the current values of the valuators of an input device.
+The valuators in the range
+first_valuator to (first_valuator + num_valuators)
+are set to the specified values.  Valuators are numbered beginning with 0.
+Not all input devices support initialization of valuator values.  If this
+request is made to a device that does not support valuators initialization,
+a \fIBadMatch\fP error will occur.
+.P
+If the request succeeds, a status of Success is returned.  If another
+client has the device grabbed, a status of AlreadyGrabbed is returned.
+.P
+\fIXSetDeviceValuators\fP
+can generate a \fIBadLength\fP, \fIBadDevice\fP , \fIBadMatch\fP, or 
+\fIBadValue\fP error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXSetDeviceValuators\fP request is made 
+specifying a device that has no valuators and reports no axes of motion,
+or if such a request is made specifying a device that does not support
+valuator initialization.
+.TP 12
+\fIBadValue\fP
+An invalid first_valuator or num_valuators values was specified.
+.SH "SEE ALSO"
+.br
+\fI\*(xL\fP

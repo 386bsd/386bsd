@@ -1,0 +1,34 @@
+.TH CKSUM 1L "GNU Text Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+cksum \- checksum and count the bytes in a file
+.SH SYNOPSIS
+.B cksum
+[\-\-help] [\-\-version] [file...]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR cksum .
+.B cksum
+computes a cyclic redundancy check (CRC) for each named file, or the
+standard input if none are given or when a file named `\-' is given.
+It prints the CRC for each file along with the number of bytes in the
+file, and the file name unless no arguments were given.
+.PP
+.B cksum
+is typically used to make sure that files have been transferred
+by unreliable means (such as netnews) have not been corrupted, by
+comparing the
+.B cksum
+output for the received files with the
+.B cksum
+output for the original files.
+The CRC algorithm is specified by the POSIX.2 standard.  It is
+not compatible with the BSD or System V
+.B sum
+programs; it is more robust.
+.TP
+.I "\-\-help"
+Print a usage message and exit with a non-zero status.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit.

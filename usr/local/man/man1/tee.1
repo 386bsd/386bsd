@@ -1,0 +1,33 @@
+.TH TEE 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+tee \- read from standard input and write to standard output and files
+.SH SYNOPSIS
+.B tee
+[\-ai] [\-\-append] [\-\-ignore-interrupts] [\-\-help] [\-\-version] [file...]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR tee .
+The
+.B tee
+command copies the standard input to the standard output and any
+files given as arguments.
+.P
+If a file being written to does not already exist, it is created.  If
+a file being written to already exists, the data it previously
+contained is overwritten unless the
+.I \-a
+option is used.
+.SS OPTIONS
+.TP
+.I "\-a, \-\-append"
+Append the standard input to the given files rather than overwriting them.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-i, \-\-ignore-interrupts"
+Ignore interrupt signals.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

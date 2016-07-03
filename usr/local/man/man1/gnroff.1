@@ -1,0 +1,69 @@
+.TH GNROFF 1 "17 May 1993" "Groff Version 1.09"
+.SH NAME
+gnroff \- emulate nroff command with groff
+.SH SYNOPSIS
+.B gnroff
+[
+.B \-h
+]
+[
+.B \-i
+]
+[
+.BI \-m name
+]
+[
+.BI \-n num
+]
+[
+.BI \-o list
+]
+[
+.BI \-r cn
+]
+[
+.BI \-T name
+]
+[
+.I file\|.\|.\|.
+]
+.SH DESCRIPTION
+The
+.B gnroff
+script emulates the
+.B nroff
+command using groff.
+The
+.B \-T
+option with an argument other than
+.B ascii
+and
+.B latin1
+will be ignored.
+The
+.B \-h
+option
+is equivalent to the
+.B grotty
+.B \-h
+option.
+The
+.BR \-i ,
+.BR \-n ,
+.BR \-m ,
+.B \-o
+and
+.B \-r
+options have the effect described in
+.BR gtroff (1).
+In addition
+.B gnroff
+silently ignores options of
+.BR \-e ,
+.B \-q
+or
+.BR \-s .
+.SH "SEE ALSO"
+.BR groff (1),
+.BR gtroff (1),
+.BR grotty (1)

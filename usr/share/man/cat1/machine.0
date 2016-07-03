@@ -1,0 +1,66 @@
+MACHINE(1)                  386BSD Reference Manual                 MACHINE(1)
+
+NNAAMMEE
+     mmaacchhiinnee - print machine type
+
+SSYYNNOOPPSSIISS
+     mmaacchhiinnee
+
+DDEESSCCRRIIPPTTIIOONN
+     The mmaacchhiinnee command displays the machine type.
+
+SSEEEE AALLSSOO
+     make(1)
+
+HHIISSTTOORRYY
+     The mmaacchhiinnee command is currently under development.
+
+BSD Experimental                 July 26, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,13 @@
+XCOMM $XFree86: mit/config/hostcc.def,v 1.1 1993/03/23 12:56:41 dawes Exp $
+
+/* Host C compiler definitions.  Used in cross-compile environments in
+ * case we want to compile a program that should run on the host itself.
+ */
+#ifdef CrossCompiling
+               CC = cc
+           CFLAGS = $(ALLINCLUDES) $(DEFINES)
+               AR = ar clq
+           RANLIB = ranlib
+               LD = cc
+        LDOPTIONS =
+#endif /* CrossCompiling */

@@ -1,0 +1,79 @@
+.TH WHO 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+who \- show who is logged on
+.SH SYNOPSIS
+.B who
+[\-imqsuwHT] [\-\-count] [\-\-idle] [\-\-heading] [\-\-help]
+[\-\-message] [\-\-mesg] [\-\-version] [\-\-writable] [file] [am i]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR who .
+If given no non-option arguments,
+.B who
+prints the following information for each user currently logged on:
+.RS
+.nf
+
+login name
+terminal line
+login time
+remote hostname or X display
+.fi
+.RE
+.PP
+If given one non-option argument,
+.B who
+uses that instead of /etc/utmp as the name of the file containing the
+record of users logged on.  /etc/wtmp is commonly given as an argument
+to
+.B who
+to look at who has previously logged on.
+.PP
+If given two non-option arguments,
+.B who
+prints only the entry for the user running it (determined from its
+standard input), preceded by the hostname.
+Traditionally, the two arguments given are `am i', as in
+`who am i'.
+.SS OPTIONS
+.TP
+.I \-m
+Same as `who am i'.
+.TP
+.I "\-q, \-\-count"
+Print only the login names and the number of users logged on.
+Overrides all other options.
+.TP
+.I \-s
+Ignored; for compatibility with other versions of
+.BR who .
+.TP
+.I "\-i, \-u, \-\-idle"
+After the login time, print the number of
+hours and minutes that the user has been idle.
+`.' means the user was active in last minute.
+`old' means the user was idle for more than 24 hours.
+.TP
+.I "\-H, \-\-heading"
+Print a line of column headings.
+.TP
+.I "\-w, \-T, \-\-mesg, \-\-message, \-\-writable"
+Like
+.IR \-s ,
+plus after the login name print a character indicating the user's
+message status:
+.RS
+.IP +
+allowing \fBwrite\fP messages
+.IP \-
+disallowing \fBwrite\fP messages
+.IP ?
+cannot find terminal device
+.RE
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

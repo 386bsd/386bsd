@@ -1,0 +1,66 @@
+KVM_MKDB(8)             386BSD System Manager's Manual             KVM_MKDB(8)
+
+NNAAMMEE
+     kkvvmm__mmkkddbb - create kernel database
+
+SSYYNNOOPPSSIISS
+     kkvvmm__mmkkddbb
+
+DDEESSCCRRIIPPTTIIOONN
+     KKvvmm__mmkkddbb creates a database in /_v_a_r/_r_u_n containing information about
+     /_3_8_6_b_s_d and perhaps other fairly static information about the current
+     system.  Various library routines consult this database.  The only
+     information currently stored is the kernel namelist, which is used by the
+     kvm_nlist(3) function.
+
+FFIILLEESS
+     /386bsd
+     /var/run/kvm_386bsd.db
+
+SSEEEE AALLSSOO
+     kvm_nlist(3)
+
+BSD Experimental                March 16, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

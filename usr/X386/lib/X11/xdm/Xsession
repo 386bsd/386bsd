@@ -1,0 +1,35 @@
+#!/bin/sh
+# $XConsortium: Xsession,v 1.7 92/08/06 11:08:14 gildea Exp $
+
+# redirect errors to a file in user's home directory if we can
+for errfile in "$HOME/.xsession-errors" "/tmp/xses-$USER"
+do
+	if ( cp /dev/null "$errfile" 2> /dev/null )
+	then
+		chmod 600 "$errfile"
+		exec > "$errfile" 2>&1
+		break
+	fi
+done
+
+case $# in
+1)
+	case $1 in
+	failsafe)
+		exec xterm -geometry 80x24-0-0
+		;;
+	esac
+esac
+
+startup=$HOME/.xsession
+resources=$HOME/.Xresources
+
+if [ -f $startup ]; then
+	exec $startup
+else
+	if [ -f $resources ]; then
+		xrdb -load $resources
+	fi
+	twm &
+	exec xterm -geometry 80x24+10+10 -ls
+fi

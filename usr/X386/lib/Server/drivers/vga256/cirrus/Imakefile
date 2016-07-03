@@ -1,0 +1,32 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga256/drivers/cirrus/Imakefile,v 2.2 1993/09/21 15:24:23 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:27 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = cir_driver.c cir_fill.c cir_blt.c cir_bltC.c cir_im.c cir_bank.s
+
+OBJS = cir_driver.o cir_fill.o cir_blt.o cir_bltC.o cir_im.o cir_bank.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../../mfb -I../../../../mi -I../../../../../include \
+           -I../../../../cfb -I../../cfb.banked -I../../vga \
+	   -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(cirrus, $(OBJS))
+
+InstallLinkKitNonExecFile(cir_driver.c,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_driver.h,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_bank.s,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_fill.c,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_im.c,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_blt.c,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(cir_bltC.c,$(LINKKITDIR)/drivers/vga256/cirrus)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga256/cirrus)
+
+DependTarget()

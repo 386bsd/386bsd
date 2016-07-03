@@ -1,0 +1,21 @@
+#	$Id: vm.symbols,v 1.1 94/10/19 17:37:25 bill Exp $
+
+#ps
+	_nswap
+	_maxslp
+
+#pstat
+#	_cons
+	_nswap
+	_swapmap
+
+#vmstat
+	_rate
+	_total
+	_sum
+#	_rectime
+#	_pgintime
+
+#w
+#	_swapdev
+	_nswap

@@ -1,0 +1,185 @@
+%    Copyright (C) 1990, 1991, 1993 Aladdin Enterprises.  All rights reserved.
+%
+% This file is part of Ghostscript.
+%
+% Ghostscript is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY.  No author or distributor accepts responsibility
+% to anyone for the consequences of using it or for whether it serves any
+% particular purpose or works at all, unless he says so in writing.  Refer
+% to the Ghostscript General Public License for full details.
+%
+% Everyone is granted permission to copy, modify and redistribute
+% Ghostscript, but only under the conditions described in the Ghostscript
+% General Public License.  A copy of this license is supposed to have been
+% given to you along with Ghostscript so you can know your rights and
+% responsibilities.  It should be in a file named COPYING.  Among other
+% things, the copyright notice and this notice must be preserved on all
+% copies.
+
+% Convert a .ps file to another .ps file containing only a bit image.
+% After loading ps2image.ps into Ghostscript, invoke
+%	(output_file.ps) ps2image
+% This replaces the current device, writing the output on the file
+% instead of to the device.  Then invoke
+%	(your_input_file.ps) run
+% To display the image at a later time, simply run the file that was
+% written (output_file.ps).
+
+% Initialize, and redefine copypage and showpage.
+/ps2idict 25 dict def
+ps2idict begin
+
+		% Save the showpage operator.
+  /realshowpage /showpage load def
+
+		% Define a monochrome palette.
+  /monopalette <00 ff> def
+
+		% Initialize the tables for reading a image.
+		% This code gets copied to the output file.
+  /maxrep 31 def		% max repeat count
+  /maxrep1 maxrep 1 sub def
+  /initread
+   {
+		% Initialize the strings for filling runs.
+
+     /.ImageFills [
+     0 1 255
+      { //maxrep string dup 0 1 //maxrep1 { 3 index put dup } for
+        pop exch pop readonly
+      } for
+     ] readonly def
+
+		% Initialize the procedure table for input dispatching.
+
+     /.ImageProcs [
+     33 { { pop .ImageItem } } repeat
+     32 { {	% 0x21-0x40: (N-0x20) data bytes follow
+      32 sub 3 index exch 0 exch getinterval 2 index exch
+      readhexstring pop exch pop dup
+     } bind } repeat
+     31 { {	% 0x41-0x5f: repeat last data byte (N-0x40) times
+      64 sub .ImageFills 2 index dup length 1 sub get get
+      exch 0 exch getinterval
+     } bind } repeat
+     160 { { pop .ImageItem } } repeat
+     ] readonly def
+
+   } def
+		% Read one item from a compressed image.
+		% This procedure gets copied to the output file.
+		% Stack contents: <buffer> <file> <previous>
+  /.ImageItem
+   { 1 index read pop dup .ImageProcs exch get exec
+   } def
+		% Read and print an entire compressed image,
+		% scaling it uniformly in X and Y to fill the page.
+		% This procedure gets copied to the output file.
+		% Arguments: <width> <height>
+  /.ImageRead
+   { gsave 1 [
+     clippath pathbbox pop pop translate
+     pathbbox newpath 4 -2 roll pop pop
+     dup 3 1 roll abs 5 index exch div exch abs 6 index exch div
+     2 copy lt { exch } if pop		% (definition of max)
+     0 0 2 index neg 0 4 index 7 -1 roll mul
+     ] { .ImageItem }
+     4 index 7 add 8 idiv string currentfile ()
+     8 3 roll
+     image pop pop pop
+     grestore showpage
+   } def
+
+		% Write a repeat command on the file.
+  /writerepeat		% <count> writerepeat -
+   {  { dup 31 le { exit } if myfile (_) writestring 31 sub } loop
+     dup 0 ne { 64 add myfile exch write } { pop } ifelse
+   } bind def
+
+		% Write a data command on the file.
+  /writedata		% <string> writedata -
+   {  { dup length 0 eq { exit } if
+	dup length 32 min
+	dup 16#20 add myfile exch write
+	1 index 0 2 index getinterval myfile exch writehexstring
+	myfile (\n) writestring
+	1 index length 1 index sub getinterval
+      }
+     loop pop
+   } bind def
+
+		% Write an entire data string on the file.
+  /writedatastring		% <string> writedatastring -
+   {  { dup length 4 lt { exit } if
+		% Detect a maximal run of non-repeated data.
+	dup length 4 sub 0 exch 1 exch
+	 { 2 copy 3 getinterval 2 index 2 index 1 add 3 getinterval
+	   eq { exit } if pop
+	 }
+	for
+	dup type /stringtype eq { exit } if	% no repetition found
+	1 add
+	1 index 0 2 index getinterval writedata
+	1 index length 1 index sub getinterval
+		% Detect a maximal run of repeated data.
+		% We know there are at least 3 repeated bytes.
+	dup 0 get exch
+	dup length exch 3 1 3 index 1 sub
+	 {		% Stack: <byte> <length> <string> <index>
+	   2 copy get 4 index ne { 3 -1 roll pop exch exit } { pop } ifelse
+	 }
+	for		% Stack: <byte> <length> <string>
+	exch dup writerepeat
+	1 index length 1 index sub getinterval
+	exch pop
+      }
+     loop writedata
+   } bind def
+
+		% The main procedure.
+  /ps2image
+   {				% Open the file
+     (w) file /myfile exch def
+     /initread load
+      { dup myfile exch write==only
+        type dup /arraytype eq exch /packedarraytype eq or
+	 { (\n) } { ( ) } ifelse myfile exch writestring
+      } forall
+     { /.ImageItem /.ImageRead }
+      { dup myfile exch write==only
+        load myfile exch write==only
+	myfile ( bind def\n) writestring
+      } forall
+					% Get the device parameters
+     currentdevice getdeviceprops .dicttomark
+     dup /HWSize get aload pop
+       /devheight exch def
+       /devwidth exch def
+     /InitialMatrix get
+       /devmatrix exch def
+				% Make a corresponding memory device
+     devmatrix devwidth devheight monopalette
+     makeimagedevice
+     /mydevice exch def
+     mydevice setdevice		% (does an erasepage)
+     /rowwidth devwidth 7 add 8 idiv def
+     /row rowwidth 7 add 8 idiv 8 mul string def	% pad for scanning
+				% Replace the definition of showpage
+     userdict /showpage { ps2idict begin myshowpage end } bind put
+   } def
+				% Write the image on the file
+  /myshowpage
+   { myfile devwidth write==only   myfile ( ) writestring
+     myfile devheight write==only   myfile ( .ImageRead\n) writestring
+	 			% Write the hex data
+     0 1 devheight 1 sub
+      { mydevice exch row 0 rowwidth getinterval copyscanlines
+	writedatastring
+      } for
+     myfile flushfile
+     erasepage initgraphics
+   } bind def
+
+end
+
+/ps2image { ps2idict begin ps2image end } bind def

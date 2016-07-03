@@ -1,0 +1,3 @@
+%!
+/Hershey-Gothic-English findfont /CharData get
+/Hershey-Gothic-English-Oblique 4290010 0.9 -20 MakeHersheyFont

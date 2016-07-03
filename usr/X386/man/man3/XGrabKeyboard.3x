@@ -1,0 +1,271 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XGrabKeyboard 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XGrabKeyboard, XUngrabKeyboard \- grab the keyboard
+.SH SYNTAX
+.\" $Header: XGrabKeybd.f,v 1.1 88/02/26 10:01:05 mento Exp $
+int XGrabKeyboard\^(\^\fIdisplay\fP, \fIgrab_window\fP\^, \fIowner_events\fP\^, \fIpointer_mode\fP\^, \fIkeyboard_mode\fP\^, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIgrab_window\fP\^;
+.br
+      Bool \fIowner_events\fP\^;
+.br
+      int \fIpointer_mode\fP\^, \fIkeyboard_mode\fP\^;
+.br
+      Time \fItime\fP\^;
+.LP
+.\" $Header: XUngrabKeybd.f,v 1.1 88/02/26 10:04:05 mento Exp $
+XUngrabKeyboard\^(\^\fIdisplay\fP, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Time \fItime\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIgrab_window\fP 1i
+Specifies the grab window.
+.\" $Header: keybdmode.a,v 1.3 88/04/06 14:22:10 mento Exp $
+.IP \fIkeyboard_mode\fP 1i
+Specifies further processing of keyboard events.
+You can pass 
+.ZN GrabModeSync 
+or
+.ZN GrabModeAsync .
+.\" $Header: ownerevents2.a,v 1.3 88/05/14 07:32:25 mento Exp $
+.IP \fIowner_events\fP 1i
+Specifies a Boolean value that indicates whether the keyboard events 
+are to be reported as usual.
+.\" $Header: pointermode.a,v 1.3 88/04/06 14:21:24 mento Exp $
+.IP \fIpointer_mode\fP 1i
+Specifies further processing of pointer events.
+You can pass 
+.ZN GrabModeSync 
+or
+.ZN GrabModeAsync .
+.IP \fItime\fP 1i
+Specifies the time.
+You can pass either a timestamp or
+.ZN CurrentTime .
+.SH DESCRIPTION
+.\" $Header: XGrabKeybd.d,v 1.4 88/08/19 20:27:03 mento Exp $
+The
+.ZN XGrabKeyboard
+function actively grabs control of the keyboard and generates
+.ZN FocusIn
+and
+.ZN FocusOut
+events.
+Further key events are reported only to the
+grabbing client.
+.ZN XGrabKeyboard
+overrides any active keyboard grab by this client.
+If owner_events is 
+.ZN False , 
+all generated key events are reported with
+respect to grab_window.  
+If owner_events is 
+.ZN True  
+and if a generated
+key event would normally be reported to this client, it is reported
+normally; otherwise, the event is reported with respect to the
+grab_window.  
+Both 
+.ZN KeyPress 
+and 
+.ZN KeyRelease 
+events are always reported,
+independent of any event selection made by the client.
+.LP
+If the keyboard_mode argument is 
+.ZN GrabModeAsync ,
+keyboard event processing continues
+as usual. 
+If the keyboard is currently frozen by this client, 
+then processing of keyboard events is resumed.
+If the keyboard_mode  argument is
+.ZN GrabModeSync ,
+the state of the keyboard (as seen by client applications) appears to freeze,
+and the X server generates no further keyboard events until the
+grabbing client issues a releasing 
+.ZN XAllowEvents 
+call or until the keyboard grab is released.
+Actual keyboard changes are not lost while the keyboard is frozen; 
+they are simply queued in the server for later processing.
+.LP
+If pointer_mode is 
+.ZN GrabModeAsync ,
+pointer event processing is unaffected
+by activation of the grab.  
+If pointer_mode is 
+.ZN GrabModeSync ,
+the state of the pointer (as seen by client applications) appears to freeze, 
+and the X server generates no further pointer events 
+until the grabbing client issues a releasing 
+.ZN XAllowEvents 
+call or until the keyboard grab is released.
+Actual pointer changes are not lost while the pointer is frozen; 
+they are simply queued in the server for later processing.
+.LP
+If the keyboard is actively grabbed by some other client,
+.ZN XGrabKeyboard
+fails and returns
+.ZN AlreadyGrabbed .
+If grab_window is not viewable,
+it fails and returns
+.ZN GrabNotViewable .
+If the keyboard is frozen by an active grab of another client,
+it fails and returns
+.ZN GrabFrozen .
+If the specified time is earlier than the last-keyboard-grab time 
+or later than the current X server time,
+it fails and returns
+.ZN GrabInvalidTime .
+Otherwise, the last-keyboard-grab time is set to the specified time
+.Pn ( CurrentTime 
+is replaced by the current X server time).
+.LP
+.ZN XGrabKeyboard
+can generate
+.ZN BadValue
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XUngrabKeybd.d,v 1.2 88/06/11 07:54:22 mento Exp $
+The
+.ZN XUngrabKeyboard
+function
+releases the keyboard and any queued events if this client has it actively grabbed from
+either
+.ZN XGrabKeyboard
+or
+.ZN XGrabKey .
+.ZN XUngrabKeyboard
+does not release the keyboard and any queued events
+if the specified time is earlier than
+the last-keyboard-grab time or is later than the current X server time.
+It also generates
+.ZN FocusIn 
+and 
+.ZN FocusOut 
+events.
+The X server automatically performs an 
+.ZN UngrabKeyboard 
+request if the event window for an
+active keyboard grab becomes not viewable.
+.SH DIAGNOSTICS
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllowEvents(3X11),
+XGrabButton(3X11),
+XGrabKey(3X11),
+XGrabPointer(3X11)
+.br
+\fI\*(xL\fP

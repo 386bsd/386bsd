@@ -1,0 +1,72 @@
+XCOMM $XFree86: mit/config/am_site.def,v 1.2 1993/03/23 12:58:50 dawes Exp $
+
+/*
+ * Amoeba configuration defines that should require no change.
+ */
+#ifdef BeforeVendorCF
+
+#define ProjectRoot		AmoebaConf/$(ARCH).$(TOOLSET)/X11R5
+
+#define CommonAmoebaDefines	-DAMOEBA -D$(ARCH)
+#define StandardDefines		CommonAmoebaDefines
+#define StandardCppDefines	StandardDefines
+
+#endif /* BeforeVendorCF */
+
+#ifdef AfterVendorCF
+
+#define	InstallXdmConfig	NO
+#define	InstallXinitConfig	NO
+#define	InstallFSConfig		NO
+
+#define UsrLibDir		$(DESTDIR)/public/module/x11/lib
+#define	LibDir			$(DESTDIR)/public/module/x11/lib
+#define ManDirectoryRoot	$(DESTDIR)/public/module/x11/man
+#define	BinDir			$(DESTDIR)/public/module/x11/bin
+#define IncRoot			$(DESTDIR)/public/module/x11/include
+#define FontDir			$(DESTDIR)/public/module/x11/fonts/$(ARCH)
+#define	DefaultRGBDatabase	$(DESTDIR)/public/module/x11/lib/rgb/$(ARCH)/rgb
+
+#define	ManSuffix		1
+#define	ManPath			ManDirectoryRoot
+#define	XmanLocalSearchPath	ManDirectoryRoot
+
+#define DefaultUserPath		:/bin:$(BINDIR)
+#define DefaultSystemPath	/bin:$(BINDIR):
+
+#define StandardIncludes	-I$(ATOP)/src/h -I$(ATOP)/src/h/posix -I$(ATOP)/src/h/posix/machdep/$(ARCH) -I$(ATOP)/src/h/machdep/arch/$(ARCH) -I$(ATOP)/src/h/toolset/$(TOOLSET)
+
+/* XDMCP is turned on by default, this turns it off for Amoeba */
+#ifdef GccGasOption
+#define	ServerExtraDefines	-DXDEBUG -DNO_ALLOCA GccGasOption
+#else
+#define	ServerExtraDefines	-DXDEBUG -DNO_ALLOCA
+#endif
+
+#define	Malloc0ReturnsNull	YES
+#define ServerInstallFlags	-s 32
+#define FontDefines		-DFONT_SNF
+#define ConnectionFlags		-DAMTCPCONN -DAMCONN
+#ifndef ExtraFPLoadFlags
+#define ExtraFPLoadFlags
+#endif
+#define OSLibraries		$(ALIB)/ajax/libajax.a $(ALIB)/amoeba/libamoeba.a $(ALIB)/math/libmath.a ExtraFPLoadFlags
+
+ATOP		= AmoebaTop
+ALIB		= AmoebaConf/$(ARCH).$(TOOLSET)/lib
+#ifdef AckToolset 
+/* The ACK toolset already links in the appropriate head.o by default */
+HEAD		=
+#else
+HEAD		= $(ALIB)/head/head.o
+#endif
+
+ABIN		= AmoebaBin
+AINSTALL	= /bin/sh $(SCRIPTSRC)/aminstall.sh $(ABIN)
+AINSTALLFLAGS	=
+TOB		= /bin/sh $(SCRIPTSRC)/aminstall.sh $(ABIN)
+
+MKXDIRHIER	= /bin/sh $(SCRIPTSRC)/ammkdirhier.sh $(ABIN)
+
+#endif /* AfterVendorCF */
+

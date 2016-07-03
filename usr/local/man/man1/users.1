@@ -1,0 +1,34 @@
+.TH USERS 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+users \- print the user names of users currently logged in to the current host
+.SH SYNOPSIS
+.B users [FILE]
+.br
+.B users
+{\-\-help,\-\-version}
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR users .
+.B users
+prints on a single line a blank-separated list of user names
+of users currently logged in to the current host.
+Each output user name corresponds to a login session, so if a user has more
+than one login session, that user's name will appear the same
+number of times in the output.
+With no file argument,
+.B users
+extracts its information from the file
+.B /etc/utmp .
+If a file argument is given,
+.B users
+uses that file instead.
+A common choice is
+.B /etc/wtmp .
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

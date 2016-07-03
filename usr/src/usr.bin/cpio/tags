@@ -1,0 +1,127 @@
+FOLD	fnmatch.c	/^#define FOLD(c)	((flags & FNM_CASEFOLD) && isupper/
+Mgetopt	getopt.c	/^main (argc, argv)$/
+Mgetopt1	getopt1.c	/^main (argc, argv)$/
+Mmain	main.c	/^main (argc, argv)$/
+READ	rtapelib.c	/^#define READ(fildes) (from_rmt[fildes][0])$/
+S_ISBLK	filemode.c	/^#define	S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)$/
+S_ISCHR	filemode.c	/^#define	S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)$/
+S_ISDIR	filemode.c	/^#define	S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)$/
+S_ISFIFO	filemode.c	/^#define	S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)$/
+S_ISLNK	filemode.c	/^#define	S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)$/
+S_ISMPB	filemode.c	/^#define S_ISMPB(m) (((m) & S_IFMT) == S_IFMPB)$/
+S_ISMPC	filemode.c	/^#define S_ISMPC(m) (((m) & S_IFMT) == S_IFMPC)$/
+S_ISNWK	filemode.c	/^#define S_ISNWK(m) (((m) & S_IFMT) == S_IFNWK)$/
+S_ISREG	filemode.c	/^#define	S_ISREG(m) (((m) & S_IFMT) == S_IFREG)$/
+S_ISSOCK	filemode.c	/^#define	S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)$/
+VA_START	error.c	/^#define VA_START(args, lastarg) va_start(args, las/
+WRITE	rtapelib.c	/^#define WRITE(fildes) (to_rmt[fildes][1])$/
+__rmt_close	rtapelib.c	/^__rmt_close (fildes)$/
+__rmt_ioctl	rtapelib.c	/^__rmt_ioctl (fildes, op, arg)$/
+__rmt_lseek	rtapelib.c	/^__rmt_lseek (fildes, offset, whence)$/
+__rmt_open	rtapelib.c	/^__rmt_open (path, oflag, mode, bias)$/
+__rmt_read	rtapelib.c	/^__rmt_read (fildes, buf, nbyte)$/
+__rmt_write	rtapelib.c	/^__rmt_write (fildes, buf, nbyte)$/
+_getopt_internal	getopt.c	/^_getopt_internal (argc, argv, optstring, longopts,/
+_rmt_rexec	rtapelib.c	/^_rmt_rexec (host, user)$/
+_rmt_shutdown	rtapelib.c	/^_rmt_shutdown (fildes)$/
+add_cdf_double_slashes	util.c	/^add_cdf_double_slashes (input_name)$/
+add_inode	util.c	/^add_inode (node_num, file_name, major_num, minor_n/
+add_link_defer	copyout.c	/^add_link_defer (file_hdr)$/
+chown	util.c	/^chown (path, owner, group)$/
+clear_rest_of_block	copyout.c	/^clear_rest_of_block (out_file_des)$/
+command	rtapelib.c	/^command (fildes, buf)$/
+copy_buf_out	util.c	/^copy_buf_out (in_buf, out_des, num_bytes)$/
+copy_files	util.c	/^copy_files (in_des, out_des, num_bytes)$/
+copy_in_buf	util.c	/^copy_in_buf (in_buf, in_des, num_bytes)$/
+count_defered_links_to_dev_ino	copyout.c	/^count_defered_links_to_dev_ino (file_hdr)$/
+create_all_directories	util.c	/^create_all_directories (name)$/
+create_defered_links	copyin.c	/^create_defered_links (file_hdr)$/
+create_deferment	defer.c	/^create_deferment (file_hdr)$/
+create_final_defers	copyin.c	/^create_final_defers ()$/
+defer_copyin	copyin.c	/^defer_copyin (file_hdr)$/
+dirname	dirname.c	/^dirname (path)$/
+ds_fgetname	dstring.c	/^ds_fgetname (f, s)$/
+ds_fgets	dstring.c	/^ds_fgets (f, s)$/
+ds_fgetstr	dstring.c	/^ds_fgetstr (f, s, eos)$/
+ds_init	dstring.c	/^ds_init (string, size)$/
+ds_resize	dstring.c	/^ds_resize (string, size)$/
+empty_output_buffer	util.c	/^empty_output_buffer (out_des)$/
+empty_output_buffer_swap	util.c	/^empty_output_buffer_swap (out_des)$/
+endgrent	userspec.c	/^#define endgrent()$/
+endpwent	userspec.c	/^#define endpwent()$/
+error	error.c	/^error (status, errnum, message, va_alist)$/
+exchange	getopt.c	/^exchange (argv)$/
+filemodestring	filemode.c	/^filemodestring (statp, str)$/
+fill_input_buffer	util.c	/^fill_input_buffer (in_des, num_bytes)$/
+find_inode_file	util.c	/^find_inode_file (node_num, major_num, minor_num)$/
+fnmatch	fnmatch.c	/^fnmatch (pattern, string, flags)$/
+free_deferment	defer.c	/^free_deferment (d)$/
+ftypelet	filemode.c	/^ftypelet (bits)$/
+get_next_reel	util.c	/^get_next_reel (tape_des)$/
+getgidbyname	idcache.c	/^getgidbyname (group)$/
+getgroup	idcache.c	/^getgroup (gid)$/
+getopt	getopt.c	/^getopt (argc, argv, optstring)$/
+getopt_long	getopt1.c	/^getopt_long (argc, argv, options, long_options, op/
+getopt_long_only	getopt1.c	/^getopt_long_only (argc, argv, options, long_option/
+getuidbyname	idcache.c	/^getuidbyname (user)$/
+getuser	idcache.c	/^getuser (uid)$/
+hash_insert	util.c	/^hash_insert (new_value)$/
+initialize_buffers	main.c	/^initialize_buffers ()$/
+is_tar_filename_too_long	tar.c	/^is_tar_filename_too_long (name)$/
+is_tar_header	tar.c	/^is_tar_header (buf)$/
+isdigit	userspec.c	/^#define isdigit(c) ((c) >= '0' && (c) <= '9')$/
+islastparentcdf	util.c	/^islastparentcdf(path)$/
+isnumber	userspec.c	/^isnumber (str)$/
+last_link	copyout.c	/^last_link (file_hdr)$/
+link_to_maj_min_ino	copypass.c	/^link_to_maj_min_ino (file_name, st_dev_maj, st_dev/
+link_to_name	copypass.c	/^link_to_name (link_name, link_target)$/
+long_format	copyin.c	/^long_format (file_hdr, link_name)$/
+make_path	makepath.c	/^make_path (argpath, mode, parent_mode, owner, grou/
+mode_string	filemode.c	/^mode_string (mode, str)$/
+my_index	getopt.c	/^my_index (str, chr)$/
+null_block	tar.c	/^null_block (block, size)$/
+open_archive	util.c	/^open_archive (file)$/
+otoa	tar.c	/^otoa (s, n)$/
+pad_output	copyout.c	/^pad_output (out_file_des, offset)$/
+parse_user_spec	userspec.c	/^parse_user_spec (name, uid, gid, username, groupna/
+peek_in_buf	util.c	/^peek_in_buf (peek_buf, in_des, num_bytes)$/
+prepare_append	util.c	/^prepare_append (out_file_des)$/
+print_name_with_quoting	copyin.c	/^print_name_with_quoting (p)$/
+private_strerror	error.c	/^private_strerror (errnum)$/
+process_args	main.c	/^process_args (argc, argv)$/
+process_copy_in	copyin.c	/^process_copy_in ()$/
+process_copy_out	copyout.c	/^process_copy_out ()$/
+process_copy_pass	copypass.c	/^process_copy_pass ()$/
+read_for_checksum	copyout.c	/^read_for_checksum (in_file_des, file_size, file_na/
+read_in_binary	copyin.c	/^read_in_binary (file_hdr, in_des)$/
+read_in_header	copyin.c	/^read_in_header (file_hdr, in_des)$/
+read_in_new_ascii	copyin.c	/^read_in_new_ascii (file_hdr, in_des)$/
+read_in_old_ascii	copyin.c	/^read_in_old_ascii (file_hdr, in_des)$/
+read_in_tar_header	tar.c	/^read_in_tar_header (file_hdr, in_des)$/
+read_pattern_file	copyin.c	/^read_pattern_file ()$/
+rwx	filemode.c	/^rwx (bits, chars)$/
+set_new_media_message	util.c	/^set_new_media_message (message)$/
+setst	filemode.c	/^setst (bits, chars)$/
+skip_padding	copyin.c	/^skip_padding (in_file_des, offset)$/
+stash_tar_filename	tar.c	/^stash_tar_filename (prefix, filename)$/
+stash_tar_linkname	tar.c	/^stash_tar_linkname (linkname)$/
+status	rtapelib.c	/^status (fildes)$/
+strip_trailing_slashes	stripslash.c	/^strip_trailing_slashes (path)$/
+swab_array	copyin.c	/^swab_array (ptr, count)$/
+swab_short	copyin.c	/^#define swab_short(i) ((((i) << 8) & 0xff00) | (((/
+swahw_array	util.c	/^swahw_array (ptr, count)$/
+tape_offline	util.c	/^tape_offline (tape_des)$/
+tar_checksum	tar.c	/^tar_checksum (tar_hdr)$/
+to_oct	tar.c	/^to_oct (value, digits, where)$/
+toss_input	util.c	/^toss_input (in_des, num_bytes)$/
+umasked_symlink	util.c	/^umasked_symlink (name1, name2, mode)$/
+usage	main.c	/^usage (fp, status)$/
+utime	util.c	/^utime (char *filename, struct utimbuf *utb)$/
+write_out_header	copyout.c	/^write_out_header (file_hdr, out_des)$/
+write_out_tar_header	tar.c	/^write_out_tar_header (file_hdr, out_des)$/
+writeout_defered_file	copyout.c	/^writeout_defered_file (header, out_file_des)$/
+writeout_final_defers	copyout.c	/^writeout_final_defers(out_des)$/
+writeout_other_defers	copyout.c	/^writeout_other_defers (file_hdr, out_des)$/
+xmalloc	xmalloc.c	/^xmalloc (n)$/
+xrealloc	xmalloc.c	/^xrealloc (p, n)$/
+xstrdup	xstrdup.c	/^xstrdup (string)$/

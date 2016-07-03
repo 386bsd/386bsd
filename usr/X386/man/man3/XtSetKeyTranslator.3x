@@ -1,0 +1,211 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtSetKeyTranslator 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtSetKeyTranslator, XtTranslateKeycode, XtRegisterCaseConverter, XtConvertCase \- convert KeySym to KeyCodes
+.SH SYNTAX
+void XtSetKeyTranslator(\fIdisplay\fP, \fIproc\fP)
+.br
+    Display *\fIdisplay\fP;
+.br
+    XtKeyProc \fIproc\fP;
+.LP
+void XtTranslateKeycode(\fIdisplay\fP, \fIkeycode\fP, \fImodifiers\fP, \
+\fImodifiers_return\fP, \fIkeysym_return\fP)
+.br
+    Display *\fIdisplay\fP;
+.br
+    KeyCode \fIkeycode\fP;
+.br
+    Modifiers \fImodifiers\fP;
+.br
+    Modifiers *\fImodifiers_return\fP;
+.br
+    KeySym *\fIkeysym_return\fP;
+.LP
+void XtRegisterCaseConverter(\fIdisplay\fP, \fIproc\fP, \fIstart\fP, \fIstop\fP)
+.br
+    Display *\fIdisplay\fP;
+.br
+    XtCaseProc \fIproc\fP;
+.br
+    KeySym \fIstart\fP;
+.br
+    KeySym \fIstop\fP;
+.LP
+void XtConvertCase(\fIdisplay\fP, \fIkeysym\fP, \fIlower_return\fP, \
+\fIupper_return\fP)
+.br
+    Display *\fIdisplay\fP;
+.br
+    KeySym \fIkeysym\fP;
+.br
+    KeySym *\fIlower_return\fP;
+.br
+    KeySym *\fIupper_return\fP;
+.SH ARGUMENTS
+.ds Di
+.IP \fIdisplay\fP 1i
+Specifies the display\*(Di.
+.IP \fIkeycode\fP 1i
+Specifies the KeyCode to translate.
+.IP \fIkeysym\fP 1i
+Specifies the KeySym to convert.
+.IP \fIkeysym_return\fP 1i
+Returns the resulting KeySym.
+.IP \fIlower_return\fP 1i
+Returns the lowercase equivalent of the KeySym.
+.IP \fIupper_return\fP 1i
+Returns the uppercase equivalent of the KeySym.
+.IP \fImodifiers\fP 1i
+Specifies the modifiers to the KeyCode.
+.IP \fImodifiers_return\fP 1i
+Returns a mask that indicates the modifiers actually used 
+to generate the KeySym.
+.ds Pr \ to perform key translations or conversions
+.IP \fIproc\fP 1i
+Specifies the procedure that is\*(Pr.
+.IP \fIstart\fP 1i
+Specifies the first KeySym for which this converter is valid.
+.IP \fIstop\fP 1i
+Specifies the last KeySym for which this converter is valid.
+.SH DESCRIPTION
+The
+.ZN XtSetKeyTranslator
+function sets the specified procedure as the current key translator.
+The default translator is 
+.ZN XtTranslateKey ,
+an
+.ZN XtKeyProc
+that uses Shift and Lock modifiers with the interpretations defined
+by the core protocol.
+It is provided so that new translators can call it to get default 
+KeyCode-to-KeySym translations and so that the default translator 
+can be reinstalled.
+.LP
+The
+.ZN XtTranslateKeycode
+function passes the specified arguments 
+directly to the currently registered KeyCode to KeySym translator.
+.LP
+The
+.ZN XtRegisterCaseConverter
+registers the specified case converter.
+The start and stop arguments provide the inclusive range of KeySyms 
+for which this converter is to be called.
+The new converter overrides any previous converters for KeySyms in that range.
+No interface exists to remove converters; 
+you need to register an identity converter.
+When a new converter is registered,
+the \*(xI  refreshes the keyboard state if necessary.
+The default converter understands case conversion for all
+KeySyms defined in the core protocol.
+.LP
+The
+.ZN XtConvertCase
+function calls the appropriate converter and returns the results.
+A user-supplied
+.ZN XtKeyProc 
+may need to use this function.
+.SH "SEE ALSO"
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

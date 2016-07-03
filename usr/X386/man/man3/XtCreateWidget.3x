@@ -1,0 +1,294 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtCreateWidget 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtCreateWidget, XtCreateManagedWidget, XtDestroyWidget \- create and destroy widgets
+.SH SYNTAX
+Widget XtCreateWidget(\fIname\fP, \fIwidget_class\fP, \fIparent\fP, \
+\fIargs\fP, \fInum_args\fP)
+.br
+      String \fIname\fP;
+.br
+      WidgetClass \fIwidget_class\fP;
+.br
+      Widget \fIparent\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+Widget XtCreateManagedWidget(\fIname\fP, \fIwidget_class\fP, \fIparent\fP, \
+\fIargs\fP, \fInum_args\fP)
+.br
+      String \fIname\fP;
+.br
+      WidgetClass \fIwidget_class\fP;
+.br
+      Widget \fIparent\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+void XtDestroyWidget(\fIw\fP)
+.br
+      Widget \fIw\fP;
+.SH ARGUMENTS
+.ds Al to override the resource defaults
+.IP \fIargs\fP 1i
+Specifies the argument list \*(Al.
+.IP \fIname\fP 1i
+Specifies the resource name for the created widget,
+which is used for retrieving resources
+and, for that reason, should not be the same as any other widget
+that is a child of same parent.
+.IP \fInum_args\fP 1i
+Specifies the number of arguments in the argument list.
+.IP \fIparent\fP 1i
+Specifies the parent widget.
+.IP \fIw\fP 1i
+Specifies the widget.
+.ds Wc \ pointer for the created widget
+.IP \fIwidget_class\fP 1i
+Specifies the widget class\*(Wc.
+.SH DESCRIPTION
+The
+.ZN XtCreateWidget
+function performs much of the boilerplate operations of widget creation:
+.IP \(bu 5
+Checks to see if the class_initialize procedure has been called for this class
+and for all superclasses and, if not, calls those necessary in a
+superclass-to-subclass order.
+.IP \(bu 5
+Allocates memory for the widget instance.
+.IP \(bu 5
+If the parent is a subclass of
+.ZN constraintWidgetClass ,
+it allocates memory for the parent's constraints
+and stores the address of this memory into the constraints field.
+.IP \(bu 5
+Initializes the core nonresource data fields
+(for example, parent and visible).
+.IP \(bu 5
+Initializes the resource fields (for example, background_pixel)
+by using the resource lists specified for this class and all superclasses.
+.IP \(bu 5
+If the parent is a subclass of
+.ZN constraintWidgetClass ,
+it initializes the resource fields of the constraints record
+by using the constraint resource list specified for the parent's class
+and all superclasses up to
+.ZN constraintWidgetClass .
+.IP \(bu 5
+Calls the initialize procedures for the widget by starting at the 
+.ZN Core
+initialize procedure on down to the widget's initialize procedure.
+.IP \(bu 5
+If the parent is a subclass of
+.ZN compositeWidgetClass ,
+it puts the widget into its parent's children list by calling its parent's
+insert_child procedure.
+For further information,
+see Section 3.5.
+.IP \(bu 5
+If the parent is a subclass of
+.ZN constraintWidgetClass ,
+it calls the constraint initialize procedures,
+starting at
+.ZN constraintWidgetClass
+on down to the parent's constraint initialize procedure.
+.LP
+Note that you can determine the number of arguments in an argument list 
+by using the
+.ZN  XtNumber
+macro.
+For further information, see Section 11.1.
+.LP
+The
+.ZN XtCreateManagedWidget
+function is a convenience routine that calls
+.ZN XtCreateWidget
+and
+.ZN XtManageChild .
+.LP
+The
+.ZN XtDestroyWidget
+function provides the only method of destroying a widget,
+including widgets that need to destroy themselves.
+It can be called at any time,
+including from an application callback routine of the widget being destroyed.
+This requires a two-phase destroy process in order to avoid dangling
+references to destroyed widgets.
+.LP
+In phase one,
+.ZN XtDestroyWidget
+performs the following:
+.IP \(bu 5
+If the being_destroyed field of the widget is 
+.ZN True ,
+it returns immediately.
+.IP \(bu 5
+Recursively descends the widget tree and
+sets the being_destroyed field to 
+.ZN True 
+for the widget and all children.
+.IP \(bu 5
+Adds the widget to a list of widgets (the destroy list) that should be
+destroyed when it is safe to do so.
+.LP
+Entries on the destroy list satisfy the invariant that
+if w2 occurs after w1 on the destroy list then w2 is not a descendent of w1.
+(A descendant refers to both normal and pop-up children.)
+.LP
+Phase two occurs when all procedures that should execute as a result of
+the current event have been called (including all procedures registered with
+the event and translation managers),
+that is, when the current invocation of
+.ZN XtDispatchEvent
+is about to return or immediately if not in
+.ZN XtDispatchEvent .
+.LP
+In phase two,
+.ZN XtDestroyWidget
+performs the following on each entry in the destroy list:
+.IP \(bu 5
+Calls the destroy callback procedures registered on the widget 
+(and all descendants) in post-order (it calls children callbacks 
+before parent callbacks).
+.IP \(bu 5
+If the widget's parent is a subclass of 
+.ZN compositeWidgetClass 
+and if the parent is not being destroyed, 
+it calls 
+.ZN XtUnmanageChild 
+on the widget and then calls the widget's parent's delete_child procedure
+(see Section 3.4).
+.IP \(bu 5
+If the widget's parent is a subclass of
+.ZN constraintWidgetClass ,
+it calls the constraint destroy procedure for the parent,
+then the parent's superclass,
+until finally it calls the constraint destroy procedure for
+.ZN constraintWidgetClass .
+.IP \(bu 5
+Calls the destroy methods for the widget (and all descendants)
+in post-order.
+For each such widget,
+it calls the destroy procedure declared in the widget class,
+then the destroy procedure declared in its superclass,
+until finally it calls the destroy procedure declared in the Core
+class record.
+.IP \(bu 5
+Calls
+.ZN XDestroyWindow
+if the widget is realized (that is, has an X window).
+The server recursively destroys all descendant windows.
+.IP \(bu 5
+Recursively descends the tree and deallocates all pop-up widgets, constraint
+records, callback lists and, if the widget is a subclass of 
+.ZN compositeWidgetClass , 
+children.
+.SH "SEE ALSO"
+XtAppCreateShell(3Xt),
+XtCreatePopupShell(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

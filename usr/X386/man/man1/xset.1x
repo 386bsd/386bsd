@@ -1,0 +1,187 @@
+.TH XSET 1 "Release 5" "X Version 11"
+.SH NAME
+xset - user preference utility for X
+.SH SYNOPSIS
+.B xset
+[-display \fIdisplay\fP]
+[-b] [b on/off] [b [\fIvolume\fP [\fIpitch\fP [\fIduration\fP]]]
+[[-]bc]
+[-c] [c on/off] [c [\fIvolume\fP]]
+[[-+]fp[-+=] \fIpath\fP[,\fIpath\fP[,...]]] [fp default] [fp rehash]
+[[-]led [\fIinteger\fP]] [led on/off]
+[m[ouse] [\fIaccel_mult\fP[/\fIaccel_div\fP] [\fIthreshold\fP]]] [m[ouse] default]
+[p \fIpixel\fP \fIcolor\fP]
+[[-]r] [r on/off]
+[s [\fIlength\fP [\fIperiod\fP]]] [s blank/noblank]
+[s expose/noexpose] [s on/off] [s default]
+[q]
+.SH DESCRIPTION
+This program is used to set various user preference options of the display.
+.SH OPTIONS
+.PP
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the server to use; see \fIX(1)\fP.
+.PP
+.TP 8
+.B b
+The \fBb\fP option controls bell volume, pitch and duration.
+This option accepts up to three numerical parameters, a preceding
+dash(-), or a 'on/off' flag.  If no parameters are
+given, or the 'on' flag is used, the system defaults will be used.
+If the dash or 'off' are given, the bell will be turned
+off.
+If only one numerical parameter is given, the
+bell volume will be set to that value, as a percentage of its maximum.
+Likewise, the second numerical
+parameter specifies the bell pitch, in hertz, and
+the third numerical parameter
+specifies the duration in milliseconds.  Note that not
+all hardware can vary the bell characteristics.  The X server will set
+the characteristics of the bell as closely as it can to the user's
+specifications.
+.PP
+.TP 8
+.B bc
+The \fBbc\fP option controls \fIbug compatibility\fP mode in the server,
+if possible; a preceding dash(-) disables the mode, otherwise the mode
+is enabled.  Various pre-R4 clients pass illegal values in some
+protocol requests, and pre-R4 servers did not correctly generate
+errors in these cases.  Such clients, when run against an R4 server,
+will terminate abnormally or otherwise fail to operate correctly.
+Bug compatibility mode explicitly reintroduces certain bugs into the
+X server, so that many such clients can still be run.  This mode should be
+used with care; new application development should be done with this mode
+disabled.  The server must support the MIT-SUNDRY-NONSTANDARD
+protocol extension in order for this option to work.
+.TP 8
+.B c
+The \fBc\fP option controls key click.
+This option can take an optional value, a preceding dash(-),
+or an 'on/off' flag.
+If no parameter or the 'on' flag is given, the system defaults
+will be used. If the dash or 'off' flag is used, keyclick will be
+disabled.
+If a value from 0 to 100 is given, it is used to
+indicate volume, as a percentage of the maximum.
+The X server will set
+the volume to the nearest value that the hardware can support.
+.PP
+.TP 8
+.B fp= \fIpath,...\fP
+The \fBfp=\fP sets the font path to the directories given in the path argument.
+The directories are interpreted by the server, not by the client, and are
+server-dependent.  Directories that do not contain font databases created by
+\fImkfontdir\fP will be ignored by the server.
+.TP 8
+.B fp \fBdefault\fP
+The \fBdefault\fP argument causes the font path to be reset to the server's
+default.
+.TP 8
+.B fp \fBrehash\fP
+The \fBrehash\fP argument causes the server to reread the font databases in
+the current font path.  This is generally only used when adding new fonts to
+a font directory (after running \fImkfontdir\fP to recreate the font database).
+.PP
+.TP 8
+.B "\-fp \fRor\fP fp\-"
+The \fB\-fp\fP and \fBfp\-\fP options remove elements from the current
+font path.  They must be followed by a comma-separated list of directories.
+.PP
+.TP 8
+.B "\+fp \fRor\fP fp\+"
+This \fB\+fp\fP and \fBfp\+\fP options prepend and append elements to the 
+current font path, respectively.  They must be followed by a comma-separated 
+list of directories.
+.PP
+.TP 8
+.B led
+The \fBled\fP option controls the keyboard LEDs.
+This controls the turning on or off of one or all of the LEDs.
+It accepts an optional integer, a preceding dash(-) or an 'on/off' flag.
+If no parameter or the 'on' flag is given, all LEDs are turned on.
+If a preceding dash or the flag 'off' is given, all LEDs are turned off.
+If a value between 1 and 32 is given, that LED will be turned on or off
+depending on the existence of a preceding dash.
+A common LED which can be controlled is the ``Caps Lock'' LED.  ``xset
+led 3'' would turn led #3 on.  ``xset -led 3'' would turn it off.
+The particular LED values may refer to different LEDs on different
+hardware.
+.PP
+.TP 8
+.B m
+The \fBm\fP option controls the mouse parameters.
+The parameters for the mouse are `acceleration' and `threshold'.
+The acceleration can be specified as an integer, or as a simple
+fraction.
+The mouse, or whatever pointer the machine is connected to,
+will go `acceleration' times as fast when it travels more than `threshold'
+pixels in a short time.  This way, the mouse can be used for precise
+alignment when it is moved slowly, yet it can be set to travel across
+the screen in a flick of the wrist when desired.  One or both
+parameters for the 
+.B m
+option can be omitted, but if only one is
+given, it will be interpreted as the acceleration.
+If no parameters or the flag 'default' is used, the system defaults will
+be set.
+.PP
+.TP 8
+.B p
+The \fBp\fP option controls pixel color values.
+The parameters are the color map entry number in decimal,
+and a color specification.  The root background colors may be changed
+on some servers by altering the entries for BlackPixel and WhitePixel.
+Although these are often 0 and 1, they need not be.  Also, a server may
+choose to allocate those colors privately, in which case an error will
+be generated.  The map entry must not be a read-only color,
+or an error will result.
+.PP
+.TP 8
+.B r
+The \fBr\fP option controls the autorepeat.
+If a preceding dash or the 'off' flag is used, autorepeat will be disabled.
+If no parameters or the 'on' flag is used, autorepeat will be enabled.
+.PP
+.TP 8
+.B s
+The \fBs\fP option lets you set the screen saver parameters.
+This option accepts up to two numerical parameters, a 'blank/noblank'
+flag, an 'expose/noexpose' flag, an 'on/off' flag, or the 'default' flag.
+If no parameters or the 'default' flag is used, the system will be set
+to its default screen saver characteristics.
+The 'on/off' flags simply turn the screen saver functions on or off.
+The 'blank' flag sets the
+preference to blank the video (if the hardware can do so) rather than
+display a background pattern, while 'noblank' sets the
+preference to display a pattern rather than blank the video.
+The 'expose' flag sets the
+preference to allow window exposures (the server can freely discard
+window contents), while 'noexpose' sets the preference to disable
+screen saver unless the server can regenerate the screens without
+causing exposure events.
+The length and period
+parameters for the screen saver function determines how long the
+server must be inactive for screen saving to activate, and the period
+to change the background pattern to avoid burn in.
+The arguments are specified in seconds.
+If only one numerical parameter is given, it will be used for the length.
+.PP
+.TP 8
+.B q
+The \fBq\fP option gives you information on the current settings.
+.PP
+These settings will be reset to default values when you log out.
+.PP
+Note that not all X implementations are guaranteed to honor all of these
+options.
+.SH "SEE ALSO"
+X(1), Xserver(1), xmodmap(1), xrdb(1), xsetroot(1)
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Bob Scheifler, MIT Laboratory for Computer Science
+.br
+David Krikorian, MIT Project Athena (X11 version)

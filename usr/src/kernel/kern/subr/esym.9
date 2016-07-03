@@ -1,0 +1,102 @@
+.\" Copyright (c) 1994 William F. Jolitz, TeleMuse
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This software is a component of "386BSD" developed by 
+.\"	William F. Jolitz, TeleMuse.
+.\" 4. Neither the name of the developer nor the name "386BSD"
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\" 5. Non-commercial distribution of this complete file in either source and/or
+.\"    binary form at no charge to the user (such as from an official Internet 
+.\"    archive site) is permitted. 
+.\" 6. Commercial distribution and sale of this complete file in either source
+.\"    and/or binary form on any media, including that of floppies, tape, or 
+.\"    CD-ROM, or through a per-charge download such as that of a BBS, is not 
+.\"    permitted without specific prior written permission.
+.\" 7. Non-commercial and/or commercial distribution of an incomplete, altered, 
+.\"    or otherwise modified file in either source and/or binary form is not 
+.\"    permitted.
+.\"
+.\" THIS SOFTWARE IS A COMPONENT OF 386BSD DEVELOPED BY WILLIAM F. JOLITZ 
+.\" AND IS INTENDED FOR RESEARCH AND EDUCATIONAL PURPOSES ONLY. THIS 
+.\" SOFTWARE SHOULD NOT BE CONSIDERED TO BE A COMMERCIAL PRODUCT. 
+.\" THE DEVELOPER URGES THAT USERS WHO REQUIRE A COMMERCIAL PRODUCT 
+.\" NOT MAKE USE OF THIS WORK.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE DEVELOPER ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE DEVELOPER BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\" $Id: esym.9,v 1.1 94/10/19 18:33:19 bill Exp $
+.\"
+.Dd August 29, 1994
+.Dt ESYM 9
+.Os 386BSD 1
+.Sh NAME
+.Nm esym
+.Nd kernel external symbol table
+.Sh SYNOPSIS
+.Fd #include """esym.h"""
+.Fn esym_bind "symbol"
+.Fn esym_unbind "symbol"
+.Ft "void *"
+.Fn esym_fetch "symbol"
+.Sh DESCRIPTION
+Services provide by modules other than the core kernel module
+(see
+.Xr kern 9
+) that may or may not be loaded in the kernel program may be
+accessed from all other modules via the external symbol table.
+This is the way an optionally, dynamically bound symbol can be
+accessed from
+any part of the kernel, unlike the statically bound symbols in the
+reset of the program.
+.Pp
+Symbols are manually entered into the external symbol table with
+the
+.Fn esym_bind
+function, that associates the symbol name with a specific kernel address.
+These addresses can be then recovered via the
+.Fn esym_fetch
+function, which obtains the address associated with a symbol of
+the given name which was already bound. Symbols can be rebound by
+breaking the binding with the
+.Fn esym_unbind
+function, allowing the symbol to be bound differently with another
+.Fn esym_bind
+call.
+.Pp
+While symbols are bound explicitly by the kernel modules implementing
+the services used elsewhere, service clients implicitly use the
+.Fn esym_fetch
+function via inline stub functions and macros present in include files (located
+adjacent to the function prototypes for the functions implemented).
+.Pp
+The external symbol table does not use dynamic memory allocation or
+any blocking resource, thus is usable anywhere in the kernel program.
+.Sh RETURN VALUES
+The
+.Fn esym_fetch
+function returns
+an address of the symbol if present; otherwise
+a null address is returned. 
+.Sh SEE ALSO
+.Xr kern 9

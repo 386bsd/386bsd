@@ -1,0 +1,440 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XChangeKeyboardControl 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XChangeKeyboardControl, XGetKeyboardControl, XAutoRepeatOn, XAutoRepeatOff, XBell, XQueryKeymap, XKeyboardControl \- manipulate keyboard settings and keyboard control structure
+.SH SYNTAX
+.\" $Header: XChKeyCon.f,v 1.1 88/02/26 09:58:32 mento Exp $
+XChangeKeyboardControl\^(\^\fIdisplay\fP, \fIvalue_mask\fP\^, \fIvalues\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      unsigned long \fIvalue_mask\fP\^;
+.br
+      XKeyboardControl *\fIvalues\fP\^;
+.LP
+.\" $Header: XGetKeybdCnt.f,v 1.1 88/02/26 10:00:50 mento Exp $
+XGetKeyboardControl\^(\^\fIdisplay\fP, \fIvalues_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XKeyboardState *\fIvalues_return\fP\^;
+.LP
+.\" $Header: XAutoReptOn.f,v 1.1 88/02/26 09:58:16 mento Exp $
+XAutoRepeatOn\^(\^\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.LP
+.\" $Header: XAutoReptOff.f,v 1.1 88/02/26 09:58:13 mento Exp $
+XAutoRepeatOff\^(\^\fIdisplay\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.LP
+.\" $Header: XBell.f,v 1.1 88/02/26 09:58:18 mento Exp $
+XBell\^(\^\fIdisplay\fP, \fIpercent\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fIpercent\fP\^;
+.LP
+.\" $Header: XQueryKeybd.f,v 1.1 88/02/26 10:02:17 mento Exp $
+XQueryKeymap\^(\^\fIdisplay\fP, \fIkeys_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char \fIkeys_return\fP[32]\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: keys.a,v 1.1 88/02/26 10:28:26 mento Exp $
+.IP \fIkeys_return\fP 1i
+Returns an array of bytes that identifies which keys are pressed down.
+Each bit represents one key of the keyboard.
+.\" $Header: percent.a,v 1.2 88/04/06 17:20:22 mento Exp $
+.IP \fIpercent\fP 1i
+Specifies the volume for the bell,
+which can range from \-100 to 100 inclusive. 
+.\" $Header: value_mask1.a,v 1.3 88/04/28 06:04:45 mento Exp $
+.IP \fIvalue_mask\fP 1i
+Specifies which controls to change.
+This mask is the bitwise inclusive OR of the valid control mask bits.
+.\" $Header: values2.a,v 1.2 88/04/06 17:16:22 mento Exp $
+.IP \fIvalues\fP 1i
+Specifies one value for each bit set to 1 in the mask.
+.\" $Header: values3.a,v 1.2 88/04/06 17:19:04 mento Exp $
+.IP \fIvalues_return\fP 1i
+Returns the current keyboard controls in the specified
+.ZN XKeyboardState 
+structure.
+.SH DESCRIPTION
+.\" $Header: XChKeyCon.d,v 1.2 88/05/16 10:04:53 mento Exp $
+The
+.ZN XChangeKeyboardControl
+function controls the keyboard characteristics defined by the
+.ZN XKeyboardControl
+structure.
+The value_mask argument specifies which values are to be changed.
+.LP
+.ZN XChangeKeyboardControl
+can generate
+.ZN BadMatch
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XGetKeybdCnt.d,v 1.1 88/02/26 10:48:27 mento Exp $
+The
+.ZN XGetKeyboardControl
+function returns the current control values for the keyboard to the
+.ZN XKeyboardState
+structure.
+.LP
+.\" $Header: XAutoReptOn.d,v 1.1 88/02/26 10:41:06 mento Exp $
+The
+.ZN XAutoRepeatOn
+function turns on auto-repeat for the keyboard on the specified display.
+.LP
+.\" $Header: XAutoReptOff.d,v 1.1 88/02/26 10:41:05 mento Exp $
+The
+.ZN XAutoRepeatOff
+function turns off auto-repeat for the keyboard on the specified display.
+.LP
+.\" $Header: XBell.d,v 1.2 88/06/11 07:48:47 mento Exp $
+The
+.ZN XBell
+function rings the bell on the keyboard on the specified display, if possible.
+The specified volume is relative to the base volume for the keyboard.
+If the value for the percent argument is not in the range \-100 to 100
+inclusive, a
+.ZN BadValue
+error results.
+The volume at which the bell rings
+when the percent argument is nonnegative is:
+.IP
+base \- [(base * percent) / 100] + percent
+.LP
+The volume at which the bell rings
+when the percent argument is negative is:
+.IP
+base + [(base * percent) / 100]
+.LP
+To change the base volume of the bell, use
+.ZN XChangeKeyboardControl .
+.LP
+.ZN XBell
+can generate a
+.ZN BadValue 
+error.
+.LP
+.\" $Header: XQueryKeybd.d,v 1.3 88/06/11 07:52:42 mento Exp $
+The
+.ZN XQueryKeymap
+function returns a bit vector for the logical state of the keyboard, 
+where each bit set to 1 indicates that the corresponding key is currently 
+pressed down.
+The vector is represented as 32 bytes.
+Byte N (from 0) contains the bits for keys 8N to 8N + 7 
+with the least-significant bit in the byte representing key 8N.
+.LP
+Note that the logical state of a device (as seen by client applications)
+may lag the physical state if device event processing is frozen.
+.SH STRUCTURES
+The
+.ZN XKeyboardControl
+structure contains:
+.LP
+.LP
+/* Mask bits for ChangeKeyboardControl */
+.TS
+lw(.5i) lw(2.5i) lw(.8i).
+T{
+#define
+T}	T{
+.ZN KBKeyClickPercent
+T}	T{
+(1L<<0)
+T}
+T{
+#define
+T}	T{
+.ZN KBBellPercent
+T}	T{
+(1L<<1)
+T}
+T{
+#define
+T}	T{
+.ZN KBBellPitch
+T}	T{
+(1L<<2)
+T}
+T{
+#define
+T}	T{
+.ZN KBBellDuration
+T}	T{
+(1L<<3)
+T}
+T{
+#define
+T}	T{
+.ZN KBLed
+T}	T{
+(1L<<4)
+T}
+T{
+#define
+T}	T{
+.ZN KBLedMode
+T}	T{
+(1L<<5)
+T}
+T{
+#define
+T}	T{
+.ZN KBKey
+T}	T{
+(1L<<6)
+T}
+T{
+#define
+T}	T{
+.ZN KBAutoRepeatMode
+T}	T{
+(1L<<7)
+T}
+.TE
+.IN "XKeyboardControl" "" "@DEF@"
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+/* Values */
+
+typedef struct {
+	int key_click_percent;
+	int bell_percent;
+	int bell_pitch;
+	int bell_duration;
+	int led;
+	int led_mode;	/* LedModeOn, LedModeOff */
+	int key;
+	int auto_repeat_mode;	/* AutoRepeatModeOff, AutoRepeatModeOn, 
+                            	AutoRepeatModeDefault */
+} XKeyboardControl;
+.De
+.LP
+The key_click_percent member sets the volume for key clicks between 0 (off) 
+and 100 (loud) inclusive, if possible.  
+A setting of \-1 restores the default.
+Other negative values generate a
+.ZN BadValue
+error.
+.LP
+The bell_percent sets the base volume for the bell between 0 (off) and 100
+(loud) inclusive, if possible.  
+A setting of \-1 restores the default.
+Other negative values generate a
+.ZN BadValue
+error.
+The bell_pitch member sets the pitch (specified in Hz) of the bell, if possible.
+A setting of \-1 restores the default.
+Other negative values generate a
+.ZN BadValue
+error.
+The bell_duration member sets the duration of the
+bell specified in milliseconds, if possible.  
+A setting of \-1 restores the default.
+Other negative values generate a
+.ZN BadValue
+error.
+.LP
+If both the led_mode and led members are specified,
+the state of that LED is changed, if possible.  
+The led_mode member can be set to
+.ZN LedModeOn
+or
+.ZN LedModeOff .
+If only led_mode is specified, the state of
+all LEDs are changed, if possible.  
+At most 32 LEDs numbered from one are supported. 
+No standard interpretation of LEDs is defined.
+If led is specified without led_mode, a
+.ZN BadMatch
+error results. 
+.LP
+If both the auto_repeat_mode and key members are specified, 
+the auto_repeat_mode of that key is changed (according to
+.ZN AutoRepeatModeOn ,
+.ZN AutoRepeatModeOff ,
+or
+.ZN AutoRepeatModeDefault ),
+if possible.
+If only auto_repeat_mode is
+specified, the global auto_repeat_mode for the entire keyboard is
+changed, if possible, and does not affect the per key settings.
+If a key is specified without an auto_repeat_mode, a
+.ZN BadMatch
+error results.
+Each key has an individual mode of whether or not it should auto-repeat
+and a default setting for the mode.
+In addition,
+there is a global mode of whether auto-repeat should be enabled or not
+and a default setting for that mode.
+When global mode is
+.ZN AutoRepeatModeOn ,
+keys should obey their individual auto-repeat modes.
+When global mode is
+.ZN AutoRepeatModeOff ,
+no keys should auto-repeat.
+An auto-repeating key generates alternating
+.ZN KeyPress
+and
+.ZN KeyRelease
+events.
+When a key is used as a modifier,
+it is desirable for the key not to auto-repeat,
+regardless of its auto-repeat setting.
+.LP
+The
+.ZN XKeyboardState
+structure contains:
+.LP
+.Ds 0
+.TA .5i 
+.ta .5i
+typedef struct {
+	int key_click_percent;
+	int bell_percent;
+	unsigned int bell_pitch, bell_duration;
+	unsigned long led_mask;
+	int global_auto_repeat;
+	char auto_repeats[32];
+} XKeyboardState;
+.De
+.LP
+For the LEDs, 
+the least-significant bit of led_mask corresponds to LED one,
+and each bit set to 1 in led_mask indicates an LED that is lit.
+The global_auto_repeat member can be set to
+.ZN AutoRepeatModeOn
+or
+.ZN AutoRepeatModeOff .
+The auto_repeats member is a bit vector.
+Each bit set to 1 indicates that auto-repeat is enabled 
+for the corresponding key.
+The vector is represented as 32 bytes.  
+Byte N (from 0) contains the bits for keys 8N to 8N + 7
+with the least-significant bit in the byte representing key 8N.
+.SH DIAGNOSTICS
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XChangeKeyboardMapping(3X11),
+XSetPointerMapping(3X11)
+.br
+\fI\*(xL\fP

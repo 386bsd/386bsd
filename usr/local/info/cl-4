@@ -1,0 +1,970 @@
+This is Info file ../info/cl, produced by Makeinfo-1.55 from the input
+file cl.texi.
+
+   This file documents the GNU Emacs Common Lisp emulation package.
+
+   Copyright (C) 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the section entitled "GNU General Public License" is included
+exactly as in the original, and provided that the entire resulting
+derived work is distributed under the terms of a permission notice
+identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that the section entitled "GNU General Public License"
+may be included in a translation approved by the author instead of in
+the original English.
+
+
+File: cl,  Node: Implementation Parameters,  Prev: Random Numbers,  Up: Numbers
+
+Implementation Parameters
+=========================
+
+This package defines several useful constants having to with numbers.
+
+ - Variable: most-positive-fixnum
+     This constant equals the largest value a Lisp integer can hold.
+     It is typically `2^23-1' or `2^25-1'.
+
+ - Variable: most-negative-fixnum
+     This constant equals the smallest (most negative) value a Lisp
+     integer can hold.
+
+   The following parameters have to do with floating-point numbers.
+This package determines their values by exercising the computer's
+floating-point arithmetic in various ways.  Because this operation
+might be slow, the code for initializing them is kept in a separate
+function that must be called before the parameters can be used.
+
+ - Function: cl-float-limits
+     This function makes sure that the Common Lisp floating-point
+     parameters like `most-positive-float' have been initialized.
+     Until it is called, these parameters will be `nil'.  If this
+     version of Emacs does not support floats (e.g., most versions of
+     Emacs 18), the parameters will remain `nil'.  If the parameters
+     have already been initialized, the function returns immediately.
+
+     The algorithm makes assumptions that will be valid for most modern
+     machines, but will fail if the machine's arithmetic is extremely
+     unusual, e.g., decimal.
+
+   Since true Common Lisp supports up to four different floating-point
+precisions, it has families of constants like
+`most-positive-single-float', `most-positive-double-float',
+`most-positive-long-float', and so on.  Emacs has only one
+floating-point precision, so this package omits the precision word from
+the constants' names.
+
+ - Variable: most-positive-float
+     This constant equals the largest value a Lisp float can hold.  For
+     those systems whose arithmetic supports infinities, this is the
+     largest *finite* value.  For IEEE machines, the value is
+     approximately `1.79e+308'.
+
+ - Variable: most-negative-float
+     This constant equals the most-negative value a Lisp float can hold.
+     (It is assumed to be equal to `(- most-positive-float)'.)
+
+ - Variable: least-positive-float
+     This constant equals the smallest Lisp float value greater than
+     zero.  For IEEE machines, it is about `4.94e-324' if denormals are
+     supported or `2.22e-308' if not.
+
+ - Variable: least-positive-normalized-float
+     This constant equals the smallest *normalized* Lisp float greater
+     than zero, i.e., the smallest value for which IEEE denormalization
+     will not result in a loss of precision.  For IEEE machines, this
+     value is about `2.22e-308'.  For machines that do not support the
+     concept of denormalization and gradual underflow, this constant
+     will always equal `least-positive-float'.
+
+ - Variable: least-negative-float
+     This constant is the negative counterpart of
+     `least-positive-float'.
+
+ - Variable: least-negative-normalized-float
+     This constant is the negative counterpart of
+     `least-positive-normalized-float'.
+
+ - Variable: float-epsilon
+     This constant is the smallest positive Lisp float that can be added
+     to 1.0 to produce a distinct value.  Adding a smaller number to 1.0
+     will yield 1.0 again due to roundoff.  For IEEE machines, epsilon
+     is about `2.22e-16'.
+
+ - Variable: float-negative-epsilon
+     This is the smallest positive value that can be subtracted from
+     1.0 to produce a distinct value.  For IEEE machines, it is about
+     `1.11e-16'.
+
+
+File: cl,  Node: Sequences,  Next: Lists,  Prev: Numbers,  Up: Top
+
+Sequences
+*********
+
+Common Lisp defines a number of functions that operate on "sequences",
+which are either lists, strings, or vectors.  Emacs Lisp includes a few
+of these, notably `elt' and `length'; this package defines most of the
+rest.
+
+* Menu:
+
+* Sequence Basics::          Arguments shared by all sequence functions
+* Mapping over Sequences::   `mapcar*', `mapcan', `map', `every', etc.
+* Sequence Functions::       `subseq', `remove*', `substitute', etc.
+* Searching Sequences::      `find', `position', `count', `search', etc.
+* Sorting Sequences::        `sort*', `stable-sort', `merge'
+
+
+File: cl,  Node: Sequence Basics,  Next: Mapping over Sequences,  Prev: Sequences,  Up: Sequences
+
+Sequence Basics
+===============
+
+Many of the sequence functions take keyword arguments; *note Argument
+Lists::..  All keyword arguments are optional and, if specified, may
+appear in any order.
+
+   The `:key' argument should be passed either `nil', or a function of
+one argument.  This key function is used as a filter through which the
+elements of the sequence are seen; for example, `(find x y :key 'car)'
+is similar to `(assoc* x y)': It searches for an element of the list
+whose `car' equals `x', rather than for an element which equals `x'
+itself.  If `:key' is omitted or `nil', the filter is effectively the
+identity function.
+
+   The `:test' and `:test-not' arguments should be either `nil', or
+functions of two arguments.  The test function is used to compare two
+sequence elements, or to compare a search value with sequence elements.
+(The two values are passed to the test function in the same order as
+the original sequence function arguments from which they are derived,
+or, if they both come from the same sequence, in the same order as they
+appear in that sequence.) The `:test' argument specifies a function
+which must return true (non-`nil') to indicate a match; instead, you
+may use `:test-not' to give a function which returns *false* to
+indicate a match.  The default test function is `:test 'eql'.
+
+   Many functions which take ITEM and `:test' or `:test-not' arguments
+also come in `-if' and `-if-not' varieties, where a PREDICATE function
+is passed instead of ITEM, and sequence elements match if the predicate
+returns true on them (or false in the case of `-if-not').  For example:
+
+     (remove* 0 seq :test '=)  ==  (remove-if 'zerop seq)
+
+to remove all zeros from sequence `seq'.
+
+   Some operations can work on a subsequence of the argument sequence;
+these function take `:start' and `:end' arguments which default to zero
+and the length of the sequence, respectively.  Only elements between
+START (inclusive) and END (exclusive) are affected by the operation.
+The END argument may be passed `nil' to signify the length of the
+sequence; otherwise, both START and END must be integers, with `0 <=
+START <= END <= (length SEQ)'.  If the function takes two sequence
+arguments, the limits are defined by keywords `:start1' and `:end1' for
+the first, and `:start2' and `:end2' for the second.
+
+   A few functions accept a `:from-end' argument, which, if non-`nil',
+causes the operation to go from right-to-left through the sequence
+instead of left-to-right, and a `:count' argument, which specifies an
+integer maximum number of elements to be removed or otherwise processed.
+
+   The sequence functions make no guarantees about the order in which
+the `:test', `:test-not', and `:key' functions are called on various
+elements.  Therefore, it is a bad idea to depend on side effects of
+these functions.  For example, `:from-end' may cause the sequence to be
+scanned actually in reverse, or it may be scanned forwards but
+computing a result "as if" it were scanned backwards.  (Some functions,
+like `mapcar*' and `every', *do* specify exactly the order in which the
+function is called so side effects are perfectly acceptable in those
+cases.)
+
+   Strings in GNU Emacs 19 may contain "text properties" as well as
+character data.  Except as noted, it is undefined whether or not text
+properties are preserved by sequence functions.  For example, `(remove*
+?A STR)' may or may not preserve the properties of the characters
+copied from STR into the result.
+
+
+File: cl,  Node: Mapping over Sequences,  Next: Sequence Functions,  Prev: Sequence Basics,  Up: Sequences
+
+Mapping over Sequences
+======================
+
+These functions "map" the function you specify over the elements of
+lists or arrays.  They are all variations on the theme of the built-in
+function `mapcar'.
+
+ - Function: mapcar* FUNCTION SEQ &rest MORE-SEQS
+     This function calls FUNCTION on successive parallel sets of
+     elements from its argument sequences.  Given a single SEQ argument
+     it is equivalent to `mapcar'; given N sequences, it calls the
+     function with the first elements of each of the sequences as the N
+     arguments to yield the first element of the result list, then with
+     the second elements, and so on.  The mapping stops as soon as the
+     shortest sequence runs out.  The argument sequences may be any
+     mixture of lists, strings, and vectors; the return sequence is
+     always a list.
+
+     Common Lisp's `mapcar' accepts multiple arguments but works only
+     on lists; Emacs Lisp's `mapcar' accepts a single sequence
+     argument.  This package's `mapcar*' works as a compatible superset
+     of both.
+
+ - Function: map RESULT-TYPE FUNCTION SEQ &rest MORE-SEQS
+     This function maps FUNCTION over the argument sequences, just like
+     `mapcar*', but it returns a sequence of type RESULT-TYPE rather
+     than a list.  RESULT-TYPE must be one of the following symbols:
+     `vector', `string', `list' (in which case the effect is the same
+     as for `mapcar*'), or `nil' (in which case the results are thrown
+     away and `map' returns `nil').
+
+ - Function: maplist FUNCTION LIST &rest MORE-LISTS
+     This function calls FUNCTION on each of its argument lists, then
+     on the `cdr's of those lists, and so on, until the shortest list
+     runs out.  The results are returned in the form of a list.  Thus,
+     `maplist' is like `mapcar*' except that it passes in the list
+     pointers themselves rather than the `car's of the advancing
+     pointers.
+
+ - Function: mapc FUNCTION SEQ &rest MORE-SEQS
+     This function is like `mapcar*', except that the values returned
+     by FUNCTION are ignored and thrown away rather than being
+     collected into a list.  The return value of `mapc' is SEQ, the
+     first sequence.
+
+ - Function: mapl FUNCTION LIST &rest MORE-LISTS
+     This function is like `maplist', except that it throws away the
+     values returned by FUNCTION.
+
+ - Function: mapcan FUNCTION SEQ &rest MORE-SEQS
+     This function is like `mapcar*', except that it concatenates the
+     return values (which must be lists) using `nconc', rather than
+     simply collecting them into a list.
+
+ - Function: mapcon FUNCTION LIST &rest MORE-LISTS
+     This function is like `maplist', except that it concatenates the
+     return values using `nconc'.
+
+ - Function: some PREDICATE SEQ &rest MORE-SEQS
+     This function calls PREDICATE on each element of SEQ in turn; if
+     PREDICATE returns a non-`nil' value, `some' returns that value,
+     otherwise it returns `nil'.  Given several sequence arguments, it
+     steps through the sequences in parallel until the shortest one
+     runs out, just as in `mapcar*'.  You can rely on the left-to-right
+     order in which the elements are visited, and on the fact that
+     mapping stops immediately as soon as PREDICATE returns non-`nil'.
+
+ - Function: every PREDICATE SEQ &rest MORE-SEQS
+     This function calls PREDICATE on each element of the sequence(s)
+     in turn; it returns `nil' as soon as PREDICATE returns `nil' for
+     any element, or `t' if the predicate was true for all elements.
+
+ - Function: notany PREDICATE SEQ &rest MORE-SEQS
+     This function calls PREDICATE on each element of the sequence(s)
+     in turn; it returns `nil' as soon as PREDICATE returns a non-`nil'
+     value for any element, or `t' if the predicate was `nil' for all
+     elements.
+
+ - Function: notevery PREDICATE SEQ &rest MORE-SEQS
+     This function calls PREDICATE on each element of the sequence(s)
+     in turn; it returns a non-`nil' value as soon as PREDICATE returns
+     `nil' for any element, or `t' if the predicate was true for all
+     elements.
+
+ - Function: reduce FUNCTION SEQ &key :from-end :start :end
+          :initial-value :key
+     This function combines the elements of SEQ using an associative
+     binary operation.  Suppose FUNCTION is `*' and SEQ is the list `(2
+     3 4 5)'.  The first two elements of the list are combined with `(*
+     2 3) = 6'; this is combined with the next element, `(* 6 4) = 24',
+     and that is combined with the final element: `(* 24 5) = 120'.
+     Note that the `*' function happens to be self-reducing, so that
+     `(* 2 3 4 5)' has the same effect as an explicit call to `reduce'.
+
+     If `:from-end' is true, the reduction is right-associative instead
+     of left-associative:
+
+          (reduce '- '(1 2 3 4))
+               == (- (- (- 1 2) 3) 4) => -8
+          (reduce '- '(1 2 3 4) :from-end t)
+               == (- 1 (- 2 (- 3 4))) => -2
+
+     If `:key' is specified, it is a function of one argument which is
+     called on each of the sequence elements in turn.
+
+     If `:initial-value' is specified, it is effectively added to the
+     front (or rear in the case of `:from-end') of the sequence.  The
+     `:key' function is *not* applied to the initial value.
+
+     If the sequence, including the initial value, has exactly one
+     element then that element is returned without ever calling
+     FUNCTION.  If the sequence is empty (and there is no initial
+     value), then FUNCTION is called with no arguments to obtain the
+     return value.
+
+   All of these mapping operations can be expressed conveniently in
+terms of the `loop' macro.  In compiled code, `loop' will be faster
+since it generates the loop as in-line code with no function calls.
+
+
+File: cl,  Node: Sequence Functions,  Next: Searching Sequences,  Prev: Mapping over Sequences,  Up: Sequences
+
+Sequence Functions
+==================
+
+This section describes a number of Common Lisp functions for operating
+on sequences.
+
+ - Function: subseq SEQUENCE START &optional END
+     This function returns a given subsequence of the argument
+     SEQUENCE, which may be a list, string, or vector.  The indices
+     START and END must be in range, and START must be no greater than
+     END.  If END is omitted, it defaults to the length of the
+     sequence.  The return value is always a copy; it does not share
+     structure with SEQUENCE.
+
+     As an extension to Common Lisp, START and/or END may be negative,
+     in which case they represent a distance back from the end of the
+     sequence.  This is for compatibility with Emacs' `substring'
+     function.  Note that `subseq' is the *only* sequence function that
+     allows negative START and END.
+
+     You can use `setf' on a `subseq' form to replace a specified range
+     of elements with elements from another sequence.  The replacement
+     is done as if by `replace', described below.
+
+ - Function: concatenate RESULT-TYPE &rest SEQS
+     This function concatenates the argument sequences together to form
+     a result sequence of type RESULT-TYPE, one of the symbols
+     `vector', `string', or `list'.  The arguments are always copied,
+     even in cases such as `(concatenate 'list '(1 2 3))' where the
+     result is identical to an argument.
+
+ - Function: fill SEQ ITEM &key :start :end
+     This function fills the elements of the sequence (or the specified
+     part of the sequence) with the value ITEM.
+
+ - Function: replace SEQ1 SEQ2 &key :start1 :end1 :start2 :end2
+     This function copies part of SEQ2 into part of SEQ1.  The sequence
+     SEQ1 is not stretched or resized; the amount of data copied is
+     simply the shorter of the source and destination (sub)sequences.
+     The function returns SEQ1.
+
+     If SEQ1 and SEQ2 are `eq', then the replacement will work
+     correctly even if the regions indicated by the start and end
+     arguments overlap.  However, if SEQ1 and SEQ2 are lists which
+     share storage but are not `eq', and the start and end arguments
+     specify overlapping regions, the effect is undefined.
+
+ - Function: remove* ITEM SEQ &key :test :test-not :key :count :start
+          :end :from-end
+     This returns a copy of SEQ with all elements matching ITEM
+     removed.  The result may share storage with or be `eq' to SEQ in
+     some circumstances, but the original SEQ will not be modified.
+     The `:test', `:test-not', and `:key' arguments define the matching
+     test that is used; by default, elements `eql' to ITEM are removed.
+     The `:count' argument specifies the maximum number of matching
+     elements that can be removed (only the leftmost COUNT matches are
+     removed).  The `:start' and `:end' arguments specify a region in
+     SEQ in which elements will be removed; elements outside that
+     region are not matched or removed.  The `:from-end' argument, if
+     true, says that elements should be deleted from the end of the
+     sequence rather than the beginning (this matters only if COUNT was
+     also specified).
+
+ - Function: delete* ITEM SEQ &key :test :test-not :key :count :start
+          :end :from-end
+     This deletes all elements of SEQ which match ITEM.  It is a
+     destructive operation.  Since Emacs Lisp does not support
+     stretchable strings or vectors, this is the same as `remove*' for
+     those sequence types.  On lists, `remove*' will copy the list if
+     necessary to preserve the original list, whereas `delete*' will
+     splice out parts of the argument list.  Compare `append' and
+     `nconc', which are analogous non-destructive and destructive list
+     operations in Emacs Lisp.
+
+   The predicate-oriented functions `remove-if', `remove-if-not',
+`delete-if', and `delete-if-not' are defined similarly.
+
+ - Function: delete ITEM LIST
+     This MacLisp-compatible function deletes from LIST all elements
+     which are `equal' to ITEM.  The `delete' function is built-in to
+     Emacs 19; this package defines it equivalently in Emacs 18.
+
+ - Function: remove ITEM LIST
+     This function removes from LIST all elements which are `equal' to
+     ITEM.  This package defines it for symmetry with `delete', even
+     though `remove' is not built-in to Emacs 19.
+
+ - Function: remq ITEM LIST
+     This function removes from LIST all elements which are `eq' to
+     ITEM.  This package defines it for symmetry with `delq', even
+     though `remq' is not built-in to Emacs 19.
+
+ - Function: remove-duplicates SEQ &key :test :test-not :key :start
+          :end :from-end
+     This function returns a copy of SEQ with duplicate elements
+     removed.  Specifically, if two elements from the sequence match
+     according to the `:test', `:test-not', and `:key' arguments, only
+     the rightmost one is retained.  If `:from-end' is true, the
+     leftmost one is retained instead.  If `:start' or `:end' is
+     specified, only elements within that subsequence are examined or
+     removed.
+
+ - Function: delete-duplicates SEQ &key :test :test-not :key :start
+          :end :from-end
+     This function deletes duplicate elements from SEQ.  It is a
+     destructive version of `remove-duplicates'.
+
+ - Function: substitute NEW OLD SEQ &key :test :test-not :key :count
+          :start :end :from-end
+     This function returns a copy of SEQ, with all elements matching
+     OLD replaced with NEW.  The `:count', `:start', `:end', and
+     `:from-end' arguments may be used to limit the number of
+     substitutions made.
+
+ - Function: nsubstitute NEW OLD SEQ &key :test :test-not :key :count
+          :start :end :from-end
+     This is a destructive version of `substitute'; it performs the
+     substitution using `setcar' or `aset' rather than by returning a
+     changed copy of the sequence.
+
+   The `substitute-if', `substitute-if-not', `nsubstitute-if', and
+`nsubstitute-if-not' functions are defined similarly.  For these, a
+PREDICATE is given in place of the OLD argument.
+
+
+File: cl,  Node: Searching Sequences,  Next: Sorting Sequences,  Prev: Sequence Functions,  Up: Sequences
+
+Searching Sequences
+===================
+
+These functions search for elements or subsequences in a sequence.
+(See also `member*' and `assoc*'; *note Lists::..)
+
+ - Function: find ITEM SEQ &key :test :test-not :key :start :end
+          :from-end
+     This function searches SEQ for an element matching ITEM.  If it
+     finds a match, it returns the matching element.  Otherwise, it
+     returns `nil'.  It returns the leftmost match, unless `:from-end'
+     is true, in which case it returns the rightmost match.  The
+     `:start' and `:end' arguments may be used to limit the range of
+     elements that are searched.
+
+ - Function: position ITEM SEQ &key :test :test-not :key :start :end
+          :from-end
+     This function is like `find', except that it returns the integer
+     position in the sequence of the matching item rather than the item
+     itself.  The position is relative to the start of the sequence as
+     a whole, even if `:start' is non-zero.  The function returns `nil'
+     if no matching element was found.
+
+ - Function: count ITEM SEQ &key :test :test-not :key :start :end
+     This function returns the number of elements of SEQ which match
+     ITEM.  The result is always a nonnegative integer.
+
+   The `find-if', `find-if-not', `position-if', `position-if-not',
+`count-if', and `count-if-not' functions are defined similarly.
+
+ - Function: mismatch SEQ1 SEQ2 &key :test :test-not :key :start1 :end1
+          :start2 :end2 :from-end
+     This function compares the specified parts of SEQ1 and SEQ2.  If
+     they are the same length and the corresponding elements match
+     (according to `:test', `:test-not', and `:key'), the function
+     returns `nil'.  If there is a mismatch, the function returns the
+     index (relative to SEQ1) of the first mismatching element.  This
+     will be the leftmost pair of elements which do not match, or the
+     position at which the shorter of the two otherwise-matching
+     sequences runs out.
+
+     If `:from-end' is true, then the elements are compared from right
+     to left starting at `(1- END1)' and `(1- END2)'.  If the sequences
+     differ, then one plus the index of the rightmost difference
+     (relative to SEQ1) is returned.
+
+     An interesting example is `(mismatch str1 str2 :key 'upcase)',
+     which compares two strings case-insensitively.
+
+ - Function: search SEQ1 SEQ2 &key :test :test-not :key :from-end
+          :start1 :end1 :start2 :end2
+     This function searches SEQ2 for a subsequence that matches SEQ1
+     (or part of it specified by `:start1' and `:end1'.)  Only matches
+     which fall entirely within the region defined by `:start2' and
+     `:end2' will be considered.  The return value is the index of the
+     leftmost element of the leftmost match, relative to the start of
+     SEQ2, or `nil' if no matches were found.  If `:from-end' is true,
+     the function finds the *rightmost* matching subsequence.
+
+
+File: cl,  Node: Sorting Sequences,  Prev: Searching Sequences,  Up: Sequences
+
+Sorting Sequences
+=================
+
+ - Function: sort* SEQ PREDICATE &key :key
+     This function sorts SEQ into increasing order as determined by
+     using PREDICATE to compare pairs of elements.  PREDICATE should
+     return true (non-`nil') if and only if its first argument is less
+     than (not equal to) its second argument.  For example, `<' and
+     `string-lessp' are suitable predicate functions for sorting
+     numbers and strings, respectively; `>' would sort numbers into
+     decreasing rather than increasing order.
+
+     This function differs from Emacs' built-in `sort' in that it can
+     operate on any type of sequence, not just lists.  Also, it accepts
+     a `:key' argument which is used to preprocess data fed to the
+     PREDICATE function.  For example,
+
+          (setq data (sort data 'string-lessp :key 'downcase))
+
+     sorts DATA, a sequence of strings, into increasing alphabetical
+     order without regard to case.  A `:key' function of `car' would be
+     useful for sorting association lists.
+
+     The `sort*' function is destructive; it sorts lists by actually
+     rearranging the `cdr' pointers in suitable fashion.
+
+ - Function: stable-sort SEQ PREDICATE &key :key
+     This function sorts SEQ "stably", meaning two elements which are
+     equal in terms of PREDICATE are guaranteed not to be rearranged
+     out of their original order by the sort.
+
+     In practice, `sort*' and `stable-sort' are equivalent in Emacs
+     Lisp because the underlying `sort' function is stable by default.
+     However, this package reserves the right to use non-stable methods
+     for `sort*' in the future.
+
+ - Function: merge TYPE SEQ1 SEQ2 PREDICATE &key :key
+     This function merges two sequences SEQ1 and SEQ2 by interleaving
+     their elements.  The result sequence, of type TYPE (in the sense
+     of `concatenate'), has length equal to the sum of the lengths of
+     the two input sequences.  The sequences may be modified
+     destructively.  Order of elements within SEQ1 and SEQ2 is
+     preserved in the interleaving; elements of the two sequences are
+     compared by PREDICATE (in the sense of `sort') and the lesser
+     element goes first in the result.  When elements are equal, those
+     from SEQ1 precede those from SEQ2 in the result.  Thus, if SEQ1
+     and SEQ2 are both sorted according to PREDICATE, then the result
+     will be a merged sequence which is (stably) sorted according to
+     PREDICATE.
+
+
+File: cl,  Node: Lists,  Next: Hash Tables,  Prev: Sequences,  Up: Top
+
+Lists
+*****
+
+The functions described here operate on lists.
+
+* Menu:
+
+* List Functions::                `caddr', `first', `last', `list*', etc.
+* Substitution of Expressions::   `subst', `sublis', etc.
+* Lists as Sets::                 `member*', `adjoin', `union', etc.
+* Association Lists::             `assoc*', `rassoc*', `acons', `pairlis'
+
+
+File: cl,  Node: List Functions,  Next: Substitution of Expressions,  Prev: Lists,  Up: Lists
+
+List Functions
+==============
+
+This section describes a number of simple operations on lists, i.e.,
+chains of cons cells.
+
+ - Function: caddr X
+     This function is equivalent to `(car (cdr (cdr X)))'.  Likewise,
+     this package defines all 28 `cXXXr' functions where XXX is up to
+     four `a's and/or `d's.  All of these functions are `setf'-able,
+     and calls to them are expanded inline by the byte-compiler for
+     maximum efficiency.
+
+ - Function: first X
+     This function is a synonym for `(car X)'.  Likewise, the functions
+     `second', `third', ..., through `tenth' return the given element
+     of the list X.
+
+ - Function: rest X
+     This function is a synonym for `(cdr X)'.
+
+ - Function: endp X
+     Common Lisp defines this function to act like `null', but
+     signalling an error if `x' is neither a `nil' nor a cons cell.
+     This package simply defines `endp' as a synonym for `null'.
+
+ - Function: list-length X
+     This function returns the length of list X, exactly like `(length
+     X)', except that if X is a circular list (where the cdr-chain
+     forms a loop rather than terminating with `nil'), this function
+     returns `nil'.  (The regular `length' function would get stuck if
+     given a circular list.)
+
+ - Function: last X &optional N
+     This function returns the last cons, or the Nth-to-last cons, of
+     the list X.  If N is omitted it defaults to 1.  The "last cons"
+     means the first cons cell of the list whose `cdr' is not another
+     cons cell.  (For normal lists, the `cdr' of the last cons will be
+     `nil'.)  This function returns `nil' if X is `nil' or shorter than
+     N.  Note that the last *element* of the list is `(car (last X))'.
+
+ - Function: butlast X &optional N
+     This function returns the list X with the last element, or the
+     last N elements, removed.  If N is greater than zero it makes a
+     copy of the list so as not to damage the original list.  In
+     general, `(append (butlast X N) (last X N))' will return a list
+     equal to X.
+
+ - Function: nbutlast X &optional N
+     This is a version of `butlast' that works by destructively
+     modifying the `cdr' of the appropriate element, rather than making
+     a copy of the list.
+
+ - Function: list* ARG &rest OTHERS
+     This function constructs a list of its arguments.  The final
+     argument becomes the `cdr' of the last cell constructed.  Thus,
+     `(list* A B C)' is equivalent to `(cons A (cons B C))', and
+     `(list* A B nil)' is equivalent to `(list A B)'.
+
+     (Note that this function really is called `list*' in Common Lisp;
+     it is not a name invented for this package like `member*' or
+     `defun*'.)
+
+ - Function: ldiff LIST SUBLIST
+     If SUBLIST is a sublist of LIST, i.e., is `eq' to one of the cons
+     cells of LIST, then this function returns a copy of the part of
+     LIST up to but not including SUBLIST.  For example, `(ldiff x
+     (cddr x))' returns the first two elements of the list `x'.  The
+     result is a copy; the original LIST is not modified.  If SUBLIST
+     is not a sublist of LIST, a copy of the entire LIST is returned.
+
+ - Function: copy-list LIST
+     This function returns a copy of the list LIST.  It copies dotted
+     lists like `(1 2 . 3)' correctly.
+
+ - Function: copy-tree X &optional VECP
+     This function returns a copy of the tree of cons cells X.  Unlike
+     `copy-sequence' (and its alias `copy-list'), which copies only
+     along the `cdr' direction, this function copies (recursively)
+     along both the `car' and the `cdr' directions.  If X is not a cons
+     cell, the function simply returns X unchanged.  If the optional
+     VECP argument is true, this function copies vectors (recursively)
+     as well as cons cells.
+
+ - Function: tree-equal X Y &key :test :test-not :key
+     This function compares two trees of cons cells.  If X and Y are
+     both cons cells, their `car's and `cdr's are compared recursively.
+     If neither X nor Y is a cons cell, they are compared by `eql', or
+     according to the specified test.  The `:key' function, if
+     specified, is applied to the elements of both trees.  *Note
+     Sequences::.
+
+
+File: cl,  Node: Substitution of Expressions,  Next: Lists as Sets,  Prev: List Functions,  Up: Lists
+
+Substitution of Expressions
+===========================
+
+These functions substitute elements throughout a tree of cons cells.
+(*Note Sequence Functions::, for the `substitute' function, which works
+on just the top-level elements of a list.)
+
+ - Function: subst NEW OLD TREE &key :test :test-not :key
+     This function substitutes occurrences of OLD with NEW in TREE, a
+     tree of cons cells.  It returns a substituted tree, which will be
+     a copy except that it may share storage with the argument TREE in
+     parts where no substitutions occurred.  The original TREE is not
+     modified.  This function recurses on, and compares against OLD,
+     both `car's and `cdr's of the component cons cells.  If OLD is
+     itself a cons cell, then matching cells in the tree are
+     substituted as usual without recursively substituting in that
+     cell.  Comparisons with OLD are done according to the specified
+     test (`eql' by default).  The `:key' function is applied to the
+     elements of the tree but not to OLD.
+
+ - Function: nsubst NEW OLD TREE &key :test :test-not :key
+     This function is like `subst', except that it works by destructive
+     modification (by `setcar' or `setcdr') rather than copying.
+
+   The `subst-if', `subst-if-not', `nsubst-if', and `nsubst-if-not'
+functions are defined similarly.
+
+ - Function: sublis ALIST TREE &key :test :test-not :key
+     This function is like `subst', except that it takes an association
+     list ALIST of OLD-NEW pairs.  Each element of the tree (after
+     applying the `:key' function, if any), is compared with the `car's
+     of ALIST; if it matches, it is replaced by the corresponding `cdr'.
+
+ - Function: nsublis ALIST TREE &key :test :test-not :key
+     This is a destructive version of `sublis'.
+
+
+File: cl,  Node: Lists as Sets,  Next: Association Lists,  Prev: Substitution of Expressions,  Up: Lists
+
+Lists as Sets
+=============
+
+These functions perform operations on lists which represent sets of
+elements.
+
+ - Function: member ITEM LIST
+     This MacLisp-compatible function searches LIST for an element
+     which is `equal' to ITEM.  The `member' function is built-in to
+     Emacs 19; this package defines it equivalently in Emacs 18.  See
+     the following function for a Common-Lisp compatible version.
+
+ - Function: member* ITEM LIST &key :test :test-not :key
+     This function searches LIST for an element matching ITEM.  If a
+     match is found, it returns the cons cell whose `car' was the
+     matching element.  Otherwise, it returns `nil'.  Elements are
+     compared by `eql' by default; you can use the `:test',
+     `:test-not', and `:key' arguments to modify this behavior.  *Note
+     Sequences::.
+
+     Note that this function's name is suffixed by `*' to avoid the
+     incompatible `member' function defined in Emacs 19.  (That
+     function uses `equal' for comparisons; it is equivalent to
+     `(member* ITEM LIST :test 'equal)'.)
+
+   The `member-if' and `member-if-not' functions analogously search for
+elements which satisfy a given predicate.
+
+ - Function: tailp SUBLIST LIST
+     This function returns `t' if SUBLIST is a sublist of LIST, i.e.,
+     if SUBLIST is `eql' to LIST or to any of its `cdr's.
+
+ - Function: adjoin ITEM LIST &key :test :test-not :key
+     This function conses ITEM onto the front of LIST, like `(cons ITEM
+     LIST)', but only if ITEM is not already present on the list (as
+     determined by `member*').  If a `:key' argument is specified, it
+     is applied to ITEM as well as to the elements of LIST during the
+     search, on the reasoning that ITEM is "about" to become part of
+     the list.
+
+ - Function: union LIST1 LIST2 &key :test :test-not :key
+     This function combines two lists which represent sets of items,
+     returning a list that represents the union of those two sets.  The
+     result list will contain all items which appear in LIST1 or LIST2,
+     and no others.  If an item appears in both LIST1 and LIST2 it will
+     be copied only once.  If an item is duplicated in LIST1 or LIST2,
+     it is undefined whether or not that duplication will survive in the
+     result list.  The order of elements in the result list is also
+     undefined.
+
+ - Function: nunion LIST1 LIST2 &key :test :test-not :key
+     This is a destructive version of `union'; rather than copying, it
+     tries to reuse the storage of the argument lists if possible.
+
+ - Function: intersection LIST1 LIST2 &key :test :test-not :key
+     This function computes the intersection of the sets represented by
+     LIST1 and LIST2.  It returns the list of items which appear in
+     both LIST1 and LIST2.
+
+ - Function: nintersection LIST1 LIST2 &key :test :test-not :key
+     This is a destructive version of `intersection'.  It tries to
+     reuse storage of LIST1 rather than copying.  It does *not* reuse
+     the storage of LIST2.
+
+ - Function: set-difference LIST1 LIST2 &key :test :test-not :key
+     This function computes the "set difference" of LIST1 and LIST2,
+     i.e., the set of elements that appear in LIST1 but *not* in LIST2.
+
+ - Function: nset-difference LIST1 LIST2 &key :test :test-not :key
+     This is a destructive `set-difference', which will try to reuse
+     LIST1 if possible.
+
+ - Function: set-exclusive-or LIST1 LIST2 &key :test :test-not :key
+     This function computes the "set exclusive or" of LIST1 and LIST2,
+     i.e., the set of elements that appear in exactly one of LIST1 and
+     LIST2.
+
+ - Function: nset-exclusive-or LIST1 LIST2 &key :test :test-not :key
+     This is a destructive `set-exclusive-or', which will try to reuse
+     LIST1 and LIST2 if possible.
+
+ - Function: subsetp LIST1 LIST2 &key :test :test-not :key
+     This function checks whether LIST1 represents a subset of LIST2,
+     i.e., whether every element of LIST1 also appears in LIST2.
+
+
+File: cl,  Node: Association Lists,  Prev: Lists as Sets,  Up: Lists
+
+Association Lists
+=================
+
+An "association list" is a list representing a mapping from one set of
+values to another; any list whose elements are cons cells is an
+association list.
+
+ - Function: assoc* ITEM A-LIST &key :test :test-not :key
+     This function searches the association list A-LIST for an element
+     whose `car' matches (in the sense of `:test', `:test-not', and
+     `:key', or by comparison with `eql') a given ITEM.  It returns the
+     matching element, if any, otherwise `nil'.  It ignores elements of
+     A-LIST which are not cons cells.  (This corresponds to the
+     behavior of `assq' and `assoc' in Emacs Lisp; Common Lisp's
+     `assoc' ignores `nil's but considers any other non-cons elements
+     of A-LIST to be an error.)
+
+ - Function: rassoc* ITEM A-LIST &key :test :test-not :key
+     This function searches for an element whose `cdr' matches ITEM.
+     If A-LIST represents a mapping, this applies the inverse of the
+     mapping to ITEM.
+
+ - Function: rassoc ITEM A-LIST
+     This function searches like `rassoc*' with a `:test' argument of
+     `equal'.  It is analogous to Emacs Lisp's standard `assoc'
+     function, which derives from the MacLisp rather than the Common
+     Lisp tradition.
+
+   The `assoc-if', `assoc-if-not', `rassoc-if', and `rassoc-if-not'
+functions are defined similarly.
+
+   Two simple functions for constructing association lists are:
+
+ - Function: acons KEY VALUE ALIST
+     This is equivalent to `(cons (cons KEY VALUE) ALIST)'.
+
+ - Function: pairlis KEYS VALUES &optional ALIST
+     This is equivalent to `(nconc (mapcar* 'cons KEYS VALUES) ALIST)'.
+
+
+File: cl,  Node: Hash Tables,  Next: Structures,  Prev: Lists,  Up: Top
+
+Hash Tables
+***********
+
+A "hash table" is a data structure that maps "keys" onto "values."
+Keys and values can be arbitrary Lisp data objects.  Hash tables have
+the property that the time to search for a given key is roughly
+constant; simpler data structures like association lists take time
+proportional to the number of entries in the list.
+
+ - Function: make-hash-table &key :test :size
+     This function creates and returns a hash-table object whose
+     function for comparing elements is `:test' (`eql' by default), and
+     which is allocated to fit about `:size' elements.  The `:size'
+     argument is purely advisory; the table will stretch automatically
+     if you store more elements in it.  If `:size' is omitted, a
+     reasonable default is used.
+
+     Common Lisp allows only `eq', `eql', `equal', and `equalp' as
+     legal values for the `:test' argument.  In this package, any
+     reasonable predicate function will work, though if you use
+     something else you should check the details of the hashing
+     function described below to make sure it is suitable for your
+     predicate.
+
+     Some versions of Emacs (like Lucid Emacs 19) include a built-in
+     hash table type; in these versions, `make-hash-table' with a test
+     of `eq' will use these built-in hash tables.  In all other cases,
+     it will return a hash-table object which takes the form of a list
+     with an identifying "tag" symbol at the front.  All of the hash
+     table functions in this package can operate on both types of hash
+     table; normally you will never know which type is being used.
+
+     This function accepts the additional Common Lisp keywords
+     `:rehash-size' and `:rehash-threshold', but it ignores their
+     values.
+
+ - Function: gethash KEY TABLE &optional DEFAULT
+     This function looks up KEY in TABLE.  If KEY exists in the table,
+     in the sense that it matches any of the existing keys according to
+     the table's test function, then the associated value is returned.
+     Otherwise, DEFAULT (or `nil') is returned.
+
+     To store new data in the hash table, use `setf' on a call to
+     `gethash'.  If KEY already exists in the table, the corresponding
+     value is changed to the stored value.  If KEY does not already
+     exist, a new entry is added to the table and the table is
+     reallocated to a larger size if necessary.  The DEFAULT argument
+     is allowed but ignored in this case.  The situation is exactly
+     analogous to that of `get*'; *note Property Lists::..
+
+ - Function: remhash KEY TABLE
+     This function removes the entry for KEY from TABLE.  If an entry
+     was removed, it returns `t'.  If KEY does not appear in the table,
+     it does nothing and returns `nil'.
+
+ - Function: clrhash TABLE
+     This function removes all the entries from TABLE, leaving an empty
+     hash table.
+
+ - Function: maphash FUNCTION TABLE
+     This function calls FUNCTION for each entry in TABLE.  It passes
+     two arguments to FUNCTION, the key and the value of the given
+     entry.  The return value of FUNCTION is ignored; MAPHASH itself
+     returns `nil'.  *Note Loop Facility::, for an alternate way of
+     iterating over hash tables.
+
+ - Function: hash-table-count TABLE
+     This function returns the number of entries in TABLE.  *Warning:*
+     The current implementation of Lucid Emacs 19 hash-tables does not
+     decrement the stored `count' when `remhash' removes an entry.
+     Therefore, the return value of this function is not dependable if
+     you have used `remhash' on the table and the table's test is `eq'.
+     A slower, but reliable, way to count the entries is `(loop for x
+     being the hash-keys of TABLE count t)'.
+
+ - Function: hash-table-p OBJECT
+     This function returns `t' if OBJECT is a hash table, `nil'
+     otherwise.  It recognizes both types of hash tables (both Lucid
+     Emacs built-in tables and tables implemented with special lists.)
+
+   Sometimes when dealing with hash tables it is useful to know the
+exact "hash function" that is used.  This package implements hash
+tables using Emacs Lisp "obarrays," which are the same data structure
+that Emacs Lisp uses to keep track of symbols.  Each hash table
+includes an embedded obarray.  Key values given to `gethash' are
+converted by various means into strings, which are then looked up in
+the obarray using `intern' and `intern-soft'.  The symbol, or "bucket,"
+corresponding to a given key string includes as its `symbol-value' an
+association list of all key-value pairs which hash to that string.
+Depending on the test function, it is possible for many entries to hash
+to the same bucket.  For example, if the test is `eql', then the symbol
+`foo' and two separately built strings `"foo"' will create three
+entries in the same bucket.  Search time is linear within buckets, so
+hash tables will be most effective if you arrange not to store too many
+things that hash the same.
+
+   The following algorithm is used to convert Lisp objects to hash
+strings:
+
+   * Strings are used directly as hash strings.  (However, if the test
+     function is `equalp', strings are `downcase'd first.)
+
+   * Symbols are hashed according to their `symbol-name'.
+
+   * Integers are hashed into one of 16 buckets depending on their value
+     modulo 16.  Floating-point numbers are truncated to integers and
+     hashed modulo 16.
+
+   * Cons cells are hashed according to their `car's; nonempty vectors
+     are hashed according to their first element.
+
+   * All other types of objects hash into a single bucket named `"*"'.
+
+Thus, for example, searching among many buffer objects in a hash table
+will devolve to a (still fairly fast) linear-time search through a
+single bucket, whereas searching for different symbols will be very
+fast since each symbol will, in general, hash into its own bucket.
+
+   The size of the obarray in a hash table is automatically adjusted as
+the number of elements increases.
+
+   As a special case, `make-hash-table' with a `:size' argument of 0 or
+1 will create a hash-table object that uses a single association list
+rather than an obarray of many lists.  For very small tables this
+structure will be more efficient since lookup does not require
+converting the key to a string or looking it up in an obarray.
+However, such tables are guaranteed to take time proportional to their
+size to do a search.
+

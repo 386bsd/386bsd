@@ -1,0 +1,66 @@
+SHM(2)                    386BSD Programmer's Manual                    SHM(2)
+
+NNAAMMEE
+     sshhmmaatt, sshhmmccttll, sshhmmddtt, sshhmmggeett - shared memory operations
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssyyss//ttyyppeess..hh>>
+     ##iinncclluuddee <<ssyyss//iippcc..hh>>
+     ##iinncclluuddee <<ssyyss//sshhmm..hh>>
+
+     _v_o_i_d *
+     sshhmmaatt(_i_n_t _s_h_m_i_d, _v_o_i_d *_s_h_m_a_d_d_r, _i_n_t _s_h_m_f_l_g)
+
+     _i_n_t
+     sshhmmccttll(_i_n_t _s_h_m_i_d, _i_n_t _c_m_d, _v_o_i_d *_b_u_f)
+
+     _i_n_t
+     sshhmmddtt(_v_o_i_d *_s_h_m_a_d_d_r)
+
+     _i_n_t
+     sshhmmggeett(_k_e_y__t _k_e_y, _i_n_t _s_i_z_e, _i_n_t _s_h_m_f_l_g)
+
+DDEESSCCRRIIPPTTIIOONN
+     System V defines a set of operations for shared memory that is a
+     manditory part of the iBCS2 standard for Intel X86 processors.  The
+     segments are either part of a global table accessible via appropriate
+     permissions by all processes, or private(IPC_PRIVATE) segments known only
+     to the process group. The segments are identified by a shared memory
+     identifier _s_h_m_i_d, a unique integer value returned on creation.  This
+     interface is made up of the following four functions:
+
+     The sshhmmggeett() function creates a shared memory segment, entering it into
+     the systems global pool of shared memory segments. If successful, a
+     shared memory identifier is returned.
+
+     The sshhmmccttll() function provides control and status operations for existing
+     shared memory segments, as specified by _c_m_d. Among them, the segments can
+     be removed(IPC_RMID), protection and permissions (re)assigned(IPC_SET),
+     and the details of the segment can be extracted from the
+     system(IPC_STAT).
+
+     The sshhmmaatt() function attaches a shared memory segment to an address in
+     the user's address space (specified by _s_h_m_a_d_d_r ) to allow the segment to
+     be accessed by the program as ordinary memory.
+
+     The sshhmmddtt() function detaches a shared memory segment at the address in
+     the user's address space (specified by _s_h_m_a_d_d_r ).
+
+ 386BSD                        February 14, 1994                             1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

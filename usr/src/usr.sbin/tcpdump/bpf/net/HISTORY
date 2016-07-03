@@ -1,0 +1,134 @@
+
+This file was extracted from a comment in net/enet.c (now net/bpf.c).
+
+
+16 July 1990 Steven McCanne	Lawrence Berekeley Laboratory
+	Berkeley Packet Filter (bpf) created from major revisions to enet.
+
+7 October 1985	Jeff Mogul	Stanford
+	Removed ENMAXOPENS limitation; available minors are now
+	dynamically allocated to interfaces, out of pool of NENETFILTER
+	minors.
+	Certain arrays formerly in the enState structure are now global.
+	Depends on modified openi() function so that enetopen() need
+	only be called once.
+	Remove support for "kernel access", it won't ever be used again.
+	Added EIOCMFREE ioctl.
+
+17 October 1984	Jeff Mogul	Stanford
+    More performance improvements:
+	Added ENF_CAND, ENF_COR, ENF_CNAND, and ENF_CNOR, short-circuit
+	operators, to make filters run faster.
+	All evaluate "(*sp++ == *sp++)":
+	ENF_CAND: returns false immediately if result is false, otherwise
+		continue
+	ENF_COR: returns true immediately if result is true, otherwise
+		continue
+	ENF_CNAND: returns true immediately if result is false, otherwise
+		continue
+	ENF_CNOR: returns false immediately if result is true, otherwise
+		continue
+	Also added ENF_NEQ to complement ENF_EQ
+    - Maintain count of received packets per filter, dynamically
+	re-organize filter queue to keep highly active filters in
+	front of queue (but maintaining priority order), if they are
+	"high priority" filters.
+
+2 October 1984	Jeff Mogul	Stanford
+	Made a few changes to enDoFilter() to speed it up, since profiling
+	shows it to be rather popular:
+	- precompute maximum word in packet and address of end of
+	filters (thereby moving this code out of "inner loop").
+	- minor re-arrangement to avoid re-evaluating a
+	common subexpression.
+	- changed #ifdef DEBUG in a few routines to #ifdef INNERDEBUG,
+	so that code in inner loops isn't always testing the enDebug
+	flag; this not only costs directly, but also breaks up some
+	basic blocks that the optimizer could play with.
+	- added enOneCopy flag; if true, then never deliver more than
+	one copy of a packet.  This is equivalent to giving everyone
+	a "high priority" device, and cuts down the number of superfluous
+	calls to enDoFilter(). [Temporary hack, will remove this!]
+
+24 August 1984	Jeff Mogul	Stanford
+	YA bug with sleeping in enetwrite(); straightened out handling
+	of counts in enKludgeSleep so that they indicate the number
+	of sleeps in progress. Maybe I've got this right, now?
+	Also, don't sleep forever (since the net might be down).
+
+17 July 1984	Jeff Mogul	Stanford
+	Bug fix: in enetwrite(), several problems with sleeping on
+	IF_QFULL:
+	- don't do it for kernel mode writes.
+	- count # of procs sleeping, to avoid lost wakeups.  Old
+		scheme would only wake up the first sleeper.
+	- using sleeper-count, avoid using more than one timeout
+		table entry per device; old scheme caused timeout table panics
+	- trap interupted sleeps using setjmp, so that we can deallocate
+		packet header and mbufs; otherwise we lost them and panicked.
+
+5 July 1984	Jeff Mogul	Stanford
+	Bug fix: in enetwrite() make sure enP_RefCount is zero before
+	deallocating "packet".  Otherwise, "packets" get lost, and
+	take mbufs (and ultimately, the system) with them.
+
+8 December 1983	Jeffrey Mogul	Stanford
+	Fixed bug in enetwrite() that eventually caused	allocator
+	to run out of packets and panic.  If enetwrite() returns
+	an error it should first deallocate any packets it has allocated.
+
+10 November 1983	Jeffrey Mogul	Stanford
+	Slight restructuring for support of 10mb ethers;
+	- added the EIOCDEVP ioctl
+	- removed the EIOCMTU ioctl (subsumed by EIOCDEVP)
+	This requires an additional parameter to the enetattach
+	call so that the device driver can specify things.
+
+	Also, cleaned up the enDebug scheme by adding symbolic
+	definitions for the bits.
+
+25-Apr-83	Jeffrey Mogul	Stanford
+	Began conversion to 4.2BSD.  This involves removing all
+		references to the actual hardware.
+	Changed read/write interface to use uio scheme.
+	Changed ioctl interface to "new style"; this places a hard
+		limit on the size of a filter (about 128 bytes).
+	"Packets" now point to mbufs, not private buffers.
+	Filter can only access data in first mbuf (about 50 words worst case);
+		this is long enough for all Pup purposes.
+	Added EIOCMTU ioctl to get MTU (max packet size).
+	Added an enetselect() routine and other select() support.
+	Other stuff is (more or less) left intact.
+	Most previous history comments removed.
+	Changed some names from enXXXX to enetXXXX to avoid confusion(?)
+
+10-Aug-82  Mike Accetta (mja) at Carnegie-Mellon University
+	Added new EIOCMBIS and EIOCMBIC ioctl calls to set and clear
+	bits in mode word;  added mode bit ENHOLDSIG which suppresses
+	the resetting of an enabled signal after it is sent (to be
+	used inconjunction with the SIGHOLD mechanism);  changed
+	EIOCGETP to zero pad word for future compatibility;  changed enwrite()
+	to enforce correct source host address on output packets (V3.05e).
+	(Stanford already uses long timeout value and has no pad word - JCM)
+	[Last change before 4.2BSD conversion starts.]
+
+01-Dec-81  Mike Accetta (mja) at Carnegie-Mellon University
+	Fixed bug in timeout handling caused by missing "break" in the
+	"switch" state check within enetread().  This caused all reads
+	to be preceeded by a bogus timeout.  In addition, fixed another
+	bug in signal processing by also recording process ID of
+	process to signal when an input packet is available.  This is
+	necessary because it is possible for a process with an enabled
+	signal to fork and exit with no guarantee that the child will
+	reenable the signal.  Thus under appropriately bizarre race
+	conditions, an incoming packet to the child can cause a signal
+	to be sent to the unsuspecting process which inherited the
+	process slot of the parent.  Of course, if the PID's wrap around
+	AND the inheriting process has the same PID, well ... (V3.03d).
+
+22-Feb-80  Rick Rashid (rfr) at Carnegie-Mellon University
+	Rewritten to provide multiple user access via user settable
+	filters (V1.05).
+
+18-Jan-80  Mike Accetta (mja) at Carnegie-Mellon University
+	Created (V1.00).

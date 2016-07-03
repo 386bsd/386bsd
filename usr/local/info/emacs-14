@@ -1,0 +1,1285 @@
+This is Info file ../info/emacs, produced by Makeinfo-1.54 from the
+input file emacs.texi.
+
+
+File: emacs,  Node: Dired Deletion,  Next: Dired Visiting,  Prev: Dired Commands,  Up: Dired
+
+Deleting Files with Dired
+=========================
+
+   The primary use of Dired is to "flag" files for deletion and then
+delete the files previously flagged.
+
+`d'
+     Flag this file for deletion.
+
+`u'
+     Remove deletion flag on this line.
+
+`DEL'
+     Move point to previous line and remove the deletion flag on that
+     line.
+
+`x'
+     Delete the files that are flagged for deletion.
+
+`#'
+     Flag all auto-save files (files whose names start and end with `#')
+     for deletion (*note Auto Save::.).
+
+`~'
+     Flag all backup files (files whose names end with `~') for deletion
+     (*note Backup::.).
+
+`. (Period)'
+     Flag excess numeric backup files for deletion.  The oldest and
+     newest few backup files of any one file are exempt; the middle
+     ones are flagged.
+
+`% d REGEXP RET'
+     Flag for deletion all files whose names match the regular
+     expression REGEXP (`dired-flag-files-regexp').  This is just like
+     `% m' except that it uses `D' instead of `*' to mark the files.
+
+     Only the non-directory part of the file name is used in matching.
+     Use `^' and `$' to anchor matches.  Exclude subdirectories by
+     hiding them (*note Hiding Subdirectories::.).
+
+   You can flag a file for deletion by moving to the line describing the
+file and typing `d'.  The deletion flag is visible as a `D' at the
+beginning of the line.  This command moves point to the beginning of
+the next line, so that repeated `d' commands flag successive files.
+
+   The files are flagged for deletion rather than deleted immediately to
+reduce the danger of deleting a file accidentally.  Until you direct
+Dired to expunge the flagged files, you can remove deletion flags using
+the commands `u' and DEL.  `u' works just like `d', but removes flags
+rather than making flags.  DEL moves upward, removing flags; it is like
+`u' with numeric argument automatically negated.
+
+   To delete the flagged files, type `x' (`dired-expunge').  This
+command first displays a list of all the file names flagged for
+deletion, and requests confirmation with `yes'.  Once you confirm, `x'
+deletes all the flagged files, then deletes their lines from the text
+of the Dired buffer.  The shortened Dired buffer remains selected.
+
+   If you answer `no' or quit with `C-g' when asked to confirm, you
+return immediately to Dired, with the deletion flags still present in
+the buffer, and no files actually deleted.
+
+   The `#', `~' and `.' commands flag many files for deletion, based on
+their file names.  These commands are useful precisely because they do
+not actually delete any files; you can remove the deletion flags from
+any flagged files that you really wish to keep.
+
+   `#' flags for deletion all files whose names look like auto-save
+files (*note Auto Save::.)--that is, files whose names begin and end
+with `#'.  `~' flags for deletion all files whose names say they are
+backup files (*note Backup::.)--that is, whose names end in `~'.
+
+   `.' (Period) flags just some of the backup files for deletion: all
+but the oldest few and newest few backups of any one file.  Normally
+`dired-kept-versions' (*not* `kept-new-versions'; that applies only
+when saving) specifies the number of newest versions of each file to
+keep, and `kept-old-versions' specifies the number of oldest versions
+to keep.
+
+   Period with a positive numeric argument, as in `C-u 3 .', specifies
+the number of newest versions to keep, overriding
+`dired-kept-versions'.  A negative numeric argument overrides
+`kept-old-versions', using minus the value of the argument to specify
+the number of oldest versions of each file to keep.
+
+   The `% d' command flags all files whose names match a specified
+regular expression (`dired-flag-files-regexp').  Only the non-directory
+part of the file name is used in matching.  You can use `^' and `$' to
+anchor matches.  You can exclude subdirectories by hiding them (*note
+Hiding Subdirectories::.).
+
+
+File: emacs,  Node: Dired Visiting,  Next: Marks vs Flags,  Prev: Dired Deletion,  Up: Dired
+
+Visiting Files in Dired
+=======================
+
+   There are several Dired commands for visiting or examining the files
+listed in the Dired buffer.  All of them apply to the current line's
+file; if that file is really a directory, these commands invoke Dired on
+that subdirectory (using a separate Dired buffer).
+
+`f'
+     Visit the file described on the current line, like typing `C-x C-f'
+     and supplying that file name (`dired-find-file').  *Note
+     Visiting::.
+
+`o'
+     Like `f', but uses another window to display the file's buffer
+     (`dired-find-file-other-window').  The Dired buffer remains visible
+     in the first window.  This is like using `C-x 4 C-f' to visit the
+     file.  *Note Windows::.
+
+`C-o'
+     Visit the file described on the current line, and display the
+     buffer in another window, but do not select that window
+     (`dired-display-file').
+
+`v'
+     View the file described on the current line, using `M-x view-file'
+     (`dired-view-file').
+
+     Viewing a file is like visiting it, but is slanted toward moving
+     around in the file conveniently and does not allow changing the
+     file.  *Note View File: Misc File Ops.
+
+
+File: emacs,  Node: Marks vs Flags,  Next: Operating on Files,  Prev: Dired Visiting,  Up: Dired
+
+Dired Marks vs. Flags
+=====================
+
+   Instead of flagging a file with `D', you can "mark" the file with
+some other character (usually `*').  Most Dired commands other than
+"expunge" (`x') operate on files marked with `*'.
+
+   Here are some commands for marking with `*' (and also for
+unmarking).  (*Note Dired Deletion::, for commands to flag and unflag
+files.)
+
+`m'
+     Mark the current file with `*' (`dired-mark').  With a numeric
+     argument N, mark the next N files starting with the current file.
+     (If N is negative, mark the previous -N files.)
+
+`*'
+     Mark all executable files with `*' (`dired-mark-executables').
+     With a prefix argument, unmark all those files.
+
+`@'
+     Mark all symbolic links with `*' (`dired-mark-symlinks').  With a
+     prefix argument, unmark all those files.
+
+`/'
+     Mark with `*' all files which are actually directories, except for
+     `.' and `..' (`dired-mark-directories').  With a prefix argument,
+     unmark all those files.
+
+`M-DEL MARKCHAR'
+     Remove all marks that use the character MARKCHAR
+     (`dired-unmark-all-files').  If you specify RET as MARKCHAR, this
+     command removes all marks, no matter what the marker character is.
+
+     With a numeric argument, this command queries about each marked
+     file, asking whether to remove its mark.  You can answer `y'
+     meaning yes, `n' meaning no, `!' to remove the marks from the
+     remaining files without asking about them.
+
+`c OLD NEW'
+     Replace all marks that use the character OLD with marks that use
+     the character NEW (`dired-change-marks').  This command is the
+     only way to create or use marks other than `*' or `D'.  The
+     arguments are single characters--do not use RET to terminate them.
+
+     You can use almost any character as a mark character by means of
+     this command, to distinguish various classes of files.  If OLD is a
+     space (` '), then the command operates on all unmarked files; if
+     NEW is a space, then the command unmarks the files it acts on.
+
+     To illustrate the power of this command, here is how to put `*'
+     marks on all the files that are unmarked, while unmarking all
+     those that have `*' marks:
+
+          c * t  c SPC *  c t SPC
+
+`% m REGEXP RET'
+     Mark (with `*') all files whose names match the regular expression
+     REGEXP (`dired-mark-files-regexp').
+
+     Only the non-directory part of the file name is used in matching.
+     Use `^' and `$' to anchor matches.  Exclude subdirectories by
+     hiding them (*note Hiding Subdirectories::.).
+
+
+File: emacs,  Node: Operating on Files,  Next: Shell Commands in Dired,  Prev: Marks vs Flags,  Up: Dired
+
+Operating on Files
+==================
+
+   This section describes the basic Dired commands to operate on one
+file or several files.  All of these commands are capital letters; all
+of them use the minibuffer, either to read an argument or to ask for
+confirmation, before they act.  All use the following convention to
+decide which files to manipulate:
+
+   * If you give the command a numeric prefix argument N, it operates
+     on the next N files, starting with the current file.  (If N is
+     negative, the command operates on the -N files preceding the
+     current line.)
+
+   * Otherwise, if some files are marked with `*', the command operates
+     on all those files.
+
+   * Otherwise, the command operates on the current file only.
+
+   Here are the commands that operate on files in this way:
+
+`C NEW RET'
+     Copy the specified files (`dired-do-copy').  The argument NEW is
+     the directory to copy into, or (if copying a single file) the new
+     name.
+
+     If `dired-copy-preserve-time' is non-`nil', then copying with this
+     command sets the modification time of the new file to be the same
+     as that of the old file.
+
+`R NEW RET'
+     Rename the specified files (`dired-do-rename').  The argument NEW
+     is the directory to rename into, or (if renaming a single file)
+     the new name.
+
+     Dired automatically changes the visited file name of buffers
+     associated with renamed files so that they refer to the new names.
+
+`H NEW RET'
+     Make hard links to the specified files (`dired-do-hardlink').  The
+     argument NEW is the directory to make the links in, or (if making
+     just one link) the name to give the link.
+
+`S NEW RET'
+     Make symbolic links to the specified files (`dired-do-symlink').
+     The argument NEW is the directory to make the links in, or (if
+     making just one link) the name to give the link.
+
+`M MODESPEC RET'
+     Change the mode (also called "permission bits") of the specified
+     files (`dired-do-chmod').  This calls the `chmod' program, so
+     MODESPEC can be any argument that `chmod' can handle.
+
+`G NEWGROUP RET'
+     Change the group of the specified files to NEWGROUP
+     (`dired-do-chgrp').
+
+`O NEWOWNER RET'
+     Change the owner of the specified files to NEWOWNER
+     (`dired-do-chown').  (On most systems, only the superuser can do
+     this.)
+
+     The variable `dired-chown-program' specifies the name of the
+     program to use to do the work (different systems put `chown' in
+     different places).
+
+`P COMMAND RET'
+     Print the specified files (`dired-do-print').  You must specify the
+     command to print them with, but the minibuffer starts out with a
+     suitable guess made using the variables `lpr-command' and
+     `lpr-switches' (the same variables that `lpr-file' uses; *note
+     Hardcopy::.).
+
+`Z'
+     Compress or uncompress the specified files (`dired-do-compress').
+     If the file appears to be a compressed file, it is uncompressed;
+     otherwise, it is compressed.
+
+`L'
+     Load the specified Emacs Lisp files (`dired-do-load').  *Note Lisp
+     Libraries::.
+
+`B'
+     Byte compile the specified Emacs Lisp files
+     (`dired-do-byte-compile').  *Note Byte Compilation: (elisp)Byte
+     Compilation.
+
+
+File: emacs,  Node: Shell Commands in Dired,  Next: Transforming File Names,  Prev: Operating on Files,  Up: Dired
+
+Shell Commands in Dired
+=======================
+
+   The dired command `!' (`dired-do-shell-command') reads a shell
+command string in the minibuffer and runs the shell command on all the
+specified files.  There are two ways of applying a shell command to
+multiple files:
+
+   * If you use `*' in the shell command, then it runs just once, with
+     the list of file names substituted for the `*'.  The order of file
+     names is the order of appearance in the Dired buffer.
+
+     Thus, `! tar cf foo.tar * RET' runs `tar' on the entire list of
+     file names, putting them into one tar file `foo.tar'.
+
+   * If the command string doesn't contain `*', then it runs once *for
+     each file*, with the file name added at the end.
+
+     For example, `! uudecode RET' runs `uudecode' on each file.
+
+   What if you want to run the shell command once for each file but with
+the file name inserted in the middle?  Or if you want to use the file
+names in a more complicated fashion?  Use a shell loop.  For example,
+this shell command would run `uuencode' on each of the specified files,
+writing the output into a corresponding `.uu' file:
+
+     for file in *; uuencode $file $file >$file.uu; done
+
+   The working directory for the shell command is the top level
+directory of the Dired buffer.
+
+   The `!' command does not attempt to update the Dired buffer to show
+new or modified files, because it doesn't really understand shell
+commands, and does not know what files the shell command changed.  Use
+the `g' command to update the Dired buffer (*note Dired Updating::.).
+
+
+File: emacs,  Node: Transforming File Names,  Next: Comparison in Dired,  Prev: Shell Commands in Dired,  Up: Dired
+
+Transforming File Names in Dired
+================================
+
+   Here are commands that alter file names in a systematic way:
+
+`% u'
+     Rename each of the selected files to an upper case name
+     (`dired-upcase').  If the old file names are `Foo' and `bar', the
+     new names are `FOO' and `BAR'.
+
+`% l'
+     Rename each of the selected files to a lower case name
+     (`dired-downcase').  If the old file names are `Foo' and `bar',
+     the new names are `foo' and `bar'.
+
+`% R FROM RET TO RET'
+`% C FROM RET TO RET'
+`% H FROM RET TO RET'
+`% S FROM RET TO RET'
+     These four commands rename, copy, make hard links and make soft
+     links, in each case computing the new name by regular expression
+     substitution from the name of the old file.
+
+   The four regular expression substitution commands effectively perform
+`query-replace-regexp' on the selected file names in the Dired buffer.
+They read two arguments: a regular expression FROM, and a substitution
+pattern TO.
+
+   The commands match each "old" file name against the regular
+expression FROM, and then replace the matching part with TO.  You can
+use `\&' and `\DIGIT' in TO to refer to all or part of what the pattern
+matched in the old file name, as in `query-replace' (*note Query
+Replace::.).
+
+   For example, `% R ^.*$ RET x-\& RET' renames each selected file by
+prepending `x-' to its name.  The inverse of this, removing `x-' from
+the front of each file name, is also possible: one method is `% R
+^x-\(.*\)$ RET \1 RET'; another is `% R ^x- RET RET'.  (Use `^' and `$'
+to anchor matches that should span the whole filename.)
+
+   If the regular expression matches more than once in a file name, only
+the first match is replaced.
+
+   Normally, the replacement process does not consider the files'
+directory names; it operates on the file name within the directory.  If
+you specify a prefix argument of zero, then replacement affects the
+entire absolute file name including directory name.
+
+   Often you will want to apply the command to all files matching the
+same REGEXP that you use in the command.  To do this, mark those files
+with `% m REGEXP RET', then use the same regular expression in the
+command to operate on the files.  To make this easier, the commands to
+operate use the last regular expression specified in a `%' command as a
+default.
+
+
+File: emacs,  Node: Comparison in Dired,  Next: Subdirectories in Dired,  Prev: Transforming File Names,  Up: Dired
+
+File Comparison with Dired
+==========================
+
+   Here are two Dired commands that compare specified files using
+`diff'.
+
+`='
+     Compare the current file (the file at point) with another file
+     (the file at the mark) using the `diff' program (`dired-diff').
+     The file at the mark is the first argument of `diff', and the file
+     at point is the second argument.
+
+`M-='
+     Compare the current file with its latest backup file
+     (`dired-backup-diff').  If the current file is itself a backup,
+     compare it with the file it is a backup of; this way, you can
+     compare a file with any backup version of your choice.
+
+     The backup file is the first file given to `diff'.
+
+
+File: emacs,  Node: Subdirectories in Dired,  Next: Subdirectory Motion,  Prev: Comparison in Dired,  Up: Dired
+
+Subdirectories in Dired
+=======================
+
+   A Dired buffer displays just one directory in the normal case; but
+you can optionally include its subdirectories as well.
+
+   The simplest way to include multiple directories in one Dired buffer
+is to specify the options `-lR' for running `ls'.  (If you give a
+numeric argument when you run Dired, then you can specify these options
+in the minibuffer.)  That produces a recursive directory listing showing
+all subdirectories at all levels.
+
+   But usually all the subdirectories are too many; usually you will
+prefer to include specific subdirectories only.  You can do this with
+the `i' command:
+
+`i'
+     Insert the contents of a subdirectory later in the buffer.
+
+     Use the `i' (`dired-maybe-insert-subdir') command on a line that
+     describes a file which is a directory.  It inserts the contents of
+     that directory into the same Dired buffer, and moves there.
+     Inserted subdirectory contents follow the top-level directory of
+     the Dired buffer, just as they do in `ls -lR' output.
+
+     If the subdirectory's contents are already present in the buffer,
+     the `i' command just moves to it.
+
+     In either case, `i' sets the Emacs mark before moving, so `C-x
+     C-x' takes you back to the old position in the buffer (the line
+     describing that subdirectory).
+
+     Use the `l' command (`dired-do-redisplay') to update the
+     subdirectory's contents.  Use `k' to delete the subdirectory.
+     *Note Dired Updating::.
+
+
+File: emacs,  Node: Subdirectory Motion,  Next: Hiding Subdirectories,  Prev: Subdirectories in Dired,  Up: Dired
+
+Moving Over Subdirectories
+==========================
+
+   When a Dired buffer lists subdirectories, you can use the page motion
+commands `C-x [' and `C-x ]' to move by entire directories.
+
+   The following commands move across, up and down in the tree of
+directories within one Dired buffer.  They move to "directory header
+lines", which are the lines that give a directory's name, at the
+beginning of the directory's contents.
+
+`C-M-n'
+     Go to next subdirectory header line, regardless of level
+     (`dired-next-subdir').
+
+`C-M-p'
+     Go to previous subdirectory header line, regardless of level
+     (`dired-prev-subdir').
+
+`C-M-u'
+     Go up to the parent directory's header line (`dired-tree-up').
+
+`C-M-d'
+     Go down in the directory tree, to the first subdirectory's header
+     line (`dired-tree-down').
+
+
+File: emacs,  Node: Hiding Subdirectories,  Next: Dired Updating,  Prev: Subdirectory Motion,  Up: Dired
+
+Hiding Subdirectories
+=====================
+
+   "Hiding" a subdirectory means to make it invisible, except for its
+header line, via selective display (*note Selective Display::.).
+
+`$'
+     Hide or reveal the subdirectory that point is in, and move point
+     to the next subdirectory (`dired-hide-subdir').  A numeric
+     argument serves as a repeat count.
+
+`M-$'
+     Hide all subdirectories in this Dired buffer, leaving only their
+     header lines (`dired-hide-all').  Or, if any subdirectory is
+     currently hidden, make all subdirectories visible again.  You can
+     use this command to get an overview in very deep directory trees
+     or to move quickly to subdirectories far away.
+
+   Ordinary Dired commands never consider files inside a hidden
+subdirectory.  For example, the commands to operate on marked files
+ignore files in hidden directories even if they are marked.  Thus you
+can use hiding to temporarily exclude subdirectories from operations
+without having to remove the markers.
+
+   The subdirectory hiding commands toggle; that is they unhide what was
+hidden and vice versa.
+
+
+File: emacs,  Node: Dired Updating,  Next: Dired and Find,  Prev: Hiding Subdirectories,  Up: Dired
+
+Updating the Dired Buffer
+=========================
+
+   This section describes commands to update the Dired buffer to reflect
+outside (non-Dired) changes in the directories and files, and to delete
+part of the Dired buffer.
+
+`g'
+     Update the entire contents of the Dired buffer (`revert-buffer').
+
+`l'
+     Update the specified files (`dired-do-redisplay').
+
+`k'
+     Delete the specified *file lines*--not the files, just the lines
+     (`dired-do-kill-lines').
+
+`s'
+     Toggle between sorting by file name and sorting by date/time
+     (`dired-sort-toggle-or-edit').
+
+`C-u s SWITCHES'
+     Refresh the Dired buffer using SWITCHES as
+     `dired-listing-switches'.
+
+   Type `g' (`revert-buffer') to update the contents of the Dired
+buffer, based on changes in the files and directories listed.  This
+preserves all marks except for those on files that have vanished.
+Hidden subdirectories are updated but remain hidden.
+
+   To update only some of the files, type `l' (`dired-do-redisplay').
+This command applies to the next N files, or to the marked files if
+any, or to the current file.  Updating them means reading their current
+status from the file system and changing the buffer to reflect it
+properly.
+
+   If you use `l' on a subdirectory header line, it updates the
+contents of the corresponding subdirectory.
+
+   To delete the specified *file lines*--not the files, just the
+lines--type `k' (`dired-do-kill-lines').  This command applies to the
+next N files, or to the marked files if any, or to the current file.
+
+   If you kill the line for a file that is a directory, the directory's
+contents are also deleted from the buffer.  Typing `C-u k' on the
+header line for a subdirectory is another way to delete a subdirectory
+from the Dired buffer.
+
+   The `g' command brings back any individual lines that you have
+killed in this way, but not subdirectories--you must use `i' to
+reinsert each subdirectory.
+
+   The files in a Dired buffers are normally in listed alphabetical
+order by file names.  Alternatively Dired can sort them by date/time.
+The Dired command `s' (`dired-sort-toggle-or-edit') switches between
+these two sorting modes.
+
+   The mode line in a Dired buffer indicates which way it is currently
+sorted--by name, or by date.
+
+   `C-u s SWITCHES RET' lets you specify a new value for
+`dired-listing-switches'.
+
+
+File: emacs,  Node: Dired and Find,  Prev: Dired Updating,  Up: Dired
+
+Dired and `find'
+================
+
+   You can select a set of files for display in a Dired buffer more
+flexibly by using the `find' utility to choose the files.
+
+   To search for files with names matching a wildcard pattern use `M-x
+find-name-dired'.  It reads arguments DIRECTORY and PATTERN, and
+chooses all the files in DIRECTORY or its subdirectories whose
+individual names match PATTERN.
+
+   The files thus chosen are displayed in a Dired buffer in which the
+ordinary Dired commands are available.
+
+   If you want to test the contents of files, rather than their names,
+use `M-x find-grep-dired'.  This command reads two minibuffer
+arguments, DIRECTORY and REGEXP; it chooses all the files in DIRECTORY
+or its subdirectories that contain a match for REGEXP.  It works by
+running the programs `find' and `grep'.
+
+   The most general command in this series is `M-x find-dired', which
+lets you specify any condition that `find' can test.  It takes two
+minibuffer arguments, DIRECTORY and FIND-ARGS; it runs `find' in
+DIRECTORY, passing FIND-ARGS to tell `find' what condition to test.  To
+use this command, you need to know how to use `find'.
+
+
+File: emacs,  Node: Calendar/Diary,  Next: GNUS,  Prev: Dired,  Up: Top
+
+The Calendar and the Diary
+**************************
+
+   Emacs provides the functions of a desk calendar, with a diary of
+planned or past events.  To enter the calendar, type `M-x calendar';
+this displays a three-month calendar centered on the current month, with
+point on the current date.  If you use prefix argument as in `C-u M-x
+calendar', it prompts you for the month and year to be the center of
+the three-month calendar.  The calendar uses its own buffer and the
+major mode is Calendar mode.
+
+   *Note Customizing the Calendar and Diary: (elisp)Calendar, for
+customization information about the calendar and diary.
+
+   To exit the calendar, type `q'.  `Mouse-3' in the calendar brings up
+a menu of commonly used calendar features.
+
+* Menu:
+
+* Calendar Motion::       Moving through the calendar; selecting a date.
+* Scroll Calendar::       Bringing earlier or later months onto the screen.
+* Counting Days::         How many days are there between two dates?
+* General Calendar::      Exiting or recomputing the calendar.
+* Holidays::              Displaying dates of holidays.
+* Sunrise/Sunset::        Displaying local times of sunrise and sunset.
+* Lunar Phases::          Displaying phases of the moon.
+* Other Calendars::       Converting dates to other calendar systems.
+* Diary::                 Displaying events from your diary.
+* Appointments::	  Reminders when it's time to do something.
+* Daylight Savings::      How to specify when daylight savings time is active.
+
+
+File: emacs,  Node: Calendar Motion,  Next: Scroll Calendar,  Up: Calendar/Diary
+
+Movement in the Calendar
+========================
+
+   Calendar mode lets you move in logical units of time such as days,
+weeks, months, and years.  If you move outside the three months
+originally displayed, the calendar display scrolls automatically through
+time.  Moving to a date lets you view its holidays or diary entries,
+convert it to other calendars; moving longer time periods is useful
+simply to scroll the calendar.
+
+* Menu:
+
+* Calendar Unit Motion::      Moving by days, weeks, months, and years.
+* Move to Beginning or End::  Moving to start/end of weeks, months, and years.
+* Specified Dates::           Moving to the current date or another
+                                specific date.
+
+
+File: emacs,  Node: Calendar Unit Motion,  Next: Move to Beginning or End,  Up: Calendar Motion
+
+Motion by Integral Days, Weeks, Months, Years
+---------------------------------------------
+
+   The commands for movement in the calendar buffer parallel the
+commands for movement in text.  You can move forward and backward by
+days, weeks, months, and years.
+
+`C-f'
+     Move point one day forward (`calendar-forward-day').
+
+`C-b'
+     Move point one day backward (`calendar-backward-day').
+
+`C-n'
+     Move point one week forward (`calendar-forward-week').
+
+`C-p'
+     Move point one week backward (`calendar-backward-week').
+
+`M-}'
+     Move point one month forward (`calendar-forward-month').
+
+`M-{'
+     Move point one month backward (`calendar-backward-month').
+
+`C-x ]'
+     Move point one year forward (`calendar-forward-year').
+
+`C-x ['
+     Move point one year backward (`calendar-forward-year').
+
+   The day and week commands are natural analogues of the usual Emacs
+commands for moving by characters and by lines.  Just as `C-n' usually
+moves to the same column in the following line, in Calendar mode it
+moves to the same day in the following week.  And `C-p' moves to the
+same day in the previous week.
+
+   The arrow keys are equivalent to `C-f', `C-b', `C-n' and `C-p', just
+as they normally are in other modes.
+
+   The commands for motion by months and years work like those for
+weeks, but move a larger distance.  The month commands `M-}' and `M-{'
+move forward or backward by an entire month's time.  The year commands
+`C-x ]' and `C-x [' move forward or backward a whole year.
+
+   The easiest way to remember these commands is to consider months and
+years analogous to paragraphs and pages of text, respectively.  But the
+commands themselves are not quite analogous.  The ordinary Emacs
+paragraph commands move to the beginning or end of a paragraph, whereas
+these month and year commands move by an entire month or an entire
+year, which usually involves skipping across the end of a month or year.
+
+   All these commands accept a numeric argument as a repeat count.  For
+convenience, the digit keys and the minus sign specify numeric
+arguments in Calendar mode even without the Meta modifier.  For example,
+`100 C-f' moves point 100 days forward from its present location.
+
+
+File: emacs,  Node: Move to Beginning or End,  Next: Specified Dates,  Prev: Calendar Unit Motion,  Up: Calendar Motion
+
+Beginning or End of Week, Month or Year
+---------------------------------------
+
+   A week (or month, or year) is not just a quantity of days; we think
+of new weeks (months, years) as starting on particular days.  So
+Calendar mode provides commands to move to the beginning or end of a
+week, month or year:
+
+`C-a'
+     Move point to beginning of week (`calendar-beginning-of-week').
+
+`C-e'
+     Move point to end of week (`calendar-end-of-week').
+
+`M-a'
+     Move point to beginning of month (`calendar-beginning-of-month').
+
+`M-e'
+     Move point to end of month (`calendar-end-of-month').
+
+`M-<'
+     Move point to beginning of year (`calendar-beginning-of-year').
+
+`M->'
+     Move point to end of year (`calendar-end-of-year').
+
+   These commands also take numeric arguments as repeat counts, with the
+repeat count indicating how many weeks, months, or years to move
+backward or forward.
+
+   By default, weeks begin on Sunday.  To make them begin on Monday
+instead, set the variable `calendar-week-start-day' to 1.
+
+
+File: emacs,  Node: Specified Dates,  Prev: Move to Beginning or End,  Up: Calendar Motion
+
+Particular Dates
+----------------
+
+   Calendar mode provides commands for getting to a particular date
+specified absolutely.
+
+`g d'
+     Move point to specified date (`calendar-goto-date').
+
+`o'
+     Center calendar around specified month (`calendar-other-month').
+
+`.'
+     Move point to today's date (`calendar-current-month').
+
+   `g d' (`calendar-goto-date') prompts for a year, a month, and a day
+of the month, and then moves to that date.  Because the calendar
+includes all dates from the beginning of the current era, you must type
+the year in its entirety; that is, type `1990', not `90'.
+
+   `o' (`calendar-other-month') prompts for a month and year, then
+centers the three-month calendar around that month.
+
+   You can return to today's date with `.' (`calendar-current-month').
+
+
+File: emacs,  Node: Scroll Calendar,  Next: Counting Days,  Prev: Calendar Motion,  Up: Calendar/Diary
+
+Scrolling in the Calendar
+=========================
+
+   The calendar display scrolls automatically through time when you
+move out of the visible portion.  You can also scroll it manually.
+Imagine that the calendar window contains a long strip of paper with
+the months on it.  Scrolling it means moving the strip so that new
+months become visible in the window.
+
+`C-x <'
+     Scroll calendar one month forward (`scroll-calendar-left').
+
+`C-x >'
+     Scroll calendar one month backward (`scroll-calendar-right').
+
+`C-v'
+`NEXT'
+     Scroll calendar three months forward
+     (`scroll-calendar-left-three-months').
+
+`M-v'
+`PRIOR'
+     Scroll calendar three months backward
+     (`scroll-calendar-right-three-months').
+
+`SPC'
+     Scroll the next window (`scroll-other-window').
+
+   The most basic calendar scroll commands scroll by one month at a
+time.  This means that there are two months of overlap between the
+display before the command and the display after.  `C-x <' scrolls the
+calendar contents one month to the left; that is, it moves the display
+forward in time.  `C-x >' scrolls the contents to the right, which
+moves backwards in time.
+
+   The commands `C-v' and `M-v' scroll the calendar by an entire
+"screenful"--three months--in analogy with the usual meaning of these
+commands.  `C-v' makes later dates visible and `M-v' makes earlier
+dates visible.  These commands take a numeric argument as a repeat
+count; in particular, since `C-u' (`universal-argument') multiplies the
+next command by four, typing `C-u C-v' scrolls the calendar forward by
+a year and typing `C-u M-v' scrolls the calendar backward by a year.
+
+   The function keys NEXT and PRIOR are equivalent to `C-v' and `M-v',
+just as they are in other modes.
+
+   In Calendar mode, you can use `SPC' (`scroll-other-window') to
+scroll the other window.  This is handy when you display a list of
+holidays or diary entries in another window.
+
+
+File: emacs,  Node: Counting Days,  Next: General Calendar,  Prev: Scroll Calendar,  Up: Calendar/Diary
+
+Counting Days
+=============
+
+`M-='
+     Display the number of days in the current region
+     (`calendar-count-days-region').
+
+   To determine the number of days in the region, type `M-='
+(`calendar-count-days-region').  The numbers of days printed is
+*inclusive*; that is, it includes the days specified by mark and point.
+
+
+File: emacs,  Node: General Calendar,  Next: Holidays,  Prev: Counting Days,  Up: Calendar/Diary
+
+Miscellaneous Calendar Commands
+===============================
+
+`p d'
+     Display day-in-year (`calendar-print-day-of-year').
+
+`C-c C-l'
+     Regenerate the calendar window (`redraw-calendar').
+
+`q'
+     Exit from calendar (`exit-calendar').
+
+   To print the number of days elapsed since the start of the year, or
+the number of days remaining in the year, type the `p d' command
+(`calendar-print-day-of-year').  This displays both of those numbers in
+the echo area.  The number of days elapsed includes the selected date.
+The number of days remaining does not include that date.
+
+   If the calendar window gets corrupted, type `C-c C-l'
+(`redraw-calendar') to redraw it.
+
+   To exit from the calendar, type `q' (`exit-calendar').  This buries
+all buffers related to the calendar and returns the window display to
+what it was when you entered the calendar.
+
+
+File: emacs,  Node: Holidays,  Next: Sunrise/Sunset,  Prev: General Calendar,  Up: Calendar/Diary
+
+Holidays
+========
+
+   The Emacs calendar knows about all major and many minor holidays,
+and can display them.
+
+`h'
+     Display holidays for the selected date
+     (`calendar-cursor-holidays').
+
+`Mouse-2 Holidays'
+     Display any diary entries for the date you click on.
+
+`x'
+     Mark holidays in the calendar window (`mark-calendar-holidays').
+
+`u'
+     Unmark calendar window (`calendar-unmark').
+
+`a'
+     List all holidays for the displayed three months in another window
+     (`list-calendar-holidays').
+
+`M-x holidays'
+     List all holidays for three months around today's date in another
+     window.
+
+   To see if any holidays fall on a given date, position point on that
+date in the calendar window and use the `h' command.  Alternatively,
+click on that date with `Mouse-2' and then choose `Holidays' from the
+menu that appears.  Either operation displays the holidays for that
+date, in the echo area if they fit there, otherwise in a separate
+window.
+
+   To find the distribution of holidays for a wider period, use the `x'
+command.  This displays the dates on which holidays fall in a different
+face (or places a `*' after these dates, if display with multiple faces
+is not available).  The command applies both to the currently visible
+months and to other months that subsequently become visible by
+scrolling.  To turn marking off and erase the current marks, type `u',
+which also erases any diary marks (*note Diary::.).
+
+   To get even more detailed information, use the `a' command, which
+displays a separate buffer containing a list of all holidays in the
+current three-month range.
+
+   The command `M-x holidays' displays the list of holidays for the
+current month and the preceding and succeeding months; this works even
+if you don't have a calendar window.  If you want the list of holidays
+centered around a different month, use `C-u M-x holidays', which
+prompts for the month and year.
+
+   The holidays known to Emacs include American holidays and the major
+Christian, Jewish, and Islamic holidays; also the solstices and
+equinoxes.
+
+   The dates used by Emacs for holidays are based on *current
+practice*, not historical fact.  Historically, for instance, the start
+of daylight savings time and even its existence have varied from year to
+year, but present American law mandates that daylight savings time
+begins on the first Sunday in April.  In an American locale, Emacs
+always uses this definition, even though it is wrong for some prior
+years.
+
+
+File: emacs,  Node: Sunrise/Sunset,  Next: Lunar Phases,  Prev: Holidays,  Up: Calendar/Diary
+
+Times of Sunrise and Sunset
+===========================
+
+   Emacs can tell you, to within a minute or two, the times of sunrise
+and sunset for any date.
+
+`S'
+     Display times of sunrise and sunset for the selected date
+     (`calendar-sunrise-sunset').
+
+`Mouse-2 Sunrise/sunset'
+     Display times of sunrise and sunset for the date you click on.
+
+`M-x sunrise-sunset'
+     Display times of sunrise and sunset for today's date.
+
+`C-u M-x sunrise-sunset'
+     Display times of sunrise and sunset for a specified date.
+
+   Within the calendar, to display the *local times* of sunrise and
+sunset in the echo area, move point to the date you want, and type `S'.
+Alternatively, click `Mouse-2' on the date, then choose
+`Sunrise/sunset' from the menu that appears.
+
+   The command `M-x sunrise-sunset' is available outside the calendar
+to print this information for today's date or a specified date.  To
+specify a date other than today, use `C-u M-x sunrise-sunset', which
+prompts for the year, month, and day.
+
+   Because the times of sunrise and sunset depend on the location on
+earth, you need to tell Emacs your latitude, longitude, and location
+name before using these commands.  Here is an example of what to set:
+
+     (setq calendar-latitude 40.1)
+     (setq calendar-longitude -88.2)
+     (setq calendar-location-name "Urbana, IL")
+
+Use one decimal place in the values of `calendar-latitude' and
+`calendar-longitude'.
+
+   Your time zone also affects the local time of sunrise and sunset.
+Emacs usually gets this information from the operating system, but if
+these values are not what you want (or if the operating system does not
+supply them), you must set them yourself.  Here is an example:
+
+     (setq calendar-time-zone -360)
+     (setq calendar-standard-time-zone-name "CST")
+     (setq calendar-daylight-time-zone-name "CDT")
+
+The value of `calendar-time-zone' is the number of minutes difference
+between your local standard time and Coordinated Universal Time
+(Greenwich time).  The values of `calendar-standard-time-zone-name' and
+`calendar-daylight-time-zone-name' are the abbreviations used in your
+time zone.
+
+   Emacs displays the times of sunrise and sunset *corrected for
+daylight savings time*.  *Note Daylight Savings::, for how daylight
+savings time is determined.
+
+   You can display the times of sunrise and sunset for any location and
+any date with `C-u C-u M-x sunrise-sunset'.  This asks you for a
+longitude, latitude, number of minutes difference from Coordinated
+Universal Time, and date, and then tells you the times of sunrise and
+sunset for that location on that date.
+
+
+File: emacs,  Node: Lunar Phases,  Next: Other Calendars,  Prev: Sunrise/Sunset,  Up: Calendar/Diary
+
+Phases of the Moon
+==================
+
+   Emacs can tell you the dates and times of the phases of the moon (new
+moon, first quarter, full moon, last quarter).  This feature is useful
+for debugging problems that "depend on the phase of the moon."
+
+`M'
+     Display the dates and times for all the quarters of the moon for
+     the three-month period shown (`calendar-phases-of-moon').
+
+`M-x phases-of-moon'
+     Display dates and times of the quarters of the moon for three
+     months around today's date.
+
+   Within the calendar, use the `M' command to display a separate
+buffer of the phases of the moon for the current three-month range.  The
+dates and times listed are accurate to within a few minutes.
+
+   Outside the calendar, use the command `M-x phases-of-moon' to
+display the list of the phases of the moon for the current month and the
+preceding and succeeding months.  For information about a different
+month, use `C-u M-x phases-of-moon', which prompts for the month and
+year.
+
+   The dates and times given for the phases of the moon are given in
+local time (corrected for daylight savings, when appropriate); but if
+the variable `calendar-time-zone' is void, Coordinated Universal Time
+(the Greenwich time zone) is used.  *Note Daylight Savings::.
+
+
+File: emacs,  Node: Other Calendars,  Next: Diary,  Prev: Lunar Phases,  Up: Calendar/Diary
+
+Conversion To and From Other Calendars
+======================================
+
+   The Emacs calendar displayed is *always* the Gregorian calendar,
+sometimes called the "new style" calendar, which is used in most of the
+world today.  However, this calendar did not exist before the sixteenth
+century and was not widely used before the eighteenth century; it did
+not fully displace the Julian calendar and gain universal acceptance
+until the early twentieth century.  The Emacs calendar can display any
+month since January, year 1 of the current era, but the calendar
+displayed is the Gregorian, even for a date at which the Gregorian
+calendar did not exist.
+
+   While Emacs cannot display other calendars, it can convert dates to
+and from several other calendars.
+
+* Menu:
+
+* Calendar Systems::	   The calendars Emacs understands
+			     (aside from Gregorian).
+* To Other Calendar::	   Converting the selected date to various calendars.
+* From Other Calendar::	   Moving to a date specified in another calendar.
+* Mayan Calendar::	   Moving to a date specified in a Mayan calendar.
+
+
+File: emacs,  Node: Calendar Systems,  Next: To Other Calendar,  Up: Other Calendars
+
+Supported Calendar Systems
+--------------------------
+
+   The ISO commercial calendar is used largely in Europe.
+
+   The Julian calendar, named after Julius Caesar, was the one used in
+Europe throughout medieval times, and in many countries up until the
+nineteenth century.
+
+   Astronomers use a simple counting of days elapsed since noon, Monday,
+January 1, 4713 B.C. on the Julian calendar.  The number of days elapsed
+is called the *Julian day number* or the *Astronomical day number*.
+
+   The Hebrew calendar is the one used to determine the dates of Jewish
+holidays.  Hebrew calendar dates begin and end at sunset.
+
+   The Islamic (Moslem) calendar is the one used to determine the dates
+of Moslem holidays.  There is no universal agreement in the Islamic
+world about the calendar; Emacs uses a widely accepted version, but the
+precise dates of Islamic holidays often depend on proclamation by
+religious authorities, not on calculations.  As a consequence, the
+actual dates of occurrence can vary slightly from the dates computed by
+Emacs.  Islamic calendar dates begin and end at sunset.
+
+   The French Revolutionary calendar was created by the Jacobins after
+the 1789 revolution, to represent a more secular and nature-based view
+of the annual cycle, and to install a 10-day week in a rationalization
+measure similar to the metric system.  The French government officially
+abandoned this calendar at the end of 1805.
+
+   The Maya of Central America used three separate, overlapping calendar
+systems, the *long count*, the *tzolkin*, and the *haab*.  Emacs knows
+about all three of these calendars.  Experts dispute the exact
+correlation between the Mayan calendar and our calendar; Emacs uses the
+Goodman-Martinez-Thompson correlation in its calculations.
+
+
+File: emacs,  Node: To Other Calendar,  Next: From Other Calendar,  Prev: Calendar Systems,  Up: Other Calendars
+
+Converting To Other Calendars
+-----------------------------
+
+   The following commands describe the selected date (the date at point)
+in various other calendar systems:
+
+`Mouse-2 Other calendars'
+     Display the date that you click on, expressed in various other
+     calendars.
+
+`p c'
+     Display ISO commercial calendar equivalent for selected day
+     (`calendar-print-iso-date').
+
+`p j'
+     Display Julian date for selected day
+     (`calendar-print-julian-date').
+
+`p a'
+     Display astronomical (Julian) day number for selected day
+     (`calendar-print-astro-day-number').
+
+`p h'
+     Display Hebrew date for selected day
+     (`calendar-print-hebrew-date').
+
+`p i'
+     Display Islamic date for selected day
+     (`calendar-print-islamic-date').
+
+`p f'
+     Display French Revolutionary date for selected day
+     (`calendar-print-french-date').
+
+`p m'
+     Display Mayan date for selected day (`calendar-print-mayan-date').
+
+   If you are using X windows, the easiest way to translate a date into
+other calendars is to click on it with `Mouse-2', then choose `Other
+calendars' from the menu that appears.  This displays the equivalent
+forms of the date in all the calendars Emacs understands, in the form
+of a menu.  (Choosing an alternative from this menu doesn't actually do
+anything--the menu is used only for display.)
+
+   Put point on the desired date of the Gregorian calendar, then type
+the appropriate keys.  The `p' is a mnemonic for "print" since Emacs
+"prints" the equivalent date in the echo area.
+
+
+File: emacs,  Node: From Other Calendar,  Next: Mayan Calendar,  Prev: To Other Calendar,  Up: Other Calendars
+
+Converting From Other Calendars
+-------------------------------
+
+   You can move to dates that you specify on the Commercial, Julian,
+astronomical, Hebrew, Islamic, or French calendars:
+
+`g c'
+     Move to a date specified in the ISO commercial calendar
+     (`calendar-goto-iso-date').
+
+`g j'
+     Move to a date specified in the Julian calendar
+     (`calendar-goto-julian-date').
+
+`g a'
+     Move to a date specified in astronomical (Julian) day number
+     (`calendar-goto-astro-day-number').
+
+`g h'
+     Move to a date specified in the Hebrew calendar
+     (`calendar-goto-hebrew-date').
+
+`g i'
+     Move to a date specified in the Islamic calendar
+     (`calendar-goto-islamic-date').
+
+`g f'
+     Move to a date specified in the French Revolutionary calendar
+     (`calendar-goto-french-date').
+
+   These commands ask you for a date on the other calendar, move point
+to the Gregorian calendar date equivalent to that date, and display the
+other calendar's date in the echo area.  Emacs uses strict completion
+(*note Completion::.) whenever it asks you to type a month name, so you
+don't have to worry about the spelling of Hebrew, Islamic, or French
+names.
+
+   One common question concerning the Hebrew calendar is the computation
+of the anniversary of a date of death, called a "yahrzeit."  The Emacs
+calendar includes a facility for such calculations.  If you are in the
+calendar, the command `M-x list-yahrzeit-dates' asks you for a range of
+years and then displays a list of the yahrzeit dates for those years
+for the date given by point.  If you are not in the calendar, this
+command first asks you for the date of death and the range of years,
+and then displays the list of yahrzeit dates.
+
+
+File: emacs,  Node: Mayan Calendar,  Prev: From Other Calendar,  Up: Other Calendars
+
+Converting from the Mayan Calendar
+----------------------------------
+
+   Here are the commands to select dates based on the Mayan calendar:
+
+`g m l'
+     Move to a date specified by the long count calendar
+     (`calendar-goto-mayan-long-count-date').
+
+`g m p t'
+     Move to the previous occurrence of a place in the tzolkin calendar
+     (`calendar-previous-tzolkin-date').
+
+`g m n t'
+     Move to the next occurrence of a place in the tzolkin calendar
+     (`calendar-next-tzolkin-date').
+
+`g m p h'
+     Move to the previous occurrence of a place in the haab calendar
+     (`calendar-previous-haab-date').
+
+`g m n h'
+     Move to the next occurrence of a place in the haab calendar
+     (`calendar-next-haab-date').
+
+`g m p c'
+     Move to the previous occurrence of a place in the calendar round
+     (`calendar-previous-calendar-round-date').
+
+`g m n c'
+     Move to the next occurrence of a place in the calendar round
+     (`calendar-next-calendar-round-date').
+
+   To understand these commands, you need to understand the Mayan
+calendars.  The "long count" is a counting of days with these units:
+
+     1 kin = 1 day   1 uinal = 20 kin   1 tun = 18 uinal
+     1 katun = 20 tun   1 baktun = 20 katun
+
+Thus, the long count date 12.16.11.16.6 means 12 baktun, 16 katun, 11
+tun, 16 uinal, and 6 kin.  The Emacs calendar can handle Mayan long
+count dates as early as 7.17.18.13.1, but no earlier.  When you use the
+`g m l' command, type the Mayan long count date with the baktun, katun,
+tun, uinal, and kin separated by periods.
+
+   The Mayan tzolkin calendar is a cycle of 260 days formed by a pair of
+independent cycles of 13 and 20 days.  Since this cycle repeats
+endlessly, Emacs provides commands to move backward and forward to the
+previous or next point in the cycle.  Type `g m p t' to go to the
+previous tzolkin date; Emacs asks you for a tzolkin date and moves point
+to the previous occurrence of that date.  Similarly, type `g m n t' to
+go to the next occurrence of a tzolkin date.
+
+   The Mayan haab calendar is a cycle of 365 days arranged as 18 months
+of 20 days each, followed a 5-day monthless period.  Like the tzolkin
+cycle, this cycle repeats endlessly, and there are commands to move
+backward and forward to the previous or next point in the cycle.  Type
+`g m p h' to go to the previous haab date; Emacs asks you for a haab
+date and moves point to the previous occurrence of that date.
+Similarly, type `g m n h' to go to the next occurrence of a haab date.
+
+   The Maya also used the combination of the tzolkin date and the haab
+date.  This combination is a cycle of about 52 years called a *calendar
+round*.  If you type `g m p c', Emacs asks you for both a haab and a
+tzolkin date and then moves point to the previous occurrence of that
+combination.  Use `g m p c' to move point to the next occurrence of a
+combination.  Emacs signals an error if the haab/tzolkin date you have
+typed is impossible.
+
+   Emacs uses strict completion (*note Completion::.) whenever it asks
+you to type a Mayan name, so you don't have to worry about spelling.
+

@@ -1,0 +1,46 @@
+.TH PATHCHK 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+pathchk \- check whether file names are valid or portable
+.SH SYNOPSIS
+.B pathchk
+[-p] [\-\-portability] [\-\-help] [\-\-version] filename...
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR pathchk .
+For each
+.IR filename ,
+.B pathchk
+prints a message if any of these conditions are false:
+.br
+\(bu all existing directories in
+.I filename
+have search (execute) permission
+.br
+\(bu the length of
+.I filename
+is no larger than its filesystem's maximum file name length
+.br
+\(bu the length of each component of
+.I filename
+corresponding to an existing directory name
+is no larger than its filesystem's maximum length for a file name component
+.PP
+The exit status is:
+.nf
+0 if all file names passed all of the tests,
+1 otherwise.
+.fi
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-p, \-\-portability"
+Instead of performing length checks on the underlying filesystem, test
+the length of each file name and its components against the POSIX.1
+minimum limits for portability.  Also check that the file name contains
+no characters not in the portable filename character set.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

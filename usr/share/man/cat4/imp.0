@@ -1,0 +1,66 @@
+IMP(4)                    386BSD Programmer's Manual                    IMP(4)
+
+NNAAMMEE
+     iimmpp - IMP raw socket interface
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssyyss//ssoocckkeett..hh>>
+     ##iinncclluuddee <<nneettiinneett//iinn..hh>>
+     ##iinncclluuddee <<nneettiimmpp//iiff__iimmpp..hh>>
+
+     _i_n_t
+     ssoocckkeett(_A_F__I_M_P_L_I_N_K, _S_O_C_K__R_A_W, _p_r_o_t_o)
+
+DDEESSCCRRIIPPTTIIOONN
+     The raw imp socket provides direct access to the iimmpp network interface.
+     Users send packets through the interface using the send(2) calls, and re-
+     ceive packets with the recv(2),  calls.  All outgoing packets must have
+     an 1822 96-bit leader on the front.  Likewise, packets received by the
+     user will have this leader on the front.  The 1822 leader and the legal
+     values for the various fields are defined in the include file
+     <_n_e_t_i_m_p/_i_f__i_m_p._h>. The raw imp interface automatically installs the
+     length and destination address in the 1822 leader of all outgoing pack-
+     ets; these need not be filled in by the user.
+
+     If the protocol selected, _p_r_o_t_o, is zero, the socket will receive all IMP
+     messages except RFNM and incompletes which are not input data for a ker-
+     nel protocol.  If _p_r_o_t_o is non-zero, only messages for the specified link
+     type will be received.
+
+DDIIAAGGNNOOSSTTIICCSS
+     An operation on a socket may fail with one of the following errors:
+
+     [EISCONN]        when trying to establish a connection on a socket which
+                      already has one, or when trying to send a datagram with
+                      the destination address specified and the socket is al-
+                      ready connected;
+
+     [ENOTCONN]       when trying to send a datagram, but no destination ad-
+                      dress is specified, and the socket hasn't been connect-
+                      ed;
+
+     [ENOBUFS]        when the system runs out of memory for an internal data
+                      structure;
+
+     [ENOBUFS]        eight messages to the destination host are outstanding,
+                      and another eight are already queued for output;
+
+     [EADDRNOTAVAIL]  when an attempt is made to create a socket with a net-
+                      work address for which no network interface exists.
+
+SSEEEE AALLSSOO
+     intro(4),  inet(4),  imp(4)
+
+HHIISSTTOORRYY
+     The iimmpp driver appeared in 4.2BSD.
+
+4.2 Berkeley Distribution       March 28, 1991                               2
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,72 @@
+.TH BDFTOPCF 1 "Release 5" "X Version 11"
+.SH NAME
+bdftopcf \- convert font from Bitmap Distribution Format to Portable
+Compiled Format
+.SH SYNOPSIS
+.B bdftopcf
+[-option ...] font-file.bdf
+.SH DESCRIPTION
+.I Bdftopcf
+is the release 5 font compiler.  Fonts in Portable Compiled Format can be
+read by any architecture, although the file is structured to allow one
+particular architecture to read them directly without reformatting.  This
+allows fast reading on the appropriate machine, but the files are still
+portable (but read more slowly) on other machines.
+.SH OPTIONS
+.TP 8
+.B \-p\fIn\fP
+Sets the font glyph padding.  Each glyph in the font will have each scanline
+padded in to a multiple of \fIn\fP bytes, where \fIn\fP is 1, 2, 4 or 8.
+.TP 8
+.B \-u\fIn\fP
+Sets the font scanline unit.  When the font bit order is different from the
+font byte order, the scanline unit \fIn\fP describes what unit of data (in
+bytes) are to be swapped; the unit \fIi\fP can be 1, 2 or 4 bytes.
+.TP 8
+.B \-m
+Sets the font bit order to MSB (most significant bit) first.  Bits for each
+glyph will be placed in this order; i.e. the left most bit on the screen
+will be in the highest valued bit in each unit.
+.TP 8
+.B \-l
+Sets the font bit order to LSB (least significant bit) first.  The left most
+bit on the screen will be in the lowest valued bit in each unit.
+.TP 8
+.B \-M
+Sets the font byte order to MSB first.  All multi-byte data in the file
+(metrics, bitmaps and everything else) will be written most significant byte
+first.
+.TP 8
+.B \-L
+Sets the font byte order to LSB first.  All multi-byte data in the file
+(metrics, bitmaps and everything else) will be written least significant
+byte first.
+.TP 8
+.B \-t
+When this option is specified,
+.I bdftopcf
+will convert fonts into "terminal" fonts when possible.  A terminal font has
+each glyph image padded to the same size; the X server can usually render
+these types of fonts more quickly.
+.TP 8
+.B \-i
+This option inhibits the normal computation of ink metrics.  When a font has
+glyph images which do not fill the bitmap image (i.e. the "on" pixels don't
+extend to the edges of the metrics)
+.I bdftopcf
+computes the actual ink metrics and places them in the .pcf file; the \-t
+option inhibits this behaviour.
+.TP 8
+.B "\-o <output-file-name>
+By default
+.I bdftopcf
+writes the pcf file to standard output; this option gives the name of a file
+to be used instead.
+.SH "SEE ALSO"
+X(1)
+.SH COPYRIGHT
+Copyright 1991, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Keith Packard, MIT X Consortium

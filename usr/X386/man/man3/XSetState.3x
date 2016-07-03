@@ -1,0 +1,255 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetState 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetState, XSetFunction, XSetPlanemask, XSetForeground, XSetBackground \- GC convenience routines
+.SH SYNTAX
+.\" $Header: XSetState.f,v 1.1 88/02/26 10:03:39 mento Exp $
+XSetState\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIforeground\fP\^, \fIbackground\fP\^, \fIfunction\fP\^, \fIplane_mask\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      unsigned long \fIforeground\fP\^, \fIbackground\fP\^;
+.br
+      int \fIfunction\fP\^;
+.br
+      unsigned long \fIplane_mask\fP\^;
+.LP
+.\" $Header: XSetFunc.f,v 1.1 88/02/26 10:03:14 mento Exp $
+XSetFunction\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIfunction\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIfunction\fP\^;
+.LP
+.\" $Header: XSetPlnMsk.f,v 1.1 88/02/26 10:03:26 mento Exp $
+XSetPlaneMask\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIplane_mask\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      unsigned long \fIplane_mask\fP\^;
+.LP
+.\" $Header: XSetFgrnd.f,v 1.1 88/02/26 10:03:08 mento Exp $
+XSetForeground\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIforeground\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      unsigned long \fIforeground\fP\^;
+.LP
+.\" $Header: XSetBckgrnd.f,v 1.1 88/02/26 10:02:56 mento Exp $
+XSetBackground\^(\^\fIdisplay\fP, \fIgc\fP\^, \fIbackground\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      unsigned long \fIbackground\fP\^;
+.SH ARGUMENTS
+.\" $Header: background.a,v 1.2 88/05/09 11:36:36 mento Exp $
+.IP \fIbackground\fP 1i
+Specifies the background you want to set for the specified GC.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: foreground.a,v 1.2 88/05/09 11:35:55 mento Exp $
+.IP \fIforeground\fP 1i
+Specifies the foreground you want to set for the specified GC.
+.\" $Header: function.a,v 1.2 88/05/09 11:37:19 mento Exp $
+.IP \fIfunction\fP 1i
+Specifies the function you want to set for the specified GC.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: plane_mask.a,v 1.1 88/02/26 10:30:28 mento Exp $
+.IP \fIplane_mask\fP 1i
+Specifies the plane mask.
+.\" *** JIM: NEED MORE INFO FOR THIS. ***
+.SH DESCRIPTION
+.\" $Header: XSetState.d,v 1.2 88/06/11 07:53:34 mento Exp $
+The
+.ZN XSetState
+function sets the foreground, background, plane mask, and function components
+for the specified GC.
+.LP
+.ZN XSetState
+can generate
+.ZN BadAlloc ,
+.ZN BadGC ,
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XSetFunc.d,v 1.2 88/06/11 07:53:14 mento Exp $
+.ZN XSetFunction
+sets a specified value in the specified GC.
+.LP
+.ZN XSetFunction
+can generate
+.ZN BadAlloc ,
+.ZN BadGC ,
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XSetPlnMsk.d,v 1.2 88/06/11 07:53:27 mento Exp $
+The
+.ZN XSetPlaneMask
+function sets the plane mask in the specified GC.
+.LP
+.ZN XSetPlaneMask
+can generate
+.ZN BadAlloc 
+and
+.ZN BadGC 
+errors.
+.LP
+.\" $Header: XSetFgrnd.d,v 1.2 88/06/11 07:53:09 mento Exp $
+The
+.ZN XSetForeground
+function sets the foreground in the specified GC.
+.LP
+.ZN XSetForeground
+can generate
+.ZN BadAlloc
+and
+.ZN BadGC 
+errors.
+.LP
+.\" $Header: XSetBckgrnd.d,v 1.2 88/06/11 07:53:00 mento Exp $
+The
+.ZN XSetBackground
+function sets the background in the specified GC.
+.LP
+.ZN XSetBackground
+can generate
+.ZN BadAlloc
+and
+.ZN BadGC 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badgc.e,v 1.1 87/09/04 08:23:02 mento Locked $
+.TP 1i
+.ZN BadGC
+A value for a GContext argument does not name a defined GContext.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XCreateGC(3X11),
+XQueryBestSize(3X11),
+XSetArcMode(3X11),
+XSetClipOrigin(3X11),
+XSetFillStyle(3X11),
+XSetFont(3X11),
+XSetLineAttributes(3X11),
+XSetTile(3X11)
+.br
+\fI\*(xL\fP

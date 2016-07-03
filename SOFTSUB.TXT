@@ -1,0 +1,132 @@
+
+
+
+
+
+
+
+                               386BSD Release 1.0
+                  Software Support and Submissions Guidelines
+
+
+          _3_8_6_B_S_D _S_y_s_t_e_m _S_o_f_t_w_a_r_e _S_u_p_p_o_r_t
+
+               386BSD  is an experimental research system intended for
+          exploration and study. The inclusion of source  code  allows
+          the creative and industrious student of operating systems to
+          modify, correct, augment and otherwise alter the  system  in
+          any   manner   desired,  and  thus  is  made  available  for
+          informational purposes only.  Due to the  unique  nature  of
+          386BSD  releases,  we cannot provide "on-demand" support. If
+          you have critical support needs, we suggest the purchase  of
+          a  commercial  binary  systems  product from a major systems
+          vendor, such as Microsoft or Sun Microsystems.
+
+               We  do  encourage  feedback,  however,  on  bug  fixes,
+          problems and solutions which arise during configuration, and
+          improvements to 386BSD.  These changes may  be  incorporated
+          back  into  the system, and made available once again to the
+          386BSD audience, to further encourage use  of  this  system.
+          Please use this SOFTSUB.TXT form for submissions of problems
+          isolated,  bug  fixes,  or  new  work.   We  do  not  accept
+          proprietary or licensed code submissions for review.
+
+               If  you  are  a qualified research or educational group
+          using 386BSD in a research or educational project, we may be
+          able   to  provide  limited  technical  assistance.   Please
+          contact ljolitz@cardio.ucsf.edu to describe  the  nature  of
+          your  project  and  needs.  Due  to  the  volume  of  email,
+          inquiries not related to research and  educational  projects
+          may  not receive a response from this email address.  Please
+          use the designated bsdserver  email  address  for  email  on
+          problems  isolated,  bug fixes, and software submissions for
+          386BSD.
+
+          _3_8_6_B_S_D _S_o_f_t_w_a_r_e _S_u_b_m_i_s_s_i_o_n_s _G_u_i_d_e_l_i_n_e_s
+
+               We  are  always  pleased  to  look   at   enhancements,
+          additions  or  ports  of public domain software for possible
+          incorporation into 386BSD releases.  However,  all  software
+          submissions must contain the following items:
+
+          1.   The  author's  name, date, and copyright (if any). If a
+               modification  of  a  public-domain  work,  modification
+               attribution and original author.
+
+          2.   A brief description of the software module or item.
+
+          3.   The  following  statement:  "This software contains, to
+               the best of my knowledge, no proprietary, trade secret,
+               or   otherwise  encumbered  code.   I  am  making  this
+
+
+          338866BBSSDD SSOOFFTTSSUUBB                11                  AAuugguusstt 11999944
+
+
+
+
+
+
+
+
+
+
+               software  available  for  incorporation  into   386BSD,
+               understanding  that  386BSD is a freely redistributable
+               and modifiable system."
+
+               In addition, the software should be  in  the  following
+          format:
+
+          1.   386BSD   Release   number  upon  which  code  has  been
+               generated (e.g. 1.0)
+
+          2.   Source  code  and  generated  executable   binary   for
+               testing.
+
+          3.   List of known bugs.
+
+               386BSD  is  a  freely  available  work.  All developers
+          submitting software for official 386BSD releases  should  be
+          aware of this fact. Given the extremely wide distribution of
+          this release, we cannot regulate or enforce specific  usage,
+          license, or proprietary restrictions, nor can we collect any
+          monies or  fees  for  use.  Those  developers  who  wish  to
+          encumber  their  software in this manner should find another
+          mechanism for distribution.
+
+               For completely novel programs (not  modified  works  of
+          other  authors), we suggest either the BSD copyright format,
+          the Free Software Foundation (GNU)  copyleft  format,  or  a
+          standard  "public  domain"  notice  (e.g. MY NAME, author of
+          this work, places this code into the public  domain,  DATE).
+          Legal  and  administrative  restrictions  present at various
+          research facilities preclude incorporation of any copylefted
+          code  into  the  386BSD  kernel module. All other modules or
+          applications packages are not restricted since they are  not
+          dependent  on  system  operation and can be removed prior to
+          use.
+
+               Due  to  constraints  on  distribution  size,  research
+          directions,  and  number of submissions, we cannot guarantee
+          that any particular piece of software will  be  incorporated
+          into  the  next  release,  nor  can  we  always  respond  to
+          inquiries. Submitted works will not be returned,  so  always
+          keep a copy on file.
+
+               However,  we  do  review  all  appropriately documented
+          submitted  work.  Please  email  software   submissions   to
+          386bsd_softsub@bsdserver.ucsf.edu or mail directly to: Lynne
+          Jolitz, 386BSD Reference CDROM Software Submissions, C/O Dr.
+          Dobbs  Journal,  411 Borel Avenue, San Mateo, CA. 94402 USA.
+          We will not review any code which is marked "proprietary" or
+          "trade secret".
+
+
+
+
+
+          338866BBSSDD SSOOFFTTSSUUBB                22                  AAuugguusstt 11999944
+
+
+

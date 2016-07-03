@@ -1,0 +1,138 @@
+.ds xL Programming With Xlib
+.TH XAllowDeviceEvents 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XAllowDeviceEvents \- release queued events
+.SH SYNTAX
+XAllowDeviceEvents\^(\^\fIdisplay\fP, \fIdevice\fP\^, \fIevent_mode\fP\^, \fItime\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+      int \fIevent_mode\fP\^; 
+.br
+      Time \fItime\fP\^; 
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device from which events are to be allowed.
+.TP 12
+.I event_mode
+Specifies the event mode.
+You can pass 
+\fIAsyncThisDevice\fP, 
+\fISyncThisDevice\fP, 
+\fIReplayThisDevice\fP, 
+\fIAsyncOtherDevices\fP, 
+\fISyncAll\fP,
+or
+\fIAsyncAll\fP.
+.TP 12
+.I time
+Specifies the time.
+You can pass either a timestamp or
+\fICurrentTime\fP.
+.SH DESCRIPTION
+The
+\fIXAllowDeviceEvents\fP
+function releases some queued events if the client has caused a device 
+to freeze.
+It has no effect if the specified time is earlier than the last-grab
+time of the most recent active grab for the client and device, 
+or if the specified time is later than the current X server time.
+.P
+The following describes the processing that occurs depending on what
+constant you pass to the event_mode argument.
+.TP 12
+\fIAsyncThisDevice\fP
+If the specified device is frozen by the client, event processing for that
+device continues as usual.  If the device is frozen multiple times by the client
+on behalf of multiple separate grabs, \fIAsyncThisDevice\fP thaws for all.
+\fIAsyncThisDevice\fP has no effect if the specified device is not frozen by
+the client, but the device need not be grabbed by the client.
+.TP 12
+\fISyncThisDevice\fP
+If the specified device is frozen and actively grabbed by the client, event
+processing for that device continues normally until the next key or button
+event is reported to the client.  At this time, the specified device
+again appears to freeze.  However, if the reported event causes the grab
+to be released, the specified device does not freeze.  \fISyncThisDevice\fP
+has no effect if the specified device is not frozen by the client or is not
+grabbed by the client.
+.TP 12
+\fIReplayThisDevice\fP
+If the specified device is actively grabbed by the client and is frozen as
+the result of an event having been sent to the client (either from the
+activation of a GrabDeviceButton or from a previous AllowDeviceEvents with
+mode SyncThisDevice, but not from a GrabDevice), the grab is released and that
+event is completely reprocessed.  This time, however, the request ignores
+any passive grabs at or above (toward the root) that the grab-window of the
+grab just released.  The request has no effect if the specified device is
+not grabbed by the client or if it is not frozen as the result of an event.
+.TP 12
+\fIAsyncOtherDevices\fP
+If the remaining devices are frozen by the client, event processing for them
+continues as usual.  If the other devices are frozen multiple times by the
+client on behalf of multiple grabs, \fIAsyncOtherDevices\fP "thaws" for
+all.  \fIAsyncOtherDevices\fP has no effect if the devices are not frozen
+by the client.
+.TP 12
+\fISyncAll\fP
+If all devices are frozen by the client, event processing (for all devices)
+continues normally until the next button or key event is reported to the
+client for a grabbed device, at which time all devices again appear to freeze.
+However, if the reported event causes the grab to be released, then the devices
+do not freeze.  If any device is still grabbed, then a subsequent event for it
+will still cause all devices to freeze.  \fISyncAll\fP has no
+effect unless all devices are frozen by the client.  If any device is 
+frozen twice by the client on behalf of two separate grabs, \fISyncAll\fP thaws
+for both.  A subsequent freeze for \fISyncAll\fP will only
+freeze each device once.
+.TP 12
+\fIAsyncAll\fP
+If all devices are frozen by the client, event processing for all devices
+continues normally.  If any device is frozen multiple times by the client
+on behalf of multiple separate grabs, \fIAsyncAll\fP thaws for
+all.  \fIAsyncAll\fP has no effect unless all devices are frozen by
+the client.
+.P
+\fIAsyncThisDevice\fP,
+\fISyncThisDevice\fP,
+and
+\fIReplayThisDevice\fP
+have no effect on the processing of events from the remaining devices.
+\fIAsyncOtherDevices\fP
+has no effect on the processing of events from the specified device.  When
+the event_mode is
+\fISyncAll\fP
+or
+\fIAsyncAll\fP,
+the device parameter is ignored.
+.P
+It is possible for several grabs of different devices by the same or
+different clients to be active simultaneously.  If a device is frozen on
+behalf of any grab, no event processing is performed for the device.
+It is possible for a single device to be frozen because of several grabs.
+In this case, the freeze must be released on behalf of each grab before
+events can again be processed.
+.P
+\fIXAllowDeviceEvents\fP
+can generate a \fIBadDevice\fP or
+\fIBadValue\fP 
+error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadValue\fP
+An invalid mode was specified on the request.
+.SH "SEE ALSO"
+XGrabDevice(3X11)
+.br
+\fI\*(xL\fP

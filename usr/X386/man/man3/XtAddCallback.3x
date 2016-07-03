@@ -1,0 +1,192 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtAddCallback 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtAddCallback, XtAddCallbacks, XtRemoveCallback, XtRemoveCallbacks, XtRemoveAllCallbacks \- add and remove callback procedures
+.SH SYNTAX
+void XtAddCallback(\fIw\fP, \fIcallback_name, \fP\fIcallback\fP, \
+\fIclient_data\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.br
+      XtCallbackProc \fIcallback\fP;
+.br
+      XtPointer \fIclient_data\fP;
+.LP
+void XtAddCallbacks(\fIw\fP, \fIcallback_name, \fP\fIcallbacks\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.br
+      XtCallbackList \fIcallbacks\fP;
+.LP
+void XtRemoveCallback(\fIw\fP, \fIcallback_name\fP, \fIcallback\fP, \
+\fIclient_data\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.br
+      XtCallbackProc \fIcallback\fP;
+.br
+      XtPointer \fIclient_data\fP;
+.LP
+void XtRemoveCallbacks(\fIw\fP, \fIcallback_name\fP, \fIcallbacks\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.br
+      XtCallbackList \fIcallbacks\fP;
+.LP
+void XtRemoveAllCallbacks(\fIw\fP, \fIcallback_name\fP)
+.br
+      Widget \fIw\fP;
+.br
+      String \fIcallback_name\fP;
+.SH ARGUMENTS
+.IP \fIcallback\fP 1i
+Specifies the callback procedure\*(Cb.
+.IP \fIcallbacks\fP 1i
+Specifies the null-terminated list of callback procedures and corresponding
+client data.
+.ds Cn \ to which the procedure is to be appended or deleted
+.IP \fIcallback_name\fP 1i
+Specifies the callback list\*(Cn.
+.ds Cd it is invoked by XtCallbacks or NULL, \
+or the client data to match on the registered callback procedures
+.IP \fIclient_data\fP 1i
+Specifies the argument that is to be passed to the specified procedure
+when \*(Cd.
+.IP \fIw\fP 1i
+Specifies the widget.
+.SH DESCRIPTION
+The
+.ZN XtAddCallback
+function adds the specified callback procedure to the specified widget's
+callback list.
+.LP
+The
+.ZN XtAddCallbacks
+add the specified list of callbacks to the specified widget's callback list.
+.LP
+The
+.ZN XtRemoveCallback
+function removes a callback only if both the procedure and the client
+data match.
+.LP
+The
+.ZN XtRemoveCallbacks
+function removes the specified callback procedures from the specified
+widget's callback list.
+.LP
+The
+.ZN XtRemoveAllCallbacks
+function removes all the callback procedures from the specified
+widget's callback list.
+.SH "SEE ALSO"
+XtCallCallbacks(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

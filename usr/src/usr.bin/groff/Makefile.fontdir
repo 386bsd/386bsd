@@ -1,0 +1,4 @@
+#	@(#)Makefile.fontdir	6.1 (Berkeley) 3/3/91
+
+FONTDIR?=	/usr/share/groff_font
+MACRODIR?=	/usr/share/tmac

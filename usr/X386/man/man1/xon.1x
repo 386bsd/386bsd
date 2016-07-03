@@ -1,0 +1,54 @@
+.TH XON 1 "Release 5" "X Version 11"
+.SH NAME
+xon \- start an X program on a remote machine
+.SH SYNOPSIS
+.B xon
+remote-host [-access] [-debug] [-name window-name] [-nols] [-screen screen-no]
+[-user user-name] [command ...]
+.SH DESCRIPTION
+.I Xon
+runs the specified command (default xterm -ls) on the remote machine using
+rsh.  Xon passes the DISPLAY, XAUTHORITY and XUSERFILESEARCHPATH environment
+variables to the remote command.
+.PP
+When no command is specified, xon runs 'xterm -ls'.  It additionally
+specifies the application name to be 'xterm-\fIremote-host\fP' and the
+window title to be '-fIremote-host\fP'.
+.PP
+Xon can only work when the remote host will allow you to use rsh, by having
+an entry in the .rhosts file permitting access.
+.SH OPTIONS
+.PP
+Note that the options follow the remote host name (as they do with rlogin).
+.sp
+.IP "\fB-access\fP"
+Runs xhost locally to add the remote host to the host access list in the X
+server.  This won't work unless xhost is given permission to modify the
+access list.
+.IP "\fB-debug\fP"
+Normally, xon disconnects the remote process from stdin, stdout and stderr
+to eliminate the daemon processes which usually connect them across the
+network.  Specifying the \fB-debug\fP option leaves them connected so that
+error messages from the remote execution are sent back to the originating
+host.
+.IP "\fB-name window-name\fP"
+This specifies a different application name and window title for the default
+command (xterm).
+.IP "\fB-nols\fP"
+Normally xon passes the -ls option to the remote xterm; this option
+suspends that behaviour.
+.IP "\fB-screen screen-no\fP"
+This changes the screen number of the DISPLAY variable passed to the remote
+command.
+.IP "\fB-user user-name\fP"
+By default, xon simply uses rsh to connect to the remote machine using the
+same user name as on the local machine.  This option cause xon to specify an
+alternative user name.  This will not work unless you have authorization to
+access the remote account via rsh by placing an appropriate entry in the
+remote users .rhosts file.
+.SH BUGS
+Xon can get easily confused when the remote-host, user-name or various
+environment variable values contain white space.
+.PP
+Xon has no way to send the appropriate X authorization information to the
+remote host.

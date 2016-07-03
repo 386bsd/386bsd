@@ -1,0 +1,192 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XrmEnumerateDatabase 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XrmEnumerateDatabase \- enumerate resource database entries
+.SH SYNTAX
+.TS
+lw(.5i) lw(2i) lw(2.5i).
+T{
+#define
+T}	T{
+.ZN XrmEnumAllLevels
+T}	T{
+0
+T}
+T{
+#define
+T}	T{
+.ZN XrmEnumOneLevel
+T}	T{
+1
+T}
+.TE
+.sp
+Bool XrmEnumerateDatabase\^(\^\fIdatabase\fP, \fIname_prefix\fP, \fIclass_prefix\fP, \fImode\fP, \fIproc\fP, \fIarg\fP\^)
+.br
+      XrmDatabase \fIdatabase\fP\^;
+.br
+      XrmNameList \fIname_prefix\fP\^;
+.br
+      XrmClassList \fIclass_prefix\fP\^;
+.br
+      int \fImode\fP\^;
+.br
+      Bool (\^*\fIproc\fP\^)\^(\^)\^;
+.br
+      XPointer \fIarg\fP\^;
+.SH ARGUMENTS
+.IP \fIdatabase\fP 1i
+Specifies the resource database.
+.IP \fIname_prefix\fP 1i
+Specifies the resource name prefix.
+.IP \fIclass_prefix\fP 1i
+Specifies the resource class prefix.
+.IP \fImode\fP 1i
+Specifies the number of levels to enumerate.
+.IP \fIproc\fP 1i
+Specifies the procedure that is to be called for each matching entry.
+.IP \fIarg\fP 1i
+Specifies the user-supplied argument that will be passed to the procedure.
+.SH DESCRIPTION
+The
+.ZN XrmEnumerateDatabase
+function calls the specified procedure for each resource in the database
+that would match some completion of the given name/class resource prefix.
+The order in which resources are found is implementation-dependent.
+If mode is
+.ZN XrmEnumOneLevel ,
+then a resource must match the given name/class prefix with
+just a single name and class appended.  If mode is
+.ZN XrmEnumAllLevels ,
+the resource must match the given name/class prefix with one or more names and
+classes appended.
+If the procedure returns
+.ZN True ,
+the enumeration terminates and the function returns
+.ZN True . 
+If the procedure always returns
+.ZN False ,
+all matching resources are enumerated and the function returns
+.ZN False .
+.LP
+The procedure is called with the following arguments:
+.LP
+.\" Start marker code here
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+(*\fIproc\fP\^)(\^\fIdatabase\fP, \fIbindings\fP, \fIquarks\fP, \fItype\fP, \fIvalue\fP, \fIarg\fP\^)
+	XrmDatabase *\fIdatabase\fP\^;
+	XrmBindingList \fIbindings\fP\^;
+	XrmQuarkList \fIquarks\fP\^;
+	XrmRepresentation *\fItype\fP\^;
+	XrmValue *\fIvalue\fP\^;
+	XPointer \fIclosure\fP\^;
+.De
+.\" End marker code here
+.LP
+The bindings and quarks lists are terminated by
+.ZN NULLQUARK .
+Note that pointers
+to the database and type are passed, but these values should not be modified.
+.SH "SEE ALSO"
+XrmGetResource(3X11),
+XrmInitialize(3X11),
+XrmPutResource(3X11)
+.br
+\fI\*(xL\fP

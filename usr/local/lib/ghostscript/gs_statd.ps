@@ -1,0 +1,201 @@
+%    Copyright (C) 1989-1993 Aladdin Enterprises.  All rights reserved.
+%
+% This file is part of Ghostscript.
+%
+% Ghostscript is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY.  No author or distributor accepts responsibility
+% to anyone for the consequences of using it or for whether it serves any
+% particular purpose or works at all, unless he says so in writing.  Refer
+% to the Ghostscript General Public License for full details.
+%
+% Everyone is granted permission to copy, modify and redistribute
+% Ghostscript, but only under the conditions described in the Ghostscript
+% General Public License.  A copy of this license is supposed to have been
+% given to you along with Ghostscript so you can know your rights and
+% responsibilities.  It should be in a file named COPYING.  Among other
+% things, the copyright notice and this notice must be preserved on all
+% copies.
+
+% This file provides statusdict, serverdict, and assorted LaserWriter
+% operators, mostly for the benefit of poorly designed PostScript programs
+% that 'know' they are running on a LaserWriter.
+
+systemdict begin
+
+ /statusdict 80 dict def
+ /serverdict 4 dict def
+
+% Define various paper formats.
+% Only letter, note, and legal are defined in the Adobe manual.
+% These procedures are also accessed as data structures during initialization,
+% so the page dimensions must be the first two elements of the procedure.
+
+ /letter {612 792 //statusdict begin .setpagesize end} bind def
+ /note {540 720 //statusdict begin .setpagesize end} bind def
+ /legal {612 1008 //statusdict begin .setpagesize end} bind def
+ /a0 {2380 3368 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a1 {1684 2380 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a2 {1190 1684 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a3 {842 1190 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a4 {595 842 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a5 {421 595 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a6 {297 421 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a7 {210 297 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a8 {148 210 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a9 {105 148 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /a10 {74 105 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b0 {2836 4008 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b1 {2004 2836 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b2 {1418 2004 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b3 {1002 1418 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b4 {709 1002 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /b5 {501 709 //statusdict begin .setpagesize end} bind def  % ISO standard
+ /archE {2592 3456 //statusdict begin .setpagesize end} bind def % U.S. CAD std
+ /archD {1728 2592 //statusdict begin .setpagesize end} bind def % U.S. CAD std
+ /archC {1296 1728 //statusdict begin .setpagesize end} bind def % U.S. CAD std
+ /archB {864 1296 //statusdict begin .setpagesize end} bind def  % U.S. CAD std
+ /archA {648 864 //statusdict begin .setpagesize end} bind def  % U.S. CAD std
+ /flsa {612 936 //statusdict begin .setpagesize end} bind def  % U.S. foolscap
+ /flse {612 936 //statusdict begin .setpagesize end} bind def  % European foolscap
+ /halfletter {396 612 //statusdict begin .setpagesize end} bind def
+ /11x17 {792 1224 //statusdict begin .setpagesize end} bind def  % 11x17 portrait
+ /ledger {1224 792 //statusdict begin .setpagesize end} bind def  % 11x17 landscape
+
+end
+
+statusdict begin
+
+% Define the pagetype values for the known page formats.
+% The values for all but letter and note are arbitrary.
+/.pagetypenames
+ { /letter /note /legal 
+   /a0 /a1 /a2 /a3 /a4 /a5 /a6 /a7 /a8 /a9 /a10
+   /b0 /b1 /b2 /b3 /b4 /b5 /archE /archD /archC /archB /archA
+   /flsa /flse /halfletter /11x17 /ledger
+ } cvlit readonly def
+
+%%%%%% The following items were suggested by a user as useful.
+
+% Permanent definitions
+
+/ramsize         4194304 def
+/hardwareiomode        0 def
+	/sethardwareiomode     {pop} bind def
+/softwareiomode        0 def
+	/setsoftwareiomode     {pop} bind def
+/dosysstart        false def
+	/setdosysstart         {pop} bind def
+/allowjobreset      true def
+	/setallowjobreset      {pop} bind def
+/defaultpaperfamily    0 def
+	/setdefaultpaperfamily {pop} bind def
+/defaultpapertray      0 def
+	/setdefaultpapertray   {pop} bind def
+/defaulttrayswitch false def
+	/setdefaulttrayswitch  {pop} bind def
+
+% Tray and format selection
+
+ /11x17tray {} bind def
+ /a3tray {} bind def
+ /a4tray {} bind def
+ /a5tray {} bind def
+ /a6tray {} bind def
+ /b4tray {} bind def
+ /flsatray {} bind def
+ /flsetray {} bind def
+ /halflettertray {} bind def
+ /legaltray {} bind def
+ /lettertray {} bind def
+
+% Per-job parameters
+
+/paperfamily 0 def	% 0 is US, 1 is European
+/papertray 1 def
+	/setpapertray {statusdict exch /papertray exch put} bind def 
+/trayswitch false def	% paperout feeds from another tray
+/papersize {/letter true} bind def	% <name of paper size>, <short-edge-first-p>
+/appletalktype (LaserWriter) def
+
+%%%%%% The following items are defined in the PostScript Language
+%%%%%% Reference Manual, First Edition.
+
+ /checkpassword {statusdict begin .password eq end} bind def
+ /defaulttimeouts {statusdict begin .timeouts aload pop end} bind def
+%/dostartpage
+ /eescratch {pop 0} bind def
+ /idlefonts {statusdict begin mark .idlefonts aload pop end} bind def
+ /jobname () def
+%/jobtimeout
+ /manualfeed false def
+ /manualfeedtimeout 60 def
+ /margins {statusdict begin .topmargin .leftmargin end} bind def
+ /pagecount {4711} bind def
+ /pagestackorder {false} bind def
+%/pagetype
+ /prefeed false def
+ /printererror {pop pop} bind def
+ /printername {statusdict begin .printername exch copy end} bind def
+ /processcolors /processcolors load def		% defined in systemdict
+ /product product def		% product is defined in systemdict
+ /revision revision def		% revision is defined in systemdict
+ /sccbatch {pop 9600 0} bind def
+ /sccinteractive {pop 9600 0} bind def
+ /setdefaulttimeouts {statusdict begin .timeouts astore pop end} bind def
+ /setdostartpage {statusdict exch /dostartpage exch put} bind def
+ /setduplexmode {pop} bind def
+ /seteescratch {pop pop} bind def
+ /setidlefonts {] statusdict exch /.idlefonts exch put} bind def
+ /setjobtimeout {statusdict exch /jobtimeout exch put} bind def
+ /setmargins
+  {statusdict begin /.leftmargin exch def /.topmargin exch def end} bind def
+ /setpagetype
+  { statusdict begin
+      dup .pagetypenames exch get systemdict exch get exec
+      /pagetype exch def
+    end
+  } bind def
+ /setpassword
+  {exch checkpassword
+    {statusdict exch /.password exch put true}
+    {pop false}
+   ifelse} bind def
+ /setprintername
+  {dup length string copy statusdict exch /printername exch put} bind def
+ /setsccbatch {pop pop pop} bind def
+ /setsccinteractive {pop pop pop} bind def
+ /waittimeout 300 def
+
+/.setpagesize
+ { mark /HWSize [
+     4 index 4 index matrix defaultmatrix dtransform
+     abs ceiling cvi exch abs ceiling cvi exch
+   ] currentdevice putdeviceprops pop pop pop
+   initmatrix initclip erasepage
+ } bind def
+/.password 0 def
+/.timeouts [0 60 30] def
+true setdostartpage
+mark setidlefonts
+0 setjobtimeout
+0 0 setmargins
+0 setpagetype
+product setprintername
+
+end	% statusdict
+
+% The following contents of serverdict are a complete guess,
+% based on some observed LaserWriter boilerplate.
+
+serverdict begin
+
+ /execjob { } bind def
+% The Red Book implies that something like the following is
+% an appropriate definition of exitserver.
+ /exitserver { clear stop } bind def
+% However, this interacts badly with our standard error handler,
+% so we override it with the following less appropriate definition.
+ /exitserver { 0 ne { clear cleardictstack } if } bind def
+ /setrealdevice { } bind def
+
+end	% serverdict

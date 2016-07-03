@@ -1,0 +1,168 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtCreateWindow 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtCreateWindow \- window creation convenience function
+.SH SYNTAX
+void XtCreateWindow(\fIw\fP, \fIwindow_class\fP, \fIvisual\fP, \
+\fIvalue_mask\fP, \fIattributes\fP)
+.br
+      Widget \fIw\fP;
+.br
+      unsigned int \fIwindow_class\fP;
+.br
+      Visual *\fIvisual\fP;
+.br
+      XtValueMask \fIvalue_mask\fP;
+.br
+      XSetWindowAttributes *\fIattributes\fP;
+.SH ARGUMENTS
+.IP \fIattributes\fP 1i
+Specifies the window attributes to use in the
+.ZN XCreateWindow
+call.
+.ds Vm attribute fields to use
+.IP \fIvalue_mask\fP 1i
+Specifies which \*(Vm.
+.IP \fIvisual\fP 1i
+Specifies the visual type (usually
+.ZN CopyFromParent ).
+.ds Wi that is used to set the x,y coordinates and so on
+.IP \fIw\fP 1i
+Specifies the widget \*(Wi.
+.IP \fIwindow_class\fP 1i
+Specifies the Xlib window class (for example,
+.ZN InputOutput ,
+.ZN InputOnly ,
+or
+.ZN CopyFromParent ).
+.SH DESCRIPTION
+The
+.ZN XtCreateWindow
+function calls the Xlib
+.ZN XCreateWindow
+function with values from the widget structure and the passed parameters.
+Then, it assigns the created window to the widget's window field.
+.LP
+.ZN XtCreateWindow
+evaluates the following fields of the
+.ZN Core 
+widget structure:
+.IP \(bu 5
+depth
+.IP \(bu 5
+screen
+.IP \(bu 5
+parent -> core.window
+.IP \(bu 5
+x
+.IP \(bu 5
+y
+.IP \(bu 5
+width
+.IP \(bu 5
+height
+.IP \(bu 5
+border_width
+.SH "SEE ALSO"
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

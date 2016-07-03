@@ -1,0 +1,231 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XcmsAllocColor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XcmsAllocColor, XcmsAllocNamedColor \- allocate colors
+.SH SYNTAX
+Status XcmsAllocColor\^(\^\fIdisplay\fP\^, \fIcolormap\fP\^, \fIcolor_in_out\fP\^, \fIresult_format\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      XcmsColor *\fIcolor_in_out\fP\^;
+.br
+      XcmsColorFormat \fIresult_format\fP\^;
+.LP
+Status XcmsAllocNamedColor\^(\^\fIdisplay\fP\^, \fIcolormap\fP\^, \fIcolor_string\fP\^, \fIresult_format\fP\^, \fIcolor_screen_return\fP\^,
+.br
+                            \fIcolor_exact_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.br
+      char *\fIcolor_string\fP\^;
+.br
+      XcmsColorFormat \fIresult_format\fP\^;
+.br
+      XcmsColor *\fIcolor_screen_return\fP\^;
+.br
+      XcmsColor *\fIcolor_exact_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: cmap.a,v 1.2 88/05/09 06:39:13 mento Exp $
+.IP \fIcolormap\fP 1i
+Specifies the colormap.
+.\" $Header$
+.IP \fIcolor_exact_return\fP 1i
+Returns the color specification parsed from the color string
+or parsed from the corresponding string found in a color name database.
+.\" $Header$
+.IP \fIcolor_in_out\fP 1i
+Specifies the color to allocate and returns the pixel and color 
+that is actually used in the colormap.
+.\" $Header$
+.IP \fIcolor_screen_return\fP 1i
+Returns the pixel value of the color cell and color specification 
+that actually is stored for that cell.
+.ds St \ whose color definition structure is to be returned
+.\" $Header$
+.IP \fIcolor_string\fP 1i
+Specifies the color string\*(St.
+.\" $Header$
+.IP \fIresult_format\fP 1i
+Specifies the color format for the returned color specification.
+.SH DESCRIPTION
+The
+.ZN XcmsAllocColor
+function is similar to
+.ZN XAllocColor
+except the color can be specified in any format.
+The
+.ZN XcmsAllocColor
+function ultimately calls 
+.ZN XAllocColor
+to allocate a read-only color cell (colormap entry) with the specified color.
+.ZN XcmsAllocColor
+first converts the color specified
+to an RGB value and then passes this to
+.ZN XAllocColor .
+.ZN XcmsAllocColor
+returns the pixel value of the color cell and the color specification
+actually allocated.
+This returned color specification is the result of converting the RGB value
+returned by 
+.ZN XAllocColor 
+into the format specified with the result_format argument.
+If there is no interest in a returned color specification, 
+unnecessary computation can be bypassed if result_format is set to
+.ZN XcmsRGBFormat .
+The corresponding colormap cell is read-only.
+If this routine returns 
+.ZN XcmsFailure , 
+the color_in_out color specification is left unchanged.
+.LP
+.ZN XcmsAllocColor
+can generate a
+.ZN BadColor
+errors.
+.LP
+The
+.ZN XcmsAllocNamedColor
+function is similar to
+.ZN XAllocNamedColor
+except the color returned can be in any format specified.
+This function
+ultimately calls
+.ZN XAllocColor
+to allocate a read-only color cell with
+the color specified by a color string.
+The color string is parsed into an
+.ZN XcmsColor
+structure (see
+.ZN XcmsLookupColor ),
+converted
+to an RGB value, then finally passed to the
+.ZN XAllocColor .
+If the color name is not in the Host Portable Character Encoding
+the result is implementation dependent.
+Use of uppercase or lowercase does not matter.
+.LP
+This function returns both the color specification as a result
+of parsing (exact specification) and the actual color specification
+stored (screen specification).
+This screen specification is the result of converting the RGB value
+returned by
+.ZN XAllocColor
+into the format specified in result_format.
+If there is no interest in a returned color specification,
+unnecessary computation can be bypassed if result_format is set to
+.ZN XcmsRGBFormat .
+.LP
+.LP
+.ZN XcmsAllocNamedColor
+can generate a
+.ZN BadColor
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badcolor.e,v 1.1 87/09/04 08:22:57 mento Exp $
+.TP 1i
+.ZN BadColor
+A value for a Colormap argument does not name a defined Colormap.
+.SH "SEE ALSO"
+XcmsQueryColor(3X11),
+XcmsStoreColor(3X11)
+.br
+\fI\*(xL\fP

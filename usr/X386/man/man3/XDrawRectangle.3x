@@ -1,0 +1,235 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XDrawRectangle 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XDrawRectangle, XDrawRectangles, XRectangle \- draw rectangles and rectangles structure
+.SH SYNTAX
+.\" $Header: XRectangle.f,v 1.1 88/02/26 10:02:37 mento Exp $
+XDrawRectangle\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIx\fP\^, \fIy\fP\^, \fIwidth\fP\^, \fIheight\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      int \fIx\fP\^, \fIy\fP\^;
+.br
+      unsigned int \fIwidth\fP\^, \fIheight\fP\^;
+.LP
+.\" $Header: XRectangles.f,v 1.1 88/02/26 10:02:38 mento Exp $
+XDrawRectangles\^(\^\fIdisplay\fP, \fId\fP\^, \fIgc\fP\^, \fIrectangles\fP\^, \fInrectangles\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      GC \fIgc\fP\^;
+.br
+      XRectangle \fIrectangles\fP\^[\^]\^;
+.br
+      int \fInrectangles\fP\^;
+.SH ARGUMENTS
+.\" $Header: d.a,v 1.1 88/02/26 10:04:25 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable. 
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: gc.a,v 1.2 88/05/09 11:20:34 mento Exp $
+.IP \fIgc\fP 1i
+Specifies the GC.
+.\" $Header: nrectangles.a,v 1.1 88/02/26 10:29:47 mento Exp $
+.IP \fInrectangles\fP 1i
+Specifies the number of rectangles in the array.
+.\" $Header: rectangles.a,v 1.1 88/02/26 10:30:50 mento Exp $
+.IP \fIrectangles\fP 1i
+Specifies an array of rectangles.
+.ds Wh , which specify the dimensions of the rectangle
+.\" $Header: w+h_gen.a,v 1.2 88/08/04 11:21:28 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height\*(Wh.
+.ds Xy , which specify the upper-left corner of the rectangle
+.\" $Header: xy_gen.a,v 1.2 88/08/04 11:22:37 mento Exp $
+.IP \fIx\fP 1i
+.br
+.ns
+.IP \fIy\fP 1i
+Specify the x and y coordinates\*(Xy.
+.SH DESCRIPTION
+.\" $Header: XRectangle.d,v 1.4 88/06/11 07:52:48 mento Exp $
+The
+.ZN XDrawRectangle
+and
+.ZN XDrawRectangles
+functions draw the outlines of the specified rectangle or rectangles as
+if a five-point 
+.ZN PolyLine 
+protocol request were specified for each rectangle:
+.IP
+[x,y] [x+width,y] [x+width,y+height] [x,y+height] [x,y]
+.LP 
+For the specified rectangle or rectangles, 
+these functions do not draw a pixel more than once.
+.ZN XDrawRectangles
+draws the rectangles in the order listed in the array.
+If rectangles intersect,
+the intersecting pixels are drawn multiple times.
+.LP
+Both functions use these GC components: 
+function, plane-mask, line-width,
+line-style, cap-style, join-style, fill-style, 
+subwindow-mode, clip-x-origin, clip-y-origin, and clip-mask.
+They also use these GC mode-dependent components: 
+foreground, background, tile, stipple, tile-stipple-x-origin, 
+tile-stipple-y-origin, dash-offset, and dash-list.
+.LP
+.ZN XDrawRectangle
+and
+.ZN XDrawRectangles
+can generate
+.ZN BadDrawable ,
+.ZN BadGC ,
+and
+.ZN BadMatch 
+errors.
+.SH STRUCTURES
+The
+.ZN XRectangle
+structure contains:
+.LP
+.Ds 0
+.TA .5i
+.ta .5i
+typedef struct {
+	short x, y;
+	unsigned short width, height;
+} XRectangle;
+.De
+.LP
+All x and y members are signed integers.
+The width and height members are 16-bit unsigned integers.
+You should be careful not to generate coordinates and sizes
+out of the 16-bit ranges, because the protocol only has 16-bit fields
+for these values.
+.SH DIAGNOSTICS
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badgc.e,v 1.1 87/09/04 08:23:02 mento Locked $
+.TP 1i
+.ZN BadGC
+A value for a GContext argument does not name a defined GContext.
+.\" $Header: badmatch1.e,v 1.3 87/09/09 18:18:54 mento Exp $
+.TP 1i
+.ZN BadMatch
+An
+.ZN InputOnly
+window is used as a Drawable.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.SH "SEE ALSO"
+XDrawArc(3X11),
+XDrawLine(3X11),
+XDrawPoint(3X11)
+.br
+\fI\*(xL\fP

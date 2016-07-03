@@ -1,0 +1,295 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XCreateImage 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XCreateImage, XGetPixel, XPutPixel, XSubImage, XAddPixel, XDestroyImage \- image utilities
+.SH SYNTAX
+XImage *XCreateImage\^(\^\fIdisplay\fP, \fIvisual\fP, \fIdepth\fP, \fIformat\fP, \fIoffset\fP, \fIdata\fP, \fIwidth\fP, \fIheight\fP\^, \fIbitmap_pad\fP, 
+.br
+                        \fIbytes_per_line\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Visual *\fIvisual\fP\^;
+.br
+      unsigned int \fIdepth\fP\^;
+.br
+      int \fIformat\fP\^;
+.br
+      int \fIoffset\fP\^;
+.br
+      char *\fIdata\fP\^;
+.br
+      unsigned int \fIwidth\fP\^;
+.br
+      unsigned int \fIheight\fP\^;
+.br
+      int \fIbitmap_pad\fP\^;
+.br
+      int \fIbytes_per_line\fP\^;
+.LP
+unsigned long XGetPixel\^(\^\fIximage\fP, \fIx\fP, \fIy\fP\^)
+.br
+      XImage *\fIximage\fP\^;
+.br
+      int \fIx\fP\^;
+.br
+      int \fIy\fP\^;
+.LP
+XPutPixel\^(\^\fIximage\fP, \fIx\fP, \fIy\fP, \fIpixel\fP\^)
+.br
+      XImage *\fIximage\fP\^;
+.br
+      int \fIx\fP\^;
+.br
+      int \fIy\fP\^;
+.br
+      unsigned long \fIpixel\fP\^;
+.LP
+XImage *XSubImage\^(\^\fIximage\fP, \fIx\fP, \fIy\fP, \fIsubimage_width\fP, \fIsubimage_height\fP\^)
+.br
+      XImage *\fIximage\fP\^;
+.br
+      int \fIx\fP\^;
+.br
+      int \fIy\fP\^;
+.br
+      unsigned int \fIsubimage_width\fP\^;
+.br
+      unsigned int \fIsubimage_height\fP\^;
+.LP
+XAddPixel\^(\^\fIximage\fP, \fIvalue\fP\^)
+.br
+      XImage *\fIximage\fP\^;
+.br
+      long \fIvalue\fP\^;
+.LP
+XDestroyImage\^(\^\fIximage\fP\^)
+.br
+        XImage *\^\fIximage\fP\^; 
+.SH ARGUMENTS
+.IP \fIbitmap_pad\fP 1i
+Specifies the quantum of a scanline (8, 16, or 32).
+In other words, the start of one scanline is separated in client memory from 
+the start of the next scanline by an integer multiple of this many bits.  
+.IP \fIbytes_per_line\fP 1i
+Specifies the number of bytes in the client image between
+the start of one scanline and the start of the next.  
+.IP \fIdata\fP 1i
+Specifies the image data.
+.IP \fIdepth\fP 1i
+Specifies the depth of the image.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIformat\fP 1i
+Specifies the format for the image.
+You can pass
+.ZN XYBitmap ,
+.ZN XYPixmap ,
+or 
+.ZN ZPixmap .
+.IP \fIheight\fP 1i
+Specifies the height of the image, in pixels.
+.IP \fIoffset\fP 1i
+Specifies the number of pixels to ignore at the beginning of the scanline.
+.IP \fIpixel\fP 1i
+Specifies the new pixel value.
+.IP \fIsubimage_height\fP 1i
+Specifies the height of the new subimage, in pixels.
+.IP \fIsubimage_width\fP 1i
+Specifies the width of the new subimage, in pixels.
+.IP \fIvalue\fP 1i
+Specifies the constant value that is to be added.
+.IP \fIvisual\fP 1i
+Specifies the
+.ZN Visual
+structure.
+.IP \fIwidth\fP 1i
+Specifies the width of the image, in pixels.
+.IP \fIximage\fP 1i
+Specifies the image.
+.\" $Header: xy.a,v 1.1 88/02/26 10:32:54 mento Exp $
+.IP \fIx\fP 1i
+.br
+.ns
+.IP \fIy\fP 1i
+Specify the x and y coordinates.
+.SH DESCRIPTION
+.\" $Header: XCreImage.d,v 1.4 88/08/20 10:25:28 mento Exp $
+The
+.ZN XCreateImage
+function allocates the memory needed for an
+.ZN XImage
+structure for the
+specified display but does not allocate space for the image itself.
+Rather, it initializes the structure byte-order, bit-order, and bitmap-unit
+values from the display and returns a pointer to the 
+.ZN XImage 
+structure.
+The red, green, and blue mask values are defined for Z format images only
+and are derived from the 
+.ZN Visual 
+structure passed in.
+Other values also are passed in.
+The offset permits the rapid displaying of the image without requiring each 
+scanline to be shifted into position.
+If you pass a zero value in bytes_per_line,
+Xlib assumes that the scanlines are contiguous
+in memory and calculates the value of bytes_per_line itself.
+.LP
+Note that when the image is created using
+.ZN XCreateImage ,
+.ZN XGetImage ,
+or
+.ZN XSubImage ,
+the destroy procedure that the 
+.ZN XDestroyImage
+function calls frees both the image structure 
+and the data pointed to by the image structure.
+.LP
+The basic functions used to get a pixel, set a pixel, create a subimage,
+and add a constant value to an image are defined in the image object.
+The functions in this section are really macro invocations of the functions
+in the image object and are defined in
+.Pn < X11/Xutil.h >.
+.LP
+.\" $Header: XGetPixel.d,v 1.2 88/06/11 07:51:14 mento Exp $
+The
+.ZN XGetPixel
+function returns the specified pixel from the named image.
+The pixel value is returned in normalized format (that is,
+the least-significant byte of the long is the least-significant byte
+of the pixel).
+The image must contain the x and y coordinates.
+.LP
+.\" $Header: XPutPixel.d,v 1.2 88/06/11 07:52:30 mento Exp $
+The
+.ZN XPutPixel
+function overwrites the pixel in the named image with the specified pixel value.
+The input pixel value must be in normalized format
+(that is, the least-significant byte of the long is the least-significant
+byte of the pixel).
+The image must contain the x and y coordinates.
+.LP
+.\" $Header: XSubImage.d,v 1.3 88/08/20 10:26:23 mento Exp $
+The
+.ZN XSubImage
+function creates a new image that is a subsection of an existing one.
+It allocates the memory necessary for the new
+.ZN XImage
+structure
+and returns a pointer to the new image.
+The data is copied from the source image,
+and the image must contain the rectangle defined by x, y, subimage_width,
+and subimage_height.
+.LP
+.\" $Header: XAddPixel.d,v 1.2 88/06/11 07:48:34 mento Exp $
+The
+.ZN XAddPixel
+function adds a constant value to every pixel in an image.
+It is useful when you have a base pixel value from allocating
+color resources and need to manipulate the image to that form.
+.LP
+.\" $Header: XDestImage.d,v 1.1 88/02/26 10:41:47 mento Exp $
+The
+.ZN XDestroyImage
+function deallocates the memory associated with the
+.ZN XImage
+structure.
+.SH "SEE ALSO"
+XPutImage(3X11)
+.br
+\fI\*(xL\fP

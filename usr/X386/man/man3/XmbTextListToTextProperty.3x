@@ -1,0 +1,397 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XmbTextListToTextProperty 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XmbTextListToTextProperty, XwcTextListToTextProperty, XmbTextPropertyToTextList, XwcTextPropertyToTextList, XwcFreeStringList, XDefaultString \- convert text lists and text property structures
+.SH SYNTAX
+int XmbTextListToTextProperty\^(\^\fIdisplay\fP\^, \fIlist\fP\^, \fIcount\fP\^, \fIstyle\fP\^, \fItext_prop_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char **\fIlist\fP\^;
+.br
+      int \fIcount\fP\^;
+.br
+      XICCEncodingStyle \fIstyle\fP\^;
+.br
+      XTextProperty *\fItext_prop_return\fP\^;
+.LP
+int XwcTextListToTextProperty\^(\^\fIdisplay\fP\^, \fIlist\fP\^, \fIcount\fP\^, \fIstyle\fP\^, \fItext_prop_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      wchar_t **\fIlist\fP\^;
+.br
+      int \fIcount\fP\^;
+.br
+      XICCEncodingStyle \fIstyle\fP\^;
+.br
+      XTextProperty *\fItext_prop_return\fP\^;
+.LP
+int XmbTextPropertyToTextList\^(\^\fIdisplay\fP\^, \fItext_prop\fP\^, \fIlist_return\fP\^, \fIcount_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XTextProperty *\fItext_prop\fP\^;
+.br
+      char ***\fIlist_return\fP\^;
+.br
+      int *\fIcount_return\fP\^;
+.LP
+int XwcTextPropertyToTextList\^(\^\fIdisplay\fP\^, \fItext_prop\fP\^, \fIlist_return\fP\^, \fIcount_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XTextProperty *\fItext_prop\fP\^;
+.br
+      wchar_t ***\fIlist_return\fP\^;
+.br
+      int *\fIcount_return\fP\^;
+.LP
+void XwcFreeStringList\^(\^\fIlist\fP\^)
+.br
+      wchar_t **\fIlist\fP\^;
+.LP
+char *XDefaultString\^(\|)
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIlist\fP 1i
+Specifies a list of null-terminated character strings.
+.IP \fIcount\fP 1i
+Specifies the number of strings specified.
+.IP \fIstyle\fP 1i
+Specifies the manner in which the property is encoded.
+.IP \fItext_prop_return\fP 1i
+Returns the
+.ZN XTextProperty
+structure.
+.IP \fItext_prop\fP 1i
+Specifies the
+.ZN XTextProperty
+structure to be used.
+.IP \fIlist_return\fP 1i
+Returns a list of null-terminated character strings.
+.ds Cn strings
+.IP \fIcount_return\fP 1i
+Returns the number of \*(Cn.
+.IP \fIlist\fP 1i
+Specifies the list of strings to be freed.
+.SH DESCRIPTION
+The
+.ZN XmbTextListToTextProperty
+and
+.ZN XwcTextListToTextProperty
+functions set the specified 
+.ZN XTextProperty
+value to a set of null-separated elements representing the concatenation
+of the specified list of null-terminated text strings.
+A final terminating null is stored at the end of the value field 
+of text_prop_return but is not included in the nitems member.
+.LP
+The functions set the encoding field of text_prop_return to an Atom 
+for the specified display 
+naming the encoding determined by the specified style, 
+and convert the specified text list to this encoding for storage in
+the text_prop_return value field.
+If the style 
+.ZN XStringStyle
+or 
+.ZN XCompoundTextStyle
+is specified,
+this encoding is ``STRING'' or ``COMPOUND_TEXT'', respectively.
+If the style 
+.ZN XTextStyle
+is specified,
+this encoding is the encoding of the current locale.
+If the style 
+.ZN XStdICCTextStyle
+is specified,
+this encoding is ``STRING'' if the text is fully convertible to STRING,
+else ``COMPOUND_TEXT''.
+.LP
+If insufficient memory is available for the new value string,
+the functions return 
+.ZN XNoMemory .
+If the current locale is not supported,
+the functions return 
+.ZN XLocaleNotSupported .
+In both of these error cases,
+the functions do not set text_prop_return.
+.LP
+To determine if the functions are guaranteed not to return
+.ZN XLocaleNotSupported ,
+use
+.ZN XSupportsLocale .
+.LP
+If the supplied text is not fully convertible to the specified encoding,
+the functions return the number of unconvertible characters.
+Each unconvertible character is converted to an implementation-defined and
+encoding-specific default string.
+Otherwise, the functions return 
+.ZN Success .
+Note that full convertibility to all styles except 
+.ZN XStringStyle
+is guaranteed.
+.LP
+To free the storage for the value field, use
+.ZN XFree .
+.LP
+The 
+.ZN XmbTextPropertyToTextList
+and 
+.ZN XwcTextPropertyToTextList
+functions return a list of text strings in the current locale representing the
+null-separated elements of the specified
+.ZN XTextProperty
+structure.
+The data in text_prop must be format 8.
+.LP
+Multiple elements of the property (for example, the strings in a disjoint
+text selection) are separated by a null byte.
+The contents of the property are not required to be null-terminated;
+any terminating null should not be included in text_prop.nitems.
+.LP
+If insufficient memory is available for the list and its elements,
+.ZN XmbTextPropertyToTextList
+and
+.ZN XwcTextPropertyToTextList
+return 
+.ZN XNoMemory .
+If the current locale is not supported,
+the functions return
+.ZN XLocaleNotSupported .
+Otherwise, if the encoding field of text_prop is not convertible 
+to the encoding of the current locale,
+the functions return
+.ZN XConverterNotFound .
+For supported locales,
+existence of a converter from COMPOUND_TEXT, STRING,
+or the encoding of the current locale is guaranteed if
+.ZN XSupportsLocale 
+returns 
+.ZN True
+for the current locale (but the actual text may contain unconvertible characters.)
+Conversion of other encodings is implementation-dependent.
+In all of these error cases,
+the functions do not set any return values.
+.LP
+Otherwise, 
+.ZN XmbTextPropertyToTextList
+and
+.ZN XwcTextPropertyToTextList
+return the list of null-terminated text strings to list_return,
+and the number of text strings to count_return.
+.LP
+If the value field of text_prop is not fully convertible to the encoding of
+the current locale,
+the functions return the number of unconvertible characters.
+Each unconvertible character is converted to a string in the
+current locale that is specific to the current locale.
+To obtain the value of this string, 
+use
+.ZN XDefaultString .
+Otherwise,
+.ZN XmbTextPropertyToTextList
+and
+.ZN XwcTextPropertyToTextList
+return 
+.ZN Success .
+.LP
+To free the storage for the list and its contents returned by
+.ZN XmbTextPropertyToTextList ,
+use
+.ZN XFreeStringList .
+To free the storage for the list and its contents returned by
+.ZN XwcTextPropertyToTextList ,
+use
+.ZN XwcFreeStringList .
+.LP
+The
+.ZN XwcFreeStringList
+function frees memory allocated by
+.ZN XwcTextPropertyToTextList .
+.LP
+The
+.ZN XDefaultString
+function returns the default string used by Xlib for text conversion
+(for example, in 
+.ZN XmbTextListToTextProperty ).
+The default string is the string in the current locale which is output 
+when an unconvertible character is found during text conversion.
+If the string returned by
+.ZN XDefaultString
+is the empty string (""),
+no character is output in the converted text.
+.ZN XDefaultString
+does not return NULL.
+.LP
+The string returned by 
+.ZN XDefaultString
+is independent of the default string for text drawing;
+see 
+.ZN XCreateFontSet
+to obtain the default string for an
+.ZN XFontSet .
+.LP
+The behavior when an invalid codepoint is supplied to any Xlib function is
+undefined.
+.LP
+The returned string is null-terminated.
+It is owned by Xlib and should not be modified or freed by the client.
+It may be freed after the current locale is changed.
+Until freed, it will not be modified by Xlib.
+.SH STRUCTURES
+The
+.ZN XTextProperty
+structure contains:
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct 		{
+	unsigned char *value;	/* property data */
+	Atom encoding;	/* type of property */
+	int format;	/* 8, 16, or 32 */
+	unsigned long nitems;	/* number of items in value */
+} XTextProperty;
+.De
+.LP
+The
+.ZN XICCEncodingStyle
+structure contains:
+.LP
+.TS
+lw(.5i) lw(2i) lw(2.5i).
+T{
+#define
+T}	T{
+.ZN XNoMemory
+T}	T{
+\-1
+T}
+T{
+#define
+T}	T{
+.ZN XLocaleNotSupported
+T}	T{
+\-2
+T}
+T{
+#define
+T}	T{
+.ZN XConverterNotFound
+T}	T{
+\-3
+T}
+.TE
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef enum {
+	XStringStyle,		/* STRING */
+	XCompoundTextStyle,	/* COMPOUND_TEXT */
+	XTextStyle,		/* text in owner's encoding (current locale) */
+	XStdICCTextStyle	/* STRING, else COMPOUND_TEXT */
+} XICCEncodingStyle;
+.De
+.SH "SEE ALSO"
+XSetTextProperty(3X11),
+XStringListToTextProperty(3X11)
+.br
+\fI\*(xL\fP

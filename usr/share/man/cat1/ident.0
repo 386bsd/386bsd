@@ -1,0 +1,132 @@
+
+
+
+IDENT(1L)                                               IDENT(1L)
+
+
+NNAAMMEE
+       ident - identify files
+
+SSYYNNOOPPSSIISS
+       iiddeenntt [ --qq ] [ file ... ]
+
+DDEESSCCRRIIPPTTIIOONN
+       _I_d_e_n_t  searches  the  named  files  or,  if  no  file name
+       appears, the standard input for  all  occurrences  of  the
+       pattern $_k_e_y_w_o_r_d:...$, where _k_e_y_w_o_r_d is one of
+
+               Author
+               Date
+               Header
+               Id
+               Locker
+               Log
+               Revision
+               RCSfile
+               Source
+               State
+
+       These  patterns are normally inserted automatically by the
+       RCS command _c_o(1L), but can also be inserted manually. The
+       option  --qq  suppresses  the  warning given if there are no
+       patterns in a file.
+
+       _I_d_e_n_t works on text files as  well  as  object  files  and
+       dumps.  For example, if the C program in file f.c contains
+
+               char rcsid[] = "$Header:  Header information $";
+
+       and f.c is compiled into f.o, then the command
+
+               ident  f.c  f.o
+
+       will print
+
+               f.c:
+                       $Header:  Header information $
+               f.o:
+                       $Header:  Header information $
+
+
+IIDDEENNTTIIFFIICCAATTIIOONN
+       Author:  Walter  F.   Tichy,   Purdue   University,   West
+       Lafayette, IN, 47907.
+       Revision Number: 1.2 ; Release Date: 89/05/02 .
+       Copyright (C) 1982, 1988, 1989 by Walter F. Tichy.
+
+SSEEEE AALLSSOO
+       ci(1L),   co(1L),   rcs(1L),   rcsdiff(1L),  rcsintro(1L),
+       rcsmerge(1L), rlog(1L), rcsfile(5L),
+       Walter F. Tichy, "Design, Implementation,  and  Evaluation
+
+
+
+University                    Purdue                            1
+
+
+
+
+
+IDENT(1L)                                               IDENT(1L)
+
+
+       of  a  Revision Control System," in _P_r_o_c_e_e_d_i_n_g_s _o_f _t_h_e _6_t_h
+       _I_n_t_e_r_n_a_t_i_o_n_a_l _C_o_n_f_e_r_e_n_c_e _o_n  _S_o_f_t_w_a_r_e  _E_n_g_i_n_e_e_r_i_n_g,  IEEE,
+       Tokyo, Sept. 1982.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+University                    Purdue                            2
+
+

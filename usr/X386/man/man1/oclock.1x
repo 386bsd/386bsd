@@ -1,0 +1,77 @@
+.TH OCLOCK 1 "Release 5" "X Version 11"
+.SH NAME
+oclock \- display time of day
+.SH SYNOPSIS
+.B oclock
+[-option ...]
+.SH DESCRIPTION
+.I Clock
+simply displays the current time on an analog display
+.SH OPTIONS
+.TP 8
+.B \-fg \fIforeground color\fB
+choose a different color for the both hands and the jewel of the clock
+.TP 8
+.B \-bg \fIbackground color\fB
+choose a different color for the background.
+.TP 8
+.B \-jewel \fIjewel color\fB
+choose a different color for the jewel on the clock.
+.TP 8
+.B \-minute \fIminute color\fB
+choose a different color for the minute hand of the clock.
+.TP 8
+.B \-hour \fIhour color\fB
+choose a different color for the hour hand of the clock.
+.TP 8
+.B \-backing \fI{ WhenMapped Always NotUseful }\fB
+selects an appropriate level of backing store.
+.TP 8
+.B \-geometry \fIgeometry\fB
+define the initial window geometry; see \fIX(1)\fP.
+.TP 8
+.B \-display \fIdisplay\fB
+specify the display to use; see \fIX(1)\fP.
+.TP 8
+.B \-bd \fIborder color\fB
+choose a different color for the window border.
+.TP 8
+.B \-bw \fIborder width\fB
+choose a different width for the window border.  As the Clock widget changes
+its border around quite a bit, this is most usefully set to zero.
+.TP 8
+.B \-noshape
+causes the clock to not reshape itself and ancestors to exactly
+fit the outline of the clock.
+.TP 8
+.B \-transparent
+causes the clock to consist only of the jewel, the hands, and the border.
+.SH COLORS
+If you would like your clock to be viewable in color, include the following 
+in the #ifdef COLOR section you read with xrdb:
+.sp 1
+*customization:                 -color
+.sp 1
+.br
+This will cause oclock to pick up the colors in the app-defaults color
+customization file:
+/usr/lib/X11/app-defaults/Clock-color.
+Below are the default colors:
+.sp 1
+Clock*Background: grey
+.br
+Clock*BorderColor: light blue
+.br
+Clock*hour: yellow
+.br
+Clock*jewel: yellow
+.br
+Clock*minute: yellow
+.SH "SEE ALSO"
+X(1), X Toolkit documentation
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Keith Packard, MIT X Consortium

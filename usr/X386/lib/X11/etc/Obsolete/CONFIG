@@ -1,0 +1,539 @@
+Videotiming configuration tutorial
+----------------------------------
+
+(written by Chin Fang, fangchin@leland.stanford.edu)
+
+
+Content:
+
+1. Introduction
+2. Get'em now
+3. Some preliminaries
+4. Lets get to work
+ 
+1. Introduction
+
+X386 allows it's users to configure their video subsystem and thus encourages
+a near optimum use of existing hardware.  If you would like to use X386 
+but do not feel having enough understanding about the configuration process, 
+then this tutorial should provide you with enough background after you go 
+thru it.    
+
+Most 386 Unix systems' video subsystems are composed of a multi-scanning
+type monitor and a SVGA, so only setup for this type subsystems is covered.
+
+2. Get'em now
+
+Before you start setting up X386 on your system, you need to collect a few
+data and facts first.  They are the following:
+
+(1) your monitor's sync frequency ranges for both horizontal and vertical
+    directions
+(2) your video adapter (SVGA) driving frequency bandwidth
+
+Sync frequency ranges are usually tabulated in your monitor's user's manual,
+under specification.  SVGA's spec. in it's user's manual usually provides
+the driving frequency bandwidth (and/or clock timings available).  If not, the
+best way is to use the TURBO Pascal program clock.exe to detect the available
+clock timings (driving frequencies).  It has to be done eventually to write
+the X386 configuration file Xconfig, so you may wish to run it as soon as 
+possible. (clock.exe is provided as part of X386 distribution, so is it's src)
+
+Note, some analog monitors like NEC 2A and one Parkard Bell 14" model,
+only provide discrete sync frequencies for both horizontal and vertical 
+directions.  They can be configured too, and the procedure is similar.
+Only difference is that your room for configuration is severely limited
+by the built-in monitor characteristics. SPECIAL CARE SHOULD BE TAKEN 
+WHEN X386 IS CONFIGURED FOR SUCH MONITORS!! 
+
+Another fact you may like to know is that your SVGA card may not employ
+crystals as sources of video driving frequencies.  Instead, some newer
+boards have a chip, most likely voltage controlled, for providing driving
+frequencies.  An example would be like Swan Technology's SVGA uses a VCO
+(voltage controlled oscillator).  Still, clock.exe should be able to reveal
+how many driving frequencies (clock timings) are available from such a
+chip oscillator.
+
+Finally, it's nice to get to know your monitor's video bandwidth if
+you intend to use high resolution and to drive such resolution at a 
+high driving frequency, say 65Mhz.  This is not a part of X386 
+config process.  But knowing it will enable you make more intellgent
+choices sometimes.
+
+Video bandwidth together with the employed driving frequency may affect
+your display's quality (like sharpness for fine details).  However, most
+of the time one can ignore this.  More explanations will be given below.
+
+Video Bandwidth is also tabulated in the monitor's spec sheet. 
+ 
+ 
+3. Some preliminaries
+
+When we talk about display, it's always NECESSARY to consider three things
+together:
+
+(1) your monitor's sync frequency ranges for both horizontal and vertical
+(2) your video adapter's driving frequency bandwidth (from crystals for ex.)
+(3) your software's video hardware device driver.
+
+and to a lesser extend, your monitor's video bandwidth.  But for now
+lets concentrate on the three mentioned above.
+
+The sync frequency ranges of your monitor together with your video
+adapter's bandwidth determines the ultimate resolution that you can
+use.  But it's up to the driver to untap any potential of your
+hardware.  Superior hardware combination without an equally
+competent device driver is a waste of money.  On the other hand,
+having a versatile device driver but not so good hardware combo, at
+least one can explore the limit of them.  This is the design
+philosophy of X386. 
+
+4. Lets get to work
+
+How to determine a good resolution for your monitor?  Please read the following
+
+Definition:     screen refresh rate => it's the DRIVING clock frequency divided
+                by the product of horizontal frame length and vertical frame
+                length.
+
+               Q. what is driving clock frequency?
+               A. it's the oscillatory frequency of the crystal (on your 
+                  video board) employed by your graphics software's video 
+                  driver.  For instance, if your driver uses 36 Mhz out of
+                 
+                  25 28  0 40 36 40 45 58 
+                  32 36 31 35 50 48 33 65 (all in Mhz, for Sigma Legend)
+                  
+                  then the driving frequency is 36Mhz.  Nothing else.
+                  This is the frequency used by the driver to determine
+                  how frequently to update (thus refresh) the screen image.
+                  
+               Q. What's frame length for horizontal and vertical directions?
+               A. It's the number of clock ticks (measured in terms of the
+                  driving timing) for your monitor's electron gun to impart
+                  a beam of electrons onto the screen and sweep such a beam
+                  from the left side of the tube to the right side and back.  
+                  Similarly, for the vertical direction, from bottom to top
+		  and back to bottom.
+
+               Q. Why does this have anything to do with resolution?
+               A. A desired resolution in fact should be called the portion 
+                  of the frame length during which an electron beam creates a
+		  visible image to your eyes!  Any image is created with your
+		  eyes's retention and the fast moving electron beam sweeping
+		  across your monitor.  At any instant, there is in fact ONLY
+		  ONE dot hitting the screen, but due to your eyes retention,
+		  you see a block of image.
+
+                  Now it should be helpful to look at two pictures to
+                  get a better idea:
+
+                    _______________________
+                   |                       |     A horizontal frame
+                   |->->->->->->->->->->-> |     length is the time
+                   |                      )|     required for an
+                   |<-<-<-<-<-<-<-<-<-<-<- |     electron beam tracing
+                   |                       |     a pattern as shown on
+                   |                       |     left
+                   |                       |
+                   |                       |
+                   |_______________________|    
+
+                    _______________________
+                   |        ^              |     A vertical frame
+                   |       ^ |             |     length is the time
+                   |       | v             |     required for an
+                   |       ^ |             |     electron beam tracing
+                   |       | v             |     a pattern as shown on
+                   |       ^ |             |     left
+                   |       | v             |
+                   |       ^ |             |
+                   |_______|_v_____________|    
+                
+                  It is always helpful to think that the image on a
+                  screen is formed by an electron beam tracing in a
+                  zigzag pattern, ie, the beam moves left <-> right
+                  and at the same time up <-> down too.   
+ 
+        
+               Q. So what does this have anything to do with screen refresh
+                  rate?
+               A. By definition, one hertz (hz) is one cycle per second.
+                  So, if your horizontal frame length takes x ticks, ver. 
+                  frame length takes y ticks, then to cover the entire screen,
+                  a rectangular area, takes x times y ticks.  Since your
+                  driving frequency provides say N ticks per second by 
+                  definition, then obviously your monitor's electron gun(s)
+                  can impart a dot on the screen and sweep it from left
+                  to right and back and from bottom to top and back (which
+                  takes total xy ticks) N/xy times/sec.  This IS your 
+                  screen's refresh rate!  Because that's how many times your 
+                  screen can be updated thus REFRESHED per second!
+
+               Q. Why do I have to know this?
+               A. You need to understand this concept to "design" a
+                  good resolution which not only provides you a steady 
+                  image, but also utilizes your hardware in a near
+                  optimum manner.
+
+               Q. So how do I get a desired resolution?
+               A. Simple! Just look at your monitor's data sheet, normally
+                  part of your users' manual.  Make sure of it's type, ie.
+                  fixed frequency  or multiscanning.  The latter is more
+                  flexible, if not better.
+
+                  THE FOLLOWING DISCUSSION DOES NOT APPLY TO THE FORMER!!
+
+                  Then, use your horizontal max sync frequency, say 55khz
+                  try out the clock frequencies listed or detected by 
+                  clock.exe. As an example, say for Sigma Legend, there is
+                  a 65 Mhz clock oscillatory driving frequency available.
+                  And from above assumption, your monitor can sync up to
+                  55 Khz in horizontal. To get max REFRESH rate and
+                  at the same time get non-interlaceness, do the following:
+ 
+                  Obviously, if your clock cycles only N times per second,
+                  and if your monitor electron beam syncs at x times per
+                  second, then using the definition of frame length above,
+                  you can only have so many horizontal frames per second:
+ 
+                  N/x, in our sample, it would be 65Mhz/55khz=1181 times.
+
+                  But due to VGA's hardware restrictions, you can only have
+                  a multiple of eight number of frames per second in the
+                  horizontal direction. So round it off -> 1176.
+
+                  This represents the MINIMUM frame length that you can
+                  use.  You can, of course, get a longer frame length by
+                  using lower sync frequencies.  In so doing, you may
+                  not be able to raise viewing resolution, but you WILL
+                  pay the price of a lower refresh rate.  Following the
+                  explanations below you will find out why. Assuming,
+                  of course, the same driving frequency is still used.
+
+                  Take 80 percent of this clock ticks, or 944 ticks for your
+                  viewing image.  This is a rule of thumb! Don't ask why! 
+
+                  Take 75% of 944 as your vertical ticks for viewable image,
+                  you have 708 ticks.  A rule of thumb is 1.05 times of ticks
+                  should be the vertical frame length ->743 ticks.  Here I
+                  implicitly assumed that you like the Golden ratio.
+                  Please note that Golden ratio is not a requirement
+                  at all.
+
+                  So your screen refresh rate is 65Mhz/1176*743=74.4 hz!
+
+                  THIS IS EXCELLENT! Don't settle on anthing less IF POSSIBLE!
+                  The image at this update rate (or screen refresh rate)
+                  WILL LOOK STEADY EVEN TO VIDEO CAMERAS! (well... I know
+                  in this case it is not likely.  Please keep reading to 
+                  find out why)
+     
+                  And you got 944x708 to boot.  Not bad at all!  You 
+                  can even improve it further to put it into almost 76 Hz
+                  by using the fact that your monitor in the horz. direction
+                  often can sync at higher frequency than 55 khz by about
+                  2khz or so and the fact that in the vertical direction,
+                  you can lower the frame length somewhat (ie, take less
+                  than 75% of 944 in the example above).
+
+                  All this is simple mathmatics and simple facts about
+                  oscilloscopes.  No black magic at all!
+
+                  But MAKE SURE that your monitor electron guns can sync
+                  up to 76 Hz vertical. (NEC 4D CAN'T for instance. It
+                  goes only up to 75 Hz in vertical)
+
+               Q. What else do I need to know?
+               A. You need to know when and where to place sync
+                  pluses.  Recall the two pictures above?  Only part
+                  of the time required for tracing such a frame is used 
+                  for displaying viewable image (ie. your resolution).
+                  Lets say for the horizontal direction, it takes H ticks
+                  to trace the frame, and h ticks for viewable data. 
+                  Obviously, h < H by definition.  For concretness, lets
+                  assume both start at the same instant as shown below:
+
+
+                  |___ __ __ __ __ __ __ __ __ __ __ __ __
+                  |_ _ _ _ _ _ _ _ _ _ _ _                |
+                  |_______________________|_______________|_____ 
+                  0                       h               H     unit: ticks
+                                              ^       ^
+                                              |       |
+                                               <----->
+                                                  s
+                  
+                  Now, we would like to place a sync plus of length s
+                  like shown above, ie, between the end of clock ticks
+                  for display data and the end of clock ticks for the
+                  entire frame.  Why so?  because if we can achieve 
+                  this, then your screen image won't shift to the right
+                  or to the left.  It will be where it supposed to be 
+                  on the screen,  covering squarely the monitor's viewable
+                  area.
+
+               Q. But I don't know how to get sync plus's length s, what
+                  can I do about it?
+               A. Because this is the only tricky part of configuration,
+                  I want to get you to understand all the basics first
+		  before I overwhelm you with the jargon.  Now let's talk.
+
+                  In general, we have to do a little trial and error for
+                  this part.  But most of the time, we can safely assume
+                  that a sync plus is about 3.5 to 4.0 micro second in 
+                  length, as documented in some monitors user's manual
+                  in the spec section.
+
+                  For concretness again, let's take 3.8 micro second to
+                  be s, which btw, is not a bad value to start with.
+
+                  Now, using the 65Mhz clock timing above, we know s is
+                  equivalent to 247 clock ticks (= 65x10**6 * 3.8 *10**(-6))
+                  [recall M=10**6, micro=10**(-6)]
+
+                  Go back to the picture above, how do we place the
+                  247 clock ticks as shown in the picture?
+
+                  Now it's time for you to get your calculator! 
+
+                  Using our example, h is 944 and H is 1176.  The difference
+                  between the two is 1176-944=232 < 247!  Obviously we
+                  have to do some adjustment here.  What can we do? 
+
+                  The first thing is to raise 1176 to 1184, and lower 944
+                  to 936.  Now the difference = 1184-936= 248. Hmm, closer.
+
+                  Next, instead using 3.8, we use 3.5 for calculating s;
+                  then, we have 65*3.5=227.  Looks better.  But 248 is not
+                  much higher than 227.  It's normally necessary to have 
+                  30 or so clock ticks between h and the starting value of s
+                  and the same for the ending value of s and H.  AND they
+                  have to be multiples of eight!  Are we stuck?
+
+                  NO! let's do this, 936%8==0, (936+32)%8==0 too. But
+                  936+32=968, 968+227=1195, 1195+32=1227. Hmm.. this looks
+                  not too bad.  But it's not a multiple of 8, so lets 
+                  round it up to 1232.
+
+                  But now we got ourself in another potential trouble,
+                  the sync plus is no longer placed right in the middle
+                  between h and H anymore.  Happily, using our calculator
+                  we find 1232-32=1200 is also multiple of 8 and 
+                  (1232-32)-968=232 corresponding using a sync plus of
+                  3.57 micro second long, still reasonable.
+
+                  In addition, 936/1232~0.76 or 76%, still not far from
+                  80%, so it should be all right.
+
+                  Furthermore, using the current horizontal frame length, we 
+                  basically ask our monRPor`4o`sync at 52.7khz(=65Mhz/1232)
+                  which is within it's capability.  No problems.
+                
+                  Using rules of thumb we mentioned before, 936*75%=702,
+                  This is our new vertical resolution.  702*1.05=737, our
+                  new vertical frame length.
+
+                  Screen refresh rate = 65Mhz/(737*1232)=71.6 Hz.  THIS
+                  IS STILL EXCELLENT! KEEP IT.
+
+               Q. But did you forget about how to place sync plus in the
+                  vertical direction?
+               A. I intentionally did so.  Let's deal with one thing at a
+	          time.  For the vertical direction, we usually would like
+		  to place sync plus as shown below:
+
+                  |___ __ __ __ __ __ __ __ __ __ __ __ __
+                  |_ _ _ _ _ _ _ _ _ _ _ _                |
+                  |_______________________|_______________|_____ 
+                  0                       v               V     unit: ticks
+                                          ^       ^
+                                          |       |
+                                           <----->
+                                             sv
+                
+                  Note in the picture, we start the sync plus at the end
+                  of the vertical display data ticks.  Since by the definition
+                  of frame length, a vertical tick is the time for tracing a
+                  complete HORIZONTAL frame, therefore in our example, it
+                  is 1232/65Mhz=18.95us.  Experience shows that a vertical
+                  sync plus should be in the range of 50us and 300us. 
+                  As an example let's use 150us, which translates into 8
+                  vertical clock ticks (150us/18.95us~8).
+
+               Q. Are we done yet?  I am tired!
+               A. YES! we are almost done.  All we need to do from now on
+                  is to write our result into Xconfig as follows:
+
+                  #name    clock   horizontal timing   vertical timing    flag
+                  936x702  65      936 968 1200 1232   702 702 710 737
+
+                  No special flag necessary.  Now we are REALLY done.
+ 
+               Q. Then what is the memory requirement for such a resolution? 
+               A. Memory requirment: 936x702/1024~642K video RAM. So if
+                  you have one meg, you have extra for virtual terminal
+                  switching.  See, this is a good compromise!
+                 
+                  However, if you only have 512K on board, then you can't
+                  use it.  Even if you have a good monitor, without enough
+                  video ram, you can't take advantage of your monitor's
+                  potential.  On the other hand, if your SVGA has one meg,
+                  but your monitor can display at most 800x600, then high
+                  resolution is still beyond your reach.  But the extra
+                  video ram can always be used for useful things like
+                  running multiple servers and virtual terminal switching   
+                  Please read X386.man for details.
+
+               Q. The example you gave is not a standard, can I use it?
+               A. WHY NOT? There is NO reason whatsover why you have to use 
+                  640x480, 800x600, or even 1024x768.  X386 driver lets you 
+                  config your hardware with a lot of freedom.  It usually
+		  takes two to three minutes to come up with the right one.
+ 
+                  The KEY is high refresh rate with reasonable viewing area.
+                  NOT Hi Res at the price of flicker!
+
+
+               Q. Is this the ONLY resolution given the two 65Mhz and 55Khz 
+                  timings?
+               A. ABSOLUTELY NOT!! You are encouraged to follow the general
+                  procedure and do some trial and error to come up with a
+		  setting that's really to your liking.  Believe me, it's fun.
+
+                  Furthermore, you need to read X386.man to see how to set
+                  up different resolutions for the server, and how to use
+                  hot key combos to chose them at run time.  That way, you
+                  can setup different resolutions for different needs.
+
+               Q. You mentioned video bandwidth earlier, why have you not
+                  discussed it yet?
+               A. Because I don't think you can use it for your X386
+                  configuration.  Most of the time you simply can ignore this
+                  monitor characteristics.  With a SVGA and most hi res
+                  monitors, you CAN'T even reach the limit of your monitor's
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  video bandwidth.  The following are examples
+    
+                  Brand                        Video Bandwidth
+                  NEC 4D:                        75Mhz
+                  Nano 9070                      50Mhz
+                  Nano 9080i                     60Mhz
+                  Mitsubishi HL6615             110Mhz
+                  Mitsubishi Diamon San         100Mhz
+                  IDEK MF-5117                   65Mhz
+                  IOCOMM Thinksync-17  CM-7126  136Mhz
+                  HP D1188A                     100Mhz
+                  Philips SC-17AS               110Mhz
+ 
+                  Most well known SVGA cards provide driving frequency ONLY
+                  up to 65Mhz.  So obviously, judging from above samples,
+                  video bandwidth is not a factor you need to worry about.
+
+               Q. Then why do almost all monitor makers make a big fuss
+                  about it?  And what is it anyway?
+               A. Simply put, your monitor employs electronic signals
+                  to represent data (or image to your eyes).  Such signals
+                  always come in a wavy form once they are converted into
+                  analog form from digitized form.  They can be considered
+                  as combinations of many simpler wave forms each one of 
+                  which has a fixed frequency, many of them are in the Mhz
+                  range, eg, 20Mhz, 40Mhz, or even 70Mhz.  Your monitor's
+                  video bandwidth is the capability of it's internal circuits
+                  to process such high frequency signals without distorting 
+                  their forms.
+
+                  So, if a monitor has a board bandwidth, like CM-7126 
+                  listed above, then clearly any signal containing components
+                  having frequencies lower than 136Mhz would come thru it's
+                  circuits with their wave form intact.  Other models can
+                  not claim so. 
+
+                  Consequently, fine details of images can be displayed
+                  without losing fidelity.  Sharpeness is thus maintained.
+               
+                  I emphasize that video bandwidth is just one factor in 
+                  getting a high quality image.  There are other things to
+                  be considered as well.  For more info, consult your
+                  librarian.
+
+               Q. But I don't have a pricy hi-res monitor. Mine is only
+                  a humble NEC Multisync II, should I care?
+               A. Still NO!  NEC Multisync II can't even display 800x600
+                  per it's spec.  It can only display 800x560.  For such
+                  a low resolution, you never need any high clock timing
+                  provided by your SVGA, most likely you can only use 
+                  32Mhz and 36Mhz, both of them are still not too far from
+                  the monitor's rated video bandwidth 30Mhz. 
+ 
+                  At these two driving frequencies, your screen image may 
+                  not be as sharp as it should be, but definitely of tolerable                    quality. Of course it would be nicer if NEC Multisync II
+                  had a video bandwidth higher than, say, 36Mhz.  But this
+                  is not critical for common tasks like text editing, as long
+                  as the difference is not significant so as to cause severe
+                  image distortion (if so your eyes would tell you right away).
+
+                  If you only want 640x480, then only 25Mhz or 28Mhz are 
+                  good choices.  Both of which are lower than 30Mhz. So you
+                  are even safer in this case.
+
+               Q. You just mentioned two standard resolutions. In Xconfig,
+                  there are many standard resolutions available, can you tell
+                  me whether I still need to "tinker" with X386's config?
+               A. Absolutely!  Take, for example, the "standard" 640x480 
+                  listed in the current Xconfig.  It employes 25Mhz driving
+                  frequency, frame lengths are 800 and 525 => refresh rate
+                  ~ 59.5Hz. Not too bad.  But 28Mhz is a commonly available
+                  driving frequency from many SVGA boards.  If we use it to
+                  drive 640x480, following the procedure we discussed above,
+                  you would get frame lengths like 812 and 505.  Now the 
+                  refresh rate is raised to 68Hz, a SIGNIFICANT improvement
+                  over the standard one!  Your eyes will tell you if you 
+                  don't trust my words.
+
+               Q. I don't believe your emphasis on refresh rate! Using your
+                  definition, I got like 45Hz but I feel fine.
+               A. Owing to the geometry of our pupils, when you face your 
+                  monitor, and if you are using a dark background, with 
+                  a good constrast for foreground color, and low to medium
+                  intensity, you shouldn't feel too bad even at 45Hz. 
+
+                  The acid test is this: open a xterm with pure white back-
+                  ground and black foreground using xterm -bg white -fg black
+                  and make it so large as to cover the entire viewable area.
+                  Now turn your monitor's intensity to 3/4 of it's setting,
+                  and turn your face away from the monitor.  Try peeking at
+                  your monitor sideways.  If you don't sense any flicker or
+                  if you feel the flickering is tolerable to you.  Then that
+                  refresh rate is fine with you.  Otherwise you better do
+                  something about it.
+                  
+                  Different individuals have different sensitivity/tolerance
+                  to flickering.  Above 60Hz is HIGHLY recommended.  Remember
+                  even fluorescent lights are refreshed at 60Hz, we still often
+                  use them in clusters to reduce flickering?
+
+               Q. But how about interlace/non-interlace?
+               A. The key word in video watching is NON-FLICKER!  The point
+                  is that non-interlace is just part of the game!  With non
+                  interlace alone BUT low screen refresh rate, your eyes will
+                  suffer badly!!!!  Interlace-ness just worsens the flickering
+                  at the same refresh rate.  If you can manage to get a high
+                  enough refresh rate, say 90 Hz for interlace display, you
+                  WILL NOT feel any flicker!!  (But I doubt this is feasible)
+             
+                  So, CONCLUSION => NON-INTERLACENESS != NON-FLICKER!
+
+               Q. Can you summarize what we have discussed so far?
+               A. Sure! It would be:
+
+                  (1) for any fixed driving frequency, raising max resolution
+                      incurs the penalty of lowering refresh rate and thus
+                      introducing more flickering.
+                  (2) if a high resolution is desirable and your monitor 
+                      supports such, try to get a SVGA card that provides
+                      a matching high driving frequency. The higher, the
+                      better!
+
+
+$XFree86: mit/server/ddx/x386/etc/CONFIG,v 2.1 1993/10/24 13:44:46 dawes Exp $

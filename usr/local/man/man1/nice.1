@@ -1,0 +1,41 @@
+.TH NICE 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+nice \- run a program with modified scheduling priority
+.SH SYNOPSIS
+.B nice
+[\-n adjustment] [\-adjustment] [\-\-adjustment=adjustment]
+[\-\-help] [\-\-version] [command [arg...]]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR nice .
+Note that most shells have a built-in command by the same name and
+with similar functionality.
+.PP
+If no arguments are given,
+.B nice
+prints the current scheduling priority, which it inherited.
+Otherwise,
+.B nice
+runs the given
+.I command
+with its scheduling priority adjusted.
+If no
+.I adjustment
+is given, the priority of the command is incremented by 10.  The
+superuser can specify a negative adjustment.  The priority can be
+adjusted by
+.B nice
+over the range of -20 (the highest priority) to 19 (the lowest).
+.SS OPTIONS
+.TP
+.I "\-n adjustment, \-adjustment, \-\-adjustment=adjustment"
+Add
+.I adjustment
+instead of 10 to the command's priority.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

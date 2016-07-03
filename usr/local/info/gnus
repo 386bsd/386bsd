@@ -1,0 +1,77 @@
+This is Info file ../info/gnus, produced by Makeinfo-1.55 from the
+input file gnus.texi.
+
+   This file documents GNUS, the GNU Emacs newsreader.
+
+   Copyright (C) 1989, 1990, 1993 Free Software Foundation, Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+
+Indirect:
+gnus-1: 783
+gnus-2: 50295
+gnus-3: 93990
+
+Tag Table:
+(Indirect)
+Node: Top783
+Node: Starting Up1458
+Node: Getting Started1823
+Node: Finding the News2109
+Node: Buffers of GNUS4231
+Node: Newsgroup Buffer5069
+Node: Summary Buffer6233
+Node: Newsgroup Commands7369
+Node: Browsing Newsgroups8128
+Node: Selecting a Newsgroup9819
+Node: Maintaining Subscriptions11093
+Node: Exiting GNUS15392
+Node: Other Newsgroup Commands16443
+Node: Summary Commands16992
+Node: Reading Articles18203
+Node: Summary Motion19191
+Node: Reading an Article19997
+Node: Scrolling22569
+Node: Moving Among Articles23569
+Node: Marking Articles25678
+Node: Thread-based Reading28532
+Node: Digest Articles30944
+Node: Searching Articles32773
+Node: Referencing Articles34422
+Node: Saving Articles35374
+Node: Sorting Headers36627
+Node: Posting Articles37827
+Node: Forward and Reply39911
+Node: Exiting Newsgroup40839
+Node: Article Commands41973
+Node: Startup File43376
+Node: Kill File44496
+Node: Making a Kill File45303
+Node: Editing Kill Files48083
+Node: Kill File Example49776
+Node: Names of Kill Files50295
+Node: Background Kills50992
+Node: Advanced Kills51620
+Node: Customization53792
+Node: Variables54379
+Node: NNTP Variables75627
+Node: Spool Variables77247
+Node: Directory Variables78693
+Node: Hooks79529
+Node: Troubleshooting90810
+Node: Reporting Bugs91734
+Node: Index93990
+
+End Tag Table

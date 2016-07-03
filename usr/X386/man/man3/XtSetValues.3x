@@ -1,0 +1,272 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtSetValues 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtSetValues, XtSetSubvalues, XtGetValues, XtGetSubvalues \- obtain and set widget resources 
+.SH SYNTAX
+void XtSetValues(\fIw\fP, \fIargs\fP, \fInum_args\fP)
+.br
+      Widget \fIw\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+void XtSetSubvalues(\fIbase\fP, \fIresources\fP, \fInum_resources\fP, \
+\fIargs\fP, \fInum_args\fP)
+.br
+      XtPointer \fIbase\fP;
+.br
+      XtResourceList \fIresources\fP;
+.br
+      Cardinal \fInum_resources\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+void XtGetValues(\fIw\fP, \fIargs\fP, \fInum_args\fP)
+.br
+      Widget \fIw\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+void XtGetSubvalues(\fIbase\fP, \fIresources\fP, \fInum_resources\fP, \
+\fIargs\fP, \fInum_args\fP)
+.br
+      XtPointer \fIbase\fP;
+.br
+      XtResourceList \fIresources\fP;
+.br
+      Cardinal \fInum_resources\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.SH ARGUMENTS
+.ds Al of name/address pairs that contain the resource name \
+and either the address into which the resource value is to be stored \
+or their new values
+.IP \fIargs\fP 1i
+Specifies the argument list \*(Al.
+.ds Ba retrieved or written
+.IP \fIbase\fP 1i
+Specifies the base address of the subpart data structure where the resources
+should be \*(Ba.
+.IP \fInum_args\fP 1i
+Specifies the number of arguments in the argument list.
+.IP \fIresources\fP 1i
+Specifies the nonwidget resource list or values.
+.IP \fInum_resources\fP 1i
+Specifies the number of resources in the resource list.
+.IP \fIw\fP 1i
+Specifies the widget.
+.SH DESCRIPTION
+The
+.ZN XtSetValues
+function starts with the resources specified for the 
+.ZN Core 
+widget fields and proceeds down the subclass chain to the widget.
+At each stage,
+it writes the new value (if specified by one of the arguments) or the existing
+value (if no new value is specified) to a new widget data record.
+.ZN XtSetValues
+then calls the set_values procedures for the widget in superclass-to-subclass 
+order.
+.IN "hook"
+If the widget has any non-NULL set_values_hook fields,
+these are called immediately after the
+corresponding set_values procedure.
+This procedure permits subclasses to set nonwidget data for
+.ZN XtSetValues .
+.LP
+If the widget's parent is a subclass of
+.ZN constraintWidgetClass ,
+.ZN XtSetValues
+also updates the widget's constraints.
+It starts with the constraint resources specified for
+.ZN constraintWidgetClass
+and proceeds down the subclass chain to the parent's class.
+At each stage,
+it writes the new value or the existing value to a new constraint record.
+It then calls the constraint set_values procedures from
+.ZN constraintWidgetClass
+down to the parent's class.
+The constraint set_values procedures are called with widget arguments,
+as for all set_values procedures, not just the constraint record arguments,
+so that they can make adjustments to the desired values based
+on full information about the widget.
+.LP
+.ZN XtSetValues
+determines if a geometry request is needed by comparing the current widget to
+the new widget.
+If any geometry changes are required,
+it makes the request, and the geometry manager returns
+.ZN XtGeometryYes ,
+.ZN XtGeometryAlmost ,
+or
+.ZN XtGeometryNo .
+If
+.ZN XtGeometryYes ,
+.ZN XtSetValues
+calls the widget's resize procedure.
+If
+.ZN XtGeometryNo ,
+.ZN XtSetValues
+resets the geometry fields to their original values.
+If
+.ZN XtGeometryAlmost ,
+.ZN XtSetValues
+calls the set_values_almost procedure,
+which determines what should be done and writes new values for the
+geometry fields into the new widget.
+.ZN XtSetValues
+then repeats this process,
+deciding once more whether the geometry manager should be called.
+.LP
+Finally, if any of the set_values procedures returned 
+.ZN True ,
+.ZN XtSetValues
+causes the widget's expose procedure to be invoked by calling the Xlib
+.ZN XClearArea
+function on the widget's window.
+.LP
+The
+.ZN XtSetSubvalues
+function stores resources into the structure identified by base.
+.LP
+The
+.ZN XtGetValues
+function starts with the resources specified for the core widget fields
+and proceeds down the subclass chain to the widget.
+The value field of a passed argument list should contain the
+address into which to store the corresponding resource value.
+It is the caller's responsibility
+to allocate and deallocate this storage according to the size of the
+resource representation type used within the widget.
+.LP
+If the widget's parent is a subclass of
+.ZN constraintWidgetClass ,
+.ZN XtGetValues
+then fetches the values for any constraint resources requested.
+It starts with the constraint resources specified for
+.ZN constraintWidgetClass
+and proceeds down to the subclass chain to the parent's constraint resources.
+If the argument list contains a resource name that is not found in any of the
+resource lists searched, 
+the value at the corresponding address is not modified.
+.IN "hook"
+Finally, if the get_values_hook procedures are non-NULL, 
+they are called in superclass-to-subclass order after
+all the resource values have been fetched by
+.ZN XtGetValues .
+This permits a subclass to provide nonwidget resource data to
+.ZN XtGetValues .
+.LP
+The
+.ZN XtGetSubvalues
+function obtains resource values from the structure identified by base.
+.SH "SEE ALSO"
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

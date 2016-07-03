@@ -1,0 +1,30 @@
+.TH TTY 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+tty \- print the file name of the terminal connected to standard input
+.SH SYNOPSIS
+.B tty
+[\-s] [\-\-silent] [\-\-quiet] [\-\-help] [\-\-version]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR tty .
+.B tty
+prints the file name of the tty connected to its standard input.  It
+prints `not a tty' if the standard input is not a tty. Its exit
+status is:
+.nf
+0 if the standard input is a tty
+1 if the standard input is not a tty
+2 if given incorrect arguments
+3 if a write error occurs
+.fi
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-s, \-\-silent, \-\-quiet"
+Print nothing; only return an exit status.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

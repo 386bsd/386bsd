@@ -1,0 +1,66 @@
+CPIO(5)                   386BSD Programmer's Manual                   CPIO(5)
+
+NNAAMMEE
+     ccppiioo - format of cpio archive
+
+DDEESSCCRRIIPPTTIIOONN
+     The header structure, when the --cc option of cpio(1) is not used, is:
+
+           struct {
+                   short   h_magic,
+                           h_dev;
+                   ushort  h_ino,
+                           h_mode,
+                           h_uid,
+                           h_gid;
+                   short   h_nlink,
+                           h_rdev,
+                           h_mtime[2],
+                           h_namesize,
+                           h_filesize[2];
+                   char    h_name[h_namesize rounded to word];
+           } Hdr;
+
+     When the --cc option is used, the header information is described by:
+
+           sscanf(Chdr,"%6o%6o%6o%6o%6o%6o%6o%6o%11lo%6o%11lo%s",
+           &Hdr.h_magic, &Hdr.h_dev, &Hdr.h_ino, &Hdr.h_mode,
+           &Hdr.h_uid, &Hdr.h_gid, &Hdr.h_nlink, &Hdr.h_rdev,
+           &Longtime, &Hdr.h_namesize,&Longfile,Hdr.h_name);
+
+     _L_o_n_g_t_i_m_e and _L_o_n_g_f_i_l_e are equivalent to _H_d_r._h__m_t_i_m_e and _H_d_r._h__f_i_l_e_s_i_z_e,
+     respectively.  The contents of each file are recorded in an element of
+     the array of varying lenght structures, archive, together with other
+     items describing the file.  Every instance of _h__m_a_g_i_c contains the
+     constant 070707 (octal).  The itimes _h__d_e_v through _h__m_t_i_m_e have meanings
+     explained in stat(2).  The length of the null-terminated path name
+     _H__n_a_m_e, icluding the null byte, is given by _h__n_a_m_e_s_i_z_e.
+
+     The last record of the archive always contains the name TRAILER!!!.
+     Special files, directories, and the trailer are recorded with _H__f_i_l_e_s_i_z_e
+     equal to zero.
+
+SSEEEE AALLSSOO
+     cpio(1),  find(1),  stat(2)
+
+HHIISSTTOORRYY
+     A cpio(1) command appeared in AT&T System V UNIX.  This file format is
+     derived from the AT&T System V UNIX sources which were contributed to the
+     public domain by AT&T.
+
+BSD Experimental                 May 10, 1991                                1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

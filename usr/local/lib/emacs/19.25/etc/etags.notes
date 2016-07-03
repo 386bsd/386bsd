@@ -1,0 +1,177 @@
+Return-Path: <kendall%saber@harvard.harvard.edu>
+Date: Thu, 19 Jan 89 12:06:02 EST
+From: kendall%saber@harvard.harvard.edu
+To: rms@wheaties.ai.mit.edu
+Cc: kendall@harvard.harvard.edu
+Subject: Here you go
+
+The papers I signed should arrive tomorrow if they haven't already.
+
+There are three files here: TAGS.README, a file of random comments in
+lieu of real documentation (I didn't get around to modifying the info
+tree); etags.c; and tags.el.
+
+Testing is needed for languages other than elisp, C, and C++.
+
+I'll be back next Thursday.  Hope you like the stuff; talk to you then.
+
+--Sam
+
+------------------------------- TAGS.README ----------------------------
+       Changes and suggested enhancements to etags.c and tags.el
+			      Sam Kendall
+				1/19/89
+
+etags options added (all the options should be documented in the info
+tree, but I didn't get around to doing that):
+
+	-D	C/C++ only: Do not find macro constants.  For many
+		programs, this option halves the size of the TAGS file.
+		Note a bug: macro constants defined to nothing are not
+		found.
+	-S	C/C++ only: Do not assume that a '}' at the beginning of
+		a line means the end of a function.  -S is helpful for
+		some poorly indented programs, such as "cfront".  Do not
+		use -S if your braces are unbalanced (as can happen with
+		conditional compilation).
+
+There was a -C option, meaning assume that .h and .c files are C++
+rather than C, but I made it the default.  It seems to produce very few
+spurious C++ tags in C programs.
+
+I've made it illegal to pass most ctags options to etags.  (To use the
+program as ctags, it must be compiled with -DCTAGS, or with neither
+-DETAGS nor -DCTAGS.)
+
+I haven't documented the ctags-only options here.
+
+tags.el modified as follows:
+
+ 1. find-tag modified to handle the new "tag" field in a tag
+    line.  A tag line can either be in the old format:
+
+		definition\177lineno,charno
+
+    or can have the additional "tag" field:
+
+    		definition\177lineno,charno,\001tag
+
+    This "tag" field is necessary for C++, where the entire tag is NOT
+    necessarily found on the definition line.  The "tag" field also
+    helps with exact tag matching.  There may be more than one tag,
+    separated by \001 characters.
+
+    The theory here is that you provide the tag field when the
+    definition field does not contain the correct tag.  This theory could
+    be made more rigorous, to help with, for instance, exact tag matching
+    in mixed Lisp/C programs.
+    
+    The old tags.el will fail with new-format lines in TAGS files, but
+    there are many new-format lines only in C++ programs.
+
+    This tags.el will work fine with old-format TAGS files.
+
+ 2. All tags functions modified to ignore the character count that
+    follows each filename in the TAGS file.  Behavior is not changed,
+    but this makes it much easier to write a program that edits the
+    TAGS file.
+
+ 3. When finding multiple matches for the same tag (via a prefix arg
+    to find-tag, usually invoked with "ESC ,"), exact matches
+    are found first; then word matches; then other matches.
+
+tags.el enhancements needed:
+
+	doesn't know how to handle included TAGS files yet
+	per-mode and/or local versions of find-tag-default,
+		for easy customization
+	eliminate duplicates in alist when prompting
+
+Enhancements to make:
+
+   * Generalize file suffix stuff -- clumsy and verbose now.  Should
+     be config-file- or environment variable- or option-driven.
+   * Treat C++ "operator token" as a single identifier -- canonicalize
+     to leave one space between "operator" and token when token is
+     an identifier, no space when token is an operator.
+   * Make a tag for a struct tag in plain C as `struct name' (likewise
+     for union etc.).  In canonical form, exactly one space in between.
+     Currently we make `name' into a tag in etags only; we can't in
+     ctags because `name' may not be unique, which breaks ctags.
+   * Symbol table should be implemented as a hash table instead of as a
+     linked list.
+   * The TeX stuff should use the Stab abstraction.
+   * Needs profiling and performance enhancements.
+   * Can -C be eliminated?  It is (nearly) unnecessary complexity.  Perhaps
+     merge -C and -t into a single option that indicates "well-formed
+     programs".  This option should probably be the default.  In etags
+     only, not ctags.  (ctags must not find struct tags by default in
+     plain C.)
+   * Is it possible to match C global variables?  It would be real nice.
+   * The C line "struct foo { ... };" will create a tag line that
+     searches for "struct foo ".  If the search included the "{" it
+     would be more specific.  This point is even more true if "foo" and
+     "{" are separated by a newline rather than a space, but having the
+     search pattern include a newline would require changes in the TAGS
+     file format.
+   * Needs config file to handle typical heavy C++ macrification.  Config file
+     must allow the definition of macros that expand to types (e.g.
+     `Seq(T)' expands to `Seq_T'), symbol-defining macros (e.g.
+     `DefineSeq(T)' should be interpreted as a definition of `Seq_T'),
+     macros that expand to symbols (e.g. `M(Foo,Bar)' expands to
+     `Class_Foo::Bar'), and macros that cause unbalanced braces or
+     parens (e.g. `LOOP' (whose C definition is "while(1){") leaves one
+     left brace).  Probably others.
+   * Config file should also handle definition of the "DEF" convention
+     of the Gnu Emacs source, and definition of the C* language
+     ("domain" keyword), so these can be taken out of the etags source.
+   * For C++, "::" is only understood if it occurs between identifiers with no
+     intervening whitespace.  This style of C++ function definition:
+     	   returntype classname::
+	   functionname(formals) {
+	        ...
+	   }
+     is not understood.
+   * Is there "::" handling needed for Common Lisp?
+   * Nroff/troff handling would be easy to write and useful.  It could
+     be one of the default file modes, along with Pascal, Fortran and C
+     -- if a source file starts with "'" or ".", it's nroff/troff
+     source.
+   * There should be a defined interface between the
+     language-independent part of etags and the language modules.  This
+     would make it easier to add a module.
+   * Macros defined inside braces aren't found, e.g.,
+        struct foo {
+	#define FOO() BAR
+	... };
+   * '#' is only recognized to start a preprocessor line if it is in
+     column 0.  According to ANSI it can be preceded by whitespace.
+   * A constant macro with no definition, e.g. `#define FOO', will not
+     be tagged, because `definedef' is prematurely reset by CNL.
+   * `typedef unsigned char TOK;' will get `char' defined as well as `TOK'.
+
+Items about the format of the TAGS file:
+
+   * Should make some special indication in a tags line that means both
+     (1) the pattern is an exact match for the definition line, and (2)
+     the ^? immediately follows the tag.  In absence of this indication,
+     the pattern is only the beginning of the definition line, and the
+     last character before the ^? is not part of the tag.  Helps in the
+     following situation:
+	struct foo *p;
+	struct foo
+	{
+	 ...
+	};
+     Currently find-tag finds the first line instead of the correct
+     second one.
+   * Some way to tell whether the line `char *foo^?5,200' is the tag
+     `foo' or `*foo'.  Since there are no modes in the TAGS file, we
+     can't (easily) say that since this is C, it can't be `*foo'.  So
+     this line should be `char *foo^?5,200,^Afoo'.  We need to decide on
+     the characters that are not in identifiers for any language.  How
+     about space, TAB, FF, `(', `)', and `;'?
+   * Along the same lines, both etags and tags.el should canonicalize
+     tags to lowercase for case-independent languages.  So `(defun
+     Foo^?5,200' in Lisp (but not Elisp) should be `(defun
+     Foo^?5,200,^Afoo'.

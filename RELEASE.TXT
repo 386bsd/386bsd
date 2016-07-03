@@ -1,0 +1,661 @@
+
+
+
+
+
+
+
+	  TeleMuse
+	  386BSD Project
+	  Oakland, CA.
+	  510-420-0174
+
+					September 1, 1994
+
+
+	  Dear Colleague:
+
+	       We  are	pleased	to  present  the  October 1994 386BSD
+	  Release 1.0 update to our earlier 1992 386BSD	Release  0.1.
+	  This	release is copyrighted by William F. Jolitz, TeleMuse,
+	  but is made available for free redistribution.  It  requires
+	  no  prior license from AT&T or The Regents of the University
+	  of California. However, individual packages and/or files  in
+	  the  user  portion  of  this	release may contain additional
+	  restrictions beyond that discussed in the file COPYRGHT.TXT.
+	  In  these  cases,  the  source code copyright and/or license
+	  agreement for that individual package and/or file should  be
+	  referred to for usage guidelines.
+
+	       This  new  release  of  386BSD contains portions of the
+	  prior 386BSD release	along  with  completely	new  material
+	  written  by  the  developer  and not made available prior to
+	  this	release.  It  also  contains  updates  and  new	work
+	  previously made available to the Internet community compiled
+	  and ready for use as a courtesy to the user.	(Please	refer
+	  to  the  CONTRIB.TXT	file  for  other  contributors	to the
+	  development of 386BSD releases).
+
+	       Although many portions of this work have	been  written
+	  and incorporated only recently, and thus have not been well-
+	  tested, we have received numerous requests for  portions  of
+	  this	system. Therefore, we are providing this release as an
+	  experimental test release for interested developers.
+
+	       The purpose of the remaining sections of this letter is
+	  to  familiarize  the	user with the new technical details of
+	  this release so that it may be better	understood  prior  to
+	  use.
+
+	  Distribution Contents
+
+	       This  distribution  is  a  complete  source  and binary
+	  distribution for the 80386, 80486,  and  Pentium  family  of
+	  microprocessors     running	on	a    PC-AT    platform
+	  (ISA/EISA/PCI/VESA bus). A limited number of device  drivers
+	  is  provided.	However,  the	barrier to the addition of new
+	  drivers has been significantly lowered with  the  changeover
+	  to  the  new	modular	kernel arrangement in 386BSD (see the
+	  Highlights section for more information).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       This software distribution is being made	available  to
+	  official Internet distribution mirror sites by UCSF from the
+	  site bsdserver.ucsf.edu as a courtesy to the educational and
+	  research   community.	Due	to  limitations  in  Internet
+	  connectivity, only official Internet distribution sites  may
+	  mirror  this	software for redistribution to others. Contact
+	  the system administrator for mirror site instructions.
+
+	       This software  distribution  is	also  available	on  a
+	  bootable  CD-ROM as part of the 386BSD Release 1.0 Reference
+	  CD-ROM from Dr. Dobbs Journal	(Miller-Freeman  Publishing).
+	  This	special	CD-ROM	also  contains	Windows-formatted and
+	  hyperlinked  386BSD  information  including  annotations  of
+	  select  kernel  files,  articles,  and other 386BSD-specific
+	  information. The system can be booted and run	from  Windows
+	  and/or installed in a partition on select PC configurations.
+	  For further information contact:
+
+	      386BSD Reference CD-ROM
+	      411 Borel Avenue
+	      San Mateo, CA. 94402 USA
+	      1-800-872-7467 VOICE
+	      1-415-358-9749 FAX
+	      1-415-3580-9500 (outside of USA)
+
+
+	       This distribution represents a work-in-progress.	While
+	  much	information can be divined from the actual source code
+	  contained with this distribution, the annotations and	other
+	  writings  on	the  CD-ROM  discuss this work in much greater
+	  detail (along with items which have been developed  but  are
+	  not  yet  ready for release). These writings are the primary
+	  reference for past, current, and future  386BSD  development
+	  and  should  be  referred  to	prior to embarking on any new
+	  system development.  It should be noted that these and other
+	  writings  on	386BSD	are not considered part of the general
+	  386BSD source/binary distribution  and  are  made  available
+	  only through Miller-Freeman Publications.
+
+	  Intended Audience for this Distribution
+
+	       This   release	is  intended  for  experienced	system
+	  developers and others who wish to preview or experiment with
+	  the	most   recent	386BSD	release.  While	theoretically
+	  possible,  due  to  the  massive  amount  of	change	made
+	  throughout  the system to accommodate new kernel development
+	  it is not recommended that new portions of this  release  be
+	  incorporated	into older versions of the system. This system
+	  is also not intended to be used on production or  commercial
+	  systems.  If	a production or commercial system is required,
+	  the developer recommends the purchase of a commercial	grade
+	  product  for	the  PC	from  a  major	vendor	such  as  SUN
+	  Microsystems or Microsoft.
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       There is no support available for  386BSD  Release  1.0
+	  (see	the file SOFTSUB.TXT for information on bugs fixes and
+	  software submissions).  It is instead recommended that users
+	  inexperienced	with  386BSD  or those planning on attempting
+	  any  new  kernel   development   first   read	the	386BSD
+	  documentation	available  on the CD-ROM.  For information on
+	  how to learn about updates, fixes, new  writings  and	talks
+	  about 386BSD, please read the INFO.TXT file.
+
+	  Summary of Changes from the Prior Release
+
+	       This  section outlines only the major changes to 386BSD
+	  as discussed at the August 1994 SVNET Meeting in  San	Jose,
+	  California  (USA)  by	William F. Jolitz. As stated earlier,
+	  the 386BSD CD-ROM annotations are intended  as  the  primary
+	  source  for  detailed	discussions of implementation, design
+	  considerations and trade-offs, and future considerations.
+
+	       Major changes have been made to the 386BSD system.  The
+	  primary  areas  of  change  reside in the new modular kernel
+	  arrangement, system configuration, and  the  virtual	memory
+	  system.  386BSD new work has been broken up into four areas:
+	  extensibility,      performance,	restructuring	for
+	  multiprocessing, and usability issues.
+
+	  Highlights of 386BSD Release 1.0
+
+	       The  kernel  taxonomy  (as outlined in man(9)) has been
+	  completely changed, since the	kernel	is  now  composed  of
+	  independent  modules.	As a result of this, many new effects
+	  are now possible:
+
+	  *    No more system configuration compilation files.
+
+	  *    Replacing  compile-time	metaphor   with	a   run-time
+	       metaphor. (However, still compile-time provisioning via
+	       makefile).
+
+	  *    Controlled  interface  scope  (module,  class,  kernel,
+	       user).
+
+	  *    Module interfaces exportable to user mode or network.
+
+	  A  large  number  of	changes	have been made throughout the
+	  kernel to remove bottlenecks to performance:
+
+	  *    Generic inlining (profiling, debugging, selective).
+
+	  *    Avoiding and/or reducing copyin/out costs.
+
+	  *    2 KByte mbuf clusters (and improved ethernet driver).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  *    Reduced resource fragmentation (malloc, map entries).
+
+	  *    Extensively revised virtual memory system.
+
+	  *    Improved page reclamation and elimination of  swapping.
+
+	  *    Reduced	context	switch	and  interrupt	overhead  and
+	       process creation overhead.
+
+	  Future work in 386BSD is oriented towards an exploration  of
+	  multiprocessing.   As	such,	much preliminary work has been
+	  done to facilitate multithreading in the kernel:
+
+	  *    Kernel thread generation (tfork(),texit()).
+
+	  *    Virtual address space sharing.
+
+	  *    Kernel stacks at unique kernel virtual addresses.
+
+	  *    Process relative operations (including copyin/out).
+
+	  *    Logical I/O mechanism.
+
+	  *    Thread creation independent of address space.
+
+	  And finally, changes have been made to improve the usability
+	  of the system:
+
+	  *    Dynamic	configuration (symbolic, unordered, universal)
+	       -- "plug-and-play".
+
+	  *    Uniform source tree and program build environments.
+
+	  *    Provision for multiple system environments.
+
+	  *    Provision for easy extensibility.
+
+	  *    Minimized system management overhead.
+
+	  *    Extended kernel tracing for performance evaluation  and
+	       fault isolation.
+
+	  *    Role based security to restrict/interdict intrusion..
+
+	  Whats New in the Design of 386BSD Release 1.0
+
+	       Release	1.0  is	the first official release of 386BSD.
+	  Earlier work-in-progress versions of 386BSD had  significant
+	  problems  that  could	not  be addressed in a timely fashion
+	  without redesign. Among the major changes in this release:
+
+	  Virtual Memory System
+	       The core of the virtual memory system was examined  and
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       critically  revised  to eliminate problems exposed when
+	       we attempted to unify the filesystem and virtual memory
+	       system  file  state  cache. It was also restructured to
+	       eliminate the "glue" code used to attach it to the rest
+	       of the kernel, and the kernel interface was expanded to
+	       make more concise (as a part of the system's  taxonomy)
+	       the  boundary  with  the	kernel.  Page reclamation was
+	       greatly improved by a variable rate page	scanner  that
+	       implements  a  form  of	LIFO  on  both	referenced and
+	       modified pages.
+
+	  Configuration
+	       Dynamic	configuration	of   kernel   drivers,	line
+	       disciplines,  protocols	and  filesystems is present in
+	       the kernel. Instead of a	configuration	program	(e.g.
+	       "config")  that builds tables from system descriptions,
+	       a single file is macro expanded by the "make"  facility
+	       to  construct  a	kernel	program,  which  may  then be
+	       tailored to a specific system by means of a  file  read
+	       during system bootstrap (/.config).
+
+	  Kernel Organization
+	       While  still  compiled  as a single file, the kernel is
+	       arranged	as  a	series	of  independent	modules  that
+	       ultimately  will	be  compiled and loaded independently
+	       (see Research Directions following). The kernel is  now
+	       arranged	quite	differently,  employing  the  modular
+	       makefiles as used by the user utility programs.	Thus,
+	       independent makefiles for each subsystem are invoked by
+	       a master makefile via composition.
+
+	  Memory Allocation
+	       Both the kernel's memory allocator (malloc), as well as
+	       the   virtual  memory  systems  root  memory  allocator
+	       (kmem_alloc)  have  been	considerably	reworked   and
+	       rewritten  to  reduce memory fragmentation and maintain
+	       memory resource in a way that avoids  many  unnecessary
+	       blocks for memory in the kernel.
+
+	  Concurrent Objects
+	       Processes   now	rely	on  kernel  threads  that  may
+	       eventually share a single  address  space.  Kernel-only
+	       threads	share  a  single  address space context on the
+	       entire machine, so that context switches	between  them
+	       can avoid high cost switches. Context switching between
+	       ordinary processes is three to five times  faster  than
+	       before,	while	signal	delivery   (real  time  from
+	       generation to delivery) is  now	more  than  ten	times
+	       faster.
+
+	  Interface Organization
+	       Both  kernel  and  user	programs  now  operate under a
+	       hierarchy of interface, where the only default  set  of
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       public  interfaces correspond to industry standard ones
+	       (e.g. POSIX 1003.1, as opposed to  ad-hoc  BSD  or  SVR
+	       ones).	This  distinction  is  a  means	to starting a
+	       process of separating out programs  and	interfaces  in
+	       such  a	way  that  multiple ad-hoc interfaces, or even
+	       composite groups	(like	a  particular  combination  of
+	       groups) can be implemented on the system. A skeleton of
+	       this structure be found in the "NONSTD" feature used in
+	       the   utilities,	as  implemented  with	libraries  and
+	       include files (for the moment only). The intent of this
+	       work  is	to  symbolically  bind	interfaces instead of
+	       rooting new ones into the filesystem --	unfortunately,
+	       since this is just the beginning of this process, it is
+	       far from complete and has been left as an exercise  for
+	       the  reader  (only a "bsd" interface is present for use
+	       in allowing "old" programs to function).
+
+	  Security
+	       The model of privilege  and  process  credentials  have
+	       changed	to  allow  for	a  more	flexible treatment of
+	       process	privileges  beyond  the	older	single   one
+	       ("superuser")  contained in the traditional UNIX model.
+	       A new concept, that of a "role" under which  the	scope
+	       of  operations  allowable  to a process are classified,
+	       has been added.	Roles	are  independent  of  ordinary
+	       POSIX  attributes, and may in certain cases be entirely
+	       determined within the kernel.
+
+	       Detailed discussions of many of these areas,  including
+	  implementation,  trade-offs  and  design  goals,  and future
+	  directions are discussed in the annotations of select kernel
+	  source  code available from Miller-Freeman (see Distribution
+	  Contents above).
+
+	  Items Intentionally Not Included in Release 1.0
+
+	       Certain works-in-progress, which are written but	still
+	  in  the  development	and  testing  phase,  were  deemed too
+	  premature to release and as such are not included in Release
+	  1.0.	The  two primary items here are the dynamically boot-
+	  loadable modules and the page cache (although certain	parts
+	  of both are evident in the changes in the kernel code itself
+	  -- see the annotations for more  information).  We  hope  to
+	  follow up Release 1.0 with these additional items as well as
+	  other new work discussed in the following section.
+
+	       In addition, no work from the incomplete 4.4  Lite  was
+	  include  in this release, primarily because it has been made
+	  available at the very close  of  this	project.  However,  a
+	  preliminary  review  of this work has already indicated that
+	  some of the advantages hoped for from this work (such as  in
+	  the  area  of filesystems) appear ill-fitting to our current
+	  technical directions (e.g. by relying more on	compile  time
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  binding),  while  others  do	not  present a clear advantage
+	  (e.g.	leases) over the increase in complexity demanded  for
+	  proper   implementation.   At	this  point  in  time	it  is
+	  difficult to	assess	what  clear  technical	value  can  be
+	  abstracted   from  the  last	University  of	California  at
+	  Berkeley BSD "release", since its incompleteness and lack of
+	  new  technical focus appears to limit it to the status of an
+	  improved NET/2 release, and  does  not  quite	hold  to  the
+	  standard  of	a  traditional	standard BSD release (a better
+	  name for it might be "NET/3 - 1"). We do hope, however, that
+	  after	much  review  that  we	will  be  able to extract and
+	  incorporate what technical value exists from this final  BSD
+	  release,  if	only  to allow others the chance to pursue the
+	  last remnants of this venerable and now ended tradition.
+
+	  Research and Development Directions for the Next Release
+
+	       While many in the BSD flock have concentrated on	near-
+	  term	operations and support of BSD-based systems, our focus
+	  of  interest	continues  to  be  on  the   "hard"   problems
+	  afflicting	both   research	(and	commercial)   systems
+	  architectures today. As a brief status report and direction,
+	  we  include the following items which synopsize our projects
+	  direction  by	selection  of	topics	(again,	many  of  the
+	  implementation details are discussed in the annotations):
+
+	  Configuration
+	       We  really  need	to finish what was started in Release
+	       1.0  by	breaking  the  remaining  ties	and   allowing
+	       independent   compilation   and	run-time  loading  of
+	       modules. In addition, the kernel is arranged to run  in
+	       "driver-less"  mode  via the BIOS/DOS drivers, allowing
+	       post kernel load configuration by  user	process.  This
+	       configuration  paradigm is extended to include revision
+	       by  a  configuration  daemon   so   that	the	kernel
+	       capabilities can be altered to suit need.
+
+	  Page Cache
+	       Now that the virtual memory system has been stabilized,
+	       the "glue" removed and some significant problems fixed,
+	       all  of	the  problem  areas stressed by the page cache
+	       have been eliminated. Thus, the page cache can  now  be
+	       re-inserted  into  the  system,	entirely replacing the
+	       pager, buffer cache, and significant  portions  of  the
+	       filesystem   implementation.   This   change   requires
+	       considerable  interface	changes	to   the   filesystem
+	       interface and organization, as abstract state is cached
+	       in  a  different	way  than  that  of  the  lower-level
+	       transfer cache (the root problem is that of a level-of-
+	       abstraction contradiction between  the  virtual	memory
+	       system  and  the filesystem). This change facilitates a
+	       cache-consistent VM layer across a distributed system's
+	       file-like  objects (as is necessary for large processor
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       cluster use).
+
+	  Multiprocessing
+	       In Release 1.0 the kernel was restructured to allow for
+	       certain	kinds  of  multiprocessing  to be implemented.
+	       The thread mechanism must be completed to allow address
+	       space  sharing  and remote context access via in-kernel
+	       network proxies (not unlike  NFS	client	sockets).  In
+	       this case, parallelism is present as shared or distinct
+	       process context models, independent of actual processor
+	       hardware	(e.g. you can "cluster" on a SMP, or simulate
+	       sharing	by   messaging	across   cluster   processor
+	       elements). Synchronization is to be achieved by a novel
+	       scheme of binding  threads  to  shared  objects	via  a
+	       static  reservation arrangement, so that it is possible
+	       to  avoid  embedding  support  for  fine-grain  locking
+	       throughout  the kernel program.	It is anticipated that
+	       while this solution will be less efficient  than	fine-
+	       grain  locking,	it will be manageable for a project of
+	       the scale of 386BSD  and,  if  successful,  afford  the
+	       opportunity  to	study  ways of improving how to employ
+	       parallelism  in	the  operating	system	incrementally
+	       across  different  degrees  of  coupling	(e.g.	intra-
+	       processor, SMP, cluster, and so forth).
+
+	  Security
+	       Release 1.0 introduced the  concept  of	a  "role"  and
+	       embedded	part of the implementation to show how it can
+	       be  employed.  Unfortunately,   both   the   filesystem
+	       implementation  (attribute/access  mediation)  and  the
+	       user level interface (chflags(), et al) are  incomplete
+	       to  take	advantage of this new mechanism. In addition,
+	       the network protocols need to interact  with  the  role
+	       credential    attribute	to   intrinsicly   associate
+	       communications content with  it.	Thus,	part  of  this
+	       concept is made impenetrable by inherent communications
+	       properties, shifting the point of focus to the external
+	       network.
+
+	  SIGNA
+	       Release 1.0 uses the old Berkeley protocol stack, which
+	       works adequately	for  use  with	ethernet-based	PC's.
+	       However,	the 386BSD Simple Internet Gigabit Networking
+	       Architecture (SIGNA) must be combined with an  adequate
+	       hardware interface to exploit high-speed communications
+	       (gigabit loopback interfaces serve no purpose) as  well
+	       as  a  robust  kernel  implementation.  The jist of the
+	       problem here is that a simple  protocol	implementation
+	       merely  passes  the  stress onto every other portion of
+	       the kernel -- yet it is still necessary to support  the
+	       rich  flexibility contained in the "old" implementation
+	       as well.	This gap between a proof  of  concept	and  a
+	       viable replacement is admittedly large, but offers much
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       interesting new work to explore.
+
+	  Dynamic Filesystem Binding/Stacking
+	       Aside from the hype surrounding using  compositions  of
+	       filesystems as a central operating system paradigm, the
+	       convenience of decoupling the storage methods of a file
+	       from  the  program-visible  semantics of the filesystem
+	       argues  strongly	for  allowing	filesystem   stacking.
+	       Existing	systems  that allow this do so in complex and
+	       ad-hoc ways that seem  to  contain  as  many  flaws  as
+	       virtues.	Most	rely  on  elaborate  statically-bound
+	       configuration arrangements that are actually more of  a
+	       way  of	converting  filesystem	objects	as  they pass
+	       between layers than anything else. Perhaps more time is
+	       spent	in    industriously   maintaining   filesystem
+	       abstractions than achieving file I/O -- instead, we can
+	       bind  associated	filesystem  objects  to the semantics
+	       directly and have the  effect  of  filesystem  stacking
+	       without	the  overhead  (e.g.  by  lazy	evaluation  of
+	       certain filesystem objects). This approach  also	lends
+	       itself  well to lowering the cost of maintaining cache-
+	       consistency in  distributed  filesystems	as  well.  In
+	       short,  we need a scalable filesystem interface instead
+	       of the current VFS/VNODE arrangement.
+
+	  Currents
+	       In a similar vein, communications can  be  handled  via
+	       stackable  protocols  like  streams  through  use  of a
+	       similar binding structure.  By this choice, a  streams-
+	       like  protocol  stacking	mechanism  can	be  used that
+	       similarly avoids the overhead of the  rigid  framework.
+	       It  appears  that  the  frameworks  for	filesystem and
+	       streams are strikingly similar, and it may be  possible
+	       to  combine them (if not necessary to do so for certain
+	       performance reasons).
+
+	  Other Architectures: Power PC?
+	       At some point a second architecture, preferably one  in
+	       wide  use  and  with  publically	available  details of
+	       operation (unlike  Pentium,  for	example),  should  be
+	       chosen as a second designated 386BSD architecture. This
+	       would allow us to avoid the temptation of exploiting  a
+	       specific	processor too much.  While this small project
+	       cannot  afford  the  disruption	(and  annoyances)   of
+	       supporting  an  arbitrary  set of obscure (or obsolete)
+	       architectures, supporting at least one other may	be  a
+	       wise  decision.	The Power PC (and possibly Alpha) is a
+	       potential candidate for this, among a few others.
+
+	  UNICODE
+	       The  system   needs   to	be   extended	to   support
+	       internationalization and localization using 16- and 32-
+	       bit character sets, either by runic coding and/or  full
+
+
+
+
+
+
+
+
+
+
+
+
+
+	       wide  character	replacements. A POSIX w_termio module,
+	       drivers, and a filesystem  attribute  to	select	wide-
+	       character  operation seem like the first step, followed
+	       by the creation of a program development environment to
+	       suit.
+
+	  Emulation/Interoperation
+	       The  nascent  support  for  multiple  operating systems
+	       personalities (NONSTDINC feature) along with  user-mode
+	       emulation  capability  need  to be fully implemented to
+	       allow   support	of   arbitrary	operating    systems
+	       applications  program  interfaces on a single operating
+	       system kernel. It should be possible to compile and run
+	       the  same  source  without  contextual  change (as if a
+	       different operating system was present).	Both  compile
+	       time and run time capability are important here.
+
+	  Error Recovery
+	       Long  a	bane  of  UNIX	systems in general, the entire
+	       operating  system's  architecture  and  especially  the
+	       kernel program need to be restructured to eliminate the
+	       "panic()" approach to  system  recovery.	Instead,  the
+	       system  needs  to contain the damage, shed the affected
+	       control path, release resources, and recover integrity.
+	       In  addition,  the  degree  of  integrity  of all user-
+	       visible objects must be	tracked	and  bound  with  the
+	       object.
+
+	  Thank You
+
+	       Thank  You  For Your Interest in the 386BSD Project. We
+	  hope that this release encourages you towards	positive  and
+	  productive  operating	systems  research and development and
+	  that your enthusiasm will allow us to release	and  document
+	  even more exciting versions of 386BSD.
+
+		    William F. Jolitz
+		    Lynne Greer Jolitz
+		    386BSD Project
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

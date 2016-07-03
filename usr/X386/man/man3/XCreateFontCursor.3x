@@ -1,0 +1,311 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XCreateFontCursor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XCreateFontCursor, XCreatePixmapCursor, XCreateGlyphCursor \- create cursors
+.SH SYNTAX
+.\" $Header: XCursor.f,v 1.1 88/02/26 09:59:17 mento Exp $
+#include <X11/cursorfont.h>
+.sp 6p
+Cursor XCreateFontCursor\^(\^\fIdisplay\fP, \fIshape\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      unsigned int \fIshape\fP\^;
+.LP
+.\" $Header: XCreCursor.f,v 1.1 88/02/26 09:59:09 mento Exp $
+Cursor XCreatePixmapCursor\^(\^\fIdisplay\fP, \fIsource\fP\^, \fImask\fP\^, \fIforeground_color\fP\^, \fIbackground_color\fP\^, \fIx\fP\^, \fIy\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Pixmap \fIsource\fP\^;
+.br
+      Pixmap \fImask\fP\^;
+.br
+      XColor *\fIforeground_color\fP\^;
+.br
+      XColor *\fIbackground_color\fP\^;
+.br
+      unsigned int \fIx\fP\^, \fIy\fP\^;
+.LP
+.\" $Header: XCreateGlCur.f,v 1.1 88/02/26 09:59:16 mento Exp $
+Cursor XCreateGlyphCursor\^(\^\fIdisplay\fP, \fIsource_font\fP\^, \fImask_font\fP\^, \fIsource_char\fP\^, \fImask_char\fP\^,
+.br
+                           \fIforeground_color\fP\^, \fIbackground_color\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Font \fIsource_font\fP\^, \fImask_font\fP\^;
+.br
+      unsigned int \fIsource_char\fP\^, \fImask_char\fP\^;
+.br
+      XColor *\fIforeground_color\fP\^;
+.br
+      XColor *\fIbackground_color\fP\^;
+.SH ARGUMENTS
+.\" $Header: bcolor.a,v 1.2 88/05/13 12:53:45 mento Exp $
+.IP \fIbackground_color\fP 1i
+Specifies the RGB values for the background of the source.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: scolor.a,v 1.2 88/05/13 12:51:29 mento Exp $
+.IP \fIforeground_color\fP 1i
+Specifies the RGB values for the foreground of the source. 
+.IP \fImask\fP 1i
+Specifies the cursor's source bits to be displayed or
+.ZN None .
+.\" $Header: mchar.a,v 1.1 88/02/26 10:28:52 mento Exp $
+.IP \fImask_char\fP 1i
+Specifies the glyph character for the mask. 
+.\" $Header: mfont.a,v 1.2 88/05/13 13:01:38 mento Exp $
+.IP \fImask_font\fP 1i
+Specifies the font for the mask glyph or
+.ZN None .
+.IP \fIshape\fP 1i
+Specifies the shape of the cursor.
+.\" $Header: source.a,v 1.1 88/02/26 10:31:17 mento Exp $
+.IP \fIsource\fP 1i
+Specifies the shape of the source cursor.
+.\" *** JIM: NEED TO CHECK THIS. ***
+.\" $Header: schar.a,v 1.1 88/02/26 10:31:06 mento Exp $
+.IP \fIsource_char\fP 1i
+Specifies the character glyph for the source.
+.\" $Header: sfont.a,v 1.1 88/02/26 10:31:12 mento Exp $
+.IP \fIsource_font\fP 1i
+Specifies the font for the source glyph.
+.ds Xy , which indicate the hotspot relative to the source's origin
+.\" $Header: xy_gen.a,v 1.2 88/08/04 11:22:37 mento Exp $
+.IP \fIx\fP 1i
+.br
+.ns
+.IP \fIy\fP 1i
+Specify the x and y coordinates\*(Xy.
+.SH DESCRIPTION
+.\" $Header: XCursor.d,v 1.2 88/06/11 07:49:47 mento Exp $
+X provides a set of standard cursor shapes in a special font named
+cursor.
+Applications are encouraged to use this interface for their cursors
+because the font can be customized for the individual display type.
+The shape argument specifies which glyph of the standard fonts
+to use.
+.LP
+The hotspot comes from the information stored in the cursor font.
+The initial colors of a cursor are a black foreground and a white
+background (see
+.ZN XRecolorCursor ).
+.LP
+.ZN XCreateFontCursor
+can generate
+.ZN BadAlloc
+and
+.ZN BadValue 
+errors.
+.LP
+.\" $Header: XCreCursor.d,v 1.2 88/06/11 07:49:29 mento Exp $
+The
+.ZN XCreatePixmapCursor
+function creates a cursor and returns the cursor ID associated with it.
+The foreground and background RGB values must be specified using
+foreground_color and background_color,
+even if the X server only has a
+.ZN StaticGray
+or
+.ZN GrayScale
+screen.
+The foreground color is used for the pixels set to 1 in the
+source, and the background color is used for the pixels set to 0.
+Both source and mask, if specified, must have depth one (or a 
+.ZN BadMatch
+error results) but can have any root.
+The mask argument defines the shape of the cursor.
+The pixels set to 1 in the mask define which source pixels are displayed,
+and the pixels set to 0 define which pixels are ignored.
+If no mask is given, 
+all pixels of the source are displayed.
+The mask, if present, must be the same size as the pixmap defined by the 
+source argument, or a
+.ZN BadMatch
+error results.
+The hotspot must be a point within the source,
+or a
+.ZN BadMatch
+error results.
+.LP
+The components of the cursor can be transformed arbitrarily to meet
+display limitations.
+The pixmaps can be freed immediately if no further explicit references
+to them are to be made.
+Subsequent drawing in the source or mask pixmap has an undefined effect on the
+cursor.
+The X server might or might not make a copy of the pixmap.
+.LP
+.ZN XCreatePixmapCursor
+can generate
+.ZN BadAlloc
+and
+.ZN BadPixmap 
+errors.
+.LP
+.\" $Header: XCreateGlCur.d,v 1.4 88/06/11 07:49:41 mento Exp $
+The
+.ZN XCreateGlyphCursor
+function is similar to
+.ZN XCreatePixmapCursor
+except that the source and mask bitmaps are obtained from the specified 
+font glyphs.
+The source_char must be a defined glyph in source_font, 
+or a
+.ZN BadValue
+error results.
+If mask_font is given, 
+mask_char must be a defined glyph in mask_font,
+or a
+.ZN BadValue
+error results.
+The mask_font and character are optional.
+The origins of the source_char and mask_char (if defined) glyphs are
+positioned coincidently and define the hotspot. 
+The source_char and mask_char need not have the same bounding box metrics, 
+and there is no restriction on the placement of the hotspot relative to the bounding
+boxes. 
+If no mask_char is given, all pixels of the source are displayed.
+You can free the fonts immediately by calling
+.ZN XFreeFont
+if no further explicit references to them are to be made. 
+.LP
+For 2-byte matrix fonts, 
+the 16-bit value should be formed with the byte1
+member in the most-significant byte and the byte2 member in the 
+least-significant byte.
+.LP
+.ZN XCreateGlyphCursor
+can generate
+.ZN BadAlloc ,
+.ZN BadFont ,
+and
+.ZN BadValue 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badfont.e,v 1.2 87/09/09 18:08:11 mento Exp $
+.TP 1i
+.ZN BadFont
+A value for a Font or GContext argument does not name a defined Font.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badpixmap.e,v 1.1 87/09/04 08:23:16 mento Exp $
+.TP 1i
+.ZN BadPixmap
+A value for a Pixmap argument does not name a defined Pixmap.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.SH "SEE ALSO"
+XDefineCursor(3X11),
+XLoadFont(3X11),
+XRecolorCursor(3X11)
+.br
+\fI\*(xL\fP

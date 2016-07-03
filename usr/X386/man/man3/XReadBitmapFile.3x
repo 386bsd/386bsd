@@ -1,0 +1,334 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XReadBitmapFile 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XReadBitmapFile, XWriteBitmapFile, XCreatePixmapFromBitmapData, XCreateBitmapFromData \- manipulate bitmaps
+.SH SYNTAX
+int XReadBitmapFile(\^\fIdisplay\fP, \fId\fP, \fIfilename\fP, \fIwidth_return\fP, \fIheight_return\fP, \fIbitmap_return\fP, \fIx_hot_return\fP, 
+.br
+                       \fIy_hot_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      char *\fIfilename\fP\^;
+.br
+      unsigned int *\fIwidth_return\fP, *\fIheight_return\fP\^;
+.br
+      Pixmap *\fIbitmap_return\fP\^;
+.br
+      int *\fIx_hot_return\fP, *\fIy_hot_return\fP\^;	
+.LP
+int XWriteBitmapFile(\^\fIdisplay\fP, \fIfilename\fP, \fIbitmap\fP, \fIwidth\fP, \fIheight\fP, \fIx_hot\fP, \fIy_hot\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      char *\fIfilename\fP\^;
+.br
+      Pixmap \fIbitmap\fP\^;
+.br
+      unsigned int \fIwidth\fP, \fIheight\fP\^;
+.br
+      int \fIx_hot\fP, \fIy_hot\fP\^;
+.LP
+Pixmap XCreatePixmapFromBitmapData\^(\^\fIdisplay\fP, \fId\fP, \fIdata\fP, \fIwidth\fP, \fIheight\fP, \fIfg\fP, \fIbg\fP, \fIdepth\fP\^)
+.br
+     Display *\fIdisplay\fP\^;
+.br
+     Drawable \fId\fP\^;
+.br
+     char *\fIdata\fP\^;
+.br
+     unsigned int \fIwidth\fP, \fIheight\fP\^;
+.br
+     unsigned long \fIfg\fP, \fIbg\fP\^;
+.br
+     unsigned int \fIdepth\fP\^;
+.LP
+Pixmap XCreateBitmapFromData(\^\fIdisplay\fP, \fId\fP, \fIdata\fP, \fIwidth\fP, \fIheight\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Drawable \fId\fP\^;
+.br
+      char *\fIdata\fP\^;
+.br
+      unsigned int \fIwidth\fP, \fIheight\fP\^;
+.SH ARGUMENTS
+.IP \fIbitmap\fP 1i
+Specifies the bitmap.
+.IP \fIbitmap_return\fP 1i
+Returns the bitmap that is created.
+.ds Dr \ that indicates the screen
+.\" $Header: d_gen.a,v 1.2 88/08/04 11:09:21 mento Exp $
+.IP \fId\fP 1i
+Specifies the drawable\*(Dr. 
+.IP \fIdata\fP 1i
+Specifies the data in bitmap format.
+.IP \fIdata\fP 1i
+Specifies the location of the bitmap data.
+.\" $Header: depth1.a,v 1.3 88/05/09 09:53:55 mento Exp $
+.IP \fIdepth\fP 1i
+Specifies the depth of the pixmap.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIfg\fP 1i
+.br
+.ns
+.IP \fIbg\fP 1i
+Specify the foreground and background pixel values to use.
+.\" $Header: filename.a,v 1.2 88/05/20 07:30:24 mento Exp $
+.IP \fIfilename\fP 1i
+Specifies the file name to use.
+The format of the file name is operating-system dependent.
+.\" $Header: widtheight.a,v 1.1 88/02/26 10:32:27 mento Exp $
+.IP \fIwidth\fP 1i
+.br
+.ns
+.IP \fIheight\fP 1i
+Specify the width and height.
+.IP \fIwidth_return\fP 1i
+.br
+.ns
+.IP \fIheight_return\fP 1i
+Return the width and height values of the read in bitmap file.
+.IP \fIx_hot\fP 1i
+.br
+.ns
+.IP \fIy_hot\fP 1i
+Specify where to place the hotspot coordinates (or \-1,\-1 if none are present)
+in the file.
+.IP \fIx_hot_return\fP 1i
+.br
+.ns
+.IP \fIy_hot_return\fP 1i
+Return the hotspot coordinates.
+.SH DESCRIPTION
+.\" $Header: XRBitFile.d,v 1.2 88/06/11 07:52:43 mento Exp $
+The
+.ZN XReadBitmapFile
+function reads in a file containing a bitmap.
+The file is parsed in the encoding of the current locale.
+The ability to read other than the standard format 
+is implementation dependent.
+If the file cannot be opened, 
+.ZN XReadBitmapFile 
+returns 
+.ZN BitmapOpenFailed .  
+If the file can be opened but does not contain valid bitmap data, 
+it returns 
+.ZN BitmapFileInvalid .  
+If insufficient working storage is allocated,
+it returns
+.ZN BitmapNoMemory .  
+If the file is readable and valid,
+it returns 
+.ZN BitmapSuccess .
+.LP
+.ZN XReadBitmapFile 
+returns the bitmap's height and width, as read
+from the file, to width_return and height_return.
+It then creates a pixmap of the appropriate size, 
+reads the bitmap data from the file into the pixmap,
+and assigns the pixmap to the caller's variable bitmap.  
+The caller must free the bitmap using 
+.ZN XFreePixmap 
+when finished.
+If \fIname\fP_x_hot and \fIname\fP_y_hot exist,
+.ZN XReadBitmapFile 
+returns them to x_hot_return and y_hot_return;
+otherwise, it returns \-1,\-1.
+.LP
+.ZN XReadBitmapFile
+can generate
+.ZN BadAlloc
+and
+.ZN BadDrawable
+errors.
+.LP
+.\" $Header: XWBitFile.d,v 1.2 88/06/11 07:54:35 mento Exp $
+The
+.ZN XWriteBitmapFile
+function writes a bitmap out to a file in the X version 11 format.
+The file is written in the encoding of the current locale.
+If the file cannot be opened for writing, 
+it returns 
+.ZN BitmapOpenFailed .  
+If insufficient memory is allocated,
+.ZN XWriteBitmapFile
+returns
+.ZN BitmapNoMemory ;
+otherwise, on no error,
+it returns
+.ZN BitmapSuccess .
+If x_hot and y_hot are not \-1, \-1, 
+.ZN XWriteBitmapFile
+writes them out as the hotspot coordinates for the bitmap.
+.LP
+.ZN XWriteBitmapFile
+can generate
+.ZN BadDrawable
+and
+.ZN BadMatch
+errors.
+.LP
+The
+.ZN XCreatePixmapFromBitmapData
+function creates a pixmap of the given depth and then does a bitmap-format
+.ZN XPutImage
+of the data into it.
+The depth must be supported by the screen of the specified drawable,
+or a
+.ZN BadMatch
+error results.
+.LP
+.ZN XCreatePixmapFromBitmapData
+can generate
+.ZN BadAlloc
+and
+.ZN BadMatch
+errors.
+.LP
+.\" $Header: XCreBmap.d,v 1.6 88/08/24 09:09:07 mento Exp $
+The
+.ZN XCreateBitmapFromData
+function allows you to include in your C program (using #include) a bitmap file
+that was written out by
+.ZN XWriteBitmapFile
+(X version 11 format only) without reading in the bitmap file.
+The following example creates a gray bitmap:
+.LP
+.Ds 0
+#include "gray.bitmap"
+.sp 6p
+Pixmap bitmap;
+bitmap = XCreateBitmapFromData(display, window, gray_bits, gray_width, gray_height);
+.De
+.LP
+If insufficient working storage was allocated,
+.ZN XCreateBitmapFromData
+returns
+.ZN None .
+It is your responsibility to free the
+bitmap using
+.ZN XFreePixmap
+when finished.
+.LP
+.ZN XCreateBitmapFromData
+can generate a
+.ZN BadAlloc
+error.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: baddrawable.e,v 1.1 87/09/04 08:22:59 mento Exp $
+.TP 1i
+.ZN BadDrawable
+A value for a Drawable argument does not name a defined Window or Pixmap.
+.\" $Header: badmatch1.e,v 1.3 87/09/09 18:18:54 mento Exp $
+.TP 1i
+.ZN BadMatch
+An
+.ZN InputOnly
+window is used as a Drawable.
+.SH "SEE ALSO"
+XCreatePixmap(3X11),
+XPutImage(3X11)
+.br
+\fI\*(xL\fP

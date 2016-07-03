@@ -1,0 +1,176 @@
+.ds xL Programming with Xlib
+.TH XGetDeviceKeyMapping 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XGetDeviceKeyMapping, XChangeDeviceKeyMapping \- query or change device key mappings
+.SH SYNTAX
+\fB
+XChangeDeviceKeyMapping(\^\fIdisplay\fP, \fIdevice\fP, \fIfirst_keycode\fP, 
+\fIkeysyms_per_keycode\fP, \fIkeysyms\fP, \fIkeycode_count\fP\^)
+.nf
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+      int \fIfirst_keycode\fP\^;
+      int \fIkeysyms_per_keycode\fP\^;
+      KeySym *\fIkeysyms\fP\^;
+      int \fIkeycode_count\fP\^;
+
+KeySym *XGetDeviceKeyMapping(\^\fIdisplay\fP, \fIdevice\fP, \fIfirst_keycode\fP, \fIkeycode_count\fP,
+\fIkeysyms_per_keycode_return\fP\^)
+      Display *\fIdisplay\fP\^;
+      XDevice *\fIdevice\fP\^;
+      KeyCode \fIfirst_keycode\fP\^;
+      int \fIkeycode_count\fP\^;
+      int *\fIkeysyms_per_keycode_return\fP\^;
+.fi
+\fP
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device whose key mapping is to be queried or modified.
+.TP 12
+.I first_keycode
+Specifies the first KeyCode to be returned.
+.TP 12
+.I keycode_count
+Specifies the number of KeyCodes to be returned or modified.
+.TP 12
+.I keysyms_per_keycode
+Specifies the number of KeySyms per KeyCode.
+.TP 12
+.I keysyms_per_keycode_return
+Specifies the address of a variable into which the number of KeySyms per KeyCode
+will be returned.
+.TP 12
+.I keysyms
+Specifies the address of an array of KeySyms.
+.SH DESCRIPTION
+For the specified device,
+the \fIXGetDeviceKeyMapping\fP request returns
+the symbols for the specified number of KeyCodes
+starting with first_keycode.
+The value specified in first_keycode must be greater than 
+or equal to min_keycode as returned by
+\fIXListInputDevices\fP, 
+or a
+\fIBadValue\fP
+error results.
+In addition, the following expression must be less than or equal 
+to max_keycode as returned by
+\fIXListInputDevices\fP:
+.P
+.DS 
+first_keycode + keycode_count \- 1
+.DE
+.P
+If this is not the case, a 
+\fIBadValue\fP
+error results. 
+The number of elements in the KeySyms list is:
+.P
+.DS 
+keycode_count * keysyms_per_keycode_return
+.DE
+.P
+KeySym number N, counting from zero, for KeyCode K has the following index
+in the list, counting from zero: 
+.DS
+(K \- first_code) * keysyms_per_code_return + N
+.DE
+.P
+The X server arbitrarily chooses the keysyms_per_keycode_return value 
+to be large enough to report all requested symbols. 
+A special KeySym value of 
+\fINoSymbol\fP
+is used to fill in unused elements for
+individual KeyCodes.
+To free the storage returned by 
+\fIXGetDeviceKeyMapping\fP,
+use
+\fIXFree\fP.
+.P
+If the specified device does not support input class keys, a \fIBadMatch\fP
+error will result.
+.P
+\fIXGetDeviceKeyMapping\fP
+can generate a \fIBadDevice\fP, \fIBadMatch\fP, or \fIBadValue\fP
+error.
+.P
+For the specified device, the \fIXChangeDeviceKeyMapping\fP
+request defines the symbols for the specified number of KeyCodes
+starting with first_keycode.
+The symbols for KeyCodes outside this range remain unchanged.  
+The number of elements in keysyms must be:
+.P
+.DS
+num_codes * keysyms_per_keycode
+.DE
+.P
+The specified first_keycode must be greater than or equal to min_keycode 
+returned by \fIXListInputDevices\fP, or a \fIBadValue\fP error results.
+In addition, the following expression must be less than or equal to 
+max_keycode as returned by
+\fIXListInputDevices\fP, or a \fIBadValue\fP error results:
+.P
+.DS
+first_keycode + num_codes \- 1
+.DE
+.P
+KeySym number N, counting from zero, for KeyCode K has the following index
+in keysyms, counting from zero: 
+.P
+.DS 
+(K \- first_keycode) * keysyms_per_keycode + N
+.DE
+.P
+The specified keysyms_per_keycode can be chosen arbitrarily by the client
+to be large enough to hold all desired symbols. 
+A special KeySym value of 
+\fINoSymbol\fP
+should be used to fill in unused elements 
+for individual KeyCodes.  
+It is legal for 
+\fINoSymbol\fP 
+to appear in nontrailing positions
+of the effective list for a KeyCode.
+\fIXChangeDeviceKeyMapping\fP generates a \fIDeviceMappingNotify\fP
+event that is sent to all clients that have selected that type of event.
+.P
+There is no requirement that the X server interpret this mapping. 
+It is merely stored for reading and writing by clients.
+.P
+If the specified device does not support input class keys, a \fIBadMatch\fP
+error results.
+.P
+\fIXChangeDeviceKeyMapping\fP can generate a \fIBadDevice\fP,
+\fIBadMatch\fP, \fIBadAlloc\fP, or \fIBadValue\fP  error.
+.P
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist or has 
+not been opened by this client via \fIXOpenInputDevice\fP.  This error may
+also occur if the specified device is the X keyboard or X pointer device.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXGetDeviceKeyMapping\fP or 
+\fIXChangeDeviceKeyMapping\fP request was made 
+specifying
+a device that has no keys.
+.TP 12
+\fIBadValue\fP
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.TP 12
+\fIBadAlloc\fP
+The server failed to allocate the requested resource or server memory.
+.SH "SEE ALSO"
+XSetDeviceButtonMapping(3X11) 
+.br
+XSetDeviceModifierMapping(3X11) 
+.br
+\fI\*(xL\fP

@@ -1,0 +1,66 @@
+RLIST(9)               386BSD Kernel Programmer's Manual              RLIST(9)
+
+NNAAMMEE
+     rrlliisstt - resource list
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee ""rrlliisstt..hh""
+
+     _v_o_i_d
+     rrlliisstt__ffrreeee(_s_t_r_u_c_t _r_l_i_s_t **_r_l_p, _u_n_s_i_g_n_e_d _s_t_a_r_t, _u_n_s_i_g_n_e_d _e_n_d)
+
+     _i_n_t
+     rrlliisstt__aalllloocc(_s_t_r_u_c_t _r_l_i_s_t **_r_l_p, _u_n_s_i_g_n_e_d _s_i_z_e, _u_n_s_i_g_n_e_d *_l_o_c)
+
+     _v_o_i_d
+     rrlliisstt__ddeessttrrooyy(_s_t_r_u_c_t _r_l_i_s_t **_r_l_p)
+
+DDEESSCCRRIIPPTTIIOONN
+     Resource lists are a sparse data abstraction used to record the use of
+     real and abstract resources employed by the kernel program. Resource
+     lists rely on dynamic memory (see malloc(9) ) to avoid compile-time
+     scaling of space to hold fragmentation. Since resources may need to be
+     allocated during interrupt level, or during times when memory can't be
+     allocated (like when reclaiming memory pages), resource lists must be
+     allocated without blocking (however, they may block on the free of
+     resource).
+
+     Each resource list is denoted by a head pointer, which initially points
+     to a null list, and filled with resource by "freeing" space into it that
+     can be allocated subsequently. If the resource list itself must be
+     reclaimed, it must be destroyed by the service employing the resource.
+
+     The rrlliisstt__aalllloocc() function allocates a segment of resource of a requested
+     size if available.  The rrlliisstt__ffrreeee() function assigns resource for use in
+     the list, possibly blocking.  The rrlliisstt__ddeessttrrooyy() function is used to
+     reclaim the storage used in implementing the resource list itself.
+
+RREETTUURRNN VVAALLUUEESS
+     The rrlliisstt__aalllloocc() function returns a success or failure indication on
+     return.
+
+SSEEEE AALLSSOO
+     malloc(9)
+
+386BSD Release 1.0              August 29, 1994                              1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,118 @@
+.TH XAUTH 1 "Release 5" "X Version 11"
+.SH NAME
+XauFileName, XauReadAuth, XauLockAuth, XauUnlockAuth, XauWriteAuth,
+XauGetAuthByAddr \- X authority database routines
+.SH SYNOPSIS
+.B "#include <X11/Xauth.h>"
+.PP
+.nf
+.ta .5i 2i
+typedef struct xauth {
+	unsigned short	family;
+	unsigned short	address_length;
+	char	*address;
+	unsigned short	number_length;
+	char	*number;
+	unsigned short	name_length;
+	char	*name;
+	unsigned short	data_length;
+	char	*data;
+} Xauth;
+
+.ft B
+char *XauFileName ()
+
+.ft B
+Xauth *XauReadAuth (auth_file)
+.ft I
+	FILE *auth_file;
+
+.ft B
+int XauWriteAuth (auth_file, auth)
+.ft I
+	FILE *auth_file;
+	Xauth *auth;
+
+.ft B 
+Xauth *XauGetAuthByAddr (\kAfamily,
+\h'|\nAu'address_length, address,
+\h'|\nAu'number_length, number)
+.ft I
+	unsigned short family;
+	unsigned short address_length;
+	char *address;
+	unsigned short number_length;
+	char *number;
+
+.ft B
+int XauLockAuth (file_name, retries, timeout, dead)
+.ft I
+	char *file_name;
+	int retries;
+	int timeout;
+	long dead;
+
+.ft B
+int XauUnlockAuth (file_name)
+.ft I
+	char *file_name;
+
+.ft B
+XauDisposeAuth (auth)
+.ft I
+	Xauth *auth;
+
+.ft R
+.SH DESCRIPTION
+.PP
+\fBXauFileName\fP generates the default authorization file name by first
+checking the XAUTHROTIY environment variable if set, else it returns
+$HOME/.Xauthority.  This name is statically allocated and should
+not be freed.
+.PP
+\fBXauReadAuth\fP reads the next entry from \fIauth_file\fP.  The entry is
+\fBnot\fP statically allocated and should be freed by calling
+\fIXauDisposeAuth\fP.
+.PP
+\fBXuWriteAuth\fP writes an authorization entry to \fIauth_file\fP.  It
+returns 1 on success, 0 on failure.
+.PP
+\fBXauGetAuthByAddr\fP searches for an entry which matches the given network
+address/display number pair.  The entry is \fBnot\fP statically allocated
+and should be freed by calling \fIXauDisposeAuth\fP
+.PP
+\fBXauLockAuth\fP does the work necessary to synchronously update an
+authorization file.  First it makes to file names, one with ``-c'' appended
+to \fIfile_name\fP, the other with ``-l'' appended.  If the ``-c'' file
+already exists and is more than \fIdead\fP seconds old, \fIXauLockAuth\fP
+removes it and the associated ``-l'' file.  To prevent possible
+synchronization troubles with NFS, a \fIdead\fP value of zero forces the
+files to be removed.  \fIXauLockAuth\fP makes \fIretries\fP attempts to
+create and link the file names, pausing \fItimeout\fP seconds between each
+attempt.  \fIXauLockAuth\fP returns a collection of values depending on the
+results:
+.nf
+.ta .5i 2i
+
+	LOCK_ERROR	A system error occurred, either a file_name
+		which is too long, or an unexpected failure from
+		a system call.  errno may prove useful.
+
+	LOCK_TIMEOUT	\fIretries\fP attempts failed
+
+	LOCK_SUCCESS	The lock succeeded.
+
+.fi
+.PP
+\fBXauUnlockAuth\fP undoes the work of \fIXauLockAuth\fP by unlinking both 
+the ``-c'' and ``-l'' file names.
+.PP
+\fBXauDisposeAuth\fP frees storage allocated to hold an authorization entry.
+.SH "SEE ALSO"
+xauth(1), xdm(1)
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Keith Packard, MIT X Consortium

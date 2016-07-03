@@ -1,0 +1,27 @@
+.TH FALSE 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+false \- do nothing, unsuccessfully
+.SH SYNOPSIS
+.B false
+.br
+.B false
+{\-\-help,\-\-version}
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.B false
+(and probably every other version, as well).
+.B false
+does nothing except return an exit status of 1, meaning ``failure''.
+It can be used as a place holder in shell scripts where an
+unsuccessful command is needed.
+.SS OPTIONS
+When GNU
+.B false
+is invoked with exactly one argument, the following options are recognized:
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

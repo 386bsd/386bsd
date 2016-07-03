@@ -1,0 +1,195 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtGetSubresources 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtGetSubresources, XtGetApplicationResources \- obtain subresources or application resources
+.SH SYNTAX
+void XtGetSubresources(\fIw\fP, \fIbase\fP, \fIname\fP, \fIclass\fP, \
+\fIresources\fP, \fInum_resources\fP, \fIargs\fP, \fInum_args\fP)
+.br
+      Widget \fIw\fP;
+.br
+      XtPointer \fIbase\fP;
+.br
+      String \fIname\fP;
+.br
+      String \fIclass\fP;
+.br
+      XtResourceList \fIresources\fP;
+.br
+      Cardinal \fInum_resources\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.LP
+void XtGetApplicationResources(\fIw\fP, \fIbase\fP, \fIresources\fP, \
+\fInum_resources\fP, \fIargs\fP, \fInum_args\fP)
+.br
+      Widget \fIw\fP;
+.br
+      XtPointer \fIbase\fP;
+.br
+      XtResourceList \fIresources\fP;
+.br
+      Cardinal \fInum_resources\fP;
+.br
+      ArgList \fIargs\fP;
+.br
+      Cardinal \fInum_args\fP;
+.SH ARGUMENTS
+.ds Al to override resources obtained from the resource database
+.IP \fIargs\fP 1i
+Specifies the argument list \*(Al.
+.ds Ba written
+.IP \fIbase\fP 1i
+Specifies the base address of the subpart data structure where the resources
+should be \*(Ba.
+.IP \fIclass\fP 1i
+Specifies the class of the subpart.
+.IP \fIname\fP 1i
+Specifies the name of the subpart.
+.IP \fInum_args\fP 1i
+Specifies the number of arguments in the argument list.
+.IP \fInum_resources\fP 1i
+Specifies the number of resources in the resource list.
+.IP \fIresources\fP 1i
+Specifies the resource list for the subpart.
+.ds Wi that wants resources for a subpart \
+or that identifies the resource database to search
+.IP \fIw\fP 1i
+Specifies the widget \*(Wi.
+.SH DESCRIPTION
+The
+.ZN XtGetSubresources
+function constructs a name/class list from the application name/class,
+the name/classes of all its ancestors, and the widget itself.
+Then, it appends to this list the name/class pair passed in.
+The resources are fetched from the argument list, the resource database,
+or the default values in the resource list.
+Then, they are copied into the subpart record.
+If args is NULL,
+num_args must be zero.
+However, if num_args is zero,
+the argument list is not referenced.
+.LP
+The
+.ZN XtGetApplicationResources
+function first uses the passed widget,
+which is usually an application shell,
+to construct a resource name and class list,
+Then, it retrieves the resources from the argument list,
+the resource database, or the resource list default values.
+After adding base to each address,
+.ZN XtGetApplicationResources
+copies the resources into the address given in the resource list.
+If args is NULL,
+num_args must be zero.
+However, if num_args is zero,
+the argument list is not referenced.
+The portable way to specify application resources is to declare them
+as members of a structure and pass the address of the structure 
+as the base argument.
+.SH "SEE ALSO"
+XtGetResourceList(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

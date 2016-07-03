@@ -1,0 +1,39 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga256/drivers/ati/Imakefile,v 2.1 1993/08/12 05:42:29 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+#if i386Mach
+SRCS = driver.c
+#else
+SRCS = driver.c bank.s
+#endif
+
+#if i386Bsd
+OBJS = driverA.o bankA.o
+#else
+OBJS = driver.o bank.o
+#endif
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+NormalRelocatableTarget(ati, $(OBJS))
+
+#if i386Bsd
+ObjectFromSpecialAsmSource(bankA,bank,NullParameter)
+ObjectFromSpecialSource(driverA,driver,NullParameter)
+#endif
+
+InstallLinkKitNonExecFile(driver.c,$(LINKKITDIR)/drivers/vga256/ati)
+InstallLinkKitNonExecFile(bank.s,$(LINKKITDIR)/drivers/vga256/ati)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga256/ati)
+
+DependTarget()
+

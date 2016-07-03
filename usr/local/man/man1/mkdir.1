@@ -1,0 +1,32 @@
+.TH MKDIR 1L "GNU File Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+mkdir \- make directories
+.SH SYNOPSIS
+.B mkdir
+[\-p] [\-m mode] [\-\-parents] [\-\-mode=mode] [\-\-help] [\-\-version] dir...
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR mkdir .
+.B mkdir
+creates a directory with each given name.  By default, the mode of
+created directories is 0777 minus the bits set in the umask.
+.SS OPTIONS
+.TP
+.I "\-m, \-\-mode mode"
+Set the mode of created directories to
+.IR mode ,
+which is symbolic as in chmod and uses the default mode as the point of
+departure.
+.TP
+.I "\-p, \-\-parents"
+Ensure that each given path exists.  Make any missing parent
+directories for each argument.  Parent directories default to the
+umask modified by `u+wx'.  Do not consider an argument directory that
+already exists to be an error.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

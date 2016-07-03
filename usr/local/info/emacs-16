@@ -1,0 +1,1160 @@
+This is Info file ../info/emacs, produced by Makeinfo-1.54 from the
+input file emacs.texi.
+
+
+File: emacs,  Node: Shell Options,  Next: Remote Host,  Prev: Shell History,  Up: Shell
+
+Shell Mode Options
+------------------
+
+   If the variable `comint-scroll-to-bottom-on-input' is non-`nil',
+insertion and yank commands scroll the selected window the bottom
+before inserting.
+
+   If `comint-scroll-show-maximum-output' is non-`nil' (which is the
+default), then scrolling due to arrival of output tries to place the
+last line of text at the bottom line of the window, so as to show as
+much useful text as possible.  (This mimics the scrolling behavior of
+many terminals.)
+
+   By setting `comint-scroll-to-bottom-on-output', you can opt for
+having point jump to the end of the buffer whenever output arrives--no
+matter where in the buffer point was before.  If the value is `this',
+point jumps in the selected window.  If the value is `all', point jumps
+in each window that shows the comint buffer.  If the value is `other',
+point jumps in all nonselected windows that show the current buffer.
+The default value is `nil', which means point does not jump to the end.
+
+   The variable `comint-input-ignoredups' controls whether successive
+identical inputs are stored in the input history.  A non-`nil' value
+means to omit an input that is the same as the previous input.  The
+default is `nil', which means to store each input even if it is equal
+to the previous input.
+
+   Three variables customize file name completion.  The variable
+`comint-completion-addsuffix' controls whether completion inserts a
+space or a slash to indicate a fully completed file or directory name
+(non-`nil' means do insert a space or slash).
+`comint-completion-recexact', if non-`nil', directs TAB to choose the
+shortest possible completion if the usual Emacs completion algorithm
+cannot add even a single character.  `comint-completion-autolist', if
+non-`nil', says to list all the possible completions whenever
+completion is not exact.
+
+   Shell mode can optionally expand history references in the buffer
+when you send them to the shell.  To request this, set the variable
+`comint-input-autoexpand' to `input'.
+
+   You can make SPC perform history expansion by binding SPC to the
+command `comint-magic-space'.
+
+   The command `comint-dynamic-complete-variable' does variable name
+completion using the environment variables as set within Emacs.  The
+variables controlling filename completion apply to variable name
+completion too.  This command is normally available through the menu
+bar.
+
+   Command completion normally considers only executable files.  If you
+set `shell-command-execonly' to `nil', it considers nonexecutable files
+as well.
+
+   In a new Shell mode buffer, the input history is initialized from the
+file name specified in the variable `shell-input-ring-file-name'.  By
+default, this is `"~/.history"'.
+
+   You can now configure the behavior of `pushd'.  Variables control
+whether `pushd' behaves like `cd' if no argument is given
+(`shell-pushd-tohome'), pop rather than rotate with a numeric argument
+(`shell-pushd-dextract'), and only add directories to the directory
+stack if they are not already on it (`shell-pushd-dunique').  The
+values you choose should match the underlying shell, of course.
+
+
+File: emacs,  Node: Remote Host,  Prev: Shell Options,  Up: Shell
+
+Remote Host
+-----------
+
+   Emacs provides two commands for logging in to another computer and
+communicating with it through an Emacs buffer.
+
+`M-x telnet RET HOSTNAME RET'
+     Set up a Telnet connection to the computer named HOSTNAME.
+
+`M-x rlogin RET HOSTNAME RET'
+     Set up an Rlogin connection to the computer named HOSTNAME.
+
+   Use `M-x telnet' to set up a Telnet connection to another computer.
+(Telnet is the standard Internet protocol for remote login.) It reads
+the host name of the other computer as an argument with the minibuffer.
+Once the connection is established, talking to the other computer
+works like talking to a subshell: you can edit input with the usual
+Emacs commands, and send it a line at a time by typing RET.  The output
+is inserted in the Telnet buffer interspersed with the input.
+
+   Use `M-x rlogin' to set up an Rlogin connection.  Rlogin is another
+remote login communication protocol, essentially much like the Telnet
+protocol but incompatible with it, and supported only by Unix-like
+systems.  Rlogin's advantages are that you can arrange not to have to
+give your user name and password when communicating between two
+machines you frequently use, and that you can make an 8-bit-clean
+connection.  (To do that in Emacs, set `rlogin-explicit-args' to
+`("-8")'.)
+
+   `M-x rlogin' sets up the default file directory of the Emacs buffer
+to access the remote host via FTP (*note File Names::.), and it tracks
+the shell commands that change the current directory just like Shell
+mode.
+
+
+File: emacs,  Node: Narrowing,  Next: Hardcopy,  Prev: Shell,  Up: Top
+
+Narrowing
+=========
+
+   "Narrowing" means focusing in on some portion of the buffer, making
+the rest temporarily inaccessible.  The portion which you can still get
+to is called the "accessible portion".  Cancelling the narrowing, and
+making the entire buffer once again accessible, is called "widening".
+The amount of narrowing in effect in a buffer at any time is called the
+buffer's "restriction".
+
+`C-x n n'
+     Narrow down to between point and mark (`narrow-to-region').
+
+`C-x n w'
+     Widen to make the entire buffer accessible again (`widen').
+
+`C-x n p'
+     Narrow down to the current page (`narrow-to-page').
+
+   When you have narrowed down to a part of the buffer, that part
+appears to be all there is.  You can't see the rest, you can't move
+into it (motion commands won't go outside the accessible part), you
+can't change it in any way.  However, it is not gone, and if you save
+the file all the inaccessible text will be saved.  In addition to
+sometimes making it easier to concentrate on a single subroutine or
+paragraph by eliminating clutter, narrowing can be used to restrict the
+range of operation of a replace command or repeating keyboard macro.
+The word `Narrow' appears in the mode line whenever narrowing is in
+effect.
+
+   The primary narrowing command is `C-x n n' (`narrow-to-region').  It
+sets the current buffer's restrictions so that the text in the current
+region remains accessible but all text before the region or after the
+region is invisible.  Point and mark do not change.
+
+   Alternatively, use `C-x n p' (`narrow-to-page') to narrow down to
+the current page.  *Note Pages::, for the definition of a page.
+
+   The way to undo narrowing is to widen with `C-x n w' (`widen').
+This makes all text in the buffer accessible again.
+
+   You can get information on what part of the buffer you are narrowed
+down to using the `C-x =' command.  *Note Position Info::.
+
+   Because narrowing can easily confuse users who do not understand it,
+`narrow-to-region' is normally a disabled command.  Attempting to use
+this command asks for confirmation and gives you the option of enabling
+it; once you enable the command, confirmation will no longer be
+required for it.  *Note Disabling::.
+
+
+File: emacs,  Node: Hardcopy,  Next: Two-Column,  Prev: Narrowing,  Up: Top
+
+Hardcopy Output
+===============
+
+   The Emacs commands for making hardcopy let you print either an entire
+buffer or just part of one, either with or without page headers.  See
+also the hardcopy commands of Dired (*note Misc File Ops::.) and the
+diary (*note Diary Commands::.).
+
+`M-x print-buffer'
+     Print hardcopy of current buffer using Unix command `print' (`lpr
+     -p').  This makes page headings containing the file name and page
+     number.
+
+`M-x lpr-buffer'
+     Print hardcopy of current buffer using Unix command `lpr'.  This
+     makes no page headings.
+
+`M-x print-region'
+     Like `print-buffer' but prints only the current region.
+
+`M-x lpr-region'
+     Like `lpr-buffer' but prints only the current region.
+
+   All the hardcopy commands pass extra switches to the `lpr' program
+based on the value of the variable `lpr-switches'.  Its value should be
+a list of strings, each string an option starting with `-'.  For
+example, to use a printer named `nearme', set `lpr-switches' like this:
+
+     (setq lpr-switches '("-Pnearme"))
+
+
+File: emacs,  Node: Two-Column,  Next: Editing Binary Files,  Prev: Hardcopy,  Up: Top
+
+Two-Column Editing
+==================
+
+   Two-column mode lets you conveniently edit two side-by-side columns
+of text.  It uses two side-by-side windows, each showing its own buffer.
+
+   There are three ways to enter two-column mode:
+
+`C-x 6 2'
+     Enter two-column mode with the current buffer on the left, and on
+     the right, a buffer whose name is based on the current buffer's
+     name (`tc-two-columns').  If the right-hand buffer doesn't already
+     exist, it starts out empty; the current buffer's contents are not
+     changed.
+
+     This command is appropriate when the current buffer contains just
+     one column and you want to add another column.
+
+`C-x 6 s'
+     Split the current buffer, which contains two-column text, into two
+     buffers, and display them side by side (`tc-split').  The current
+     buffer becomes the left-hand buffer, but the text in the right-hand
+     column is moved into the right-hand buffer.  The current column
+     specifies the split point.  Splitting starts with the current line
+     and continues to the end of the buffer.
+
+     This command is appropriate when you have a buffer that already
+     contains two-column text, and you wish to separate the columns
+     temporarily.
+
+`C-x 6 b BUFFER RET'
+     Enter two-column mode using the current buffer as the left-hand
+     buffer, and using buffer BUFFER as the right-hand buffer
+     (`tc-associate-buffer').
+
+   `C-x 6 s' looks for a column separator which is a string that
+appears on each line between the two columns.  You can specify the width
+of the separator with a numeric argument to `C-x 6 s'; that many
+characters, before point, constitute the separator string.  By default,
+the width is 1, so the column separator is the character before point.
+
+   When a line has the separator at the proper place, `C-x 6 s' puts
+the text after the separator into the right-hand buffer, and deletes the
+separator.  Lines that don't have the column separator at the proper
+place remain unsplit; they stay in the left-hand buffer, and the
+right-hand buffer gets an empty line to correspond.  (This is the way
+to write a line which "spans both columns while in two-column mode:
+write it in the left-hand buffer, and put an empty line in the
+right-hand buffer.)
+
+   It's not a good idea to use ordinary scrolling commands during
+two-column editing, because that separates the two parts of each split
+line.  Instead, use these special scroll commands:
+
+`C-x 6 SPC'
+     Scroll both buffers up, in lockstep (`tc-scroll-up').
+
+`C-x 6 DEL'
+     Scroll both buffers down, in lockstep (`tc-scroll-down').
+
+`C-x 6 C-l'
+     Recenter both buffers, in lockstep (`tc-recenter').
+
+   When you have edited both buffers as you wish, merge them with `C-x
+6 1' (`tc-merge').  This copies the text from the right-hand buffer as
+a second column in the other buffer.  To go back to two-column editing,
+use `C-x 6 s'.
+
+   Use `C-x 6 d' to disassociate the two buffers, leaving each as it
+stands (`tc-dissociate').  If the other buffer, the one not current
+when you type `C-x 6 d', is empty, `C-x 6 d' kills it.
+
+
+File: emacs,  Node: Editing Binary Files,  Next: Emacs Server,  Prev: Two-Column,  Up: Top
+
+Editing Binary Files
+====================
+
+   There is a special major mode for editing binary files: Hexl mode.
+To use it, use `M-x hexl-find-file' instead of `C-x C-f' to visit the
+file.  This command converts the file's contents to hexadecimal and
+lets you edit the translation.  When you save the file, it is converted
+automatically back to binary.
+
+   You can also use `M-x hexl-mode' to translate an existing buffer
+into hex.  This is useful if you visit a file normally and then discover
+it is a binary file.
+
+   Ordinary text characters overwrite in Hexl mode.  This is to reduce
+the risk of accidentally spoiling the alignment of data in the file.
+There are special commands for insertion.  Here is a list of the
+commands of Hexl mode:
+
+`C-M-d'
+     Insert a byte with a code typed in decimal.
+
+`C-M-o'
+     Insert a byte with a code typed in octal.
+
+`C-M-x'
+     Insert a byte with a code typed in hex.
+
+`C-x ['
+     Move to the beginning of a 1k-byte "page".
+
+`C-x ]'
+     Move to the end of a 1k-byte "page".
+
+`M-g'
+     Move to an address specified in hex.
+
+`M-j'
+     Move to an address specified in decimal.
+
+`C-c C-c'
+     Leave Hexl mode, going back to the major mode this buffer had
+     before you invoked `hexl-mode'.
+
+
+File: emacs,  Node: Emacs Server,  Next: Saving Emacs Sessions,  Prev: Editing Binary Files,  Up: Top
+
+Using Emacs as a Server
+=======================
+
+   Various programs such as `mail' can invoke your choice of editor to
+edit a particular piece of text, such as a message that you are
+sending.  By convention, these programs use the environment variable
+`EDITOR' to specify which editor to run.  If you set `EDITOR' to
+`emacs', they invoke Emacs--but in an inconvenient fashion, by starting
+a new, separate Emacs process.  This is inconvenient because it takes
+time and because the new Emacs process doesn't share the buffers in the
+existing Emacs process.
+
+   You can arrange to use your existing Emacs process as the editor for
+programs like `mail' by using the Emacs client and Emacs server
+programs.  Here is how.
+
+   First, the preparation.  Within Emacs, call the function
+`server-start'.  (Your `.emacs' file can do this automatically if you
+add the expression `(server-start)' to it.)  Then, outside Emacs, set
+the `EDITOR' environment variable to `emacsclient'.
+
+   Then, whenever any program invokes your specified `EDITOR' program,
+the effect is to send a message to your principal Emacs telling it to
+visit a file.  (That's what the program `emacsclient' does.) Emacs
+obeys silently; it does not immediately switch to the new file's
+buffer.  When you want to do that, type `C-x #' (`server-edit').
+
+   When you've finished editing that buffer, type `C-x #' again.  This
+saves the file and sends a message back to the `emacsclient' program
+telling it to exit.  The programs that use `EDITOR' wait for the
+"editor" (actually, `emacsclient') to exit.  `C-x #' also checks to see
+if any other files are pending for you to edit, and selects the next
+one.
+
+   You can switch to a server buffer manually if you wish; you don't
+have to arrive at it with `C-x #'.  But `C-x #' is the only way to say
+that you are "finished" with one.
+
+   If you set the variable `server-window' to a window or a frame, `C-x
+#' displays the server buffer in that window or in that frame.
+
+   While `mail' or another application is waiting for `emacsclient' to
+finish, `emacsclient' does not read terminal input.  So the terminal
+that `mail' was using is effectively blocked for the duration.  In
+order to edit with your principal Emacs, you need to be able to use it
+without using that terminal.  There are two ways to do this:
+
+   * Using a window system, run `mail' and the principal Emacs in two
+     separate windows.  While `mail' is waiting for `emacsclient', the
+     window where it was running is blocked, but you can use Emacs by
+     switching windows.
+
+   * Use Shell mode in Emacs to run the other program such as `mail';
+     then, `emacsclient' blocks only the subshell under Emacs; you can
+     still use Emacs to edit the file.
+
+   Some programs write temporary files for you to edit.  After you edit
+the temporary file, the program reads it back and deletes it.  If the
+Emacs server is later asked to edit the same file name, it should assume
+this has nothing to do with the previous occasion for that file name.
+The server accomplishes this by killing the temporary file's buffer when
+you finish with the file.  Use the variable `server-temp-file-regexp'
+to specify which files are temporary in this sense; its value should be
+a regular expression that matches file names that are temporary.
+
+
+File: emacs,  Node: Saving Emacs Sessions,  Next: Recursive Edit,  Prev: Emacs Server,  Up: Top
+
+Saving Emacs Sessions
+=====================
+
+   You can use the Desktop library to save the state of Emacs from one
+session to another.  Saving the state means that Emacs starts up with
+the same set of buffers, major modes, buffer positions, and so on that
+the previous Emacs session had.
+
+   To use Desktop, you should first add these lines to your `.emacs'
+file, preferably at or near the end:
+
+     (load "desktop")
+     (desktop-load-default)
+     (desktop-read)
+
+Then, to enable state saving in a particular Emacs session, use the
+command `M-x desktop-save'.  Once you have done this, the state of this
+Emacs session will be saved when you exit Emacs.
+
+   In order for Emacs to recover the state from a previous session, you
+must start it with the same current directory as you used when you
+started the previous session.
+
+
+File: emacs,  Node: Recursive Edit,  Next: Dissociated Press,  Prev: Saving Emacs Sessions,  Up: Top
+
+Recursive Editing Levels
+========================
+
+   A "recursive edit" is a situation in which you are using Emacs
+commands to perform arbitrary editing while in the middle of another
+Emacs command.  For example, when you type `C-r' inside of a
+`query-replace', you enter a recursive edit in which you can change the
+current buffer.  On exiting from the recursive edit, you go back to the
+`query-replace'.
+
+   "Exiting" the recursive edit means returning to the unfinished
+command, which continues execution.  To exit, type `C-M-c'
+(`exit-recursive-edit').
+
+   You can also "abort" the recursive edit.  This is like exiting, but
+also quits the unfinished command immediately.  Use the command `C-]'
+(`abort-recursive-edit') for this.  *Note Quitting::.
+
+   The mode line shows you when you are in a recursive edit by
+displaying square brackets around the parentheses that always surround
+the major and minor mode names.  Every window's mode line shows this,
+in the same way, since being in a recursive edit is true of Emacs as a
+whole rather than any particular window or buffer.
+
+   It is possible to be in recursive edits within recursive edits.  For
+example, after typing `C-r' in a `query-replace', you may type a
+command that enters the debugger.  This begins a recursive editing level
+for the debugger, within the recursive editing level for `C-r'.  Mode
+lines display a pair of square brackets for each recursive editing
+level currently in progress.
+
+   Exiting the inner recursive edit (such as, with the debugger `c'
+command) resumes the command running in the next level up.  When that
+command finishes, you can then use `C-M-c' to exit another recursive
+editing level, and so on.  Exiting applies to the innermost level only.
+Aborting also gets out of only one level of recursive edit; it returns
+immediately to the command level of the previous recursive edit.  If you
+wish, you can then abort the next recursive editing level.
+
+   Alternatively, the command `M-x top-level' aborts all levels of
+recursive edits, returning immediately to the top level command reader.
+
+   The text being edited inside the recursive edit need not be the same
+text that you were editing at top level.  It depends on what the
+recursive edit is for.  If the command that invokes the recursive edit
+selects a different buffer first, that is the buffer you will edit
+recursively.  In any case, you can switch buffers within the recursive
+edit in the normal manner (as long as the buffer-switching keys have
+not been rebound).  You could probably do all the rest of your editing
+inside the recursive edit, visiting files and all.  But this could have
+surprising effects (such as stack overflow) from time to time.  So
+remember to exit or abort the recursive edit when you no longer need it.
+
+   In general, we try to minimize the use of recursive editing levels in
+GNU Emacs.  This is because they constrain you to "go back" in a
+particular order-from the innermost level toward the top level.  When
+possible, we present different activities in separate buffers.  Some
+commands switch to a new major mode but provide a way to switch back.
+These approaches give you more flexibility to go back to unfinished
+tasks in the order you choose.
+
+
+File: emacs,  Node: Dissociated Press,  Next: Amusements,  Prev: Recursive Edit,  Up: Top
+
+Dissociated Press
+=================
+
+   `M-x dissociated-press' is a command for scrambling a file of text
+either word by word or character by character.  Starting from a buffer
+of straight English, it produces extremely amusing output.  The input
+comes from the current Emacs buffer.  Dissociated Press writes its
+output in a buffer named `*Dissociation*', and redisplays that buffer
+after every couple of lines (approximately) to facilitate reading it.
+
+   Dissociated Press asks every so often whether to continue operating.
+Answer `n' to stop it.  You can also stop at any time by typing `C-g'.
+The dissociation output remains in the `*Dissociation*' buffer for you
+to copy elsewhere if you wish.
+
+   Dissociated Press operates by jumping at random from one point in the
+buffer to another.  In order to produce plausible output rather than
+gibberish, it insists on a certain amount of overlap between the end of
+one run of consecutive words or characters and the start of the next.
+That is, if it has just printed out `president' and then decides to jump
+to a different point in the file, it might spot the `ent' in `pentagon'
+and continue from there, producing `presidentagon'.(1)  Long sample
+texts produce the best results.
+
+   A positive argument to `M-x dissociated-press' tells it to operate
+character by character, and specifies the number of overlap characters.
+A negative argument tells it to operate word by word and specifies the
+number of overlap words.  In this mode, whole words are treated as the
+elements to be permuted, rather than characters.  No argument is
+equivalent to an argument of two.  For your againformation, the output
+goes only into the buffer `*Dissociation*'.  The buffer you start with
+is not changed.
+
+   Dissociated Press produces nearly the same results as a Markov chain
+based on a frequency table constructed from the sample text.  It is,
+however, an independent, ignoriginal invention.  Dissociated Press
+techniquitously copies several consecutive characters from the sample
+between random choices, whereas a Markov chain would choose randomly for
+each word or character.  This makes for more plausible sounding results,
+and runs faster.
+
+   It is a mustatement that too much use of Dissociated Press can be a
+developediment to your real work.  Sometimes to the point of outragedy.
+And keep dissociwords out of your documentation, if you want it to be
+well userenced and properbose.  Have fun.  Your buggestions are welcome.
+
+   ---------- Footnotes ----------
+
+   (1)  This dissociword actually appeared during the Vietnam War, when
+it was very appropriate.
+
+
+File: emacs,  Node: Amusements,  Next: Emulation,  Prev: Dissociated Press,  Up: Top
+
+Other Amusements
+================
+
+   If you are a little bit bored, you can try `M-x hanoi'.  If you are
+considerably bored, give it a numeric argument.  If you are very very
+bored, try an argument of 9.  Sit back and watch.
+
+   If you want a little more personal involvement, try `M-x gomoku',
+which plays the game Go Moku with you.
+
+   `M-x blackbox' and `M-x mpuz' are two kinds of puzzles.  `blackbox'
+challenges you to determine the location of objects inside a box by
+tomography.  `mpuz' displays a multiplication puzzle with letters
+standing for digits in a code that you must guess--to guess a value,
+type a letter and then the digit you think it stands for.
+
+   `M-x dunnet' runs an adventure-style exploration game, which is a
+bigger sort of puzzle.
+
+   When you are frustrated, try the famous Eliza program.  Just do `M-x
+doctor'.  End each input by typing `RET' twice.
+
+   When you are feeling strange, type `M-x yow'.
+
+
+File: emacs,  Node: Emulation,  Next: Customization,  Prev: Amusements,  Up: Top
+
+Emulation
+=========
+
+   GNU Emacs can be programmed to emulate (more or less) most other
+editors.  Standard facilities can emulate these:
+
+EDT (DEC VMS editor)
+     Turn on EDT emulation with `M-x edt-emulation-on'.  `M-x
+     edt-emulation-off' restores normal Emacs command bindings.
+
+     Most of the EDT emulation commands are keypad keys, and most
+     standard Emacs key bindings are still available.  The EDT
+     emulation rebindings are done in the global keymap, so there is no
+     problem switching buffers or major modes while in EDT emulation.
+
+Gosling Emacs
+     To turn on emulation of Gosling Emacs (alias Unipress Emacs), type
+     the command `M-x set-gosmacs-bindings'.  This redefines many keys,
+     mostly on the `C-x' and `ESC' prefixes, to work as they do in
+     Gosmacs.  `M-x set-gnu-bindings' returns to normal GNU Emacs by
+     rebinding the same keys to the definitions they had before you used
+     `M-x set-gosmacs-bindings'.
+
+vi (Berkeley Unix editor)
+     Turn on vi emulation with `M-x vi-mode'.  This is a major mode
+     that replaces the previously established major mode.  All of the
+     vi commands that, in real vi, enter "input" mode are programmed in
+     the Emacs emulator to return to the previous major mode.  Thus,
+     ordinary Emacs serves as vi's "input" mode.
+
+     Because vi emulation works through major modes, it does not work
+     to switch buffers during emulation.  Return to normal Emacs first.
+
+     If you plan to use vi emulation much, you probably want to bind a
+     key to the `vi-mode' command.
+
+vi (alternate emulator)
+     Another vi emulator said to resemble real vi more thoroughly is
+     invoked by `M-x vip-mode'.  "Input" mode in this emulator is
+     changed from ordinary Emacs so you can use ESC to go back to
+     emulated vi command mode.  To get from emulated vi command mode
+     back to ordinary Emacs, type `C-z'.
+
+     This emulation does not work through major modes, and it is
+     possible to switch buffers in various ways within the emulator.
+     It is not so necessary to assign a key to the command `vip-mode' as
+     it is with `vi-mode' because terminating insert mode does not use
+     it.
+
+     For full information, see the long comment at the beginning of the
+     source file, which is `lisp/vip.el' in the Emacs distribution.
+
+   I am interested in hearing which vi emulator users prefer, as well
+as in receiving more complete user documentation for either or both
+emulators.  Warning: loading both at once may cause name conflicts; no
+one has checked.
+
+
+File: emacs,  Node: Customization,  Next: Quitting,  Prev: Emulation,  Up: Top
+
+Customization
+*************
+
+   This chapter talks about various topics relevant to adapting the
+behavior of Emacs in minor ways.  See `The Emacs Lisp Reference Manual'
+for how to make more far-reaching changes.
+
+   All kinds of customization affect only the particular Emacs job that
+you do them in.  They are completely lost when you kill the Emacs job,
+and have no effect on other Emacs jobs you may run at the same time or
+later.  The only way an Emacs job can affect anything outside of it is
+by writing a file; in particular, the only way to make a customization
+`permanent' is to put something in your `.emacs' file or other
+appropriate file to do the customization in each session.  *Note Init
+File::.
+
+* Menu:
+
+* Minor Modes::		   Each minor mode is one feature you can turn on
+			     independently of any others.
+* Variables::		   Many Emacs commands examine Emacs variables
+			     to decide what to do; by setting variables,
+			     you can control their functioning.
+* Keyboard Macros::	   A keyboard macro records a sequence of
+			     keystrokes to be replayed with a single
+			     command.
+* Key Bindings::	   The keymaps say what command each key runs.
+			     By changing them, you can "redefine keys".
+* Keyboard Translations::  If your keyboard passes an undesired code
+			     for a key, you can tell Emacs to
+			     substitute another code.
+* Syntax::		   The syntax table controls how words and
+			      expressions are parsed.
+* Init File::		   How to write common customizations in the
+                             `.emacs' file.
+
+
+File: emacs,  Node: Minor Modes,  Next: Variables,  Up: Customization
+
+Minor Modes
+===========
+
+   Minor modes are optional features which you can turn on or off.  For
+example, Auto Fill mode is a minor mode in which SPC breaks lines
+between words as you type.  All the minor modes are independent of each
+other and of the selected major mode.  Most minor modes say in the mode
+line when they are on; for example, `Fill' in the mode line means that
+Auto Fill mode is on.
+
+   Append `-mode' to the name of a minor mode to get the name of a
+command function that turns the mode on or off.  Thus, the command to
+enable or disable Auto Fill mode is called `M-x auto-fill-mode'.  These
+commands are usually invoked with `M-x', but you can bind keys to them
+if you wish.  With no argument, the function turns the mode on if it was
+off and off if it was on.  This is known as "toggling".  A positive
+argument always turns the mode on, and an explicit zero argument or a
+negative argument always turns it off.
+
+   Enabling or disabling some minor modes applies only to the current
+buffer; each buffer is independent of the other buffers.  Therefore, you
+can enable the mode in particular buffers and disable it in others.
+
+   Auto Fill mode allows you to enter filled text without breaking lines
+explicitly.  Emacs inserts newlines as necessary to prevent lines from
+becoming too long.  *Note Filling::.
+
+   Outline minor mode provides the same facilities as the major mode
+called Outline mode; but since it is a minor mode instead, you can
+combine it with any major mode.  *Note Outline Mode::.
+
+   Overwrite mode causes ordinary printing characters to replace
+existing text instead of shoving it over.  For example, if the point is
+in front of the `B' in `FOOBAR', then in Overwrite mode typing a `G'
+changes it to `FOOGAR', instead of making it `FOOGBAR' as usual.
+
+   Auto Save mode causes the contents of a buffer to be saved
+periodically to reduce the amount you will lose in case of a system
+crash.  *Note Auto Save::.
+
+   ISO Accents mode makes the characters ``', `'', `"', `^', `/' and
+`~' combined with the following letter, to produce an accented letter
+in the ISO Latin-1 character set.  *Note European Display::.
+
+   The following minor modes normally apply to all buffers at once.
+Since each is enabled or disabled by the value of a variable, you *can*
+set them differently for particular buffers, by explicitly making the
+corresponding variables local in those buffers.  *Note Locals::.
+
+   Abbrev mode allows you to define abbreviations that automatically
+expand as you type them.  For example, `amd' might expand to `abbrev
+mode'.  *Note Abbrevs::, for full information.
+
+   Line Number mode enables continuous display in the mode line of the
+line number of point.  *Note Mode Line::.
+
+   Scroll Bar mode gives each window a scroll bar (*note Scroll
+Bars::.).  Menu Bar mode gives each frame a menu bar (*note Menu
+Bars::.).  Both of these modes are enabled by default when you use the
+X Window System.
+
+   In Transient Mark mode, every change in the buffer "deactivates" the
+mark, so that commands that operate on the region will get an error.
+This means you must either set the mark, or explicitly "reactivate" it,
+before each command that uses the region.  The advantage of Transient
+Mark mode is that Emacs can display the region highlighted (currently
+only when using X).  *Note Setting Mark::.
+
+
+File: emacs,  Node: Variables,  Next: Keyboard Macros,  Prev: Minor Modes,  Up: Customization
+
+Variables
+=========
+
+   A "variable" is a Lisp symbol which has a value.  The symbol's name
+is also called the name of the variable.  A variable name can contain
+any characters that can appear in a file, but conventionally variable
+names consist of words separated by hyphens.  A variable can have a
+documentation string which describes what kind of value it should have
+and how the value will be used.
+
+   Lisp allows any variable to have any kind of value, but most
+variables that Emacs uses require a value of a certain type.  Often the
+value should always be a string, or should always be a number.
+Sometimes we say that a certain feature is turned on if a variable is
+"non-`nil'," meaning that if the variable's value is `nil', the feature
+is off, but the feature is on for *any* other value.  The conventional
+value to use to turn on the feature--since you have to pick one
+particular value when you set the variable--is `t'.
+
+   Emacs uses many Lisp variables for internal recordkeeping, as any
+Lisp program must, but the most interesting variables for you are the
+ones that exist for the sake of customization.  Emacs does not
+(usually) change the values of these variables; instead, you set the
+values, and thereby alter and control the behavior of certain Emacs
+commands.  These variables are called "options".  Most options are
+documented in this manual, and appear in the Variable Index (*note
+Variable Index::.).
+
+   One example of a variable which is an option is `fill-column', which
+specifies the position of the right margin (as a number of characters
+from the left margin) to be used by the fill commands (*note
+Filling::.).
+
+* Menu:
+
+* Examining::	     Examining or setting one variable's value.
+* Edit Options::     Examining or editing list of all variables' values.
+* Hooks::	     Hook variables let you specify programs for parts
+		       of Emacs to run on particular occasions.
+* Locals::	     Per-buffer values of variables.
+* File Variables::   How files can specify variable values.
+
+
+File: emacs,  Node: Examining,  Next: Edit Options,  Up: Variables
+
+Examining and Setting Variables
+-------------------------------
+
+`C-h v VAR RET'
+     Print the value and documentation of variable VAR
+     (`describe-variable').
+
+`M-x set-variable RET VAR RET VALUE RET'
+     Change the value of variable VAR to VALUE.
+
+   To examine the value of a single variable, use `C-h v'
+(`describe-variable'), which reads a variable name using the
+minibuffer, with completion.  It prints both the value and the
+documentation of the variable.  For example,
+
+     C-h v fill-column RET
+
+prints something like this:
+
+     fill-column's value is 75
+     
+     Documentation:
+     *Column beyond which automatic line-wrapping should happen.
+     Automatically becomes buffer-local when set in any fashion.
+
+The star at the beginning of the documentation indicates that this
+variable is an option.  `C-h v' is not restricted to options; it allows
+any variable name.
+
+   The most convenient way to set a specific option is with `M-x
+set-variable'.  This reads the variable name with the minibuffer (with
+completion), and then reads a Lisp expression for the new value using
+the minibuffer a second time.  For example,
+
+     M-x set-variable RET fill-column RET 75 RET
+
+sets `fill-column' to 75.
+
+   You can set any variable with a Lisp expression using the function
+`setq'.  Here's how to use it to set `fill-column':
+
+     (setq fill-column 75)
+
+   Setting variables, like all means of customizing Emacs except where
+explicitly stated, affects only the current Emacs session.
+
+
+File: emacs,  Node: Edit Options,  Next: Hooks,  Prev: Examining,  Up: Variables
+
+Editing Variable Values
+-----------------------
+
+   These two functions make it easy to display all the user edit options
+and change some of them.
+
+`M-x list-options'
+     Display a buffer listing names, values and documentation of all
+     options.
+
+`M-x edit-options'
+     Change option values by editing a list of options.
+
+   `M-x list-options' displays a list of all Emacs option variables, in
+an Emacs buffer named `*List Options*'.  Each option is shown with its
+documentation and its current value.  Here is what a portion of it might
+look like:
+
+     ;; exec-path:
+     ("." "/usr/local/bin" "/usr/ucb" "/bin" "/usr/bin" "/u2/emacs/etc")
+     *List of directories to search programs to run in subprocesses.
+     Each element is a string (directory name)
+     or nil (try the default directory).
+     ;;
+     ;; fill-column:
+     75
+     *Column beyond which automatic line-wrapping should happen.
+     Automatically becomes buffer-local when set in any fashion.
+     ;;
+
+   `M-x edit-options' goes one step further and immediately selects the
+`*List Options*' buffer; this buffer uses the major mode Options mode,
+which provides commands that allow you to point at an option and change
+its value:
+
+`s'
+     Set the variable point is in or near to a new value read using the
+     minibuffer.
+
+`x'
+     Toggle the variable point is in or near: if the value was `nil',
+     it becomes `t'; otherwise it becomes `nil'.
+
+`1'
+     Set the variable point is in or near to `t'.
+
+`0'
+     Set the variable point is in or near to `nil'.
+
+`n'
+`p'
+     Move to the next or previous variable.
+
+   Any changes take effect immediately, and last until you exit from
+Emacs.
+
+
+File: emacs,  Node: Hooks,  Next: Locals,  Prev: Edit Options,  Up: Variables
+
+Hooks
+-----
+
+   A "hook" is a variable where you can store a function or functions
+to be called on a particular occasion by an existing program.  Emacs
+provides a number of hooks for the sake of customization.
+
+   Most of the hooks in Emacs are "normal hooks".  These variables
+contain lists of functions to be called with no arguments.  The reason
+most hooks are normal hooks is so that you can use them in a uniform
+way.  Every variable in Emacs whose name ends in `-hook' is a normal
+hook.
+
+   Most major modes run hooks as the last step of initialization.  This
+makes it easy for a user to customize the behavior of the mode, by
+overriding the local variable assignments already made by the mode.  But
+hooks may also be used in other contexts.  For example, the hook
+`suspend-hook' runs just before Emacs suspends itself (*note
+Exiting::.).
+
+   The recommended way to add a hook function to a normal hook is by
+calling `add-hook'.  You can use any valid Lisp function as the hook
+function.  For example, here's how to set up a hook to turn on Auto
+Fill mode when entering Text mode and other modes based on Text mode:
+
+     (add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+   The next example shows how to use a hook to customize the indentation
+of C code.  (People often have strong personal preferences for one
+format compared to another.)  Here the hook function is an anonymous
+lambda expression.
+
+     (add-hook 'c-mode-hook
+       (function (lambda ()
+                   (setq c-indent-level 4
+                         c-argdecl-indent 0
+                         c-label-offset -4
+                         c-continued-statement-indent 0
+                         c-brace-offset 0
+                         comment-column 40))))
+     
+     (setq c++-mode-hook c-mode-hook)
+
+   It is best to design your hook functions so that the order in which
+they are executed does not matter.  Any dependence on the order is
+"asking for trouble."  However, the order is predictable: the most
+recently added hook functions are executed first.
+
+
+File: emacs,  Node: Locals,  Next: File Variables,  Prev: Hooks,  Up: Variables
+
+Local Variables
+---------------
+
+`M-x make-local-variable RET VAR RET'
+     Make variable VAR have a local value in the current buffer.
+
+`M-x kill-local-variable RET VAR RET'
+     Make variable VAR use its global value in the current buffer.
+
+`M-x make-variable-buffer-local RET VAR RET'
+     Mark variable VAR so that setting it will make it local to the
+     buffer that is current at that time.
+
+   Any variable can be made "local" to a specific Emacs buffer.  This
+means that its value in that buffer is independent of its value in other
+buffers.  A few variables are always local in every buffer.  Every other
+Emacs variable has a "global" value which is in effect in all buffers
+that have not made the variable local.
+
+   `M-x make-local-variable' reads the name of a variable and makes it
+local to the current buffer.  Further changes in this buffer will not
+affect others, and further changes in the global value will not affect
+this buffer.
+
+   `M-x make-variable-buffer-local' reads the name of a variable and
+changes the future behavior of the variable so that it will become local
+automatically when it is set.  More precisely, once a variable has been
+marked in this way, the usual ways of setting the variable automatically
+do `make-local-variable' first.  We call such variables "per-buffer"
+variables.
+
+   Major modes (*note Major Modes::.) always make the variables they set
+local to the buffer.  This is why changing major modes in one buffer has
+no effect on other buffers.  Minor modes also work by setting
+variables--normally, each minor mode has one controlling variable which
+is non-`nil' when the mode is enabled (*note Minor Modes::.).  For most
+minor modes, the controlling variable is per buffer.
+
+   Emacs contains a number of variables that are always per-buffer.
+These include `abbrev-mode', `auto-fill-function', `case-fold-search',
+`comment-column', `ctl-arrow', `fill-column', `fill-prefix',
+`indent-tabs-mode', `left-margin', `mode-line-format', `overwrite-mode',
+`selective-display-ellipses', `selective-display', `tab-width', and
+`truncate-lines'.  Some other variables are always local in every
+buffer, but they are used for internal purposes.
+
+   `M-x kill-local-variable' reads the name of a variable and makes it
+cease to be local to the current buffer.  The global value of the
+variable henceforth is in effect in this buffer.  Setting the major
+mode kills all the local variables of the buffer except for a few
+specially marked variables that are "permanent locals".
+
+   To set the global value of a variable, regardless of whether the
+variable has a local value in the current buffer, you can use the Lisp
+function `setq-default'.  It works like `setq'.  If there is a local
+value in the current buffer, the local value is not affected by
+`setq-default'; thus, the new global value may not be visible until you
+switch to another buffer.  For example,
+
+     (setq-default fill-column 75)
+
+`setq-default' is the only way to set the global value of a variable
+that has been marked with `make-variable-buffer-local'.
+
+   Lisp programs can look at a variable's default value with
+`default-value'.  This function takes a symbol as argument and returns
+its default value.  The argument is evaluated; usually you must quote
+it explicitly.  For example,
+
+     (default-value 'fill-column)
+
+
+File: emacs,  Node: File Variables,  Prev: Locals,  Up: Variables
+
+Local Variables in Files
+------------------------
+
+   A file can specify local variable values for use when you edit the
+file with Emacs.  Visiting the file checks for local variables
+specifications; it automatically makes these variables local to the
+buffer, and sets them to the values specified in the file.
+
+   There are two ways to specify local variable values: in the first
+line, or with a local variables list.  Here's how to do this with the
+first line:
+
+     -*- mode: MODENAME; VAR: VALUE; ... -*-
+
+You can specify any number of variables/value pairs in this way, each
+pair with a colon and semicolon as shown above.  The major mode should
+come first, if it is mentioned at all.  Here is an example that
+specifies Lisp mode and sets two variables with numeric values:
+
+     ;; -*-Mode: Lisp; fill-column: 75; comment-column: 50; -*-
+
+   A "local variables list" goes near the end of the file, in the last
+page.  (It is often best to put it on a page by itself.)  The local
+variables list starts with a line containing the string `Local
+Variables:', and ends with a line containing the string `End:'.  In
+between come the variable names and values, one set per line, as
+`VARIABLE: VALUE'.  The VALUEs are not evaluated; they are used
+literally.
+
+   Here is an example of a local variables list:
+
+     ;;; Local Variables: ***
+     ;;; mode:lisp ***
+     ;;; comment-column:0 ***
+     ;;; comment-start: ";;; "  ***
+     ;;; comment-end:"***" ***
+     ;;; End: ***
+
+   As you see, each line starts with the prefix `;;; ' and each line
+ends with the suffix ` ***'.  Emacs recognizes these as the prefix and
+suffix based on the first line of the list, by finding them surrounding
+the magic string `Local Variables:'; so it automatically discards them
+from the other lines of the list.
+
+   The usual reason for using a prefix and/or suffix is to embed the
+local variables list in a comment, so it won't confuse other programs
+that the file is intended as input for.  The example above is for a
+language where comment lines start with `;;; ' and end with `***'; the
+local values for `comment-start' and `comment-end' customize the rest
+of Emacs for this unusual syntax.  Don't use a prefix (or a suffix) if
+you don't need one.
+
+   Two "variable names" have special meanings in a local variables
+list: a value for the variable `mode' really sets the major mode, and a
+value for the variable `eval' is simply evaluated as an expression and
+the value is ignored.  `mode' and `eval' are not real variables;
+setting such variables in any other context has no such effect.  If
+`mode' is used in a local variables list, it should be the first entry
+in the list.
+
+   The start of the local variables list must be no more than 3000
+characters from the end of the file, and must be in the last page if the
+file is divided into pages.  Otherwise, Emacs will not notice it is
+there.  The purpose of this is so that a stray `Local Variables:' not
+in the last page does not confuse Emacs, and so that visiting a long
+file that is all one page and has no local variables list need not take
+the time to search the whole file.
+
+   You may be tempted to try to turn on Auto Fill mode with a local
+variable list.  That is a mistake.  The choice of Auto Fill mode or not
+is a matter of individual taste, not a matter of the contents of
+particular files.  If you want to use Auto Fill, set up major mode
+hooks with your `.emacs' file to turn it on (when appropriate) for you
+alone (*note Init File::.).  Don't try to use a local variable list
+that would impose your taste on everyone.
+
+   The variable `enable-local-variables' controls whether to process
+local variables lists, and thus gives you a chance to override them.
+Its default value is `t', which means to process local variables lists.
+If you set the value to `nil', Emacs simply ignores local variables
+lists.  Any other value says to query you about each local variables
+list, showing you the local variables list to consider.
+
+   The `eval' "variable" creates special risks, so there is a separate
+variable `enable-local-eval' to control whether Emacs processes `eval'
+variables, as well variables with names that end in `-hook', `-hooks',
+`-function' or `-functions'.  The three possibilities for the value are
+`t', `nil', and anything else, just as for `enable-local-variables'.
+The default is `maybe', which is neither `t' nor `nil', so normally
+Emacs queries about `eval' variable settings.
+
+   Use the command `normal-mode' to reset the local variables and major
+mode of a buffer according to the file name and contents, including the
+local variables list if any.  *Note Choosing Modes::.
+
+
+File: emacs,  Node: Keyboard Macros,  Next: Key Bindings,  Prev: Variables,  Up: Customization
+
+Keyboard Macros
+===============
+
+   A "keyboard macro" is a command defined by the user to abbreviate a
+sequence of keys.  For example, if you discover that you are about to
+type `C-n C-d' forty times, you can speed your work by defining a
+keyboard macro to do `C-n C-d' and calling it with a repeat count of
+forty.
+
+`C-x ('
+     Start defining a keyboard macro (`start-kbd-macro').
+
+`C-x )'
+     End the definition of a keyboard macro (`end-kbd-macro').
+
+`C-x e'
+     Execute the most recent keyboard macro (`call-last-kbd-macro').
+
+`C-u C-x ('
+     Re-execute last keyboard macro, then add more keys to its
+     definition.
+
+`C-x q'
+     When this point is reached during macro execution, ask for
+     confirmation (`kbd-macro-query').
+
+`M-x name-last-kbd-macro'
+     Give a command name (for the duration of the session) to the most
+     recently defined keyboard macro.
+
+`M-x insert-kbd-macro'
+     Insert in the buffer a keyboard macro's definition, as Lisp code.
+
+`C-x C-k'
+     Edit a previously defined keyboard macro (`edit-kbd-macro').
+
+   Keyboard macros differ from ordinary Emacs commands in that they are
+written in the Emacs command language rather than in Lisp.  This makes
+it easier for the novice to write them, and makes them more convenient
+as temporary hacks.  However, the Emacs command language is not powerful
+enough as a programming language to be useful for writing anything
+intelligent or general.  For such things, Lisp must be used.
+
+   You define a keyboard macro while executing the commands which are
+the definition.  Put differently, as you define a keyboard macro, the
+definition is being executed for the first time.  This way, you can see
+what the effects of your commands are, so that you don't have to figure
+them out in your head.  When you are finished, the keyboard macro is
+defined and also has been, in effect, executed once.  You can then do
+the whole thing over again by invoking the macro.
+
+* Menu:
+
+* Basic Kbd Macro::  Defining and running keyboard macros.
+* Save Kbd Macro::   Giving keyboard macros names; saving them in files.
+* Kbd Macro Query::  Keyboard macros that do different things each use.
+

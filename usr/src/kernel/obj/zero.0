@@ -1,0 +1,66 @@
+NULL(4)                   386BSD Programmer's Manual                   NULL(4)
+
+NNAAMMEE
+     zzeerroo - the zero-fill device
+
+DDEESSCCRRIIPPTTIIOONN
+     The zzeerroo device reads as if an infinitely long file of zeros.  Like the
+     null(4) device, the zzeerroo device accepts and reads data as any ordinary
+     (and willing) file - but throws it away. The length of the zzeerroo device is
+     always zero.
+
+FFIILLEESS
+     /dev/null
+
+BSD Experimental                 June 28, 1994                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

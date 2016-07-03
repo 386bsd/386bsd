@@ -1,0 +1,84 @@
+*** if_le_virgin.c	Wed Jan 16 15:18:50 1991
+--- if_le_virgin_bpf.c	Wed Jan 16 12:55:02 1991
+***************
+*** 40,45 ****
+--- 40,50 ----
+  
+  #include <sundev/mbvar.h>
+  
++ #include "bpfilter.h"
++ #if NBPFILTER > 0
++ #include "../net/bpf.h"
++ #endif
++ 
+  #include <sunif/if_lereg.h>
+  #include <sunif/if_levar.h>
+  
+***************
+*** 264,269 ****
+--- 269,282 ----
+  	/* Do hardware-independent attach stuff. */
+  	ether_attach(&es->es_if, unit, "le",
+  		leinit, leioctl, leoutput, lereset);
++ #if NBPFILTER > 0
++ 	{
++ 		static struct bpf_devp dev = { 
++ 			DLT_EN10MB, sizeof(struct ether_header)
++ 		};
++ 		bpfattach(&es->es_bpf, &es->es_if, &dev);
++         }
++ #endif
+  	/*
+  	 * attach interrupts and dma vectors
+  	 */
+***************
+*** 1028,1033 ****
+--- 1041,1053 ----
+  			}
+  		} while (m = m->m_next);
+  
++ #if NBPFILTER > 0
++ 		{
++ 			struct le_softc *le = &le_softc[unit];
++ 			if (le->es_bpf)
++ 				bpf_mtap(le->es_bpf, m0);
++ 		}
++ #endif
+  		/*
+  		 * t points to the next free tmd.
+  		 */
+***************
+*** 1384,1389 ****
+--- 1404,1435 ----
+  		return;
+  	}
+  
++ #if NBPFILTER > 0
++         /*
++          * If bpf is listening on this interface, let it see the packet 
++ 	 * before we pass it up to higher evel protocols.  
++ 	 *
++ 	 * Note that BPF doesn't currently (and hopefully never will)
++ 	 * work for trailer-encapsulated packets.  We just ignore them.
++          */
++         if (es->es_bpf && off == 0) {
++                 bpf_tap(es->es_bpf, (u_char *)header, 
++ 			length + sizeof(struct ether_header));
++ 		/*
++ 		 * If we are in promiscuous mode, we return if this
++ 		 * packet isn't for us.  This prevents NIT from seeing
++ 		 * any promiscuous packets when there is a BPF listener.
++ 		 * The IFF_PROMISC test isn't necessary but saves the
++ 		 * bcmp() calls; it's probably worthwhile.
++ 		 */
++ 		if ((es->es_if.if_flags & IFF_PROMISC) &&
++ 		    bcmp(header->ether_dhost.ether_addr_octet,
++ 			 es->es_enaddr.ether_addr_octet, 6) != 0 &&
++ 		    bcmp(header->ether_dhost.ether_addr_octet,
++ 			 etherbroadcastaddr.ether_addr_octet, 6) != 0)
++ 			return;
++ 	}
++ #endif
+  	/*
+  	 * Pull packet off interface.  Off is nonzero if packet has
+  	 * trailing header; copy_to_mbufs will then force this header

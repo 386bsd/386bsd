@@ -1,0 +1,229 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtManageChildren 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtManageChildren, XtManageChild, XtUnmanageChildren, XtUnmanageChild \- manage and unmanage children
+.SH SYNTAX
+typedef Widget *WidgetList;
+.sp
+void XtManageChildren(\fIchildren\fP, \fInum_children\fP)
+.br
+      WidgetList \fIchildren\fP;
+.br
+      Cardinal \fInum_children\fP;
+.LP
+void XtManageChild(\fIchild\fP)
+.br
+      Widget \fIchild\fP;
+.LP
+void XtUnmanageChildren(\fIchildren\fP, \fInum_children\fP)
+.br
+      WidgetList \fIchildren\fP;
+.br
+      Cardinal \fInum_children\fP;
+.LP
+void XtUnmanageChild(\fIchild\fP)
+.br
+      Widget \fIchild\fP;
+.SH ARGUMENTS
+.IP \fIchild\fP 1i
+Specifies the child.
+.IP \fIchildren\fP 1i
+Specifies a list of child widgets.
+.IP \fInum_children\fP 1i
+Specifies the number of children.
+.SH DESCRIPTION
+The
+.ZN XtManageChildren
+function performs the following:
+.IP \(bu 5
+Issues an error if the children do not all have the same parent or
+if the parent is not a subclass of 
+.ZN compositeWidgetClass .
+.IP \(bu 5
+Returns immediately if the common parent is being destroyed;
+otherwise, for each unique child on the list,
+.ZN XtManageChildren
+ignores the child if it already is managed or is being destroyed
+and marks it if not.
+.IP \(bu 5
+If the parent is realized and after all children have been marked,
+it makes some of the newly managed children viewable:
+.RS
+.IP \- 5
+Calls the change_managed routine of the widgets' parent.
+.IP \- 5
+Calls
+.ZN XtRealizeWidget
+on each previously unmanaged child that is unrealized.
+.IP \- 5
+Maps each previously unmanaged child that has map_when_managed 
+.ZN True .
+.RE
+.LP
+Managing children is independent of the ordering of children and
+independent of creating and deleting children.
+The layout routine of the parent
+should consider children whose managed field is
+.ZN True 
+and should ignore all other children.
+Note that some composite widgets, especially fixed boxes, call
+.ZN XtManageChild
+from their insert_child procedure.
+.LP
+If the parent widget is realized,
+its change_managed procedure is called to notify it
+that its set of managed children has changed.
+The parent can reposition and resize any of its children.
+It moves each child as needed by calling 
+.ZN XtMoveWidget ,
+which first updates the x and y fields and then calls
+.ZN XMoveWindow
+if the widget is realized.
+.LP
+The
+.ZN XtManageChild
+function constructs a
+.ZN WidgetList
+of length one and calls
+.ZN XtManageChildren .
+.LP
+The
+.ZN XtUnmanageChildren
+function performs the following:
+.IP \(bu 5
+Issues an error if the children do not all have the same parent
+or if the parent is not a subclass of 
+.ZN compositeWidgetClass .
+.IP \(bu 5
+Returns immediately if the common parent is being destroyed;
+otherwise, for each unique child on the list, 
+.ZN XtUnmanageChildren
+performs the following:
+.RS
+.IP \- 5
+Ignores the child if it already is unmanaged or is being destroyed
+and marks it if not.
+.IP \- 5
+If the child is realized,
+it makes it nonvisible by unmapping it.
+.RE
+.IP \(bu 5
+Calls the change_managed routine of the widgets' parent
+after all children have been marked
+if the parent is realized.
+.LP
+.ZN XtUnmanageChildren
+does not destroy the children widgets.
+Removing widgets from a parent's managed set is often a temporary banishment,
+and, some time later, you may manage the children again.
+.LP
+The
+.ZN XtUnmanageChild
+function constructs a widget list
+of length one and calls
+.ZN XtUnmanageChildren .
+.SH "SEE ALSO"
+XtMapWidget(3Xt),
+XtRealizeWidget(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

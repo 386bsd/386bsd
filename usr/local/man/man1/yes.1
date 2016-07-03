@@ -1,0 +1,27 @@
+.TH YES 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+yes \- output a string repeatedly until killed
+.SH SYNOPSIS
+.B yes
+[string...]
+.br
+.B yes
+{\-\-help,\-\-version}
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR yes .
+.B yes
+prints the command line arguments, separated by spaces and followed by
+a newline, forever until it is killed.  If no arguments are given, it
+prints `y' followed by a newline forever until killed.
+.SS OPTIONS
+When GNU
+.B false
+is invoked with exactly one argument, the following options are recognized:
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

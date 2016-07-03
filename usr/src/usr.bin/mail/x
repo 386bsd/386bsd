@@ -1,0 +1,3794 @@
+# 1 "collect.c"
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static char sccsid[] = "@(#)collect.c	5.24 (Berkeley) 4/1/91";
+
+
+ 
+
+
+
+
+
+
+# 1 "rcv.h" 1
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+# 1 "def.h" 1
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/param.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/types.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef	unsigned char	u_char;
+typedef	unsigned short	u_short;
+typedef	unsigned int	u_int;
+typedef	unsigned long	u_long;
+typedef	unsigned short	ushort;		 
+
+typedef	char *	caddr_t;		 
+typedef	long	daddr_t;		 
+typedef	short	dev_t;			 
+typedef	u_long	ino_t;			 
+typedef	long	off_t;			 
+typedef	u_short	nlink_t;		 
+typedef	long	swblk_t;		 
+typedef	long	segsz_t;		 
+typedef	u_short	uid_t;			 
+typedef	u_short	gid_t;			 
+typedef	short	pid_t;			 
+typedef	u_short	mode_t;			 
+typedef u_long	fixpt_t;		 
+
+
+typedef	struct	_uquad	{ u_long val[2]; } u_quad;
+typedef	struct	_quad	{   long val[2]; } quad;
+typedef	long *	qaddr_t;	 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+# 1 "/usr/include/machine/ansi.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 78 "/usr/include/sys/types.h" 2 3
+
+
+# 1 "/usr/include/machine/types.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct _physadr {
+	int r[1];
+} *physadr;
+
+typedef struct label_t {
+	int val[6];
+} label_t;
+
+typedef	u_long	vm_offset_t;
+typedef	u_long	vm_size_t;
+
+
+ 
+
+ 
+
+
+# 80 "/usr/include/sys/types.h" 2 3
+
+
+
+
+typedef	unsigned long			clock_t;
+
+
+
+
+typedef	unsigned int			size_t;
+
+
+
+
+typedef	long				time_t;
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+typedef long	fd_mask;
+
+
+
+
+
+
+typedef	struct fd_set {
+	fd_mask	fds_bits[(((256 )+(( (sizeof(fd_mask) * 8		)	)-1))/( (sizeof(fd_mask) * 8		)	)) ];
+} fd_set;
+
+
+
+
+
+
+# 141 "/usr/include/sys/types.h" 3
+
+
+
+
+# 45 "/usr/include/sys/param.h" 2 3
+
+
+
+ 
+
+
+
+
+
+
+# 1 "/usr/include/sys/syslimits.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 55 "/usr/include/sys/param.h" 2 3
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+ 
+# 1 "/usr/include/sys/signal.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/machine/trap.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+# 43 "/usr/include/sys/signal.h" 2 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/cdefs.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+# 76 "/usr/include/sys/cdefs.h" 3
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 91 "/usr/include/sys/signal.h" 2 3
+
+
+
+typedef	void (*sig_t) (int)		;
+
+
+typedef void (*__sighandler_t) (int)		;
+typedef unsigned int sigset_t;
+
+ 
+int	sigaddset (sigset_t *, int)		;
+int	sigdelset (sigset_t *, int)		;
+int	sigemptyset (sigset_t *)		;
+int	sigfillset (sigset_t *)		;
+int	sigismember (const sigset_t *, int)		;
+ 
+
+
+
+
+ 
+
+
+struct	sigaction {
+	__sighandler_t  sa_handler;      
+	sigset_t sa_mask;		 
+	int	sa_flags;		 
+};
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+struct	sigvec {
+	void	(*sv_handler)();	 
+	int	sv_mask;		 
+	int	sv_flags;		 
+};
+
+
+
+
+ 
+
+
+struct	sigaltstack {
+	char	*ss_base;		 
+	int	ss_len;			 
+	int	ss_onstack;		 
+};
+
+ 
+
+
+struct	sigstack {
+	char	*ss_sp;			 
+	int	ss_onstack;		 
+};
+
+ 
+
+
+
+
+
+
+struct	sigcontext {
+	int	sc_onstack;		 
+	int	sc_mask;		 
+	int	sc_sp;			 
+	int	sc_fp;			 
+	int	sc_ap;			 
+	int	sc_pc;			 
+	int	sc_ps;			 
+};
+
+ 
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+ 
+ 
+__sighandler_t signal (int, __sighandler_t)		;
+int	raise (int)		;
+
+int	kill (pid_t, int)		;
+int	sigaction (int, const struct sigaction *, struct sigaction *)		;
+int	sigpending (sigset_t *)		;
+int	sigprocmask (int, const sigset_t *, sigset_t *)		;
+int	sigsuspend (const sigset_t *)		;
+
+
+int	killpg (pid_t, int)		;
+void	psignal (unsigned, const char *)		;
+int	sigblock (int)		;
+int	siginterrupt (int, int)		;
+int	sigpause (int)		;
+int	sigreturn (struct sigcontext *)		;
+int	sigsetmask (int)		;
+int	sigstack (const struct sigstack *, struct sigstack *)		;
+int	sigvec (int, struct sigvec *, struct sigvec *)		;
+
+ 
+
+
+
+# 78 "/usr/include/sys/param.h" 2 3
+
+
+ 
+# 1 "/usr/include/machine/param.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+
+
+
+ 
+
+
+ 
+
+
+
+ 
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 81 "/usr/include/sys/param.h" 2 3
+
+# 1 "/usr/include/machine/endian.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+unsigned long	htonl (unsigned long)		;
+unsigned short	htons (unsigned short)		;
+unsigned long	ntohl (unsigned long)		;
+unsigned short	ntohs (unsigned short)		;
+ 
+
+ 
+
+
+# 66 "/usr/include/machine/endian.h" 3
+
+
+
+
+
+
+
+
+
+# 82 "/usr/include/sys/param.h" 2 3
+
+# 1 "/usr/include/machine/limits.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 83 "/usr/include/sys/param.h" 2 3
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+# 36 "def.h" 2
+
+
+# 1 "/usr/include/stdio.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef long fpos_t;		 
+
+
+
+ 
+
+
+
+
+
+ 
+struct __sbuf {
+	unsigned char *_base;
+	int	_size;
+};
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef	struct __sFILE {
+	unsigned char *_p;	 
+	int	_r;		 
+	int	_w;		 
+	short	_flags;		 
+	short	_file;		 
+	struct	__sbuf _bf;	 
+	int	_lbfsize;	 
+
+	 
+	void	*_cookie;	 
+	int	(*_close) (void *)		;
+	int	(*_read)  (void *, char *, int)		;
+	fpos_t	(*_seek)  (void *, fpos_t, int)		;
+	int	(*_write) (void *, const char *, int)		;
+
+	 
+	struct	__sbuf _ub;	 
+	unsigned char *_up;	 
+	int	_ur;		 
+
+	 
+	unsigned char _ubuf[3];	 
+	unsigned char _nbuf[1];	 
+
+	 
+	struct	__sbuf _lb;	 
+
+	 
+	int	_blksize;	 
+	int	_offset;	 
+} FILE;
+
+ 
+extern FILE __sF[];
+ 
+
+
+
+
+
+	 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+ 
+void	 clearerr (FILE *)		;
+int	 fclose (FILE *)		;
+int	 feof (FILE *)		;
+int	 ferror (FILE *)		;
+int	 fflush (FILE *)		;
+int	 fgetc (FILE *)		;
+int	 fgetpos (FILE *, fpos_t *)		;
+char	*fgets (char *, size_t, FILE *)		;
+FILE	*fopen (const char *, const char *)		;
+int	 fprintf (FILE *, const char *, ...)		;
+int	 fputc (int, FILE *)		;
+int	 fputs (const char *, FILE *)		;
+int	 fread (void *, size_t, size_t, FILE *)		;
+FILE	*freopen (const char *, const char *, FILE *)		;
+int	 fscanf (FILE *, const char *, ...)		;
+int	 fseek (FILE *, long, int)		;
+int	 fsetpos (FILE *, const fpos_t *)		;
+long	 ftell (const FILE *)		;
+int	 fwrite (const void *, size_t, size_t, FILE *)		;
+int	 getc (FILE *)		;
+int	 getchar (void)		;
+char	*gets (char *)		;
+
+extern int sys_nerr;			 
+extern char *sys_errlist[];
+
+void	 perror (const char *)		;
+int	 printf (const char *, ...)		;
+int	 putc (int, FILE *)		;
+int	 putchar (int)		;
+int	 puts (const char *)		;
+int	 remove (const char *)		;
+int	 rename  (const char *, const char *)		;
+void	 rewind (FILE *)		;
+int	 scanf (const char *, ...)		;
+void	 setbuf (FILE *, char *)		;
+int	 setvbuf (FILE *, char *, int, size_t)		;
+int	 sprintf (char *, const char *, ...)		;
+int	 sscanf (char *, const char *, ...)		;
+FILE	*tmpfile (void)		;
+char	*tmpnam (char *)		;
+int	 ungetc (int, FILE *)		;
+int	 vfprintf (FILE *, const char *, char *			)		;
+int	 vprintf (const char *, char *			)		;
+int	 vsprintf (char *, const char *, char *			)		;
+ 
+
+ 
+
+
+
+
+
+
+ 
+char	*ctermid (char *)		;
+FILE	*fdopen (int, const char *)		;
+int	 fileno (FILE *)		;
+ 
+
+
+ 
+
+
+
+ 
+char	*fgetline (FILE *, size_t *)		;
+int	 fpurge (FILE *)		;
+int	 getw (FILE *)		;
+int	 pclose (FILE *)		;
+FILE	*popen (const char *, const char *)		;
+int	 putw (int, FILE *)		;
+void	 setbuffer (FILE *, char *, int)		;
+int	 setlinebuf (FILE *)		;
+char	*tempnam (const char *, const char *)		;
+int	 snprintf (char *, size_t, const char *, ...)		;
+int	 vsnprintf (char *, size_t, const char *, char *			)		;
+int	 vscanf (const char *, char *			)		;
+int	 vsscanf (const char *, const char *, char *			)		;
+ 
+
+ 
+
+
+
+
+
+
+ 
+
+
+ 
+FILE	*funopen (const void *,
+		int (*)(void *, char *, int),
+		int (*)(void *, const char *, int),
+		fpos_t (*)(void *, fpos_t, int),
+		int (*)(void *))		;
+ 
+
+
+
+
+ 
+
+
+ 
+int	__srget (FILE *)		;
+int	__svfscanf (FILE *, const char *, char *			)		;
+int	__swbuf (int, FILE *)		;
+ 
+
+ 
+
+
+
+
+
+static inline int __sputc(int _c, FILE *_p) {
+	if (--_p->_w >= 0 || (_p->_w >= _p->_lbfsize && (char)_c != '\n'))
+		return (*_p->_p++ = _c);
+	else
+		return (__swbuf(_c, _p));
+}
+# 331 "/usr/include/stdio.h" 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 38 "def.h" 2
+
+# 1 "/usr/include/sgtty.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/ioctl.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+struct winsize {
+	unsigned short	ws_row;		 
+	unsigned short	ws_col;		 
+	unsigned short	ws_xpixel;	 
+	unsigned short	ws_ypixel;	 
+};
+
+ 
+
+
+struct ttysize {
+	unsigned short	ts_lines;
+	unsigned short	ts_cols;
+	unsigned short	ts_xxx;
+	unsigned short	ts_yyy;
+};
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						 
+
+
+						 
+
+						 
+
+
+
+
+
+
+						 
+
+
+
+
+
+
+						 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+int	ioctl (int, unsigned long, ...)		;
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/ioctl_compat.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/sys/ttychars.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+struct ttychars {
+	char	tc_erase;	 
+	char	tc_kill;	 
+	char	tc_intrc;	 
+	char	tc_quitc;	 
+	char	tc_startc;	 
+	char	tc_stopc;	 
+	char	tc_eofc;	 
+	char	tc_brkc;	 
+	char	tc_suspc;	 
+	char	tc_dsuspc;	 
+	char	tc_rprntc;	 
+	char	tc_flushc;	 
+	char	tc_werasc;	 
+	char	tc_lnextc;	 
+};
+
+# 1 "/usr/include/sys/ttydefaults.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+# 61 "/usr/include/sys/ttychars.h" 2 3
+
+
+
+# 43 "/usr/include/sys/ioctl_compat.h" 2 3
+
+# 1 "/usr/include/sys/ttydev.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 44 "/usr/include/sys/ioctl_compat.h" 2 3
+
+
+
+struct tchars {
+	char	t_intrc;	 
+	char	t_quitc;	 
+	char	t_startc;	 
+	char	t_stopc;	 
+	char	t_eofc;		 
+	char	t_brkc;		 
+};
+
+struct ltchars {
+	char	t_suspc;	 
+	char	t_dsuspc;	 
+	char	t_rprntc;	 
+	char	t_flushc;	 
+	char	t_werasc;	 
+	char	t_lnextc;	 
+};
+
+ 
+
+
+
+
+struct sgttyb {
+	char	sg_ispeed;		 
+	char	sg_ospeed;		 
+	char	sg_erase;		 
+	char	sg_kill;		 
+	short	sg_flags;		 
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 222 "/usr/include/sys/ioctl.h" 2 3
+
+
+
+# 39 "/usr/include/sgtty.h" 2 3
+
+# 39 "def.h" 2
+
+# 1 "/usr/include/ctype.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+extern char	_ctype_[];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 40 "def.h" 2
+
+# 1 "/usr/include/string.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+void	*memchr (const void *, int, size_t)		;
+int	 memcmp (const void *, const void *, size_t)		;
+void	*memcpy (void *, const void *, size_t)		;
+void	*memmove (void *, const void *, size_t)		;
+void	*memset (void *, int, size_t)		;
+char	*strcat (char *, const char *)		;
+char	*strchr (const char *, int)		;
+int	 strcmp (const char *, const char *)		;
+int	 strcoll (const char *, const char *)		;
+char	*strcpy (char *, const char *)		;
+size_t	 strcspn (const char *, const char *)		;
+char	*strerror (int)		;
+size_t	 strlen (const char *)		;
+char	*strncat (char *, const char *, size_t)		;
+int	 strncmp (const char *, const char *, size_t)		;
+char	*strncpy (char *, const char *, size_t)		;
+char	*strpbrk (const char *, const char *)		;
+char	*strrchr (const char *, int)		;
+size_t	 strspn (const char *, const char *)		;
+char	*strstr (const char *, const char *)		;
+char	*strtok (char *, const char *)		;
+size_t	 strxfrm (char *, const char *, size_t)		;
+
+ 
+
+int	 bcmp (const void *, const void *, size_t)		;
+void	 bcopy (const void *, void *, size_t)		;
+void	 bzero (void *, size_t)		;
+int	 ffs (int)		;
+char	*index (const char *, int)		;
+void	*memccpy (void *, const void *, int, size_t)		;
+char	*rindex (const char *, int)		;
+int	 strcasecmp (const char *, const char *)		;
+char	*strdup (const char *)		;
+void	 strmode (int, char *)		;
+int	 strncasecmp (const char *, const char *, size_t)		;
+char	*strsep (char **, const char *)		;
+void	 swab (const void *, void *, size_t)		;
+
+ 
+
+
+# 41 "def.h" 2
+
+# 1 "pathnames.h" 1
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1 "/usr/include/paths.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+# 36 "pathnames.h" 2
+
+
+
+
+
+
+
+
+# 42 "def.h" 2
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+struct message {
+	short	m_flag;			 
+	short	m_block;		 
+	short	m_offset;		 
+	long	m_size;			 
+	short	m_lines;		 
+};
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+struct cmd {
+	char	*c_name;		 
+	int	(*c_func)();		 
+	short	c_argtype;		 
+	short	c_msgflag;		 
+	short	c_msgmask;		 
+};
+
+ 
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+struct headline {
+	char	*l_from;	 
+	char	*l_tty;		 
+	char	*l_date;	 
+};
+
+
+
+
+
+
+				 
+
+
+
+
+
+ 
+
+
+
+
+struct header {
+	struct name *h_to;		 
+	char *h_subject;		 
+	struct name *h_cc;		 
+	struct name *h_bcc;		 
+	struct name *h_smopts;		 
+};
+
+ 
+
+
+
+
+
+struct name {
+	struct	name *n_flink;		 
+	struct	name *n_blink;		 
+	short	n_type;			 
+	char	*n_name;		 
+};
+
+ 
+
+
+
+
+
+struct var {
+	struct	var *v_link;		 
+	char	*v_name;		 
+	char	*v_value;		 
+};
+
+struct group {
+	struct	group *ge_link;		 
+	char	*ge_name;		 
+};
+
+struct grouphead {
+	struct	grouphead *g_link;	 
+	char	*g_name;		 
+	struct	group *g_list;		 
+};
+
+
+
+
+
+
+
+ 
+
+
+struct ignoretab {
+	int i_count;			 
+	struct ignore {
+		struct ignore *i_link;	 
+		char *i_field;		 
+	} *i_head[	59		];
+};
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+FILE	*Fopen();
+FILE	*Fdopen();
+FILE	*Popen();
+FILE	*collect();
+FILE	*infix();
+FILE	*run_editor();
+FILE	*setinput();
+char	**unpack();
+char	*calloc();
+char	*copy();
+char	*copyin();
+char	*detract();
+char	*expand();
+char	*getdeadletter();
+char	*gets();
+char	*hfield();
+char	*name1();
+char	*nameof();
+char	*nextword();
+char	*getenv();
+char	*getname();
+char	*fgets();
+char	*ishfield();
+char	*malloc();
+char	*mktemp();
+char	*readtty();
+char	*reedit();
+char	*salloc();
+char	*savestr();
+char	*skin();
+char	*snarf();
+char	*username();
+char	*value();
+char	*vcopy();
+char	*yankword();
+off_t	fsize();
+uid_t	getuid();
+struct	cmd	*lex();
+struct	grouphead	*findgroup();
+struct	name	*nalloc();
+struct	name	*cat();
+struct	name	*delname();
+struct	name	*elide();
+struct	name	*extract();
+struct	name	*gexpand();
+struct	name	*outof();
+struct	name	*put();
+struct	name	*usermap();
+struct	var	*lookup();
+# 43 "rcv.h" 2
+
+# 1 "glob.h" 1
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+int	msgCount;			 
+int	rcvmode;			 
+int	sawcom;				 
+char	*Tflag;				 
+int	senderr;			 
+int	edit;				 
+int	readonly;			 
+int	noreset;			 
+int	sourcing;			 
+int	loading;			 
+int	cond;				 
+FILE	*itf;				 
+FILE	*otf;				 
+int	image;				 
+FILE	*input;				 
+char	mailname[1024	 	];		 
+char	prevfile[1024	 	];		 
+char	*homedir;			 
+char	*myname;			 
+off_t	mailsize;			 
+int	lexnumber;			 
+char	lexstring[1024		];		 
+int	regretp;			 
+int	regretstack[2			];		 
+char	*string_stack[2			];		 
+int	numberstack[2			];		 
+struct	message	*dot;			 
+struct	message	*message;		 
+struct	var	*variables[	59		];	 
+struct	grouphead	*groups[	59		]; 
+struct	ignoretab	ignore[2];	 
+
+struct	ignoretab	saveignore[2];	 
+
+struct	ignoretab	ignoreall[2];	 
+char	**altnames;			 
+int	debug;				 
+int	screenwidth;			 
+int	screenheight;			 
+
+int	realscreenheight;		 
+
+# 1 "/usr/include/setjmp.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+typedef int sigjmp_buf[10  + 1];
+
+
+typedef int jmp_buf[10 ];
+
+
+
+ 
+int	setjmp (jmp_buf)		;
+void	longjmp (jmp_buf, int)		;
+
+
+ 
+
+
+int	sigsetjmp (sigjmp_buf, int)		;
+void	siglongjmp (sigjmp_buf, int)		;
+
+
+
+int	_setjmp (jmp_buf)		;
+void	_longjmp (jmp_buf, int)		;
+void	longjmperror (void)		;
+
+ 
+
+
+# 83 "glob.h" 2
+
+
+jmp_buf	srbuf;
+
+
+ 
+
+
+
+
+
+
+
+struct strings {
+	char	*s_topFree;		 
+	char	*s_nextFree;		 
+	unsigned s_nleft;		 
+} stringdope[25			];
+# 44 "rcv.h" 2
+
+# 45 "collect.c" 2
+
+# 1 "/usr/include/sys/stat.h" 1 3
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+struct stat
+{
+	dev_t	st_dev;			 
+	ino_t	st_ino;			 
+	mode_t	st_mode;		 
+	nlink_t	st_nlink;		 
+	uid_t	st_uid;			 
+	gid_t	st_gid;			 
+	dev_t	st_rdev;		 
+	off_t	st_size;		 
+	time_t	st_atime;		 
+	long	st_spare1;
+	time_t	st_mtime;		 
+	long	st_spare2;
+	time_t	st_ctime;		 
+	long	st_spare3;
+	long	st_blksize;		 
+	long	st_blocks;		 
+	u_long	st_flags;		 
+	u_long	st_gen;			 
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+mode_t	umask (mode_t)		;
+int	chmod (const char *, mode_t)		;
+int	fstat (int, struct stat *)		;
+int	mkdir (const char *, mode_t)		;
+int	mkfifo (const char *, mode_t)		;
+int	stat (const char *, struct stat *)		;
+
+int	fchmod (int, mode_t)		;
+int	lstat (const char *, struct stat *)		;
+
+ 
+
+# 46 "collect.c" 2
+
+
+ 
+
+
+
+
+ 
+
+
+
+
+
+static	sig_t	saveint;		 
+static	sig_t	savehup;		 
+static	sig_t	savetstp;		 
+static	sig_t	savettou;		 
+static	sig_t	savettin;		 
+static	FILE	*collf;			 
+static	int	hadintr;		 
+
+static	jmp_buf	colljmp;		 
+static	int	colljmp_p;		 
+static	jmp_buf	collabort;		 
+
+FILE *
+collect(hp, printheaders)
+	struct header *hp;
+{
+	FILE *fbuf;
+	int lc, cc, escape, eofcount;
+	register int c, t;
+	char linebuf[1024				], *cp;
+	extern char tempMail[];
+	char getsub;
+	int omask;
+	void collint(), collhup(), collstop();
+
+	collf = 0 ;
+	 
+
+
+
+	omask = sigblock((1 << ((2	)-1))  | (1 << ((1	)-1)) );
+	if ((saveint = signal(2	, 	((__sighandler_t) 1) )) != 	((__sighandler_t) 1) )
+		signal(2	, collint);
+	if ((savehup = signal(1	, 	((__sighandler_t) 1) )) != 	((__sighandler_t) 1) )
+		signal(1	, collhup);
+	savetstp = signal(18	, collstop);
+	savettou = signal(22	, collstop);
+	savettin = signal(21	, collstop);
+	if (setjmp(collabort) || setjmp(colljmp)) {
+		rm(tempMail);
+		goto err;
+	}
+	sigsetmask(omask & ~((1 << ((2	)-1))  | (1 << ((1	)-1)) ));
+
+	noreset++;
+	if ((collf = Fopen(tempMail, "w+")) == 0 ) {
+		perror(tempMail);
+		goto err;
+	}
+	unlink(tempMail);
+
+	 
+
+
+
+
+	t = 1		|2		|4		|16		;
+	getsub = 0;
+	if (hp->h_subject == 	((char *) 0)	 && value("interactive") != 	((char *) 0)	 &&
+	    (value("ask") != 	((char *) 0)	 || value("asksub") != 	((char *) 0)	))
+		t &= ~16		, getsub++;
+	if (printheaders) {
+		puthead(hp, (&__sF[1]) , t);
+		fflush((&__sF[1]) );
+	}
+	if ((cp = value("escape")) != 	((char *) 0)	)
+		escape = *cp;
+	else
+		escape = 	'~'		;
+	eofcount = 0;
+	hadintr = 0;
+
+	if (!setjmp(colljmp)) {
+		if (getsub)
+			grabh(hp, 2		);
+	} else {
+		 
+
+
+
+
+cont:
+		if (hadintr) {
+			fflush((&__sF[1]) );
+			fprintf((&__sF[2]) ,
+			"\n(Interrupt -- one more to kill letter)\n");
+		} else {
+			printf("(continue)\n");
+			fflush((&__sF[1]) );
+		}
+	}
+	for (;;) {
+		colljmp_p = 1;
+		c = readline((&__sF[0]) , linebuf, 1024				);
+		colljmp_p = 0;
+		if (c < 0) {
+			if (value("interactive") != 	((char *) 0)	 &&
+			    value("ignoreeof") != 	((char *) 0)	 && ++eofcount < 25) {
+				printf("Use \".\" to terminate letter\n");
+				continue;
+			}
+			break;
+		}
+		eofcount = 0;
+		hadintr = 0;
+		if (linebuf[0] == '.' && linebuf[1] == '\0' &&
+		    value("interactive") != 	((char *) 0)	 &&
+		    (value("dot") != 	((char *) 0)	 || value("ignoreeof") != 	((char *) 0)	))
+			break;
+		if (linebuf[0] != escape || value("interactive") == 	((char *) 0)	) {
+			if (putline(collf, linebuf) < 0)
+				goto err;
+			continue;
+		}
+		c = linebuf[1];
+		switch (c) {
+		default:
+			 
+
+
+
+			if (c == escape) {
+				if (putline(collf, &linebuf[1]) < 0)
+					goto err;
+				else
+					break;
+			}
+			printf("Unknown tilde escape.\n");
+			break;
+		case 'C':
+			 
+
+
+			core();
+			break;
+		case '!':
+			 
+
+
+
+			shell(&linebuf[2]);
+			break;
+		case ':':
+			 
+
+
+			execute(&linebuf[2], 1);
+			goto cont;
+		case '.':
+			 
+
+
+			goto out;
+		case 'q':
+			 
+
+
+
+			hadintr++;
+			collint(2	);
+			exit(1);
+		case 'h':
+			 
+
+
+			grabh(hp, 1		|2		|4		|8		);
+			goto cont;
+		case 't':
+			 
+
+
+			hp->h_to = cat(hp->h_to, extract(&linebuf[2], 1		));
+			break;
+		case 's':
+			 
+
+
+			cp = &linebuf[2];
+			while (((_ctype_ + 1)[*cp] & 0x08 ) )
+				cp++;
+			hp->h_subject = savestr(cp);
+			break;
+		case 'c':
+			 
+
+
+			hp->h_cc = cat(hp->h_cc, extract(&linebuf[2], 4		));
+			break;
+		case 'b':
+			 
+
+
+			hp->h_bcc = cat(hp->h_bcc, extract(&linebuf[2], 8		));
+			break;
+		case 'd':
+			strcpy(linebuf + 2, getdeadletter());
+			 
+		case 'r':
+			 
+
+
+
+
+			cp = &linebuf[2];
+			while (((_ctype_ + 1)[*cp] & 0x08 ) )
+				cp++;
+			if (*cp == '\0') {
+				printf("Interpolate what file?\n");
+				break;
+			}
+			cp = expand(cp);
+			if (cp == 	((char *) 0)	)
+				break;
+			if (isdir(cp)) {
+				printf("%s: Directory\n", cp);
+				break;
+			}
+			if ((fbuf = Fopen(cp, "r")) == 0 ) {
+				perror(cp);
+				break;
+			}
+			printf("\"%s\" ", cp);
+			fflush((&__sF[1]) );
+			lc = 0;
+			cc = 0;
+			while (readline(fbuf, linebuf, 1024				) >= 0) {
+				lc++;
+				if ((t = putline(collf, linebuf)) < 0) {
+					Fclose(fbuf);
+					goto err;
+				}
+				cc += t;
+			}
+			Fclose(fbuf);
+			printf("%d/%d\n", lc, cc);
+			break;
+		case 'w':
+			 
+
+
+			cp = &linebuf[2];
+			while (*cp == ' ' || *cp == '\t')
+				cp++;
+			if (*cp == '\0') {
+				fprintf((&__sF[2]) , "Write what file!?\n");
+				break;
+			}
+			if ((cp = expand(cp)) == 	((char *) 0)	)
+				break;
+			rewind(collf);
+			exwrite(cp, collf, 1);
+			break;
+		case 'm':
+		case 'M':
+		case 'f':
+		case 'F':
+			 
+
+
+
+
+
+			if (forward(linebuf + 2, collf, c) < 0)
+				goto err;
+			goto cont;
+		case '?':
+			if ((fbuf = Fopen("/usr/share/misc/mail.tildehelp" , "r")) == 0 ) {
+				perror("/usr/share/misc/mail.tildehelp" );
+				break;
+			}
+			while ((t = (--(fbuf)->_r < 0 ? __srget(fbuf) : (int)(*(fbuf)->_p++))  ) != (-1) )
+				(void) __sputc(t,  (&__sF[1]) )  ;
+			Fclose(fbuf);
+			break;
+		case 'p':
+			 
+
+
+
+			rewind(collf);
+			printf("-------\nMessage contains:\n");
+			puthead(hp, (&__sF[1]) , 1		|2		|4		|8		|16		);
+			while ((t = (--(collf)->_r < 0 ? __srget(collf) : (int)(*(collf)->_p++))  ) != (-1) )
+				(void) __sputc(t,  (&__sF[1]) )  ;
+			goto cont;
+		case '|':
+			 
+
+
+
+			rewind(collf);
+			mespipe(collf, &linebuf[2]);
+			goto cont;
+		case 'v':
+		case 'e':
+			 
+
+
+
+
+			rewind(collf);
+			mesedit(collf, c);
+			goto cont;
+		}
+	}
+	goto out;
+err:
+	if (collf != 0 ) {
+		Fclose(collf);
+		collf = 0 ;
+	}
+out:
+	if (collf != 0 )
+		rewind(collf);
+	noreset--;
+	sigblock((1 << ((2	)-1))  | (1 << ((1	)-1)) );
+	signal(2	, saveint);
+	signal(1	, savehup);
+	signal(18	, savetstp);
+	signal(22	, savettou);
+	signal(21	, savettin);
+	sigsetmask(omask);
+	return collf;
+}
+
+ 
+
+
+
+exwrite(name, fp, f)
+	char name[];
+	FILE *fp;
+{
+	register FILE *of;
+	register int c;
+	long cc;
+	int lc;
+	struct stat junk;
+
+	if (f) {
+		printf("\"%s\" ", name);
+		fflush((&__sF[1]) );
+	}
+	if (stat(name, &junk) >= 0 && (junk.st_mode &  0170000		) ==  0100000		) {
+		if (!f)
+			fprintf((&__sF[2]) , "%s: ", name);
+		fprintf((&__sF[2]) , "File exists\n");
+		return(-1);
+	}
+	if ((of = Fopen(name, "w")) == 0 ) {
+		perror(	((char *) 0)	);
+		return(-1);
+	}
+	lc = 0;
+	cc = 0;
+	while ((c = (--(fp)->_r < 0 ? __srget(fp) : (int)(*(fp)->_p++))  ) != (-1) ) {
+		cc++;
+		if (c == '\n')
+			lc++;
+		(void) __sputc(c,  of) ;
+		if ((((of)->_flags & 0x0040		) != 0)  ) {
+			perror(name);
+			Fclose(of);
+			return(-1);
+		}
+	}
+	Fclose(of);
+	printf("%d/%ld\n", lc, cc);
+	fflush((&__sF[1]) );
+	return(0);
+}
+
+ 
+
+
+
+mesedit(fp, c)
+	FILE *fp;
+{
+	sig_t sigint = signal(2	, 	((__sighandler_t) 1) );
+	FILE *nf = run_editor(fp, (off_t)-1, c, 0);
+
+	if (nf != 0 ) {
+		fseek(nf, (off_t)0, 2);
+		collf = nf;
+		Fclose(fp);
+	}
+	(void) signal(2	, sigint);
+}
+
+ 
+
+
+
+
+
+mespipe(fp, cmd)
+	FILE *fp;
+	char cmd[];
+{
+	FILE *nf;
+	sig_t sigint = signal(2	, 	((__sighandler_t) 1) );
+	extern char tempEdit[];
+
+	if ((nf = Fopen(tempEdit, "w+")) == 0 ) {
+		perror(tempEdit);
+		goto out;
+	}
+	(void) unlink(tempEdit);
+	 
+
+
+
+	if (run_command(cmd, 0, ((fp)->_file)  , ((nf)->_file)  , 	((char *) 0)	) < 0) {
+		(void) Fclose(nf);
+		goto out;
+	}
+	if (fsize(nf) == 0) {
+		fprintf((&__sF[2]) , "No bytes from \"%s\" !?\n", cmd);
+		(void) Fclose(nf);
+		goto out;
+	}
+	 
+
+
+	(void) fseek(nf, 0L, 2);
+	collf = nf;
+	(void) Fclose(fp);
+out:
+	(void) signal(2	, sigint);
+}
+
+ 
+
+
+
+
+
+
+
+forward(ms, fp, f)
+	char ms[];
+	FILE *fp;
+{
+	register int *msgvec;
+	extern char tempMail[];
+	struct ignoretab *ig;
+	char *tabst;
+
+	msgvec = (int *) salloc((msgCount+1) * sizeof *msgvec);
+	if (msgvec == (int *) 	((char *) 0)	)
+		return(0);
+	if (getmsglist(ms, msgvec, 0) < 0)
+		return(0);
+	if (*msgvec == 0) {
+		*msgvec = first(0, 	((1<<1)		|	(1<<2)		) );
+		if (*msgvec == 0 ) {
+			printf("No appropriate messages\n");
+			return(0);
+		}
+		msgvec[1] = 0 ;
+	}
+	if (f == 'f' || f == 'F')
+		tabst = 	((char *) 0)	;
+	else if ((tabst = value("indentprefix")) == 	((char *) 0)	)
+		tabst = "\t";
+	ig = ((_ctype_ + 1)[f] & 0x01 )  ? 0  : ignore;
+	printf("Interpolating:");
+	for (; *msgvec != 0; msgvec++) {
+		struct message *mp = message + *msgvec - 1;
+
+		touch(mp);
+		printf(" %d", *msgvec);
+		if (send(mp, fp, ig, tabst) < 0) {
+			perror(tempMail);
+			return(-1);
+		}
+	}
+	printf("\n");
+	return(0);
+}
+
+ 
+
+
+ 
+void
+collstop(s)
+{
+	sig_t old_action = signal(s, 	((__sighandler_t) 0) );
+
+	sigsetmask(sigblock(0) & ~(1 << ((s)-1)) );
+	kill(0, s);
+	sigblock((1 << ((s)-1)) );
+	signal(s, old_action);
+	if (colljmp_p) {
+		colljmp_p = 0;
+		hadintr = 0;
+		longjmp(colljmp, 1);
+	}
+}
+
+ 
+
+
+
+ 
+void
+collint(s)
+{
+	 
+
+
+	if (!hadintr) {
+		if (value("ignore") != 	((char *) 0)	) {
+			puts("@");
+			fflush((&__sF[1]) );
+			((void)(((&__sF[0]) )->_flags &= ~(0x0040		|0x0020		)))  ;
+			return;
+		}
+		hadintr = 1;
+		longjmp(colljmp, 1);
+	}
+	rewind(collf);
+	if (value("nosave") == 	((char *) 0)	)
+		savedeadletter(collf);
+	longjmp(collabort, 1);
+}
+
+ 
+void
+collhup(s)
+{
+	rewind(collf);
+	savedeadletter(collf);
+	 
+
+
+
+	exit(1);
+}
+
+savedeadletter(fp)
+	register FILE *fp;
+{
+	register FILE *dbuf;
+	register int c;
+	char *cp;
+
+	if (fsize(fp) == 0)
+		return;
+	cp = getdeadletter();
+	c = umask(077);
+	dbuf = Fopen(cp, "a");
+	(void) umask(c);
+	if (dbuf == 0 )
+		return;
+	while ((c = (--(fp)->_r < 0 ? __srget(fp) : (int)(*(fp)->_p++))  ) != (-1) )
+		(void) __sputc(c,  dbuf) ;
+	Fclose(dbuf);
+	rewind(fp);
+}

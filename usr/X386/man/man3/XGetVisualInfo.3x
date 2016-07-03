@@ -1,0 +1,286 @@
+'\" t
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+'\" t
+.TH XGetVisualInfo 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XGetVisualInfo, XMatchVisualInfo, XVisualIDFromVisual, XVisualInfo \- obtain visual information and visual structure
+.SH SYNTAX
+XVisualInfo *XGetVisualInfo\^(\^\fIdisplay\fP, \fIvinfo_mask\fP, \fIvinfo_template\fP, \fInitems_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      long \fIvinfo_mask\fP\^;
+.br
+      XVisualInfo *\fIvinfo_template\fP\^;
+.br
+      int *\fInitems_return\fP\^;
+.LP
+Status XMatchVisualInfo\^(\^\fIdisplay\fP, \fIscreen\fP, \fIdepth\fP, \fIclass\fP, \fIvinfo_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      int \fIscreen\fP\^;
+.br
+      int \fIdepth\fP\^;
+.br
+      int \fIclass\fP\^;
+.br
+      XVisualInfo *\fIvinfo_return\fP\^;
+.LP
+VisualID XVisualIDFromVisual\^(\^\fIvisual\fP\^)
+.br
+       Visual *\^\fIvisual\fP\^;
+.SH ARGUMENTS
+.IP \fIclass\fP 1i
+Specifies the class of the screen.
+.IP \fIdepth\fP 1i
+Specifies the depth of the screen.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fInitems_return\fP 1i
+Returns the number of matching visual structures.
+.IP \fIscreen\fP 1i
+Specifies the screen.
+.\" $Header: visual_gen.a,v 1.1 88/07/10 10:05:08 mento Exp $
+.IP \fIvisual\fP 1i
+Specifies the visual type.
+.IP \fIvinfo_mask\fP 1i
+Specifies the visual mask value.
+.IP \fIvinfo_return\fP 1i
+Returns the matched visual information.
+.IP \fIvinfo_template\fP 1i
+Specifies the visual attributes that are to be used in matching the visual
+structures.
+.SH DESCRIPTION
+.\" $Header: XGetVInfo.d,v 1.3 88/06/11 07:51:29 mento Exp $
+The
+.ZN XGetVisualInfo
+function returns a list of visual structures that have attributes 
+equal to the attributes specified by vinfo_template.
+If no visual structures match the template using the specified vinfo_mask,
+.ZN XGetVisualInfo
+returns a NULL.
+To free the data returned by this function, use
+.ZN XFree .
+.LP
+.\" $Header: XMatVInfo.d,v 1.2 88/06/11 07:51:59 mento Exp $
+The
+.ZN XMatchVisualInfo
+function returns the visual information for a visual that matches the specified
+depth and class for a screen.
+Because multiple visuals that match the specified depth and class can exist,
+the exact visual chosen is undefined.
+If a visual is found,
+.ZN XMatchVisualInfo
+returns nonzero and the information on the visual to vinfo_return.
+Otherwise, when a visual is not found,
+.ZN XMatchVisualInfo
+returns zero.
+.LP
+The
+.ZN XVisualIDFromVisual
+function returns the visual ID for the specified visual type.
+.SH STRUCTURES
+The
+.ZN XVisualInfo
+structure contains:
+.LP
+.LP
+/* Visual information mask bits */
+.TS
+lw(.5i) lw(2.5i) lw(.8i).
+T{
+#define
+T}	T{
+.ZN VisualNoMask
+T}	T{
+0x0
+T}
+T{
+#define
+T}	T{
+.ZN VisualIDMask
+T}	T{
+0x1
+T}
+T{
+#define
+T}	T{
+.ZN VisualScreenMask
+T}	T{
+0x2
+T}
+T{
+#define
+T}	T{
+.ZN VisualDepthMask
+T}	T{
+0x4
+T}
+T{
+#define
+T}	T{
+.ZN VisualClassMask
+T}	T{
+0x8
+T}
+T{
+#define
+T}	T{
+.ZN VisualRedMaskMask
+T}	T{
+0x10
+T}
+T{
+#define
+T}	T{
+.ZN VisualGreenMaskMask
+T}	T{
+0x20
+T}
+T{
+#define
+T}	T{
+.ZN VisualBlueMaskMask
+T}	T{
+0x40
+T}
+T{
+#define
+T}	T{
+.ZN VisualColormapSizeMask
+T}	T{
+0x80
+T}
+T{
+#define
+T}	T{
+.ZN VisualBitsPerRGBMask
+T}	T{
+0x100
+T}
+T{
+#define
+T}	T{
+.ZN VisualAllMask
+T}	T{
+0x1FF
+T}
+.TE
+.IN "XVisualInfo" "" "@DEF@"
+.Ds 0
+.TA .5i 3i
+.ta .5i 3i
+/* Values */
+
+typedef struct {
+	Visual *visual;
+	VisualID visualid;
+	int screen;
+	unsigned int depth;
+	int class;
+	unsigned long red_mask;
+	unsigned long green_mask;
+	unsigned long blue_mask;
+	int colormap_size;
+	int bits_per_rgb;
+} XVisualInfo;
+.De
+.SH "SEE ALSO"
+XFree(3X11)
+.br
+\fI\*(xL\fP

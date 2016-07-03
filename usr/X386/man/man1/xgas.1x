@@ -1,0 +1,66 @@
+.TH XGAS 1 "Release 5" "X Version 11"
+.SH NAME
+xgas - animated simulation of an ideal gas
+.SH SYNOPSIS
+.B "xgas"
+[-option ...]
+.SH DESCRIPTION
+.PP
+\fIxgas\fP
+is a physical simulation of an ideal gas in a heated box.
+Gas molecules move around the box with velocities
+dependent on their temperature.
+A chamber consisting of two boxes contains the gas molecules;
+the temperature of each box can be independently controlled
+by a scrollbar.
+When gas molecules collide with the walls, their temperature
+approaches that of the box.
+.PP
+Use mouse button 1 to create molecules one at a time
+at the cursor position.
+Use mouse button 2 to create the maximum number of molecules
+at the cursor position.
+.SH OPTIONS
+.TP 8
+This is a toolkit program;
+all the usual toolkit options are available.
+.SH "X DEFAULTS"
+The \fIxgas\fP program uses the following X resources:
+.TP 8
+.B timeStepSize
+Specifies the simulated time duration in microseconds for each cycle of
+computation.
+.TP 8
+.B delay
+Specifies the real time interval between timestep computations.
+.TP 8
+.B randomBounce
+In each wall collision, a molecule bounces elastically
+(angle of incidence = angle of reflection).
+A component of randomness is added to this angle.
+RandomBounce varies from 0.0 (no randomness)
+to 1.0 (completely random angle of incidence).
+.TP 8
+.B equilibrium
+During each wall collision,
+a molecule's kinetic energy approaches that
+corresponding to the temperature of the wall.
+If equilibrium is 1.0,
+the molecule reaches the wall temperature immediately.
+For values between 1.0 and 0.0,
+the molecule approaches the temperature of the wall more slowly.
+.TP 8
+.B maxMolecules
+Specifies the maximum number of molecules in the simulation.
+.SH "SEE ALSO"
+X(1), xwd(1)
+.SH BUGS
+.PP
+When the chamber is resized,
+molecules should be rearranged appropriately.
+Instead,
+the molecule arrays are reinitialized.
+.SH COPYRIGHT
+Copyright 1991, Massachusetts Institute of Technology.
+.SH AUTHOR
+Larry Medwin

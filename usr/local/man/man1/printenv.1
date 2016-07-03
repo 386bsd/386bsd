@@ -1,0 +1,28 @@
+.TH PRINTENV 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+printenv \- print all or part of environment
+.SH SYNOPSIS
+.B printenv
+[\-\-help] [\-\-version] [variable...]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR printenv .
+If no arguments are given,
+.B printenv
+prints the entire environment.  If one or more variable names are
+given, it prints the value of each one that is set, and nothing
+for each one that is not set.
+.PP
+The exit status is:
+.nf
+0 if all variables specified were found
+1 if at least one specified variable was not found
+2 if a write error occurred
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

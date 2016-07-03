@@ -1,0 +1,191 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XQueryPointer 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XQueryPointer \- get pointer coordinates
+.SH SYNTAX
+.\" $Header: XQueryPntr.f,v 1.1 88/02/26 10:02:18 mento Exp $
+Bool XQueryPointer\^(\^\fIdisplay\fP, \fIw\fP\^, \fIroot_return\fP\^, \fIchild_return\fP\^, \fIroot_x_return\fP\^, \fIroot_y_return\fP\^, 
+.br
+                     \fIwin_x_return\fP\^, \fIwin_y_return\fP\^, \fImask_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Window *\fIroot_return\fP\^, *\fIchild_return\fP\^;
+.br
+      int *\fIroot_x_return\fP\^, *\fIroot_y_return\fP\^;
+.br
+      int *\fIwin_x_return\fP\^, *\fIwin_y_return\fP\^;
+.br
+      unsigned int *\fImask_return\fP\^;
+.SH ARGUMENTS
+.IP \fIchild_return\fP 1i
+Returns the child window that the pointer is located in, if any.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: mask1.a,v 1.1 88/02/26 10:28:48 mento Exp $
+.IP \fImask_return\fP 1i
+Returns the current state of the modifier keys and pointer buttons.
+.ds Ro that the pointer is in
+.\" $Header: root_gen.a,v 1.2 88/08/04 11:19:15 mento Exp $
+.IP \fIroot_return\fP 1i
+Returns the root window \*(Ro.
+.\" $Header: rootxy.a,v 1.2 88/08/17 09:03:18 mento Exp $
+.IP \fIroot_x_return\fP 1i
+.br
+.ns
+.IP \fIroot_y_return\fP 1i
+Return the pointer coordinates relative to the root window's origin.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.\" $Header: winxy.a,v 1.2 88/08/17 09:04:07 mento Exp $
+.IP \fIwin_x_return\fP 1i
+.br
+.ns
+.IP \fIwin_y_return\fP 1i
+Return the pointer coordinates relative to the specified window.
+.SH DESCRIPTION
+.\" $Header: XQueryPntr.d,v 1.2 88/06/11 07:52:42 mento Exp $
+The
+.ZN XQueryPointer
+function returns the root window the pointer is logically on and the pointer
+coordinates relative to the root window's origin.
+If
+.ZN XQueryPointer
+returns 
+.ZN False , 
+the pointer is not on the same screen as the specified window, and
+.ZN XQueryPointer
+returns 
+.ZN None
+to child_return and zero to win_x_return and win_y_return.
+If 
+.ZN XQueryPointer
+returns 
+.ZN True , 
+the pointer coordinates returned to win_x_return and win_y_return
+are relative to the origin of the specified window.
+In this case, 
+.ZN XQueryPointer
+returns the child that contains the pointer, if any,
+or else
+.ZN None
+to child_return.
+.LP
+.ZN XQueryPointer
+returns the current logical state of the keyboard buttons 
+and the modifier keys in mask_return.
+It sets mask_return to the bitwise inclusive OR of one or more
+of the button or modifier key bitmasks to match 
+the current state of the mouse buttons and the modifier keys.
+.LP
+.ZN XQueryPointer
+can generate a
+.ZN BadWindow 
+error.
+.SH DIAGNOSTICS
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XGetWindowAttributes(3X11),
+XQueryTree(3X11)
+.br
+\fI\*(xL\fP

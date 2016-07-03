@@ -1,0 +1,74 @@
+This is Info file ../info/vip, produced by Makeinfo-1.54 from the input
+file vip.texi.
+
+Distribution
+************
+
+   Copyright (C) 1987 Masahiko Sato.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that
+the entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the same conditions as for modified
+versions.
+
+
+Indirect:
+vip-1: 721
+vip-2: 49768
+
+Tag Table:
+(Indirect)
+Node: Top721
+Node: Survey1707
+Node: Basic Concepts2192
+Node: Loading VIP3816
+Node: Modes in VIP4550
+Node: Emacs Mode7092
+Node: Vi Mode7446
+Node: Insert Mode7754
+Node: Differences from Vi8373
+Node: Undoing9367
+Node: Changing9722
+Node: Searching10332
+Node: z Command11042
+Node: Counts11373
+Node: Marking11874
+Node: Region Commands12374
+Node: New Commands13042
+Node: New Bindings15791
+Node: Window Commands17953
+Node: Buffer Commands18418
+Node: File Commands18898
+Node: Misc Commands19260
+Node: Vi Commands19671
+Node: Numeric Arguments20609
+Node: Important Keys21099
+Node: Buffers and Windows22837
+Node: Files25054
+Node: Viewing the Buffer28279
+Node: Mark Commands30168
+Node: Motion Commands31022
+Node: Searching and Replacing36547
+Node: Modifying Commands38814
+Node: Delete Commands40284
+Node: Yank Commands41983
+Node: Put Back Commands42863
+Node: Change Commands44312
+Node: Repeating and Undoing Modifications45327
+Node: Other Vi Commands46142
+Node: Commands in Insert Mode49768
+Node: Ex Commands51833
+Node: Ex Command Reference53008
+Node: Customization59490
+Node: Customizing Constants59907
+Node: Customizing Key Bindings61226
+
+End Tag Table

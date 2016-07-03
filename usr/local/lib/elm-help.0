@@ -1,0 +1,55 @@
+
+        Command                      Elm 2.4 Action
+
+          <RETURN>,<SPACE>      Display current message
+           |                    Pipe current message or tagged messages to
+                                        a system command
+           !                    Shell escape
+           $                    Resynchronize folder
+           ?                    This screen of information
+           +, <RIGHT>           Display next index page
+           -, <LEFT>            Display previous index page
+           =                    Set current message to first message
+           *                    Set current message to last message
+           <NUMBER><RETURN>     Set current message to <NUMBER>
+           /                    Search from/subjects for pattern
+           //                   Search entire message texts for pattern
+           >                    Save current message or tagged messages
+                                        to a folder
+           <                    Scan current message for calendar entries
+           a                    Alias, change to 'alias' mode
+           b                    Bounce (remail) current message
+           C                    Copy current message or tagged messages
+                                        to a folder
+           c                    Change to another folder
+           d                    Delete current message
+          ^D                    Delete messages with a specified pattern
+           e                    Edit current folder
+           f                    Forward current message
+           g                    Group (all recipients) reply to current message
+           h                    Headers displayed with message
+           J                    Increment current message by one
+           j, <DOWN>            Advance to next undeleted message
+           K                    Decrement current message by one
+           k, <UP>              Advance to previous undeleted message
+           l                    Limit messages by specified criteria
+          ^L                    Redraw screen
+           m                    Mail a message
+           n                    Next message, displaying current,
+                                        then increment
+           o                    Change ELM options
+           p                    Print current message or tagged messages
+           q                    Quit, maybe prompting for deleting, storing,
+                                        and keeping messages
+           Q                    Quick quit - no prompting
+           r                    Reply to current message
+           s                    Save current message or tagged messages
+                                        to a folder
+           t                    Tag current message for further operations
+           T                    Tag current message and go to next message
+          ^T                    Tag messages with a specified pattern
+           u                    Undelete current message
+          ^U                    Undelete messages with a specified pattern
+           x, ^Q                Exit leaving folder untouched, ask permission
+                                        if folder changed
+           X                    Exit leaving folder untouched, unconditionally

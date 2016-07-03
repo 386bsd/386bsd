@@ -1,0 +1,26 @@
+XCOMM $XFree86: mit/server/ddx/x386/accel/s3/drivers/s3_generic/Imakefile,v 2.3 1993/09/22 15:43:44 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = s3_generic.c
+
+OBJS = s3_generic.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../.. -I../../../../common -I../../../../common_hw \
+	   -I../../../../os-support -I$(SERVERSRC)/ddx/mi \
+           -I../../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+all:: s3_generic.o
+
+InstallLinkKitNonExecFile(s3_generic.c,$(LINKKITDIR)/drivers/s3/s3_generic)
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/s3/s3_generic)
+
+DependTarget()
+

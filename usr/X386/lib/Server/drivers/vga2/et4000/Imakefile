@@ -1,0 +1,29 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/et4000/Imakefile,v 2.2 1993/08/20 16:27:50 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = driver4.c bank4.s
+
+OBJS = driver4.o bank4.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+           -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+DEFINES = -DMONOVGA
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(et4000, $(OBJS))
+
+ObjectFromSpecialSource(driver4,$(VGA256DIR)/et4000/driver,/**/)
+ObjectFromSpecialAsmSource(bank4,$(VGA256DIR)/et4000/bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/et4000)
+
+DependTarget()

@@ -1,0 +1,26 @@
+XCOMM $XFree86: mit/server/ddx/x386/vga2/drivers/compaq/Imakefile,v 2.1 1993/08/12 05:41:48 dawes Exp $
+#include <Server.tmpl>
+
+SRCS = cpq_driver.c cpq_bank.s
+
+OBJS = cpq_driver.o cpq_bank.o
+
+#if X386LinkKit
+VGA256DIR = ../../vga256
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../../../common -I../../../common_hw -I../../../os-support \
+	   -I../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+VGA256DIR = ../../../vga256/drivers
+#endif
+
+NormalLibraryObjectRule()
+
+NormalRelocatableTarget(compaq, $(OBJS))
+
+ObjectFromSpecialSource(cpq_driver,$(VGA256DIR)/compaq/cpq_driver,-DMONOVGA)
+ObjectFromSpecialAsmSource(cpq_bank,$(VGA256DIR)/compaq/cpq_bank,/**/)
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/vga2/compaq)
+
+DependTarget()

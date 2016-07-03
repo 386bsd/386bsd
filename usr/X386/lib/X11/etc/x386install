@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Installation script for XFree86 on FreeBSD.
+# This script should also be suitable for NetBSD and 386BSD.
+#
+# $XFree86: mit/server/ddx/x386/etc/install.bsd,v 2.1 1993/10/24 13:44:50 dawes Exp $
+
+# if /usr/X386 doesn't exist, check if we are being run from the directory
+# containing X386, or from X386/lib/X11/etc
+
+if [ ! -d /usr/X386 ]; then
+	if [ -d X386 ]; then
+		instdir=`pwd`
+	elif [ -d ../../../../X386 ]; then
+		instdir=`(cd ../../../..; pwd)`
+	else
+		echo Please change to the directory where you unpacked
+		echo XFree86 and then run `basename $0`.
+		exit 1
+	fi
+
+	echo creating the sym link for /usr/X386
+	(set -x; cd /usr; ln -s $instdir/X386 .)
+fi
+		
+# put /usr/X386/bin in /etc/csh.login
+d=/etc/csh.login
+if grep -s '/usr/X386/bin' $d; then
+	:
+else
+	echo adding /usr/X386/bin to the search path in $d
+	echo '# add X386 executables to the search path' >>$d
+	(set -x; echo 'set path = ($path /usr/X386/bin)' >>$d )
+fi
+
+# put /usr/X386/bin in /etc/profile
+d=/etc/profile
+if grep -s '/usr/X386/bin' $d; then
+	:
+else
+	echo adding /usr/X386/bin to the search path in $d
+	echo '# add X386 executables to the search path' >>$d
+	(set -x; echo 'PATH=$PATH:/usr/X386/bin' >>$d )
+fi
+
+# check for console drivers
+if [ -f /386bsd ]; then
+    kern=/386bsd
+elif [ -f /netbsd ]; then
+    kern=/netbsd
+fi
+
+echo looking for your console driver in $kern ...
+
+if grep -s pcprobe $kern >/dev/null 2>&1 ; then
+    if grep -s load_font $kern >/dev/null 2>&1 ; then
+        # if it's syscons, do nothing.
+        echo "Good, you are using syscons in $kern."
+    else
+        # if it's pccons and /dev/vga isn't a character device, create it
+        if [ ! -c /dev/vga ]; then
+            echo 'creating /dev/vga.'
+            (set -x; rm /dev/vga; mknod /dev/vga c 12 0)
+        fi
+        if grep -s '^vga.*\bon\b' /etc/ttys >/dev/null 2>&1 ; then
+            echo Good, you have a getty running on /dev/vga.
+        else
+            echo You don\'t have a getty running on /dev/vga.
+            cons=`grep -s '^console.*\bon\b' /etc/ttys 2>/dev/null`
+            if [ X"$cons" != X ]; then
+                echo I suggest you edit /etc/ttys and change the line:
+                echo "$cons"
+                echo to:
+                echo "$cons" | sed -e 's/^console/vga/'
+            else
+                echo I suggest you edit /etc/ttys and insert:
+                echo 'vga     "/usr/libexec/getty Pc" pc3     on secure'
+            fi
+            echo You must then reboot for this change to take effect
+        fi
+    fi
+fi
+
+echo "That's it, done."

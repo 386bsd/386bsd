@@ -1,0 +1,42 @@
+.TH XLSCLIENTS 1 "Release 5" "X Version 11"
+.SH NAME
+xlsclients - list client applications running on a display
+.SH SYNOPSIS
+.B "xlsclients"
+[-display \fIdisplayname\fP] [-a] [-l] [-m maxcmdlen]
+.SH DESCRIPTION
+.PP
+.I Xlsclients
+is a utility for listing information about the client applications 
+running on a display.  It may be used to generate scripts representing
+a snapshot of the the user's current session.
+.SH OPTIONS
+.TP 8
+.B \-display \fIdisplayname\fP
+This option specifies the X server to contact.
+.TP 8
+.B \-a
+This option indicates that clients on all screens should be listed.  By 
+default, only those clients on the default screen are listed.
+.TP 8
+.B \-l
+This option indicates that a long listing showing the window name, icon name,
+and class hints in addition to the machine name and command string shown in
+the default listing.
+.TP 8
+.B \-m \fImaxcmdlen\fP
+This option specifies the maximum number of characters in a command to 
+print out.  The default is 10000.
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+To get the default host, display number, and screen.
+.SH "SEE ALSO"
+X(1), xwininfo(1), xprop(1)
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium

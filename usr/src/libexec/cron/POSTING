@@ -1,0 +1,49 @@
+Newsgroups: comp.sources.unix
+From: paul@vix.com (Paul Vixie)
+Subject: v27i196: vixie-cron - Vixie's Cron, V3.0, Part01/02
+Message-id: <1.758778125.12895@gw.home.vix.com>
+Sender: unix-sources-moderator@gw.home.vix.com
+Approved: vixie@gw.home.vix.com
+
+Submitted-By: paul@vix.com (Paul Vixie)
+Posting-Number: Volume 27, Issue 196
+Archive-Name: vixie-cron/part01
+
+This is version 3.0 of vixie-cron.  Previous versions are contained in
+BSD/386, NetBSD, FreeBSD, 386BSD, Linux, and thousands of Usenet systems
+where the local sysadmin has replaced the vendor's cron with this one. It is
+essential that all systems using any previous version of this cron be
+upgraded, since there are three major security holes in all previous
+versions.  (Two of the security holes have been well-publicized; one has
+not; the Linux/NetBSD fix for one of the publicized security holes actually 
+adds a new hole, so even those systems ought to be upgraded to this cron.)
+
+The other major difference between this and previous versions is that this one
+has support for the 4.3BSD-style "/etc/crontab" file -- that's the one that has
+an extra field between the time specification and the command; that field is a
+user name.  Thus commands can be made to run as non-root users without the old
+"* * * * * echo /usr/bin/rnews -U | su news" trick.  The support for this was
+done by BSDi and contributed back to the public version of cron.
+
+I have run an extensive beta test of this software using the alt.sources group;
+this version of cron is known to compile and run on *BSD*, Linux, SunOS, OSF/1,
+HP-UX, and several flavours of System V including the one running on Convex's
+hardware.  I have run it in production here for many months, and it is part of
+the upcoming 1.1 release of BSDi's BSD/386 operating system.
+
+Briefly, this cron is better than the older BSD/V7 cron since it permits each
+user on the system to have their own private crontab. It also logs each command
+as it is run (using syslog or a local log file, depending on how you configure
+it).  It does not contain "atrun" as does System V cron, and since those
+systems do not have a separate "atrun" that this cron can run, it is unlikely
+that any System V system will want to run this cron.
+
+This cron complies with POSIX 1003.1.  Actually, this cron predates POSIX
+1003.1's specification by a several years, but since the interface for this
+cron and POSIX's cron are both based on AT&T System V's cron, the differences
+were small and this latest version has been changed to the POSIX interface
+where they differed.
+
+	Paul Vixie
+	paul@vix.com
+

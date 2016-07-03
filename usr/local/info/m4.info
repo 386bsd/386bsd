@@ -1,0 +1,100 @@
+This is Info file m4.info, produced by Makeinfo-1.47 from the input
+file m4.texinfo.
+
+   This file documents the GNU m4 utility.
+
+   Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation,
+Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+Indirect:
+m4.info-1: 778
+m4.info-2: 50425
+
+Tag Table:
+(Indirect)
+Node: Top780
+Node: Intro5413
+Node: Manual6162
+Node: Bugs7364
+Node: Invoking m48626
+Node: Syntax13366
+Node: Names13955
+Node: Quoted strings14346
+Node: Other tokens14931
+Node: Comments15148
+Node: Macros15798
+Node: Invocation16234
+Node: Macro Arguments17370
+Node: Quoting Arguments18455
+Node: Macro expansion19260
+Node: Definitions19923
+Node: Define20700
+Node: Arguments21511
+Node: Pseudo Arguments22993
+Node: Undefine24846
+Node: Defn25508
+Node: Pushdef26670
+Node: Indir28507
+Node: Builtin29270
+Node: Conditionals29719
+Node: Ifdef30425
+Node: Ifelse31195
+Node: Loops32961
+Node: Debugging36250
+Node: Dumpdef36824
+Node: Trace37674
+Node: Debug Levels39053
+Node: Debug Output41439
+Node: Input Control41960
+Node: Dnl42426
+Node: Changequote43554
+Node: Changecom44916
+Node: M4wrap46197
+Node: File Inclusion47399
+Node: Include47715
+Node: Search Path49640
+Node: Diversions50427
+Node: Divert51217
+Node: Undivert52380
+Node: Divnum54317
+Node: Cleardiv54863
+Node: Text handling55899
+Node: Len56620
+Node: Index57018
+Node: Regexp57603
+Node: Substr58727
+Node: Translit59347
+Node: Patsubst60790
+Node: Format62913
+Node: Arithmetic64403
+Node: Incr64849
+Node: Eval65354
+Node: Unix commands68354
+Node: Syscmd68826
+Node: Esyscmd69646
+Node: Sysval70431
+Node: Maketemp70838
+Node: Miscellaneous71895
+Node: Errprint72267
+Node: M4exit73182
+Node: Compatibility73968
+Node: Extensions74487
+Node: Incompatibilities76835
+Node: Other Incompat77277
+Node: Concept index78656
+Node: Macro index85102
+
+End Tag Table

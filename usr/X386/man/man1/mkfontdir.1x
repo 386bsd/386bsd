@@ -1,0 +1,56 @@
+.TH MKFONTDIR 1 "Release 5" "X Version 11"
+.SH NAME
+mkfontdir - create fonts.dir file from directory of font files
+.SH SYNOPSIS
+.B "mkfontdir"
+[directory-names]
+.SH DESCRIPTION
+.PP
+.B Mkfontdir
+For each directory argument, mkfontdir reads all of the font files in the
+directory searching for properties named "FONT", or (failing that) the name
+of the file stripped of its suffix.  These are used as font names, which are
+written out to the file "fonts.dir" in the directory along with the name of
+the font file.
+.PP
+The kinds of font files read by mkfontdir depends on configuration
+parameters, but typically include PCF (suffix ".pcf"), SNF (suffix ".snf")
+and BDF (suffix ".bdf").  If a font exists in multiple formats,
+.I mkfontdir
+will first choose PCF, then SNF and finally BDF.
+.SH "SCALABLE FONTS"
+Because scalable font files do not usually include the X font name, the
+fonts.dir file in directories containing such fonts must be edited by hand
+to include the appropriate entries for those fonts.  However, when
+.I mkfontdir
+is run, all of those additions will be lost, so be careful.
+.SH "FONT NAME ALIASES"
+.PP
+The file "fonts.alias" which can be put in any directory of the font-path is
+used to map new names to existing fonts, and should be edited by hand.  The
+format is straight forward enough, two white-space separated columns, the
+first containing aliases and the second containing font-name patterns.
+.PP
+When a font alias is used, the name it references is search for in the normal
+manner, looking through each font directory in turn.  This means that the
+aliases need not mention fonts in the same directory as the alias file.
+.PP
+To embed white-space in either name, simply enclose them in double-quote
+marks, to embed double-quote marks (or any other character), precede them
+with back-slash:
+.PP
+.nf
+"magic-alias with spaces"	"\\"font\\name\\" with quotes"
+regular-alias			fixed
+.fi
+.PP
+If the string "FILE_NAMES_ALIASES" stands alone on a line, each file-name
+in the directory (stripped of it's suffix) will be used as an alias for
+that font.
+.SH "USAGE"
+.PP
+Both the \fBX server\fP and the \fBFont Server\fP look for "fonts.dir" and
+"fonts.alias" files in each directory in the font path each time it is set
+(see xset(1)).
+.SH "SEE ALSO"
+X(1), Xserver(1), fs(1), xset(1)

@@ -1,0 +1,42 @@
+XCOMM $XFree86: mit/config/gnucross386.cf,v 1.1 1993/03/23 12:56:40 dawes Exp $
+
+#define CrossCompiling		YES
+#define GnuToolset		YES
+
+#define GccUsesGas		YES
+#define UseGas			YES
+
+#define GccGasOption		-DGCCUSESGAS
+
+#define CcCmd			CrossConf/$(ARCH).$(TOOLSET)/toolset/do_gcc
+#define ServerCcCmd		CcCmd
+#define LdCmd			CrossConf/$(ARCH).$(TOOLSET)/toolset/do_ld
+
+#define DoGccOption		-mam_i80386 -msoft
+#define YaccCmd			byacc
+#define DefaultCCOptions	DoGccOption -DNO_ASM -nodeps -fwritable-strings
+#define LibraryCCOptions	DoGccOption -DNO_ASM -nodeps
+#define LdCombineFlags		-r
+#define OptimizedCDebugFlags	-O2
+#define TermcapLibrary		/* in standard library */
+
+#define GnuAr			CrossConf/$(ARCH).$(TOOLSET)/toolset/do_ar
+#if HasLargeTmp
+#define ArCmd			GnuAr crsv   /* use /tmp for temp files */
+#else
+#define ArCmd			GnuAr clrsv  /* use local dir for temp files */
+#endif
+#define RanlibCmd		/bin/true
+
+#define AsCmd			CrossConf/$(ARCH).$(TOOLSET)/toolset/do_as
+#define AsIncl			-I$(ATOP)/src/h/machdep/arch/$(ARCH)
+#define AsmDefines		-DUSE_GAS
+
+#define AssembleObject(flags) $(RM) $@                                  @@\
+	AsCmd -mam_i80386 -o $*.o AsmDefines $(INCLUDES) AsIncl flags $*.s
+
+ARCH		= i80386
+TOOLSET		= gnu-2
+ALDFLAGS	= -mam_i80386
+
+#include "x386.cf"

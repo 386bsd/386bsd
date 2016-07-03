@@ -1,0 +1,70 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH XCMSTEST 1 "Release 5" "X Version 11"
+.SH NAME
+xcmstest \- XCMS test program
+.SH SYNOPSIS
+.B xcmstest
+[-display displayname]
+
+ or
+
+.B xcmstest
+-echo [-display displayname] < cmdfile
+.SH DESCRIPTION
+.I xcmstest
+was developed as a simple test interface for testing the XCMS
+API library during its development.
+.SH BEFORE INVOCATION
+Insure that the Screen Color Characterization Data has been placed in
+the appropriate properties on the screen's root window.  To load
+these properties, refer to the xcmsdb utility provided with this
+release.
+
+In order to convert color names using a client-side color name
+database, the database file must be specified via the XCMSDB
+environment variable.
+
+To use the sample database provided with this release set XCMSDB
+as follows:
+    % setenv XCMSDB `pwd`/Xcms.txt
+.SH USING XCMSTEST
+Upon invocation of xcmstest, you should receive a "XCMS >" prompt.
+At this point you can begin entering commands.
+
+To list the commands currently available enter "list":
+            XCMS >  list
+
+To receive help for a specific command enter the command name followed by
+"-help".  For example:
+            XCMS >  LookupColor -help
+
+The -echo option provides a more readable output, echoing the command
+from the cmdfile.  At some point in time, you might try using some
+simple test cases provided with the release (in the tc directory, e.g.
+test1, test2, AllocNColor, gamutquery).  For example, to use commmand
+file test1, invoke xcmstest as follows: 
+            % xcmstest -echo < tc/test1
+.SH CAVEATS
+Color name strings passed to xcmstest commands cannot contain
+a space.  However, since spaces are ignored by the XCMS API
+library, you can pass a color name with the spaces eliminated.
+For example:
+            XCMS >  LookupColor cornflowerblue UNDEFINED RGB
+
+.SH "SEE ALSO"
+.PP
+xcmsdb(1), Chapter 6 of Xlib - C Language X Interface.
+.SH COPYRIGHT
+Copyright 1991, Massachusetts Institute of Technology.

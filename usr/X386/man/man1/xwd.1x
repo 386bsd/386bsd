@@ -1,0 +1,105 @@
+.TH XWD 1 "Release 5" "X Version 11"
+.SH NAME
+xwd - dump an image of an X window
+.SH SYNOPSIS
+.B "xwd"
+[-debug] [-help] [-nobdrs] [-out \fIfile\fP] [-xy] [-frame] [-add \fIvalue\fP]
+[-root | -id \fIid\fP | -name \fIname\fP ] [-icmap] [-screen]
+[-display \fIdisplay\fP]
+.SH DESCRIPTION
+.PP
+.I Xwd
+is an X Window System window dumping utility.
+.I Xwd
+allows X users to store window images in a specially formatted dump
+file.  This file can then be read by various other X utilities for
+redisplay, printing, editing, formatting, archiving, image processing, etc.
+The target window is selected by clicking the pointer in the desired window.
+The keyboard bell is rung once at the beginning of the dump and twice when
+the dump is completed.
+.SH OPTIONS
+.PP
+.TP 8
+.B "-display \fIdisplay\fP"
+This argument allows you to specify the server to connect to; see \fIX(1)\fP.
+.PP
+.TP 8
+.B "-help"
+Print out the `Usage:' command syntax summary.
+.PP
+.TP 8
+.B "-nobdrs"
+This argument specifies that the window dump should not include the
+pixels that compose the X window border.  This is useful in situations
+where you may wish to include the window contents in a document 
+as an illustration.
+.PP
+.TP 8
+.B "-out \fIfile\fP"
+This argument allows the user to explicitly specify the output
+file on the command line.  The default is to output to standard out.
+.PP
+.TP 8
+.B "-xy"
+This option applies to color displays only. It selects `XY' format dumping
+instead of the default `Z' format.
+.PP
+.TP 8
+.B "-add \fIvalue\fP"
+This option specifies an signed value to be added to every pixel.
+.PP
+.TP 8
+.B "-frame"
+This option indicates that the window manager frame should be included when
+manually selecting a window.
+.PP
+.TP 8
+.B "-root"
+This option indicates that the root window should be selected for the
+window dump, without requiring the user to select a window with the pointer.
+.PP
+.TP 8
+.B "-id \fIid\fP"
+This option indicates that the window with the specified resource id
+should be selected for the window dump, without requiring the user to
+select a window with the pointer.
+.PP
+.TP 8
+.B "-name \fIname\fP"
+This option indicates that the window with the specified WM_NAME property
+should be selected for the window dump, without requiring the user to
+select a window with the pointer.
+.PP
+.TP 8
+.B "-icmap"
+Normally the colormap of the chosen window is used to obtain RGB values.
+This option forces the first installed colormap of the screen to be used
+instead.
+.PP
+.TP 8
+.B "-screen"
+This option indicates that the GetImage request used to obtain the image
+should be done on the root window, rather than directly on the specified
+window.  In this way, you can obtain pieces of other windows that overlap
+the specified window, and more importantly, you can capture menus or other
+popups that are independent windows but appear over the specified window.
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+To get default host and display number.
+.SH FILES
+.PP
+.TP 8
+.B XWDFile.h
+X Window Dump File format definition file.
+.SH SEE ALSO
+xwud(1), xpr(1), X(1)
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+Tony Della Fera, Digital Equipment Corp., MIT Project Athena
+.br
+William F. Wyatt, Smithsonian Astrophysical Observatory

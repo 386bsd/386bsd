@@ -1,0 +1,63 @@
+.if n \{\
+.	ds ct "
+.\}
+.if t \{\
+.	ds ct \\(co
+.\}
+.TH AUTOREPLY 1L "Elm Version 2.4" "USENET Community Trust"
+.SH NAME
+autoreply - Automatic mail reply system
+.SH SYNOPSIS
+.B autoreply
+.br
+.B "autoreply off"
+.br
+.B autoreply
+.I filename
+.PP
+.SH DESCRIPTION
+.I Autoreply\^
+is a part of \fBThe Elm Mail System\fR
+and is designed to enable users to easily set up
+an automatic response to all mail they receive.  This is
+typically during a vacation or some other period of time that
+the user is not available to reply to mail (although some
+people get enough mail that they have it permanently running
+to simply send an "ack" to each message)
+.PP
+The system is quite easy to use...
+You can type "autoreply" and be informed of your current
+status in the system (on or off), or "autoreply off" will
+turn your autoreplying off.
+.PP
+To add yourself to the system, you need merely to compose a
+form response in a file somewhere, then type "autoreply \fIfile\fR"
+where \fIfile\fR is the name of the file.
+.SH "SPECIAL NOTE"
+For this to function correctly, the program "arepdaemon" must
+be running as a daemon in background.  This program automatically
+checks all the currently enrolled users for new mail in their
+mailboxes...
+.SH AUTHOR
+Elm Development Group
+.SH SEE ALSO
+.I "The Elm Users Guide"
+.sp
+.br
+elm(1L), mail(1), mailx(1)
+.SH "BUGS"
+Unfortunately, this program isn't too brilliant about identifying
+mail that shouldn't be responded to (like mail from other
+daemons, or your mother) but that's a more general problem anyway.
+.sp
+Also, occasionally a user will remove themselves from the
+autoreply system and the system won't turn their autoreply
+off.  This is a problem that hasn't been solved yet (obviously
+since it's in the "bugs" section!!) and any further information
+would be appreciated!
+.SH BUG REPORTS TO
+Syd Weinstein	elm@DSI.COM	(dsinc!elm)
+.SH COPYRIGHTS
+\fB\*(ct\fRCopyright 1988-1992 by The USENET Community Trust
+.br
+Derived from Elm 2.0, \fB\*(ct\fR Copyright 1986, 1987 by Dave Taylor

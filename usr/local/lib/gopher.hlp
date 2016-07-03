@@ -1,0 +1,44 @@
+                       Quick Gopher Help
+                       -----------------
+
+Moving around Gopherspace
+-------------------------
+Press return to view a document
+
+Use the Arrow Keys or vi/emacs equivalent to move around
+
+Up ..................:  Move to previous line.
+Down ................:  Move to next line.
+Right Return ........:  "Enter"/Display current item.
+Left, u  ............:  "Exit" current item/Go up a level.
+
+>, +, Pgdwn, space ..:  View next page.
+<, -, Pgup, b .......:  View previous page.
+
+0-9 .................:  Go to a specific line.
+m   .................:  Go back to the main menu.
+
+Bookmarks
+---------
+a : Add current item to the bookmark list.
+A : Add current directory/search to bookmark list.
+v : View bookmark list.
+d : Delete a bookmark/directory entry.
+
+Other commands
+--------------
+s : Save current item to a file.
+D : Download a file.
+q : Quit with prompt.
+Q : Quit unconditionally.
+= : Display Technical information about current item.
+O : change options
+/ : Search for an item in the menu.
+n : Find next search item.
+o : Open a new gopher server
+! : Shell Escape
+
+The Gopher development team hopes that you find this software useful.
+If you find what you think is a bug, please report it to us by sending
+e-mail to "gopher@boombox.micro.umn.edu".
+

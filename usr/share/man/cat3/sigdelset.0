@@ -1,0 +1,66 @@
+SIGSETOPS(3)              386BSD Programmer's Manual              SIGSETOPS(3)
+
+NNAAMMEE
+     ssiiggsseettooppss, ssiiggeemmppttyysseett, ssiiggffiillllsseett, ssiiggaaddddsseett, ssiiggddeellsseett, ssiiggiissmmeemmbbeerr -
+     manipulate signal masks
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ssiiggnnaall..hh>>
+
+     ssiiggeemmppttyysseett(_s_i_g_s_e_t__t *_s_e_t)
+
+     ssiiggffiillllsseett(_s_i_g_s_e_t__t *_s_e_t)
+
+     ssiiggaaddddsseett(_s_i_g_s_e_t__t *_s_e_t, _i_n_t _s_i_g_n_o)
+
+     ssiiggddeellsseett(_s_i_g_s_e_t__t *_s_e_t, _i_n_t _s_i_g_n_o)
+
+     ssiiggiissmmeemmbbeerr(_s_i_g_s_e_t__t *_s_e_t, _i_n_t _s_i_g_n_o)
+
+DDEESSCCRRIIPPTTIIOONN
+     These functions manipulate signal mask stored in a _s_i_g_s_e_t__t.
+
+     The ssiiggeemmppttyysseett() function initializes a signal set to be empty.  The
+     ssiiggffiillllsseett() function initializes a signal set to contain all of the
+     known signals.  One of these routines must be used to initialize a signal
+     set before its use by the other functions.
+
+     The ssiiggaaddddsseett() function adds a specified signal _s_i_g_n_o to a signal set.
+     The ssiiggddeellsseett() function deletes a specified signal _s_i_g_n_o from a signal
+     set.
+
+     The ssiiggiissmmeemmbbeerr() function tests whether a specified signal _s_i_g_n_o is
+     contained in a signal set.
+
+RREETTUURRNN VVAALLUUEESS
+     The ssiiggiissmmeemmbbeerr() function returns 1 if the signal is a member of the
+     set, a 0 otherwise.  The other functions return 0 upon success.  A -1
+     return value indicates an error occurred and the global variable _e_r_r_n_o is
+     set to indicated the reason.  The current implementation does not detect
+     any errors.
+
+EERRRROORRSS
+     These functions could fail if one of the following occurs:
+
+     [EINVAL]  _s_i_g_n_o has an invalid value.
+
+SSEEEE AALLSSOO
+     kill(2),  sigaction(2),  sigsetops(2),  sigsuspend(2)
+
+SSTTAANNDDAARRDDSS
+     These functions are defined by IEEE Std1003.1-1988 (``POSIX'').
+
+BSD Experimental                April 19, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+

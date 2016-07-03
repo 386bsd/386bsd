@@ -1,0 +1,1566 @@
+This is Info file m4.info, produced by Makeinfo-1.47 from the input
+file m4.texinfo.
+
+   This file documents the GNU m4 utility.
+
+   Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation,
+Inc.
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the entire resulting derived work is distributed under the terms
+of a permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions.
+
+
+File: m4.info,  Node: Top,  Next: Intro,  Prev: (dir),  Up: (dir)
+
+   This file documents GNU the `m4' simple macroprocessor, as of
+release 1.1.  It has been originally written by Rene Seindal, from
+Denmark.
+
+* Menu:
+
+* Intro::                       Introduction to m4
+* Manual::                      How to use this manual
+* Bugs::                        Reporting bugs in m4
+
+* Invoking m4::                 How to run the program
+* Syntax::                      Lexical and syntactic conventions
+
+* Macros::                      How to invoke macros
+* Definitions::                 How to define new macros
+* Conditionals::                Conditionals and loops
+
+* Debugging::                   How to debug macros and input
+* Input Control::               Input control
+
+* File Inclusion::              File inclusion
+* Diversions::                  Diverting and undiverting output
+
+* Text handling::               Macros for text handling
+* Arithmetic::                  Macros for doing arithmetic
+* Unix commands::               Macros for running Unix commands
+* Miscellaneous::               Miscellaneous built-in macros
+
+* Compatibility::               Compatibility with other versions of m4
+
+* Concept index::		Index for many concepts
+* Macro index::			Index for all m4 macros
+
+ -- The Detailed Node Listing --
+
+Lexical and syntactic conventions
+
+* Names::                       Macro names.
+* Quoted strings::              Quoting input to m4.
+* Other tokens::                Other kinds of input tokens.
+* Comments::                    Comments in m4 input.
+
+How to invoke macros
+
+* Invocation::                  Macro invocation
+* Macro Arguments::             Macro arguments.
+* Quoting Arguments::           On Quoting Arguments to macros.
+* Macro expansion::             Expanding macros.
+
+How to define new macros
+
+* Define::                      Defining a new macro
+* Arguments::                   Arguments to macros
+* Pseudo Arguments::            Pseudo arguments to macros
+* Undefine::                    Deleting a macro
+* Defn::                        Renaming macros
+* Pushdef::                     Temporarily redefining macros
+
+* Indir::                       Indirect call of macros
+* Builtin::                     Indirect call of built-ins
+
+Conditionals, loops and recursion
+
+* Ifdef::                       Testing if a macro is defined
+* Ifelse::                      If-else construct, or multibranch
+* Loops::                       Loops and recursion in m4
+
+How to debug macros and input
+
+* Dumpdef::                     Displaying macro definitions
+* Trace::                       Tracing macro calls
+* Debug Levels::                Controlling debugging output
+* Debug Output::                Saving debugging output
+
+Input control
+
+* Dnl::                         Deleting whitespace in input
+* Changequote::                 Changing the quote characters
+* Changecom::                   Changing the comment delimiters
+* M4wrap::                      Saving input until end of input
+
+File inclusion
+
+* Include::                     Including named files
+* Search Path::                 Searching for include files
+
+Diverting and undiverting output
+
+* Divert::                      Diverting output
+* Undivert::                    Undiverting output
+* Divnum::                      Diversion numbers
+* Cleardiv::                    Discarding diverted text
+
+Macros for text handling
+
+* Len::                         Calculating length of strings
+* Index::                       Searching for substrings
+* Regexp::                      Searching for regular expressions
+* Substr::                      Extracting substrings
+* Translit::                    Translating characters
+* Patsubst::                    Substituting text by regular expression
+* Format::                      Formatting strings (printf-like)
+
+Macros for doing arithmetic
+
+* Incr::                        Decrement and increment operators
+* Eval::                        Evaluating integer expressions
+
+Running Unix commands
+
+* Syscmd::                      Executing simple commands
+* Esyscmd::                     Reading the output of commands
+* Sysval::                      Exit codes
+* Maketemp::                    Making names for temporary files
+
+Miscellaneous built-in macros
+
+* Errprint::                    Printing error messages
+* M4exit::                      Exiting from m4
+
+Compatibility with other versions of `m4'
+
+* Extensions::                  Extensions in GNU m4
+* Incompatibilities::           Facilities in System V m4 not in GNU m4
+* Other Incompat::              Other incompatibilities
+
+
+File: m4.info,  Node: Intro,  Next: Manual,  Prev: Top,  Up: Top
+
+Introduction to `m4'
+********************
+
+   `m4' is a macro processor, in the sense that in copies its input to
+the output, expanding macros as it goes.  Macros are either built-in or
+user-defined, and can take any number of arguments.  Besides just doing
+macro expansion, `m4' has built-in functions for including named files,
+running Unix commands, doing integer arithmetic, manipulating text in
+various ways, recursion, etc...
+
+   `m4' can be used either as a front-end to a compiler, or as a macro
+processor in its own right.
+
+   GNU `m4' is mostly compatible with the System V, Release 3 version,
+except for some minor differences.  *Note Compatibility:: for more
+details.
+
+
+File: m4.info,  Node: Manual,  Next: Bugs,  Prev: Intro,  Up: Top
+
+Using this manual
+*****************
+
+   This manual contains a number of examples of `m4' input and output,
+and a simple notation is used to distinguish input, output and error
+messages from `m4'.  Examples are set out from the normal text, and
+shown in a fixed width font, like this
+
+     This is an example of an example!
+
+   To distinguish input from output, all output from `m4' is prefixed
+by the string `=>', and all error messages by the string `error-->'. 
+Thus
+
+     Example of input line
+     =>Output line from m4
+     error-->and an error message
+
+   As each of the predefined macros in `m4' is described, a prototype
+call of the macro will be shown, giving descriptive names to the
+arguments, e.g.,
+
+     regexp(STRING, REGEXP, opt REPLACEMENT)
+
+   All macro arguments in `m4' are strings, but some are given special
+interpretation, e.g., as numbers, filenames, regular expressions, etc.
+
+   The `opt' before the third argument shows that this argument is
+optional--if it is left out, it is taken to be the empty string.  An
+ellipsis (`...') last in the argument list indicates that any number of
+arguments may follow.
+
+
+File: m4.info,  Node: Bugs,  Next: Invoking m4,  Prev: Manual,  Up: Top
+
+Problems and bugs
+*****************
+
+   If you have problems with GNU `m4' or think you've found a bug,
+please report it.  Before reporting a bug, make sure you've actually
+found a real bug.  Carefully reread the documentation and see if it
+really says you can do what you're trying to do.  If it's not clear
+whether you should be able to do something or not, report that too; it's
+a bug in the documentation!
+
+   Before reporting a bug or trying to fix it yourself, try to isolate
+it to the smallest possible input file that reproduces the problem. 
+Then send us the input file and the exact results `m4' gave you.  Also
+say what you expected to occur; this will help us decide whether the
+problem was really in the documentation.
+
+   Once you've got a precise problem, send e-mail to (Internet)
+`bug-gnu-utils@prep.ai.mit.edu' or (UUCP)
+`mit-eddie!prep.ai.mit.edu!bug-gnu-utils'.  Please include the version
+number of `m4' you are using.  You can get this information with the
+command `m4 -V /dev/null'.
+
+   Non-bug suggestions are always welcome as well.  If you have
+questions about things that are unclear in the documentation or are
+just obscure features, please report them too.
+
+
+File: m4.info,  Node: Invoking m4,  Next: Syntax,  Prev: Bugs,  Up: Top
+
+Invoking `m4'
+*************
+
+   The format of the `m4' command is:
+
+     `m4' [OPTION...] [MACRO-DEFINITIONS...] [INPUT-FILE...]
+
+   All options begin with `-', or if long option names are used, with a
+`--'.  A long option name need not be written completely, and
+unambigous prefix is sufficient.  `m4' understands the following
+options:
+
+`--version'
+     Print the version number of the program on standard output, then
+     immediately exit `m4' without reading any INPUT-FILES.
+
+`--help'
+     Print an help summary on standard output, then immediately exit
+     `m4' without reading any INPUT-FILES.
+
+`-G'
+`--traditional'
+     Suppress all the extensions made in this implementation, compared
+     to the System V version.  For a list of these, *note
+     Compatibility::..
+
+`-dFLAGS'
+`--debug=FLAGS'
+     Set the debug-level according to the flags FLAGS.  The debug-level
+     controls the format and amount of information presented by the
+     debugging functions.  *Note Debug Levels:: for more details on the
+     format and meaning of FLAGS.
+
+`-lNUM'
+`--arglength=NUM'
+     Restrict the size of the output generated by macro tracing.  *Note
+     Debug Levels:: for more details.
+
+`-oFILE'
+`--erroroutput=FILE'
+     Redirect debug and trace output to the named file.  Error messages
+     are still printed on the standard error output.  *Note Debug
+     Output:: for more details.
+
+`-IDIR'
+`--include=DIR'
+     Make `m4' search DIR for included files that are not found in the
+     current working directory.  *Note Search Path:: for more details.
+
+`-e'
+`--interactive'
+     Makes this invocation of `m4' interactive.  This means that all
+     output will be unbuffered, and interrupts will be ignored.
+
+`-s'
+`--synclines'
+     Generate synchronisation lines, for use by the C preprocessor or
+     other similar tools.  This is useful, for example, when `m4' is
+     used as a front end to a compiler.  Source file name and line
+     number information is conveyed by directives of the form `#line
+     LINENUM "FILENAME"', which are inserted as needed into the middle
+     of the input.  Such directives mean that the following line
+     originated or was expanded from the contents of input file
+     FILENAME at line LINENUM.  The `"FILENAME"' part is often omitted
+     when the file name did not change from the previous directive.
+
+     Synchronisation directives are always given on complete lines per
+     themselves.  When a synchronisation discrepancy occurs in the
+     middle of an output line, the associated synchronisation directive
+     is delayed until the beginning of the next generated line.
+
+`-P'
+`--prefix_builtins'
+     Internally modify *all* builtin macro names so they all start with
+     the prefix `m4_'.  For example, using this option, one should write
+     `m4_define' instead of `define', and `m4___file__' instead of
+     `__file__'.
+
+`-HN'
+`--hashsize=N'
+     Make the internal hash table for symbol lookup be N entries big.
+     The number should be prime.  The default is 509 entries.  It
+     should not be necessary to increase this value, unless you define
+     an excessive number of macros.
+
+`-NN'
+`--diversions=N'
+     Allow for up to N diversions to be used at the same time.  The
+     default is 10 diversions.
+
+`-Q'
+`--quiet'
+`--silent'
+     Suppress warnings about missing or superflous arguments in macro
+     calls.
+
+`-B'
+`-S'
+`-T'
+     These options are present for compatibility with System V `m4', but
+     do nothing in this implementation.
+
+   Macro definitions and deletions can be made on the command line, by
+using the `-D' and `-U' options.  They have the following format:
+
+`-DNAME'
+`-DNAME=VALUE'
+`--define=NAME'
+`--define=NAME=VALUE'
+     This enters NAME into the symbol table, before any input files are
+     read.  If `=VALUE' is missing, the value is taken to be the empty
+     string.  The VALUE can be any string, and the macro can be defined
+     to take arguments, just as if it was defined from within the input.
+
+`-UNAME'
+`--undefine=NAME'
+     This deletes any predefined meaning NAME might have.  Obviously,
+     only predefined macros can be deleted in this way.
+
+`-tNAME'
+`--trace=NAME'
+     This enters NAME into the symbol table, as undefined but traced.
+     The macro will consequently be traced from the point it is defined.
+
+   The remaining arguments on the command line are taken to be input
+file names.  If no names are present, the standard input is read.  A
+file name of `-' is taken to mean the standard input.
+
+   The input files are read in the sequence given.  The standard input
+can only be read once, so the filename `-' should only appear once on
+the command line.
+
+
+File: m4.info,  Node: Syntax,  Next: Macros,  Prev: Invoking m4,  Up: Top
+
+Lexical and syntactic conventions
+*********************************
+
+   As `m4' reads its input, it separates it into "tokens".  A token is
+either a name, a quoted string, or any single character, that is not a
+part of either a name or a string.  Input to `m4' can also contain
+comments.
+
+* Menu:
+
+* Names::                       Macro names.
+* Quoted strings::              Quoting input to m4.
+* Other tokens::                Other kinds of input tokens.
+* Comments::                    Comments in m4 input.
+
+
+File: m4.info,  Node: Names,  Next: Quoted strings,  Prev: Syntax,  Up: Syntax
+
+Names
+=====
+
+   A name is any sequence of letters, digits, and the character `_'
+(underscore), where the first character is not a digit.  If a name has a
+macro definition, it will be subject to macro expansion (*note
+Macros::. for more details).
+
+   Examples of legal names are: `foo', `_tmp', and `name01'.
+
+
+File: m4.info,  Node: Quoted strings,  Next: Other tokens,  Prev: Names,  Up: Syntax
+
+Quoted strings
+==============
+
+   A quoted string is a sequence of characters surrounded by the quotes
+``' and `'', where the number of start and end quotes within the string
+balances.  The value of a string token is the text, with one level of
+quotes stripped off.  Thus
+
+     `'
+
+   is the empty string, and
+
+     ``quoted''
+
+   is the string
+
+     `quoted'
+
+   The quote characters can be changed at any time, using the built-in
+macro `changequote'.  *Note Changequote:: for more information.
+
+
+File: m4.info,  Node: Other tokens,  Next: Comments,  Prev: Quoted strings,  Up: Syntax
+
+Other tokens
+============
+
+   Any character, that is neither a part of a name, nor of a quoted
+string, is a token by itself.
+
+
+File: m4.info,  Node: Comments,  Prev: Other tokens,  Up: Syntax
+
+Comments
+========
+
+   Comments in `m4' are normally delimited by the characters `#' and
+newline.  All characters between the comment delimiters are ignored,
+but the entire comment (including the delimiters) is passed through to
+the output--comments are *not* discarded by `m4'.
+
+   Comments cannot be nested, so the first newline after a `#' ends the
+comment.  The begin comment character can be included in the input by
+quoting it.
+
+   The comment delimiters can be changed to any string at any time,
+using the built-in macro `changecom'.  *Note Changecom:: for more
+information.
+
+
+File: m4.info,  Node: Macros,  Next: Definitions,  Prev: Syntax,  Up: Top
+
+How to invoke macros
+********************
+
+   This chapter covers macro invocation, macro arguments and how macro
+expansion is treated.
+
+* Menu:
+
+* Invocation::                  Macro invocation
+* Macro Arguments::             Macro arguments.
+* Quoting Arguments::           On Quoting Arguments to macros.
+* Macro expansion::             Expanding macros.
+
+
+File: m4.info,  Node: Invocation,  Next: Macro Arguments,  Prev: Macros,  Up: Macros
+
+Macro invocation
+================
+
+   Macro invocations has one of the forms
+
+     name
+
+which is a macro invocation without any arguments, or
+
+     name(arg1, arg2, ..., argN)
+
+which is a macro invocation with N arguments.  Macros can have any
+number of arguments.  All arguments are strings, but different macros
+might interpret the arguments in different ways.
+
+   The opening parenthesis *must* follow the NAME directly, with no
+spaces in between.  If it does not, the macro is called with no
+arguments at all.
+
+   For a macro call to have no arguments, the parentheses *must* be
+left out.  The macro call
+
+     name()
+
+is a macro call with one argument, which is the empty string, not a call
+with no arguments.
+
+   Many builtin macros cannot meaningfully be called without arguments.
+For any of these macros, whenever an opening parenthesis does not
+immediately follow their name, then they are not recognized as builtin
+macros.  The sentence "This macro is recognized only when given
+arguments.", later in this document, means exactly that.
+
+
+File: m4.info,  Node: Macro Arguments,  Next: Quoting Arguments,  Prev: Invocation,  Up: Macros
+
+Macro arguments
+===============
+
+   When a name is seen, and it has a macro definition, it will be
+expanded as a macro.
+
+   If the name is followed by an opening parenthesis, the arguments
+will be collected before the macro is called.  If too few arguments are
+supplied, the missing arguments are taken to be the empty string.  If
+there are too many arguments, the excess arguments are ignored.
+
+   Normally `m4' will issue warnings if a built-in macro is called with
+an inappropriate number of arguments, but it can be suppressed with the
+`-Q' command line option.  For user defined macros, there is no check
+of the number of arguments given.
+
+   Macros are expanded normally during argument collection, and whatever
+commas, quotes and parentheses that might show up in the resulting
+expanded text will serve to define the arguments as well.  Thus, if FOO
+expands to `,b,c', the macro call
+
+     bar(a foo,d)
+
+   is a macro call with four arguments, which are `a ', `b', `c' and
+`d'.
+
+
+File: m4.info,  Node: Quoting Arguments,  Next: Macro expansion,  Prev: Macro Arguments,  Up: Macros
+
+Quoting macro arguments
+=======================
+
+   Each argument has leading unquoted whitespace removed.  Within each
+argument, all unquoted parentheses must match.  For example, if FOO is
+a macro,
+
+     foo(() (`(') `(')
+
+   is a macro call, with one argument, whose value is `() (() ('.
+
+   It is common practice to quote all arguments to macros, unless you
+are sure you want the arguments expanded.  Thus, in the above example
+with the parentheses, the `right' way to do it is like this:
+
+     foo(`() (() (')
+
+   It is, however, in certain cases necessary to leave out quotes for
+some arguments, and there is nothing wrong in doing it.  It just makes
+life a bit harder, if you are not careful.
+
+
+File: m4.info,  Node: Macro expansion,  Prev: Quoting Arguments,  Up: Macros
+
+Macro expansion
+===============
+
+   When the arguments, if any, to a macro call have been collected, the
+macro is expanded, and the expansion text is pushed back onto the input
+(unquoted), and reread.  The expansion text from one macro call might
+therefore result in more macros being called, if the calls are included,
+completely or partially, in the first macro calls' expansion.
+
+   Taking a very simple example, if FOO expands to `bar', and BAR
+expands to `Hello world', the input
+
+     foo
+
+will expand first to `bar', and when this is reread and expanded, into
+`Hello world'.
+
+
+File: m4.info,  Node: Definitions,  Next: Conditionals,  Prev: Macros,  Up: Top
+
+How to define new macros
+************************
+
+   Macros can be defined, redefined and deleted in several different
+ways. Also, it is possible to redefine a macro, without losing a
+previous value, which can be brought back at a later time.
+
+* Menu:
+
+* Define::                      Defining a new macro
+* Arguments::                   Arguments to macros
+* Pseudo Arguments::            Pseudo arguments to macros
+* Undefine::                    Deleting a macro
+* Defn::                        Renaming macros
+* Pushdef::                     Temporarily redefining macros
+
+* Indir::                       Indirect call of macros
+* Builtin::                     Indirect call of built-ins
+
+
+File: m4.info,  Node: Define,  Next: Arguments,  Prev: Definitions,  Up: Definitions
+
+Defining a macro
+================
+
+   The normal way to define or redefine macros is to use the built-in
+`define':
+
+     define(NAME [, EXPANSION])
+
+which defines NAME to expand to EXPANSION.  If EXPANSION is not given,
+it is taken to be empty.
+
+   The expansion of `define' is void.
+
+   The following example defines the macro FOO to expand to the text
+`Hello World.'.
+
+     define(`foo', `Hello world.')
+     =>
+     foo
+     =>Hello world.
+
+   The empty line in the output is there because the newline is not a
+part of the macro definition, and it is consequently copied to the
+output. This can be avoided by use of the macro `dnl' (*note Dnl::. for
+details).
+
+   The macro `define' is recognized only with parameters.
+
+
+File: m4.info,  Node: Arguments,  Next: Pseudo Arguments,  Prev: Define,  Up: Definitions
+
+Arguments to macros
+===================
+
+   Macros can have arguments.  The Nth argument is denoted by `$n' in
+the expansion text, and is replaced by the Nth actual argument, when
+the macro is expanded.  Here is a example of a macro with two
+arguments.  It simply exchanges the order of the two arguments.
+
+     define(`exch', `$2, $1')
+     =>
+     exch(arg1, arg2)
+     =>arg2, arg1
+
+   This can be used, for example, if you like the arguments to `define'
+to be reversed.
+
+     define(`exch', `$2, $1')
+     =>
+     define(exch(``expansion text'', ``macro''))
+     =>
+     macro
+     =>expansion text
+
+   For an explanation of the double quotes, *note Quoting Arguments::..
+
+   GNU `m4' allows the number following the `$' to consist of one or
+more digits, allowing macros to have any number of arguments.  This is
+not so in Unix implementations of `m4', which only recognize one digit.
+
+   As a special case, the zero'th argument, `$0', is always the name of
+the macro being expanded.
+
+     define(`test', ``Macro name: $0'')
+     =>
+     test
+     =>Macro name: test
+
+   If you want quoted text to appear as part of the expansion text,
+remember that quotes can be nested in quoted strings.  Thus, in
+
+     define(`foo', `This is macro `foo'.')
+     =>
+     foo
+     =>This is macro foo.
+
+The `foo' in the expansion text is *not* expanded, since it is a quoted
+string, and not a name.
+
+
+File: m4.info,  Node: Pseudo Arguments,  Next: Undefine,  Prev: Arguments,  Up: Definitions
+
+Special arguments to macros
+===========================
+
+   There is a special notation for the number of actual arguments
+supplied, and for all the actual arguments.
+
+   The number of actual arguments in a macro call is denoted by `$#' in
+the expansion text.  Thus, a macro to display the number of arguments
+given can be
+
+     define(`nargs', `$#')
+     =>
+     nargs
+     =>0
+     nargs()
+     =>1
+     nargs(arg1, arg2, arg3)
+     =>3
+
+   The notation `$*' can be used in the expansion text to denote all
+the actual arguments, unquoted, with commas in between.  For example
+
+     define(`echo', `$*')
+     =>
+     echo(arg1,    arg2, arg3 , arg4)
+     =>arg1,arg2,arg3 ,arg4
+
+   Often each argument should be quoted, and the notation `$@' handles
+that.  It is just like `$*', except that it quotes each argument. A
+simple example of that is:
+
+     define(`echo', `$@')
+     =>
+     echo(arg1,    arg2, arg3 , arg4)
+     =>arg1,arg2,arg3 ,arg4
+
+   Where did the quotes go?  Of course, they were eaten, when the
+expanded text were reread by `m4'.  To show the difference, try
+
+     define(`echo1', `$*')
+     =>
+     define(`echo2', `$@')
+     =>
+     define(`foo', `This is macro `foo'.')
+     =>
+     echo1(foo)
+     =>This is macro This is macro foo..
+     echo2(foo)
+     =>This is macro foo.
+
+   If you don't understand this, *note Trace::..
+
+   A `$' sign in the expansion text, that is not followed by anything
+`m4' understands, is simply copied to the macro expansion, as any other
+text is.
+
+     define(`foo', `$$$ hello $$$')
+     =>
+     foo
+     =>$$$ hello $$$
+
+   If you want a macro to expand to something like `$12', put a pair of
+quotes after the `$'.  This will prevent `m4' from interpreting the `$'
+sign as a reference to an argument.
+
+
+File: m4.info,  Node: Undefine,  Next: Defn,  Prev: Pseudo Arguments,  Up: Definitions
+
+Deleting a macro
+================
+
+   A macro definition can be removed with `undefine':
+
+     undefine(NAME)
+
+which removes the macro NAME.  The macro name must necessarily be
+quoted, since it will be expanded otherwise.
+
+   The expansion of `undefine' is void.
+
+     foo
+     =>foo
+     define(`foo', `expansion text')
+     =>
+     foo
+     =>expansion text
+     undefine(`foo')
+     =>
+     foo
+     =>foo
+
+   It is not an error for NAME to have no macro definition.  In that
+case, `undefine' does nothing.
+
+   The macro `undefine' is recognized only with parameters.
+
+
+File: m4.info,  Node: Defn,  Next: Pushdef,  Prev: Undefine,  Up: Definitions
+
+Renaming macros
+===============
+
+   It is possible to rename an already defined macro.  To do this, you
+need the built-in `defn':
+
+     defn(NAME)
+
+which expands to the *quoted definition* of NAME.  If the argument is
+not a defined macro, the expansion is void.
+
+   If NAME is a user-defined macro, the quoted definition is simply the
+quoted expansion text.  If, instead, NAME is a built-in, the expansion
+is a special token, which points to the built-in's internal definition.
+ This token is only meaningful as the second argument to `define' (and
+`pushdef'), and is ignored in any other context.
+
+   Its normal use is best understood through an example, which shows
+how to rename `undefine' to `zap':
+
+     define(`zap', defn(`undefine'))
+     =>
+     zap(`undefine')
+     =>
+     undefine(`zap')
+     =>undefine(zap)
+
+   In this way, `defn' can be used to copy macro definitions, and also
+definitions of built-in macros.  Even if the original macro is removed,
+the other name can still be used to access the definition.
+
+   The macro `defn' is recognized only with parameters.
+
+
+File: m4.info,  Node: Pushdef,  Next: Indir,  Prev: Defn,  Up: Definitions
+
+Temporarily redefining macros
+=============================
+
+   It is possible to redefine a macro temporarily, reverting to the
+previous definition at a later time. This is done with the built-ins
+`pushdef' and `popdef':
+
+     pushdef(NAME [, EXPANSION])
+     popdef(NAME)
+
+which are quite analogous to `define' and `undefine'.
+
+   These macros work in a stack-like fashion.  A macro is temporarily
+redefined with `pushdef', which replaces an existing definition of
+NAME, while saving the previous definition, before the new one is
+installed.  If there is no previous definition, `pushdef' behaves
+exactly like `define'.
+
+   If a macro has several definitions (of which only one is accessible),
+the topmost definition can be removed with `popdef'.  If there is no
+previous definition, `popdef' behaves like `undefine'.
+
+     define(`foo', `Expansion one.')
+     =>
+     foo
+     =>Expansion one.
+     pushdef(`foo', `Expansion two.')
+     =>
+     foo
+     =>Expansion two.
+     popdef(`foo')
+     =>
+     foo
+     =>Expansion one.
+     popdef(`foo')
+     =>
+     foo
+     =>foo
+
+   If a macro with several definitions is redefined with `define', the
+topmost definition is *replaced* with the new definition.  If it is
+removed with `undefine', *all* the definitions are removed, and not
+only the topmost one.
+
+     define(`foo', `Expansion one.')
+     =>
+     foo
+     =>Expansion one.
+     pushdef(`foo', `Expansion two.')
+     =>
+     foo
+     =>Expansion two.
+     define(`foo', `Second expansion two.')
+     =>
+     foo
+     =>Second expansion two.
+     undefine(`foo')
+     =>
+     foo
+     =>foo
+
+   It is possible to temporarily redefine a built-in with `pushdef' and
+`defn'.
+
+   The macros `pushdef' and `popdef' are recognized only with
+parameters.
+
+
+File: m4.info,  Node: Indir,  Next: Builtin,  Prev: Pushdef,  Up: Definitions
+
+Indirect call of macros
+=======================
+
+   Any macro can be called indirectly with `indir':
+
+     indir(NAME, ...)
+
+which results in a call to the macro NAME, which is passed the rest of
+the arguments.  This can be used to call macros with "illegal" names
+(`define' allows such names to be defined):
+
+     define(`$$internal$macro', `Internal macro (name `$0')')
+     =>
+     $$internal$macro
+     =>$$internal$macro
+     indir(`$$internal$macro')
+     =>Internal macro (name $$internal$macro)
+
+   The point is, here, that larger macro packages can have private
+macros defined, that will not be called by accident.  They can *only* be
+called through the built-in `indir'.
+
+
+File: m4.info,  Node: Builtin,  Prev: Indir,  Up: Definitions
+
+Indirect call of built-ins
+==========================
+
+   Built-in macros can be called indirectly with `built-in':
+
+     builtin(NAME, ...)
+
+which results in a call to the built-in NAME, which is passed the rest
+of the arguments.  This can be used, if NAME has been given another
+definition that has covered the original.
+
+   The macro `builtin' is recognized only with parameters.
+
+
+File: m4.info,  Node: Conditionals,  Next: Debugging,  Prev: Definitions,  Up: Top
+
+Conditionals, loops and recursion
+*********************************
+
+   Macros, expanding to plain text, perhaps with arguments, are not
+quite enough.  We would like to have macros expand to different things,
+based on decisions taken at run-time.  E.g., we need some kind of
+conditionals. Also, we would like to have some kind of loop construct,
+so we could do something a number of times, or while some condition is
+true.
+
+* Menu:
+
+* Ifdef::                       Testing if a macro is defined
+* Ifelse::                      If-else construct, or multibranch
+* Loops::                       Loops and recursion in m4
+
+
+File: m4.info,  Node: Ifdef,  Next: Ifelse,  Prev: Conditionals,  Up: Conditionals
+
+Testing macro definitions
+=========================
+
+   There are two different built-in conditionals in `m4'.  The first is
+`ifdef':
+
+     ifdef(NAME, STRING-1, opt STRING-2)
+
+which makes it possible to test whether a macro is defined or not.  If
+NAME is defined as a macro, `ifdef' expands to STRING-1, otherwise to
+STRING-2.  If STRING-2 is omitted, it is taken to be the empty string
+(according to the normal rules).
+
+     ifdef(`foo', ``foo' is defined', ``foo' is not defined')
+     =>foo is not defined
+     define(`foo', `')
+     =>
+     ifdef(`foo', ``foo' is defined', ``foo' is not defined')
+     =>foo is defined
+
+   The macro `ifdef' is recognized only with parameters.
+
+
+File: m4.info,  Node: Ifelse,  Next: Loops,  Prev: Ifdef,  Up: Conditionals
+
+Comparing strings
+=================
+
+   The other conditional, `ifelse', is much more powerful.  It can be
+used as a way to introduce a long comment, as an if-else construct, or
+as a multibranch, depending on the number of arguments supplied:
+
+     ifelse(COMMENT)
+     ifelse(STRING-1, STRING-2, EQUAL, opt NOT-EQUAL)
+     ifelse(STRING-1, STRING-2, EQUAL, ...)
+
+Used with only one argument, the `ifelse' simply discards it and
+produces no output.  This is a common `m4' idiom for introducing a
+block comment, as an alternative to repeatedly using `dnl'.  This
+special usage is recognized by GNU `m4', so that in this case, the
+warning about missing arguments is never triggered.
+
+   If called with three or four arguments, `ifelse' expands into EQUAL,
+if STRING-1 and STRING-2 are equal (character for character), otherwise
+it expands to NOT-EQUAL.
+
+     ifelse(foo, bar, `true')
+     =>
+     ifelse(foo, foo, `true')
+     =>true
+     ifelse(foo, bar, `true', `false')
+     =>false
+     ifelse(foo, foo, `true', `false')
+     =>true
+
+   However, `ifelse' can take more than four arguments.  If given more
+than four arguments, `ifelse' works like a `case' or `switch' statement
+in traditional programming languages.  If STRING-1 and STRING-2 are
+equal, `ifelse' expands into EQUAL, otherwise the procedure is repeated
+with the first three arguments discarded.  This calls for an example:
+
+     ifelse(foo, bar, `third', gnu, gnats, `sixth', `seventh')
+     =>seventh
+
+   Naturally, the normal case will be slightly more advanced than these
+examples.  A common use of `ifelse' is in macros implementing loops of
+various kinds.
+
+   The macro `ifelse' is recognized only with parameters.
+
+
+File: m4.info,  Node: Loops,  Prev: Ifelse,  Up: Conditionals
+
+Loops and recursion
+===================
+
+   There is no direct support for loops in `m4', but macros can be
+recursive.  There is no limit on the number of recursion levels, other
+than those enforced by your hardware and operating system.
+
+   Loops can be programmed using recursion and the conditionals
+described previously.
+
+   There is a built-in macro, `shift', which can, among other things,
+be used for iterating through the actual arguments to a macro:
+
+     shift(...)
+
+It takes any number of arguments, and expands to all but the first
+argument, separated by commas, with each argument quoted.
+
+     shift(bar)
+     =>
+     shift(foo, bar, baz)
+     =>bar,baz
+
+   An example of the use of `shift' is this macro, which reverses the
+order of its arguments:
+
+     define(`reverse', `ifelse($#, 0, , $#, 1, ``$1'',
+     			  `reverse(shift($@)), `$1'')')
+     =>
+     reverse
+     =>
+     reverse(foo)
+     =>foo
+     reverse(foo, bar, gnats,and gnus)
+     =>and gnus, gnats, bar, foo
+
+   While not a very interesting macro, it does show how simple loops
+can be made with `shift', `ifelse' and recursion.
+
+   Here is an example of a loop macro that implements a simple forloop.
+ It can, for example, be used for simple counting:
+
+     forloop(`i', 1, 8, `i ')
+     =>1 2 3 4 5 6 7 8
+
+   The arguments are a name for the iteration variable, the starting
+value, the final value, and the text to be expanded for each iteration.
+ With this macro, the macro `i' is defined only within the loop.  After
+the loop, it retains whatever value it might have had before.
+
+   For-loops can be nested, like
+
+     forloop(`i', 1, 4, `forloop(`j', 1, 8, `(i, j) ')
+     ')
+     =>(1, 1) (1, 2) (1, 3) (1, 4) (1, 5) (1, 6) (1, 7) (1, 8)
+     =>(2, 1) (2, 2) (2, 3) (2, 4) (2, 5) (2, 6) (2, 7) (2, 8)
+     =>(3, 1) (3, 2) (3, 3) (3, 4) (3, 5) (3, 6) (3, 7) (3, 8)
+     =>(4, 1) (4, 2) (4, 3) (4, 4) (4, 5) (4, 6) (4, 7) (4, 8)
+     =>
+
+   The implementation of the `forloop' macro is fairly straightforward.
+ The `forloop' macro itself is simply a wrapper, which saves the
+previous definition of the first argument, calls the internal macro
+`_forloop', and re-establishes the saved definition of the first
+argument.
+
+   The macro `_forloop' expands the fourth argument once, and tests to
+see if it is finished.  If it has not finished, it increments the
+iteration variable (using the predefined macro `incr' (*note Incr::.
+for details)), and recurses.
+
+   Here is the actual implementation of `forloop':
+
+     define(`forloop',
+            `pushdef(`$1', `$2')_forloop(`$1', `$2', `$3', `$4')popdef(`$1')')
+     define(`_forloop',
+            `$4`'ifelse($1, `$3', ,
+     		   `define(`$1', incr($1))_forloop(`$1', `$2', `$3', `$4')')')
+
+   Notice the careful use of quotes.  Only three macro arguments are
+unquoted, each for its own reason.  Try to find out *why* these three
+arguments are left unquoted, and see what happens if they are quoted.
+
+   Now, even though these two macros are useful, they are still not
+robust enough for general use. They lack even basic error handling of
+cases like start value less than final value, and the first argument
+not being a name.  Correcting these errors are left as an exercise to
+the reader.
+
+
+File: m4.info,  Node: Debugging,  Next: Input Control,  Prev: Conditionals,  Up: Top
+
+How to debug macros and input
+*****************************
+
+   When writing macros for `m4', most of the time they won't work as
+intended (as is the case with most programming languages).  There is a
+little support for macro debugging in `m4'.
+
+* Menu:
+
+* Dumpdef::                     Displaying macro definitions
+* Trace::                       Tracing macro calls
+* Debug Levels::                Controlling debugging output
+* Debug Output::                Saving debugging output
+
+
+File: m4.info,  Node: Dumpdef,  Next: Trace,  Prev: Debugging,  Up: Debugging
+
+Displaying macro definitions
+============================
+
+   If you want to see what a name expands into, you can use the built-in
+`dumpdef':
+
+     dumpdef(...)
+
+which accepts any number of arguments.  If called without any arguments,
+it displays the definitions of all known names, otherwise it displays
+the definitions of the names given.  The output is printed directly on
+the standard error output.
+
+   The expansion of `dumpdef' is void.
+
+     define(`foo', `Hello world.')
+     =>
+     dumpdef(`foo')
+     error-->foo:	`Hello world.'
+     =>
+     dumpdef(`define')
+     error-->define:	<define>
+     =>
+
+   The last example shows how built-in macros definitions are displayed.
+
+   *Note Debug Levels:: for information on controlling the details of
+the display.
+
+
+File: m4.info,  Node: Trace,  Next: Debug Levels,  Prev: Dumpdef,  Up: Debugging
+
+Tracing macro calls
+===================
+
+   It is possible to trace macro calls and expansions through the
+built-ins `traceon' and `traceoff':
+
+     traceon(...)
+     traceoff(...)
+
+When called without any arguments, `traceon' and `traceoff' will turn
+tracing on and off, respectively,  for all defined macros. When called
+with arguments, only the named macros are affected.
+
+   The expansion of `traceon' and `traceoff' is void.
+
+   Whenever a traced macro is called and the arguments have been
+collected, the call is displayed.  If the expansion of the macro call
+is not void, the expansion can be displayed after the call.  The output
+is printed directly on the standard error output.
+
+     define(`foo', `Hello World.')
+     =>
+     define(`echo', `$@')
+     =>
+     traceon(`foo', `echo')
+     =>
+     foo
+     error-->m4trace: -1- foo -> `Hello World.'
+     =>Hello World.
+     echo(gnus, and gnats)
+     error-->m4trace: -1- echo(`gnus', `and gnats') -> ``gnus',`and gnats''
+     =>gnus,and gnats
+
+   The number between dashes is the depth of the expansion.  It is one
+most of the time, signifying an expansion at the outermost level, but it
+increases when macro arguments contain unquoted macro calls.
+
+   *Note Debug Levels:: for information on controlling the details of
+the display.
+
+
+File: m4.info,  Node: Debug Levels,  Next: Debug Output,  Prev: Trace,  Up: Debugging
+
+Controlling debugging output
+============================
+
+   The `-d' option to `m4' controls the amount of details presented,
+when using the macros described in the preceding sections.
+
+   The FLAGS following the option can be one or more of the following:
+
+`t'
+     Trace all macro calls made in this invocation of `m4'.
+
+`a'
+     Show the actual arguments in each macro call.  This applies to all
+     macro calls if the `t' flag is used, otherwise only the macros
+     covered by calls of `traceon'.
+
+`e'
+     Show the expansion of each macro call, if it is not void.  This
+     applies to all macro calls if the `t' flag is used, otherwise only
+     the macros covered by calls of `traceon'.
+
+`q'
+     Quote actual arguments and macro expansions in the display with the
+     current quotes.
+
+`c'
+     Show several trace lines for each macro call.  A line is shown
+     when the macro is seen, but before the arguments are collected; a
+     second line when the arguments have been collected and a third
+     line after the call has completed.
+
+`x'
+     Add a unique `macro call id' to each line of the trace output. 
+     This is useful in connection with the `c' flag above.
+
+`f'
+     Show the name of the current input file in each trace output line.
+
+`l'
+     Show the the current input line number in each trace output line.
+
+`p'
+     Print a message when a named file is found through the path search
+     mecanism (*note Search Path::.), giving the actual filename used.
+
+`i'
+     Print a message each time the current input file is changed,
+     giving file name and input line number.
+
+`V'
+     A shorthand for all of the above flags.
+
+   If no flags are specified with the `-d' option, the default is
+`aeq'. The examples in the previous two sections assumed the default
+flags.
+
+   There is a built-in macro `debugmode', which allows on-the-fly
+control of the debugging output format:
+
+     debugmode(opt FLAGS)
+
+The argument FLAGS should be a subset of the letters listed above. As
+special cases, if the argument starts with a `+', the flags are added
+to the current debug flags, and if it starts with a `-', they are
+removed.  If no argument is present, the debugging flags are set to
+zero (as if no `-d' was given), and with an empty argument the flags
+are reset to the default.
+
+
+File: m4.info,  Node: Debug Output,  Prev: Debug Levels,  Up: Debugging
+
+Saving debugging output
+=======================
+
+   Debug and tracing output can be redirected to files using either the
+`-o' option to `m4', or with the built-in macro `debugfile':
+
+     debugfile(opt FILENAME)
+
+will send all further debug and trace output to FILENAME.  If FILENAME
+is empty, debug and trace output are discarded and if `debugfile' is
+called without any arguments, debug and trace output are sent to the
+standard error output.
+
+
+File: m4.info,  Node: Input Control,  Next: File Inclusion,  Prev: Debugging,  Up: Top
+
+Input control
+*************
+
+   This chapter describes various built-in macros for controlling the
+input to `m4'.
+
+* Menu:
+
+* Dnl::                         Deleting whitespace in input
+* Changequote::                 Changing the quote characters
+* Changecom::                   Changing the comment delimiters
+* M4wrap::                      Saving input until end of input
+
+
+File: m4.info,  Node: Dnl,  Next: Changequote,  Prev: Input Control,  Up: Input Control
+
+Deleting whitespace in input
+============================
+
+   The built-in `dnl' reads and discards all characters, up to and
+including the first newline:
+
+     dnl
+
+and it is often used in connection with `define', to remove the newline
+that follow the call to `define'.  Thus
+
+     define(`foo', `Macro `foo'.')dnl A very simple macro, indeed.
+     foo
+     =>Macro foo.
+
+   The input up to and including the next newline is discarded, as
+opposed to the way comments are treated (*note Comments::.).
+
+   Usually, `dnl' is immediately followed by an end of line or some
+other whitespace.  GNU `m4' will produce a warning diagnostic if `dnl'
+is followed by an open parenthesis.  In this case, `dnl' will collect
+and process all arguments, looking for a matching close parenthesis. 
+All predictable side effects resulting from this collection will take
+place.  `dnl' will return no output.  The input following the matching
+close parenthesis up to and including the next newline, on whatever
+line containing it, will still be discarded.
+
+
+File: m4.info,  Node: Changequote,  Next: Changecom,  Prev: Dnl,  Up: Input Control
+
+Changing the quote characters
+=============================
+
+   The default quote delimiters can be changed with the built-in
+`changequote':
+
+     changequote(opt START, opt END)
+
+where START is the new start-quote delimiter and END is the new
+end-quote delimiter.  If any of the arguments are missing, the default
+quotes (``' and `'') are used instead of the void arguments.
+
+   The expansion of `changequote' is void.
+
+     changequote([,])
+     =>
+     define([foo], [Macro [foo].])
+     =>
+     foo
+     =>Macro foo.
+
+   If no single character is appropriate, START and END can be of any
+length.
+
+     changequote([[,]])
+     =>
+     define([[foo]], [[Macro [[[foo]]].]])
+     =>
+     foo
+     =>Macro [foo].
+
+   Changing the quotes to the empty strings will effectively disable the
+quoting mechanism, leaving no way to quote text.
+
+     define(`foo', `Macro `FOO'.')
+     =>
+     changequote(,)
+     =>
+     foo
+     =>Macro `FOO'.
+     `foo'
+     =>`Macro `FOO'.'
+
+   There is no way in `m4' to quote a string containing an unmatched
+left quote, except using `changequote' to change the current quotes.
+
+   Neither quote string should start with a letter or `_' (underscore),
+as they will be confused with names in the input.  Doing so disables
+the quoting mechanism.
+
+
+File: m4.info,  Node: Changecom,  Next: M4wrap,  Prev: Changequote,  Up: Input Control
+
+Changing comment delimiters
+===========================
+
+   The default comment delimiters can be changed with the built-in
+macro `changecom':
+
+     changecom(opt START, opt END)
+
+where START is the new start-comment delimiter and END is the new
+end-comment delimiter.  If any of the arguments are void, the default
+comment delimiters (`#' and newline) are used instead of the void
+arguments.  The comment delimiters can be of any length.
+
+   The expansion of `changecom' is void.
+
+     define(`comment', `COMMENT')
+     =>
+     # A normal comment
+     =># A normal comment
+     changecom(`/*', `*/')
+     =>
+     # Not a comment anymore
+     =># Not a COMMENT anymore
+     But: /* this is a comment now */ while this is not a comment
+     =>But: /* this is a comment now */ while this is not a COMMENT
+
+   Note how comments are copied to the output, much as if they were
+quoted strings.  If you want the text inside a comment expanded, quote
+the start comment delimiter.
+
+   Calling `changecom' without any arguments disables the commenting
+mechanism completely.
+
+     define(`comment', `COMMENT')
+     =>
+     changecom
+     =>
+     # Not a comment anymore
+     =># Not a COMMENT anymore
+
+
+File: m4.info,  Node: M4wrap,  Prev: Changecom,  Up: Input Control
+
+Saving input
+============
+
+   It is possible to `save' some text until the end of the normal input
+has been seen.  Text can be saved, to be read again by `m4' when the
+normal input has been exhausted.  This feature is normally used to
+initiate cleanup actions before normal exit, e.g., deleting temporary
+files.
+
+   To save input text, use the built-in `m4wrap':
+
+     m4wrap(STRING, ...)
+
+which stores STRING and the rest of the arguments in a safe place, to
+be reread when end of input is reached.
+
+     define(`cleanup', `This is the `cleanup' actions.
+     ')
+     =>
+     m4wrap(`cleanup')
+     =>
+     This is the first and last normal input line.
+     =>This is the first and last normal input line.
+     ^D
+     =>This is the cleanup actions.
+
+   The saved input is only reread when the end of normal input is seen,
+and not if `m4exit' is used to exit `m4'.
+
+   It is safe to call `m4wrap' from saved text, but then the order in
+which the saved text is reread is undefined.  If `m4wrap' is not used
+recursively, the saved pieces of text are reread in the opposite order
+in which they were saved (LIFO--last in, first out).
+
+
+File: m4.info,  Node: File Inclusion,  Next: Diversions,  Prev: Input Control,  Up: Top
+
+File inclusion
+**************
+
+   `m4' allows you to include named files at any point in the input.
+
+* Menu:
+
+* Include::                     Including named files
+* Search Path::                 Searching for include files
+
+
+File: m4.info,  Node: Include,  Next: Search Path,  Prev: File Inclusion,  Up: File Inclusion
+
+Including named files
+=====================
+
+   There are two built-in macros in `m4' for including files:
+
+     include(FILENAME)
+     sinclude(FILENAME)
+
+both of which cause the file named FILENAME to be read by `m4'.  When
+the end of the file is reached, input is resumed from the previous
+input file.
+
+   The expansion of `include' and `sinclude' is therefore the contents
+of FILENAME.
+
+   It is an error for an `include'd file not to exist.  If you don't
+want error messages about non-existent files, `sinclude' can be used to
+include a file, if it exists, expanding to nothing if it does not.
+
+     include(`no-such-file')
+     =>
+     error-->m4:30.include:2: can't open no-such-file: No such file or directory
+     sinclude(`no-such-file')
+     =>
+
+   Assume in the following that the file `incl.m4' contains the lines:
+     Include file start
+     foo
+     Include file end
+
+Normally file inclusion is used to insert the contents of a file into
+the input stream.  The contents of the file will be read by `m4' and
+macro calls in the file will be expanded:
+
+     define(`foo', `FOO')
+     =>
+     include(`incl.m4')
+     =>Include file start
+     =>FOO
+     =>Include file end
+     =>
+
+   The fact that `include' and `sinclude' expand to the contents of the
+file can be used to define macros that operate on entire files. Here is
+an example, which defines `bar' to expand to the contents of `incl.m4':
+
+     define(`bar', include(`incl.m4'))
+     =>
+     This is `bar':  >>>bar<<<
+     =>This is bar:  >>>Include file start
+     =>foo
+     =>Include file end
+     =><<<
+
+   This use of `include' is not trivial, though, as files can contain
+quotes, commas and parentheses, which can interfere with the way the
+`m4' parser works.
+
+   The builtin macros `include' and `sinclude' are recognized only when
+given arguments.
+
+
+File: m4.info,  Node: Search Path,  Prev: Include,  Up: File Inclusion
+
+Searching for include files
+===========================
+
+   GNU `m4' allows included files to be found in other directories than
+the current working directory.
+
+   If a file is not found in the current working directory, and the file
+name is not absolute, the file will be looked for in a specified search
+path.  First, the directories specified with the `-I' option will be
+searched, in the order found on the command line.  Second, if the
+`M4PATH' environment variable is set, it is expected to contain a
+colon-separated list of directories, which will be searched in order.
+
+   If the automatic search for include-files causes trouble, the `p'
+debug flag (*note Debug Levels::.) can help isolate the problem.
+
+

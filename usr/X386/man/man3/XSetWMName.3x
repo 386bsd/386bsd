@@ -1,0 +1,238 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetWMName 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetWMName, XGetWMName, XStoreName, XFetchName \- set or read a window's WM_NAME property
+.SH SYNTAX
+void XSetWMName\^(\^\fIdisplay\fP, \fIw\fP, \fItext_prop\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      XTextProperty *\fItext_prop\fP\^;
+.LP
+Status XGetWMName\^(\^\fIdisplay\fP, \fIw\fP, \fItext_prop_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      XTextProperty *\fItext_prop_return\fP\^;
+.LP
+.\" $Header: XStoreName.f,v 1.1 88/02/26 10:03:53 mento Exp $
+XStoreName\^(\^\fIdisplay\fP, \fIw\fP\^, \fIwindow_name\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      char *\fIwindow_name\fP\^;
+.LP
+.\" $Header: XFetchName.f,v 1.2 88/04/07 14:34:36 mento Exp $
+Status XFetchName\^(\^\fIdisplay\fP, \fIw\fP\^, \fIwindow_name_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      char **\fIwindow_name_return\fP\^;
+.SH ARGUMENTS
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fItext_prop\fP 1i
+Specifies the
+.ZN XTextProperty
+structure to be used.
+.IP \fItext_prop_return\fP 1i
+Returns the
+.ZN XTextProperty
+structure.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.\" $Header: window_name.a,v 1.2 88/05/18 05:22:36 mento Exp $
+.IP \fIwindow_name\fP 1i
+Specifies the window name,
+which should be a null-terminated string.
+.\" $Header: window_name1.a,v 1.2 88/05/17 11:14:20 mento Exp $
+.IP \fIwindow_name_return\fP 1i
+Returns the window name, which is a null-terminated string.
+.SH DESCRIPTION
+The
+.ZN XSetWMName
+convenience function calls
+.ZN XSetTextProperty 
+to set the WM_NAME property.
+.LP
+The
+.ZN XGetWMName 
+convenience function calls
+.ZN XGetTextProperty 
+to obtain the WM_NAME property.
+It returns nonzero status on success; otherwise it returns a zero status.
+.LP
+.\" $Header: XStoreName.d,v 1.2 88/06/11 07:53:51 mento Exp $
+The
+.ZN XStoreName
+function assigns the name passed to window_name to the specified window.
+A window manager can display the window name in some prominent
+place, such as the title bar, to allow users to identify windows easily.
+Some window managers may display a window's name in the window's icon,
+although they are encouraged to use the window's icon name
+if one is provided by the application.
+If the string is not in the Host Portable Character Encoding
+the result is implementation dependent.
+.LP
+.ZN XStoreName
+can generate
+.ZN BadAlloc
+and
+.ZN BadWindow
+errors.
+.LP
+.\" $Header: XFetchName.d,v 1.5 88/06/11 07:50:16 mento Exp $
+The
+.ZN XFetchName
+function returns the name of the specified window.
+If it succeeds,
+it returns nonzero; 
+otherwise, no name has been set for the window,
+and it returns zero.
+If the WM_NAME property has not been set for this window,
+.ZN XFetchName
+sets window_name_return to NULL.
+If the data returned by the server is in the Latin Portable Character Encoding,
+then the returned string is in the Host Portable Character Encoding.
+Otherwise, the result is implementation dependent.
+When finished with it, a client must free
+the window name string using
+.ZN XFree .
+.LP
+.ZN XFetchName
+can generate a
+.ZN BadWindow
+error.
+.SH PROPERTIES
+.TP 1i
+\s-1WM_NAME\s+1
+The name of the application.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllocClassHint(3X11),
+XAllocIconSize(3X11),
+XAllocSizeHints(3X11),
+XAllocWMHints(3X11),
+XFree(3X11),
+XSetCommand(3X11),
+XSetTransientForHint(3X11),
+XSetTextProperty(3X11),
+XSetWMClientMachine(3X11),
+XSetWMColormapWindows(3X11),
+XSetWMIconName(3X11),
+XSetWMProperties(3X11),
+XSetWMProtocols(3X11),
+XStringListToTextProperty(3X11)
+.br
+\fI\*(xL\fP

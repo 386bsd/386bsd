@@ -1,0 +1,51 @@
+.TH XEV 1 "Release 5" "X Version 11"
+.SH NAME
+xev - print contents of X events
+.SH SYNOPSIS
+.B "xev"
+[\-display \fIdisplayname\fP] [\-geometry \fIgeom\fP]
+[\-bw \fIpixels\fP] [\-bs \fI{NotUseful,WhenMapped,Always}\fP]
+[\-id \fIwindowid\fP] [\-s] [\-name \fIstring\fP] [\-rv]
+.SH DESCRIPTION
+.PP
+\fIXev\fP creates a window and then asks the X server to send it
+\fIevents\fP whenever anything happens to the window (such as being moved,
+resized, typed in, clicked in, etc.).  You can also attach it to an
+existing window.  It is useful for seeing what causes
+events to occur and to display the information that they contain.
+.SH OPTIONS
+.TP 8
+.B \-display \fIdisplay\fP
+This option specifies the X server to contact.
+.TP 8
+.B \-geometry \fIgeom\fP
+This option specifies the size and/or location of the window.
+.TP 8
+.B \-bw \fIpixels\fP
+This option specifies the border width for the window.
+.TP 8
+.B \-bs \fI{NotUseful,WhenMapped,Always}\fP
+This option specifies what kind of backing store to give the window.
+The default is NotUseful.
+.TP 8
+.B \-id \fIwindowid\fP
+This option specifies that the window with the given id should be
+monitored, instead of creating a new window.
+.TP 8
+.B \-s
+This option specifies that save-unders should be enabled on the window.
+.TP 8
+.B \-name \fIstring\fP
+This option specifies the name to assign to the created window.
+.TP 8
+.B \-rv
+This option specifies that the window should be in reverse video.
+.SH "SEE ALSO"
+X(1), xwininfo(1), xdpyinfo(1), Xlib Programmers Manual, X Protocol
+Specification
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium

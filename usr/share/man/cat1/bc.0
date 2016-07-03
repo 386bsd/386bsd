@@ -1,0 +1,1056 @@
+
+
+
+bc(1)                                                       bc(1)
+
+
+NNAAMMEE
+       bc - An arbitrary precision calculator language
+
+SSYYNNTTAAXX
+       bbcc [ --llwwss ] [  _f_i_l_e ... ]
+
+VVEERRSSIIOONN
+       This man page documents GNU bc version 1.02.
+
+DDEESSCCRRIIPPTTIIOONN
+       bbcc is a language that supports arbitrary precision numbers
+       with interactive execution of statements.  There are  some
+       similarities  in the syntax to the C programming language.
+       A standard math  library  is  available  by  command  line
+       option.   If requested, the math library is defined before
+       processing any files.  bbcc starts by processing  code  from
+       all  the  files  listed  on  the command line in the order
+       listed.  After all files have  been  processed,  bbcc  reads
+       from  the  standard  input.  All code is executed as it is
+       read.   (If  a  file  contains  a  command  to  halt   the
+       processor, bbcc will never read from the standard input.)
+
+       This  version  of  bbcc  contains  several extensions beyond
+       traditional  bbcc  implementations  and  the   POSIX   draft
+       standard.  Command line options can cause these extensions
+       to print a warning  or  to  be  rejected.   This  document
+       describes   the   language  accepted  by  this  processor.
+       Extensions will be identified as such.
+
+   OOPPTTIIOONNSS
+       -l     Define the standard math library.
+
+       -w     Give warnings for extensions to POSIX bbcc.
+
+       -s     Process exactly the POSIX bbcc language.
+
+   NNUUMMBBEERRSS
+       The most basic element in bbcc is the number.   Numbers  are
+       arbitrary  precision  numbers.   This precision is both in
+       the integer part and the fractional part.  All numbers are
+       represented  internally  in decimal and all computation is
+       done in decimal.  (This  version  truncates  results  from
+       divide and multiply operations.)  There are two attributes
+       of numbers, the length and the scale.  The length  is  the
+       total number of significant decimal digits in a number and
+       the scale is the total number of decimal digits after  the
+       decimal point.  For example:
+               .000001 has a length of 6 and scale of 6.
+               1935.000 has a length of 7 and a scale of 3.
+
+   VVAARRIIAABBLLEESS
+       Numbers  are  stored  in  two  types  of variables, simple
+       variables and arrays.  Both  simple  variables  and  array
+       variables  are  named.  Names begin with a letter followed
+
+
+
+                                .                               1
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       by any number of letters,  digits  and  underscores.   All
+       letters must be lower case.  (Full alpha-numeric names are
+       an extension. In POSIX bbcc all names  are  a  single  lower
+       case  letter.)   The  type  of  variable  is  clear by the
+       context because all array variable names will be  followed
+       by brackets ([]).
+
+       There are four special variables, ssccaallee,, iibbaassee,, oobbaassee,, and
+       llaasstt.  ssccaallee defines how some operations use digits  after
+       the decimal point.  The default value of ssccaallee is 0. iibbaassee
+       and oobbaassee define the conversion base for input and  output
+       numbers.   The  default  for both input and output is base
+       10.  llaasstt (an extension) is a variable that has the  value
+       of  the  last  printed number.  These will be discussed in
+       further detail where appropriate.  All of these  variables
+       may  have  values  assigned  to  them  as  well as used in
+       expressions.
+
+   CCOOMMMMEENNTTSS
+       Comments in bbcc start with the characters //** and  end  with
+       the characters **//.  Comments may start anywhere and appear
+       as a single space in the input.  (This causes comments  to
+       delimit other input items.  For example, a comment can not
+       be found in the middle  of  a  variable  name.)   Comments
+       include  any  newlines (end of line) between the start and
+       the end of the comment.
+
+   EEXXPPRREESSSSIIOONNSS
+       The numbers are manipulated by expressions and statements.
+       Since   the  language  was  designed  to  be  interactive,
+       statements  and  expressions  are  executed  as  soon   as
+       possible.   There  is no "main" program.  Instead, code is
+       executed as it is encountered.  (Functions,  discussed  in
+       detail later, are defined when encountered.)
+
+       A  simple  expression  is  just  a  constant.  bbcc converts
+       constants into internal decimal numbers using the  current
+       input  base, specified by the variable iibbaassee. (There is an
+       exception in functions.)  The legal values of iibbaassee are  2
+       through  16  (F).  Assigning a value outside this range to
+       iibbaassee will result in a value of 2 or  16.   Input  numbers
+       may  contain  the characters 0-9 and A-F. (Note: They must
+       be capitals.  Lower  case  letters  are  variable  names.)
+       Single  digit  numbers  always have the value of the digit
+       regardless of the value of iibbaassee.  (i.e.  A  =  10.)   For
+       multi-digit  numbers,  bbcc changes all input digits greater
+       or equal to ibase to the value of iibbaassee-1.  This makes the
+       number  FFFFFF  always  be  the largest 3 digit number of the
+       input base.
+
+       Full expressions are similar  to  many  other  high  level
+       languages.   Since there is only one kind of number, there
+       are no rules for mixing types.  Instead, there  are  rules
+       on  the  scale  of  expressions.   Every  expression has a
+
+
+
+                                .                               2
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       scale.   This  is  derived  from  the  scale  of  original
+       numbers,  the  operation  performed and in many cases, the
+       value of the variable ssccaallee. Legal values of the  variable
+       ssccaallee  are  0  to  the maximum number representable by a C
+       integer.
+
+       In the following descriptions of legal expressions, "expr"
+       refers  to  a  complete  expression  and "var" refers to a
+       simple or an array variable.  A simple variable is just a
+              _n_a_m_e
+       and an array variable is specified as
+              _n_a_m_e[_e_x_p_r]
+       Unless specifically mentioned the scale of the  result  is
+       the maximum scale of the expressions involved.
+
+       - expr The result is the negation of the expression.
+
+       ++ var The  variable  is  incremented  by  one and the new
+              value is the result of the expression.
+
+       -- var The variable is decremented  by  one  and  the  new
+              value is the result of the expression.
+
+       var ++   The  result of the expression is the value of the
+              variable and then the variable  is  incremented  by
+              one.
+
+       var -- The  result  of  the expression is the value of the
+              variable and then the variable  is  decremented  by
+              one.
+
+       expr + expr
+              The  result of the expression is the sum of the two
+              expressions.
+
+       expr - expr
+              The result of the expression is the  difference  of
+              the two expressions.
+
+       expr * expr
+              The  result of the expression is the product of the
+              two expressions.
+
+       expr / expr
+              The result of the expression is the quotient of the
+              two  expressions.   The  scale of the result is the
+              value of the variable ssccaallee.
+
+       expr % expr
+              The result of the expression is the "remainder" and
+              it  is  computed  in the following way.  To compute
+              a%b, first a/b is computed to ssccaallee  digits.   That
+              result is used to compute a-(a/b)*b to the scale of
+              the maximum of  ssccaallee+scale(b)  and  scale(a).   If
+
+
+
+                                .                               3
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+              ssccaallee  is  set  to  zero  and  both expressions are
+              integers this expression is the  integer  remainder
+              function.
+
+       expr ^ expr
+              The  result  of  the expression is the value of the
+              first raised to the second. The  second  expression
+              must  be  an integer.  (If the second expression is
+              not an integer, a  warning  is  generated  and  the
+              expression  is  truncated to get an integer value.)
+              The scale of the result is ssccaallee if the exponent is
+              negative.  If the exponent is positive the scale of
+              the result is the minimum of the scale of the first
+              expression  times the value of the exponent and the
+              maximum  of  ssccaallee  and  the  scale  of  the  first
+              expression.   (e.g.  scale(a^b)  =  min(scale(a)*b,
+              max( ssccaallee,, scale(a))).)  It should be  noted  that
+              expr^0 will always return the value of 1.
+
+       ( expr )
+              This  alters  the  standard precedence to force the
+              evaluation of the expression.
+
+       var = expr
+              The  variable  is  assigned  the   value   of   the
+              expression.
+
+       var <op>= expr
+              This  is  equivalent  to "var = var <op> expr" with
+              the exception that the "var" part is evaluated only
+              once.   This  can  make a difference if "var" is an
+              array.
+
+        Relational expressions are a special kind  of  expression
+       that always evaluate to 0 or 1, 0 if the relation is false
+       and 1 if the relation is true.  These may  appear  in  any
+       legal  expression.   (POSIX  bc  requires  that relational
+       expressions are used only in if, while, and for statements
+       and  that  only  one relational test may be done in them.)
+       The relational operators are
+
+       expr1 < expr2
+              The result is 1 if  expr1  is  strictly  less  than
+              expr2.
+
+       expr1 <= expr2
+              The  result  is 1 if expr1 is less than or equal to
+              expr2.
+
+       expr1 > expr2
+              The result is 1 if expr1 is strictly  greater  than
+              expr2.
+
+
+
+
+
+                                .                               4
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       expr1 >= expr2
+              The  result  is 1 if expr1 is greater than or equal
+              to expr2.
+
+       expr1 == expr2
+              The result is 1 if expr1 is equal to expr2.
+
+       expr1 != expr2
+              The result is 1 if expr1 is not equal to expr2.
+
+       Boolean operations are also legal.   (POSIX  bbcc  does  NOT
+       have  boolean  operations).  The  result  of  all  boolean
+       operations are  0  and  1  (for  false  and  true)  as  in
+       relational expressions.  The boolean operators are:
+
+       !expr  The result is 1 if expr is 0.
+
+       expr && expr
+              The result is 1 if both expressions are non-zero.
+
+       expr || expr
+              The result is 1 if either expression is non-zero.
+
+       The  expression  precedence  is  as  follows:  (lowest  to
+       highest)
+              || operator, left associative
+              && operator, left associative
+              ! operator, nonassociative
+              Relational operators, left associative
+              Assignment operator, right associative
+              + and - operators, left associative
+              *, / and % operators, left associative
+              ^ operator, right associative
+              unary - operator, nonassociative
+              ++ and -- operators, nonassociative
+
+       This precedence was chosen  so  that  POSIX  compliant  bbcc
+       programs  will  run  correctly. This will cause the use of
+       the relational and logical operators to have some  unusual
+       behavior  when used with assignment expressions.  Consider
+       the expression:
+              a = 3 < 5
+
+       Most C programmers would  assume  this  would  assign  the
+       result of "3 < 5" (the value 1) to the variable "a".  What
+       this does in bbcc is assign the value 3 to the variable  "a"
+       and  then  compare  3 to 5.  It is best to use parenthesis
+       when using  relational  and  logical  operators  with  the
+       assignment operators.
+
+       There are a few more special expressions that are provided
+       in bbcc.  These have to do with user defined  functions  and
+       standard     functions.      They     all     appear    as
+       "_n_a_m_e((_p_a_r_a_m_e_t_e_r_s))".  See the section on functions for user
+
+
+
+                                .                               5
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       defined functions.  The standard functions are:
+
+       length ( expression )
+              The  value  of the length function is the number of
+              significant digits in the expression.
+
+       read ( )
+              The read function (an extension) will read a number
+              from  the  standard  input, regardless of where the
+              function occurs.   Beware, this can cause  problems
+              with the mixing of data and program in the standard
+              input.  The best use for  this  function  is  in  a
+              previously  written  program  that needs input from
+              the user, but never allows program code to be input
+              from  the  user.  The value of the read function is
+              the number read from the standard input  using  the
+              current   value  of  the  variable  iibbaassee  for  the
+              conversion base.
+
+       scale ( expression )
+              The value of the scale function is  the  number  of
+              digits after the decimal point in the expression.
+
+       sqrt ( expression )
+              The  value  of the sqrt function is the square root
+              of the expression.  If the expression is  negative,
+              a run time error is generated.
+
+   SSTTAATTEEMMEENNTTSS
+       Statements  (as  in  most algebraic languages) provide the
+       sequencing of expression evaluation.  In bbcc statements are
+       executed  "as soon as possible."  Execution happens when a
+       newline in encountered and there is one or  more  complete
+       statements.  Due to this immediate execution, newlines are
+       very important in bbcc. In fact,  both  a  semicolon  and  a
+       newline  are  used as statement separators.  An improperly
+       placed  newline  will  cause  a  syntax  error.    Because
+       newlines  are statement separators, it is possible to hide
+       a newline by using the backslash character.  The  sequence
+       "\<nl>",  where  <nl>  is  the  newline  appears  to bbcc as
+       whitespace instead of a newline.  A statement  list  is  a
+       series of statements separated by semicolons and newlines.
+       The following is a list of bbcc statements and what they do:
+       (Things  enclosed  in  brackets ([]) are optional parts of
+       the statement.)
+
+       expression
+              This statement does one  of  two  things.   If  the
+              expression  starts  with  "<variable>  <assignment>
+              ...",  it  is  considered  to  be   an   assignment
+              statement.   If the expression is not an assignment
+              statement, the expression is evaluated and  printed
+              to  the  output.   After  the  number is printed, a
+              newline is  printed.   For  example,  "a=1"  is  an
+
+
+
+                                .                               6
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+              assignment  statement  and "(a=1)" is an expression
+              that has an embedded assignment.  All numbers  that
+              are  printed  are  printed in the base specified by
+              the variable oobbaassee. The legal values for oobbaassee  are
+              2  through  BC_BASE_MAX.  (See the section LIMITS.)
+              For bases 2 through 16, the usual method of writing
+              numbers  is  used.   For  bases greater than 16, bbcc
+              uses a multi-character digit method of printing the
+              numbers  where each higher base digit is printed as
+              a base 10 number.  The multi-character  digits  are
+              separated  by  spaces.   Each  digit  contains  the
+              number of characters required to represent the base
+              ten  value  of  "obase-1".   Since  numbers  are of
+              arbitrary  precision,  some  numbers  may  not   be
+              printable  on  a  single  output  line.  These long
+              numbers will be split across lines using the "\" as
+              the  last  character on a line.  The maximum number
+              of characters printed per line is 70.  Due  to  the
+              interactive  nature  of  bbcc printing a number cause
+              the side effect of assigning the printed value  the
+              the  special variable llaasstt. This allows the user to
+              recover the last value printed  without  having  to
+              retype  the  expression  that  printed  the number.
+              Assigning to llaasstt is legal and will  overwrite  the
+              last  printed  value  with the assigned value.  The
+              newly assigned value will  remain  until  the  next
+              number  is  printed or another value is assigned to
+              llaasstt.
+
+       string The string is printed to the output.  Strings start
+              with  a  double  quote  character  and  contain all
+              characters until the next double  quote  character.
+              All  characters  are  take literally, including any
+              newline.  No newline character is printed after the
+              string.
+
+       pprriinntt list
+              The print statement (an extension) provides another
+              method of output.  The "list" is a list of  strings
+              and  expressions  separated by commas.  Each string
+              or expression is printed in the order of the  list.
+              No terminating newline is printed.  Expressions are
+              evaluated and their value is printed  and  assigned
+              the   the  variable  llaasstt.  Strings  in  the  print
+              statement are printed to the output and may contain
+              special  characters.  Special characters start with
+              the   backslash   character   (\).    The   special
+              characters  recognized  by  bbcc  are "b" (bell), "f"
+              (form feed), "n" (newline), "r" (carriage  return),
+              "t"   (tab),   and   "\"  (backslash).   Any  other
+              character following the backslash will be  ignored.
+              This   still   does  not  allow  the  double  quote
+              character to be part of any string.
+
+
+
+
+                                .                               7
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       { statement_list }
+              This is the compound statement.  It allows multiple
+              statements to be grouped together for execution.
+
+       iiff ( expression ) tthheenn statement1 [eellssee statement2]
+              The  if  statement  evaluates  the  expression  and
+              executes statement1 or statement2 depending on  the
+              value of the expression.  If the expression is non-
+              zero, statement1 is  executed.   If  statement2  is
+              present  and the value of the expression is 0, then
+              statement2 is executed.  (The  else  clause  is  an
+              extension.)
+
+       wwhhiillee ( expression ) statement
+              The  while  statement  will  execute  the statement
+              while the expression is non-zero.  It evaluates the
+              expression  before each execution of the statement.
+              Termination  of  the  loop  is  caused  by  a  zero
+              expression  value  or  the  execution  of  a  break
+              statement.
+
+       ffoorr ( [expression1] ; [expression2] ; [expression3] )
+              statement
+              The  for  statement  controls repeated execution of
+              the statement.  Expression1 is evaluated before the
+              loop.    Expression2   is   evaluated  before  each
+              execution of the statement.  If it is non-zero, the
+              statement is evaluated.  If it is zero, the loop is
+              terminated.  After each execution of the statement,
+              expression3 is evaluated before the reevaluation of
+              expression2.  If  expression1  or  expression3  are
+              missing,  nothing  is  evaluated  at the point they
+              would be evaluated.  If expression2 is missing,  it
+              is  the  same  as  substituting  the  value  1  for
+              expression2.   (The  optional  expressions  are  an
+              extension.    POSIX    bbcc    requires   all   three
+              expressions.)  The following is equivalent code for
+              the for statement:
+              expression1;
+              while (expression2) {
+                 statement;
+                 expression3;
+              }
+
+       bbrreeaakk  This  statement  causes  a  forced exit of the most
+              recent enclosing while statement or for  statement.
+
+       ccoonnttiinnuuee
+              The  continue  statement (an extension)  causes the
+              most recent enclosing for statement  to  start  the
+              next iteration.
+
+       hhaalltt   The  halt  statement  (an extension) is an executed
+              statement that causes the bbcc processor to quit only
+
+
+
+                                .                               8
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+              when  it  is  executed.   For example, "if (0 == 1)
+              halt" will not cause bbcc to  terminate  because  the
+              halt is not executed.
+
+       rreettuurrnn Return  the  value  0  from  a  function.  (See the
+              section on functions.)
+
+       rreettuurrnn ( expression )
+              Return the value of the expression from a function.
+              (See the section on functions.)
+
+   PPSSEEUUDDOO SSTTAATTEEMMEENNTTSS
+       These  statements  are  not  statements in the traditional
+       sense.  They are not executed statements.  Their  function
+       is performed at "compile" time.
+
+       lliimmiittss Print  the  local  limits  enforced  by  the  local
+              version of bbcc.  This is an extension.
+
+       qquuiitt   When the quit statement is read, the  bbcc  processor
+              is   terminated,   regardless  of  where  the  quit
+              statement is found.  For  example,  "if  (0  ==  1)
+              quit" will cause bbcc to terminate.
+
+       wwaarrrraannttyy
+              Print   a  longer  warranty  notice.   This  is  an
+              extension.
+
+   FFUUNNCCTTIIOONNSS
+       Functions provide a method of defining a computation  that
+       can  be  executed later.  Functions in bbcc always compute a
+       value and return it to the caller.   Function  definitions
+       are  "dynamic"  in  the sense that a function is undefined
+       until a definition is  encountered  in  the  input.   That
+       definition  is then used until another definition function
+       for the same name is encountered.  The new definition then
+       replaces  the  older definition.  A function is defined as
+       follows:
+              ddeeffiinnee _n_a_m_e (( _p_a_r_a_m_e_t_e_r_s )) {{ _n_e_w_l_i_n_e
+                  _a_u_t_o__l_i_s_t   _s_t_a_t_e_m_e_n_t__l_i_s_t }}
+       A  function  call  is  just  an  expression  of  the  form
+       "_n_a_m_e((_p_a_r_a_m_e_t_e_r_s))".
+
+       Parameters  are  numbers or arrays (an extension).  In the
+       function definition, zero or more parameters  are  defined
+       by  listing  their names separated by commas.  Numbers are
+       only call by value parameters.  Arrays are  only  call  by
+       variable.    Arrays   are   specified   in  the  parameter
+       definition by the notation  "_n_a_m_e[[]]".    In  the  function
+       call,  actual  parameters  are full expressions for number
+       parameters.  The same notation is used for passing  arrays
+       as  for  defining  array  parameters.   The named array is
+       passed  by  variable  to  the  function.   Since  function
+       definitions  are  dynamic, parameter numbers and types are
+
+
+
+                                .                               9
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       checked when a function is called.  Any mismatch in number
+       or  types  of  parameters  will  cause a runtime error.  A
+       runtime error will also occur for the call to an undefined
+       function.
+
+       The _a_u_t_o__l_i_s_t_i_s _a_n _o_p_t_i_o_n_a_l _l_i_s_t _o_f _v_a_r_i_a_b_l_e_s _t_h_a_t _a_r_e _f_o_r
+       "_l_o_c_a_l" _u_s_e.  _T_h_e _s_y_n_t_a_x _o_f _t_h_e _a_u_t_o _l_i_s_t (_i_f _p_r_e_s_e_n_t)  _i_s
+       "aauuttoo  _n_a_m_e,  ...  ;".  (The semicolon is optional.)  Each
+       _n_a_m_e is the name of  an  auto  variable.   Arrays  may  be
+       specified   by   using   the  same  notation  as  used  in
+       parameters.  These variables have their values pushed onto
+       a  stack  at the start of the function.  The variables are
+       then initialized to zero and used throughout the execution
+       of  the  function.   At function exit, these variables are
+       popped so that the original value  (at  the  time  of  the
+       function  call)  of  these  variables  are  restored.  The
+       parameters are really auto variables that are  initialized
+       to  a value provided in the function call.  Auto variables
+       are different than traditional local variables in the fact
+       that if function A calls function B, B may access function
+       A's auto variables by just using  the  same  name,  unless
+       function  B  has  called  them auto variables.  Due to the
+       fact that auto variables and parameters are pushed onto  a
+       stack, bbcc supports recursive functions.
+
+       The  function  body  is  a  list of bbcc statements.  Again,
+       statements  are  separated  by  semicolons  or   newlines.
+       Return  statements cause the termination of a function and
+       the return of a value.  There  are  two  versions  of  the
+       return  statement.   The first form, "rreettuurrnn", returns the
+       value 0 to  the  calling  expression.   The  second  form,
+       "rreettuurrnn  ((  _e_x_p_r_e_s_s_i_o_n  ))",  computes  the  value  of  the
+       expression  and  returns  that  value   to   the   calling
+       expression.   There  is an implied "rreettuurrnn ((00))" at the end
+       of every function.  This allows a  function  to  terminate
+       and return 0 without an explicit return statement.
+
+       Functions  also  change  the  usage of the variable iibbaassee.
+       All constants in the function body will be converted using
+       the  value  of  iibbaassee  at  the  time of the function call.
+       Changes of iibbaassee will be ignored during the  execution  of
+       the  function except for the standard function rreeaadd, which
+       will always use the current value of iibbaassee for  conversion
+       of numbers.
+
+   MMAATTHH LLIIBBRRAARRYY
+       If  bbcc  is  invoked  with the --ll option, a math library is
+       preloaded and the default scale is set to 20.    The  math
+       functions will calculate their results to the scale set at
+       the time of their call.   The  math  library  defines  the
+       following functions:
+
+       s (_x)  The sine of x in radians.
+
+
+
+
+                                .                              10
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       c (_x)  The cosine of x in radians.
+
+       a (_x)  The arctangent of x.
+
+       l (_x)  The natural logarithm of x.
+
+       e (_x)  The  exponential function of raising e to the value
+              x.
+
+       j (_n,_x)
+              The bessel function of integer order n of x.
+
+   EEXXAAMMPPLLEESS
+       In /bin/sh,  the following will assign the value  of  "pi"
+       to the shell variable ppii.
+
+              ppii==$$((eecchhoo ""ssccaallee==1100;; 44**aa((11))"" || bbcc --ll))
+
+
+       The   following  is  the  definition  of  the  exponential
+       function used in  the  math  library.   This  function  is
+       written in POSIX bbcc.
+
+              ssccaallee == 2200
+
+              //** UUsseess tthhee ffaacctt tthhaatt ee^^xx == ((ee^^((xx//22))))^^22
+                 WWhheenn xx iiss ssmmaallll eennoouugghh,, wwee uussee tthhee sseerriieess::
+                   ee^^xx == 11 ++ xx ++ xx^^22//22!! ++ xx^^33//33!! ++ ......
+              **//
+
+              ddeeffiinnee ee((xx)) {{
+                aauuttoo  aa,, dd,, ee,, ff,, ii,, mm,, vv,, zz
+
+                //** CChheecckk tthhee ssiiggnn ooff xx.. **//
+                iiff ((xx<<00)) {{
+                  mm == 11
+                  xx == --xx
+                }}
+
+                //** PPrreeccoonnddiittiioonn xx.. **//
+                zz == ssccaallee;;
+                ssccaallee == 44 ++ zz ++ ..4444**xx;;
+                wwhhiillee ((xx >> 11)) {{
+                  ff ++== 11;;
+                  xx //== 22;;
+                }}
+
+                //** IInniittiiaalliizzee tthhee vvaarriiaabblleess.. **//
+                vv == 11++xx
+                aa == xx
+                dd == 11
+
+                ffoorr ((ii==22;; 11;; ii++++)) {{
+                  ee == ((aa **== xx)) // ((dd **== ii))
+
+
+
+                                .                              11
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+                  iiff ((ee ==== 00)) {{
+                    iiff ((ff>>00)) wwhhiillee ((ff----))  vv == vv**vv;;
+                    ssccaallee == zz
+                    iiff ((mm)) rreettuurrnn ((11//vv));;
+                    rreettuurrnn ((vv//11));;
+                  }}
+                  vv ++== ee
+                }}
+              }}
+
+
+       The  following  is code that uses the extended features of
+       bbcc to implement a simple program for calculating checkbook
+       balances.   This program is best kept in a file so that it
+       can be used many times without  having  to  retype  it  at
+       every use.
+
+              ssccaallee==22
+              pprriinntt ""\\nnCChheecckk bbooookk pprrooggrraamm!!\\nn""
+              pprriinntt ""  RReemmeemmbbeerr,, ddeeppoossiittss aarree nneeggaattiivvee ttrraannssaaccttiioonnss..\\nn""
+              pprriinntt ""  EExxiitt bbyy aa 00 ttrraannssaaccttiioonn..\\nn\\nn""
+
+              pprriinntt ""IInniittiiaall bbaallaannccee?? "";; bbaall == rreeaadd(())
+              bbaall //== 11
+              pprriinntt ""\\nn""
+              wwhhiillee ((11)) {{
+                ""ccuurrrreenntt bbaallaannccee == "";; bbaall
+                ""ttrraannssaaccttiioonn?? "";; ttrraannss == rreeaadd(())
+                iiff ((ttrraannss ==== 00)) bbrreeaakk;;
+                bbaall --== ttrraannss
+                bbaall //== 11
+              }}
+              qquuiitt
+
+
+       The following is the definition of the recursive factorial
+       function.
+
+              ddeeffiinnee ff ((xx)) {{
+                iiff ((xx <<== 11)) rreettuurrnn ((11));;
+                rreettuurrnn ((ff((xx--11)) ** xx));;
+              }}
+
+
+   DDIIFFFFEERREENNCCEESS
+       This  version  of  bbcc  was  implemented  from  the   POSIX
+       P1003.2/D11  draft  and  contains  several differences and
+       extensions  relative  to   the   draft   and   traditional
+       implementations.  It is not implemented in the traditional
+       way using _d_c(_1).  This version is a single  process  which
+       parses  and  runs  a byte code translation of the program.
+       There is an "undocumented" option  (-c)  that  causes  the
+       program  to  output  the  byte code to the standard output
+       instead of running it.  It was mainly used  for  debugging
+
+
+
+                                .                              12
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       the parser and preparing the math library.
+
+       A  major  source  of  differences  is  extensions, where a
+       feature  is  extended  to  add  more   functionality   and
+       additions, where new features are added.  The following is
+       the list of differences and extensions.
+
+       LANG   This version does not conform to the POSIX standard
+              in  the processing of the LANG environment variable
+              and all environment variables starting with LC_.
+
+       names  Traditional and POSIX bbcc have single  letter  names
+              for  functions,  variables  and  arrays.  They have
+              been extended  to  be  multi-character  names  that
+              start  with  a  letter  and  may  contain  letters,
+              numbers and the underscore character.
+
+       Strings
+              Strings are not allowed to contain NUL  characters.
+              POSIX  says  all  characters  must  be  included in
+              strings.
+
+       last   POSIX bbcc does  not  have  a  llaasstt  variable.   Some
+              implementations  of  bbcc  use  the  period  (.) in a
+              similar way.
+
+       comparisons
+              POSIX  bbcc  allows  comparisons  only  in   the   if
+              statement,  the  while  statement,  and  the second
+              expression of the for statement.   Also,  only  one
+              relational  operation  is  allowed in each of those
+              statements.
+
+       if statement, else clause
+              POSIX bbcc does not have an else clause.
+
+       for statement
+              POSIX bbcc requires all expressions to be present  in
+              the for statement.
+
+       &&, ||, !
+              POSIX bbcc does not have the logical operators.
+
+       read function
+              POSIX bbcc does not have a read function.
+
+       print statement
+              POSIX bbcc does not have a print statement .
+
+       continue statement
+              POSIX bbcc does not have a continue statement.
+
+       array parameters
+              POSIX  bbcc  does  not  have array parameters.  Other
+
+
+
+                                .                              13
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+              implementations of bbcc may have call by value  array
+              parameters.
+
+       =+, =-, =*, =/, =%, =^
+              POSIX   bbcc  does  not  require  these  "old  style"
+              assignment operators to be defined.   This  version
+              may  allow  these "old style" assignments.  Use the
+              limits statement to see if  the  installed  version
+              supports  them.  If it does support the "old style"
+              assignment operators, the statement "a =-  1"  will
+              decrement  aa by 1 instead of setting aa to the value
+              -1.
+
+       spaces in numbers
+              Other  implementations  of  bbcc  allow   spaces   in
+              numbers.   For  example,  "x=1  3" would assign the
+              value 13 to the variable  x.   The  same  statement
+              would cause a syntax error in this version of bbcc.
+
+       errors and execution
+              This     implementation     varies    from    other
+              implementations in  terms  of  what  code  will  be
+              executed  when syntax and other errors are found in
+              the program.  If a  syntax  error  is  found  in  a
+              function  definition,  error recovery tries to find
+              the beginning of a statement and continue to  parse
+              the  function.  Once a syntax error is found in the
+              function, the function will  not  be  callable  and
+              becomes    undefined.    Syntax   errors   in   the
+              interactive  execution  code  will  invalidate  the
+              current  execution  block.   The execution block is
+              terminated by an end of line that appears  after  a
+              complete sequence of statements.  For example,
+              a = 1
+              b = 2
+       has two execution blocks and
+              { a = 1
+                b = 2 }
+       has one execution block.  Any runtime error will terminate
+       the execution of the current execution block.   A  runtime
+       warning will not terminate the current execution block.
+
+       Interrupts
+              During  an  interactive  session, the SIGINT signal
+              (usually generated by the control-C character  from
+              the  terminal)  will cause execution of the current
+              execution block to be interrupted.  It will display
+              a  "runtime"  error  indicating  which function was
+              interrupted.  After  all  runtime  structures  have
+              been  cleaned  up,  a  message  will  be printed to
+              notify the user that bbcc is ready  for  more  input.
+              All previously defined functions remain defined and
+              the value of all non-auto variables are  the  value
+              at  the  point of interruption.  All auto variables
+
+
+
+                                .                              14
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+              and function  parameters  are  removed  during  the
+              clean   up   process.    During  a  non-interactive
+              session,  the  SIGINT  signal  will  terminate  the
+              entire run of bbcc.
+
+   LLIIMMIITTSS
+       The  following  are the limits currently in place for this
+       bbcc processor.  Some of them may have been  changed  by  an
+       installation.   Use the limits statement to see the actual
+       values.
+
+       BC_BASE_MAX
+              The maximum output base is currently  set  at  999.
+              The maximum input base is 16.
+
+       BC_DIM_MAX
+              This  is  currently  an arbitrary limit of 65535 as
+              distributed.  Your installation may be different.
+
+       BC_SCALE_MAX
+              The number of digits after  the  decimal  point  is
+              limited  to  INT_MAX  digits.   Also, the number of
+              digits before  the  decimal  point  is  limited  to
+              INT_MAX digits.
+
+       BC_STRING_MAX
+              The  limit  on the number of characters in a string
+              is INT_MAX characters.
+
+       exponent
+              The value of the exponent in  the  raise  operation
+              (^) is limited to LONG_MAX.
+
+       multiply
+              The multiply routine may yield incorrect results if
+              a number has more than LONG_MAX / 90 total  digits.
+              For 32 bit longs, this number is 23,860,929 digits.
+
+       code size
+              Each function and the "main" program are limited to
+              10240 bytes of compiled byte code each.  This limit
+              (BC_MAX_SEGS) can be easily changed  to  have  more
+              than 10 segments of 1024 bytes.
+
+       variable names
+              The  current limit on the number of unique names is
+              32767 for each  of  simple  variables,  arrays  and
+              functions.
+
+FFIILLEESS
+       In  most  installations,  bbcc is completely self-contained.
+       Where executable size is of importance or the  C  compiler
+       does  not  deal  with  very long strings, bbcc will read the
+       standard     math     library      from      the      file
+
+
+
+                                .                              15
+
+
+
+
+
+bc(1)                                                       bc(1)
+
+
+       /usr/local/lib/libmath.b.   (The actual location may vary.
+       It may be /lib/libmath.b.)
+
+DDIIAAGGNNOOSSTTIICCSS
+       If any file on the command line can not be opened, bbcc will
+       report  that the file is unavailable and terminate.  Also,
+       there are compile and run time diagnostics that should  be
+       self-explanatory.
+
+BBUUGGSS
+       Error recovery is not very good yet.
+
+AAUUTTHHOORR
+       Philip A. Nelson
+       phil@cs.wwu.edu
+
+AACCKKNNOOWWLLEEDDGGEEMMEENNTTSS
+       The   author   would   like   to   thank   Steve   Sommars
+       (sesv@iwtsf.att.com) for his extensive help in testing the
+       implementation.   Many great suggestions were given.  This
+       is a much better product due to his involvement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                .                              16
+
+

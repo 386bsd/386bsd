@@ -1,0 +1,69 @@
+.TH APPRES 1 "Release 5" "X Version 11"
+.SH NAME
+appres - list application resource database
+.SH SYNOPSIS
+.B "appres"
+[[class [instance]] [-1] [toolkitoptions] 
+.SH DESCRIPTION
+.PP
+The \fIappres\fP program prints the resources seen by an application
+(or subhierarchy of an application) with the specified \fIclass\fP and
+\fIinstance\fP names.  It can be used to determine which
+resources a particular program will load.  For example,
+.sp 1
+.in +.5i
+.nf
+% appres XTerm
+.fi
+.in -.5i
+.sp 1
+will list the resources that any \fIxterm\fP program will load.
+If no application class is specified, the class \fI-AppResTest-\fP is used.
+.PP
+To match a particular instance name, specify an instance name
+explicitly after the class name, or use the normal Xt toolkit option.
+For example,
+.sp 1
+.in +.5i
+.nf
+% appres XTerm myxterm
+.fi
+.in -.5i
+or
+.in +.5i
+.nf
+% appres XTerm -name myxterm
+.fi
+.in -.5i
+.PP
+To list resources that match a subhierarchy of an application, specify
+hierarchical class and instance names.  The number of class and instance
+components must be equal, and the instance name should not be
+specified with a toolkit option.  For example,
+.sp 1
+.in +.5i
+.nf
+% appres Xman.TopLevelShell.Form xman.topBox.form
+.fi
+.in -.5i
+.sp 1
+will list the resources of widgets of \fIxman\fP topBox hierarchy.
+To list just the resources matching a specific level in the hierarcy,
+use the \-1 option.  For example,
+.sp 1
+.in +.5i
+.nf
+% appres XTerm.VT100 xterm.vt100 -1
+.fi
+.in -.5i
+.sp 1
+will list the resources matching the \fIxterm\fP vt100 widget.
+.SH "SEE ALSO"
+.PP
+X(1), xrdb(1), listres(1)
+.SH COPYRIGHT
+Copyright 1989, Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Jim Fulton, MIT X Consortium

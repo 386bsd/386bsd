@@ -1,0 +1,219 @@
+		-*- text -*-
+How to get GNU Software by Internet FTP or by UUCP.  Last updated 21 Apr 93.
+
+* Please send improvements to this file to gnu@prep.ai.mit.edu.
+
+* No Warranties
+
+We distribute software in the hope that it will be useful, but without
+any warranty.  No author or distributor of this software accepts
+responsibility to anyone for the consequences of using it or for
+whether it serves any particular purpose or works at all, unless he
+says so in writing.
+
+* Updates
+
+If you find this file in the Emacs distribution, there is a chance it
+is out of date.  If you plan to FTP files from prep.ai.mit.edu, you
+might as well start by FTPing the current version of this file, which
+is `/pub/gnu/GNUinfo/FTP'.
+
+* How to FTP
+
+Use the ftp program on your system (ask locally if you can't find it)
+to connect to the host you are ftping from.  Unless indicated
+otherwise, login in as user "anonymous", with password: "your e-mail
+address" and set "binary" mode (to transfer all eight bits in each
+byte).
+
+* FTPing GNU Software
+
+** How to FTP GNU Emacs
+
+If you are on the Internet (see also "** Alternative Internet FTP
+Sources" below), you can at present copy the latest distribution
+version of GNU Emacs from the file /pub/gnu/emacs-M.N.tar on host
+prep.ai.mit.edu (or the file /pub/gnu/emacs-M.N.tar.gz which has been
+run through gzip after tar).  M and N stand for version numbers; look
+at a listing of the directory through ftp to see what version is
+available.  These files are about 11 and 4 megabytes long,
+respectively.  After you unpack the distribution, be sure to look at
+the files README and INSTALL.
+
+Because of difficulties in transferring large files, sometimes a split
+version of the tar file is created.  This would be in a directory
+named /pub/gnu/emacs-M.N.tar-split or perhaps
+/pub/gnu/emacs-M.N.tar.gz-split, containing files of 100000 characters
+each.  There is generally no trouble in ftping files of this size.
+They can be combined with cat to make a tar file or compressed tar
+file.  If you can't find such files on prep.ai.mit.edu, have a look at
+archive.cis.ohio-state.edu.
+
+ALWAYS USE BINARY/IMAGE MODE TO TRANSFER THESE FILES!
+Text mode does not work for tar files or compressed files.
+
+Some ftp'ers have found it necessary for successful file transfer:
+   - to explicitly use prep.ai.mit.edu internet address:
+18.71.0.38	(as of 11 April 89)
+
+Files of differences from previous widely distributed GNU Emacs
+versions to the present version are also available on prep.ai.mit.edu
+under names of the form emacs.diff-OO.OO-NN.NN in directory /pub/gnu.
+These are made with diff -rc2.  Sometimes there are versions
+compressed with gzip of these difference files as well; their names
+have .gz appended.
+
+The Emacs manual in source form is included in the distribution.  The
+dvi file produced by TeX is not included, but a copy may be available
+for ftp under the name /pub/gnu/emacs.dvi.
+
+The Emacs Lisp Reference Manual is in a separate file:
+	/pub/gnu/elisp-manual-NN.tar.gz
+
+** VMS FTP sites with GNU Emacs
+You can anonymously ftp a VMS version of GNU emacs from:
+	- ftp.stacken.kth.se:/pub/GNU-VMS/ - also has some other VMS
+ports (and a few VMS binaries) of GNU software
+	- addvax.llnl.gov
+	- VMSD.OAC.UCI.EDU
+	- RIGEL.EFD.LTH.SE [130.235.48.3]
+	- ctrsci.cc.utah.edu - The 00readme.txt file gives details
+
+** VMS FTP sites with GCC/G++
+	- mango.rsmas.miami.edu has a VMS version of the GCC/G++ compiler.
+Contact angel@flipper.miami.edu (angel li) for details.
+
+** VMS sites with other GNU Software
+	- cc.utah.edu [128.110.8.24], user anonymous, pass guest.  
+The 00README.txt file gives details.
+
+** Other GNU Software and How To FTP It
+
+Other GNU software is available on prep.ai.mit.edu under directory
+/pub/gnu.  diff files to convert between versions (like those used for
+GNU Emacs), exist for some of these programs.  Some programs have misc
+support files as well.  Have a look on prep to see which ones.
+Compressed versions of the tar or diff files are often available
+(indicated by a .gz suffix and made with the `gzip' program).  Some of
+this software is in beta test (probably still buggy), and is being
+made available for use by hackers who like to test software.
+
+The file /pub/gnu/DESCRIPTIONS has a list of the packages distributed
+on prep.ai.mit.edu with a brief description explaining what
+each one can be used for.
+
+More information about these programs can typically be found in the
+GNU Bulletin.  To receive a copy, write to gnu@prep.ai.mit.edu.
+
+** TeX and How to FTP It
+
+We don't distribute TeX now, but it is free software.
+
+You can get TeX sources via anonymous FTP from labrea.stanford.edu in
+pub/tex.  The directory pub/tex/unix3.0 probably contains what you
+want, but see pub/tex/README to be sure.  The most recent incarnation
+of the LaTeX macros are in labrea:pub/tex/latex.  If you'd like to
+support TUG and/or don't have access to the Internet, then write to
+elisabet@max.acs.washington.edu about getting their tape distribution.
+
+** Scheme and How to FTP It
+
+The latest distribution version of C Scheme is available via anonymous FTP
+from altdorf.ai.mit.edu in /archive/scheme-X.XX/ (where X.XX is some version
+number).
+
+Read the files INSTALL and README in the top level C Scheme directory.
+
+** Alternative Internet FTP Sources
+
+The administrators of louie.udel.edu maintains copies of GNU Emacs.
+The files are available via anonymous ftp under directory ~ftp/gnu.
+
+Emacs and other GNU programs may be available via anonymous ftp from
+these US sites: ftp.kpc.com:/pub/mirror/gnu (Silicon Valley, CA)
+ftp.hawaii.edu:/mirrors/gnu, f.ms.uky.edu:/pub3/gnu,
+ftp.digex.net:/pub/gnu (Internet address 164.109.10.23, nightly full
+mirror, ran by mcguire@digex.net), wuarchive.wustl.edu:/systems/gnu,
+col.hp.com:/mirrors/gnu, ftp.cs.columbia.edu:/archives/gnu/prep,
+vixen.cso.uiuc.edu:/gnu, mrcnext.cso.uiuc.edu:/pub/gnu,
+jaguar.utah.edu:/gnustuff, gatekeeper.dec.com:/pub/GNU,
+labrea.stanford.edu, ftp.cs.widener.edu, archive.cis.ohio-state.edu,
+and ftp.uu.net:/archive/systems/gnu.  And these foreign sites:
+ftp.cs.ubc.ca:/mirror2/gnu (Western Canada, daily full mirror, ran by
+ftp-admin@cs.ubc.ca), ftp.unicamp.br:/pub/gnu (Brazil manual mirror,
+ran by oliva@dcc.unicamp.br), archie.au:/gnu (Australia (archie.oz or
+archie.oz.au for ACSnet)), ftp.technion.ac.il:/pub/unsupported/gnu
+(Israel, daily full mirror, ran by ftp-admin), ftp.sun.ac.za:/pub/gnu
+(South Africa), ftp.informatik.tu-muenchen.de,
+ftp.informatik.rwth-aachen.de or germany.eu.net (mirror ran by
+archive-admin@germany.eu.net) (Germany), isy.liu.se,
+ftp.stacken.kth.se or ftp.luth.se:/pub/unix/gnu (Sweden),
+ftp.sunet.se:/pub/gnu (Sweden 130.238.127.3 daily mirror, ran by
+archive@ftp.sunet.se (also mirros the Mailing List Archives)
+hp4nl.nluug.nl (Netherlands), ftp.win.tue.nl:/pub/gnu (Netherlands
+131.155.70.100 daily mirror, ran by ftp@win.tue.nl),
+ftp.funet.fi:/pub/gnu (Finland 128.214.6.100, ran by gnu-adm),
+ftp.denet.dk (Denmark), ugle.unit.no (Norway 129.241.1.97),
+ftp.eunet.ch or nic.switch.ch:/mirror/gnu (Switzerland),
+irisa.irisa.fr:/pub/gnu or ftp.univ-lyon1.fr:pub/gnu (ran by
+ftpmaint@ftp.univ-lyon1.fr) (France), archive.eu.net (Europe
+192.16.202.1), cair.kaist.ac.kr:/pub/gnu (Korea 143.248.11.170),
+ftp.nectec.or.th:/pub/mirrors/gnu (Thailand 192.150.251.32 daily
+mirror, ran by ftp@nwg.nectec.or.th),
+utsun.s.u-tokyo.ac.jp:/ftpsync/prep or ftp.cs.titech.ac.jp (Japan,
+nemacs, the japanese port of GNU Emacs, is under ~ftp/JAPAN).  Please
+do NOT use a site outside your country, until you have checked all
+sites inside your country, and then your continent.  Trans-ocean
+TCP/IP links are very expensive and usually very low speed.
+
+* Getting GNU software in Great Britain
+
+jpo@cs.nott.ac.uk is willing to distribute those GNU sources he has
+available.  The smaller items are available from the info-server (send
+to info-server@cs.nott.ac.uk) the larger items by negotiation.  Due to
+communication costs this service is only available within the UK.
+
+BattenIG@computer-science.birmingham.ac.uk (aka
+I.G.Batten@fulcrum.bt.co.uk) is also willing to distribute those GNU
+sources he has.  He can also write tapes in qic-21 and qic-24 formats.
+
+lmjm@doc.ic.ac.uk is willing to distribute those GNU sources he has
+along with comp.sources.unix, comp.sources.x, X windows et al.  The
+archive, on src.doc.ic.ac.uk in directory /gnu, is available via ftp
+over the Internet (on 146.169.3.7), niftp over janet (000005102000),
+ftam over IXI and uucp.  Due to communication costs this service is
+only available within the UK.  Mail to info-server@doc.ic.ac.uk for
+details.  He can also write sun cartridge or exabyte tapes.
+
+These UK sites have just anonymous FTP access: ftp.mcc.ac.uk
+(130.88.203.12), unix.hensa.ac.uk:/pub/uunet/systems/gnu,
+ftp.warwick.ac.uk (137.205.192.14 daily full mirror, maintained by
+unixhelp@warwick.ac.uk).
+
+* Getting GNU software via UUCP
+
+OSU is distributing via UUCP: most GNU software, MIT C Scheme,
+Compress, News, RN, NNTP, Patch, some Appletalk stuff, some of the
+Internet Requests For Comment (RFC) et al..  See their periodic
+postings on the Usenet newsgroup comp.sources.d for informational
+updates.  Current details from <staff@cis.ohio-state.edu> or
+<...!osu-cis!staff>.
+
+Information on how to uucp some GNU programs is available via
+electronic mail from: uunet!hutch!barber, hqda-ai!merlin, acornrc!bob,
+hao!scicom!qetzal!upba!ugn!nepa!denny, ncar!noao!asuvax!hrc!dan,
+bigtex!james (aka james@bigtex.cactus.org), oli-stl!root,
+src@contrib.de (Germany), toku@dit.co.jp (Japan) and info@ftp.uu.net.
+
+* If You Like The Software
+
+If you like the software developed and distributed by the Free
+Software Foundation, please express your satisfaction with a donation.
+Your donations will help to support the Foundation and make our future
+efforts successful, including a complete development and operating
+system, called GNU (Gnu's Not Un*x), which will run Un*x user
+programs.  For more information on GNU and the Foundation, contact us
+at the above address.
+
+Ordering a distribution tape from the Foundation is often a good
+way to bring your company or university to make a donation.

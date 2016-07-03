@@ -1,0 +1,66 @@
+ISALNUM(3)                386BSD Programmer's Manual                ISALNUM(3)
+
+NNAAMMEE
+     iissaallnnuumm - alphanumeric character test
+
+SSYYNNOOPPSSIISS
+     ##iinncclluuddee <<ccttyyppee..hh>>
+
+     _i_n_t
+     iissaallnnuumm(_i_n_t _c)
+
+DDEESSCCRRIIPPTTIIOONN
+     The iissaallnnuumm() macro tests for any character for which isalpha(3) or
+     isdigit(3) is true.
+
+RREETTUURRNN VVAALLUUEESS
+     The iissaallnnuumm() macro returns zero if the character tests false and returns
+     non-zero if the character tests true.
+
+SSEEEE AALLSSOO
+     isascii(3),  isalnum(3),  isalpha(3),  iscntrl(3),  isdigit(3),
+     isgraph(3),  islower(3),  isprint(3),  ispunct(3),  isspace(3),
+     isupper(3),  isxdigit(3),  toascii(3),  tolower(3),  toupper(3),
+     stdio(3) ascii(7)
+
+SSTTAANNDDAARRDDSS
+     The iissaallnnuumm() function conforms to ANSI C3.159-1989 (``ANSI C'').
+
+BSD Experimental                 June 29, 1991                               1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

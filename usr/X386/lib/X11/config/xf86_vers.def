@@ -1,0 +1,20 @@
+XCOMM -------------------------------------------------------------------------
+XCOMM XFree86 version definition
+XCOMM $XFree86: mit/config/xf86_vers.def,v 2.7 1993/10/08 16:11:07 dawes Exp $
+
+#ifndef XFree86Version
+# define XFree86Version 2000
+#endif
+
+#ifndef XVendorString
+# define XVendorString "XFree86"
+#endif
+
+#ifndef XVendorRelease
+# define XVendorRelease XFree86Version
+#endif
+
+XCOMM -------------------------------------------------------------------------
+XCOMM XFree86 version: XFree86Version
+XCOMM -------------------------------------------------------------------------
+

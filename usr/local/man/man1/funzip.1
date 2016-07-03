@@ -1,0 +1,64 @@
+.TH FUNZIP 1 "10 Sep 92 (v1.6)"
+.SH NAME
+funzip \- extract from a ZIP archive file as a filter
+.SH SYNOPSIS
+[...]  |  \fBfunzip\fP [ -password ]  |  [...]
+.PP
+\fBfunzip\fP [ -password ]  input.zip |  [...]
+.SH ARGUMENTS
+.IP [\fI-password\fP] \w'[\fI-password\fP]'u+2m
+Optional password to be used if ZIP archive is encrypted.  Decryption
+may not be supported at some sites.  See DESCRIPTION for more details.
+.PD
+.SH DESCRIPTION
+.I FUnZip
+acts as a filter; that is, it assumes that a ZIP archive is being piped into
+standard input, and it extracts the first member from the archive to stdout.
+If there is an argument, then the input comes from the specified file
+instead of from stdin.  A password for encrypted zip files can be specified
+on the command line (preceding the file name, if any) by prefixing the
+password with a dash.  If the first entry of the zip file is encrypted and
+no password is specified on the command line, then the user is prompted for
+a password, and the password is not echoed on the console.
+.PP
+Given the limitation on single-member extraction, \fIFUnZip\fP is most
+useful in conjunction with a secondary archiver program such as tar(1).
+The following section includes an example illustrating this usage in the
+case of disk backups to tape.
+.PD
+.SH EXAMPLES
+To use \fIFUnZip\fP to extract the first member file of the archive test.zip
+and to pipe it into more(1):
+.PP
+.IP "\t\fIfunzip\fP test.zip | more"
+.PP
+To use \fIFUnZip\fP to test the first member file of test.zip (any errors
+will be reported on standard error):
+.PP
+.IP "\t\fIfunzip\fP test.zip > /dev/null"
+.PP
+To use \fIZip\fP and \fIFUnZip\fP in place of compress(1) and zcat(1) for
+tape backups:
+.PP
+.IP "\ttar cf \- . | \fIzip\fP \-7 | dd of=/dev/nrst0 obs=8k"
+.IP "\tdd if=/dev/nrst0 ibs=8k | \fIfunzip\fP | tar xf \-"
+.PP
+(where, for example, nrst0 is a SCSI tape drive).
+.PD
+.SH LIMITATIONS
+There is presently no way to extract any member but the first from a ZIP
+archive.  This would be useful in the case where a ZIP archive is included
+within another archive.  In the case where the first member is a directory,
+\fIFUnZip\fP simply creates the directory and exits.
+.PP
+\fIFUnZip\fP would be useful under OS/2, too.
+.PP
+The functionality of \fIFUnZip\fP should be included in \fIUnZip\fP
+directly (future release).
+.PD
+.SH SEE ALSO
+unzip(1), zip(1), zipcloak(1), zipinfo(1), zipnote(1), zipsplit(1)
+.PD
+.SH AUTHOR
+Mark Adler (Info-ZIP)
+.PD

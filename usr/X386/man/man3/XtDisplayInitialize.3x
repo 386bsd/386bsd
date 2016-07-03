@@ -1,0 +1,266 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtDisplayInitialize 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtDisplayInitialize, XtOpenDisplay, XtDatabase, XtCloseDisplay \- initialize, open, or close a display
+.SH SYNTAX
+void XtToolkitInitialize()
+.LP
+void XtDisplayInitialize(\fIapp_context\fP, \fIdisplay\fP, \
+\fIapplication_name\fP, \fIapplication_class\fP,
+.br
+                       \fIoptions\fP, \fInum_options\fP, \fIargc\fP, \fIargv\fP)
+.br
+      XtAppContext \fIapp_context\fP;
+.br
+      Display *\fIdisplay\fP;
+.br
+      String \fIapplication_name\fP;
+.br
+      String \fIapplication_class\fP;
+.br
+      XrmOptionDescRec *\fIoptions\fP;
+.br
+      Cardinal \fInum_options\fP;
+.br
+      Cardinal *\fIargc\fP;
+.br
+      String *\fIargv\fP;
+.LP
+Display *XtOpenDisplay(\fIapp_context\fP, \fIdisplay_string\fP, \
+\fIapplication_name\fP, \fIapplication_class\fP, 
+.br
+                       \fIoptions\fP, \fInum_options\fP, \fIargc\fP, \fIargv\fP)
+.br
+       XtAppContext \fIapp_context\fP;
+.br
+       String \fIdisplay_string\fP;
+.br
+       String \fIapplication_name\fP;
+.br
+       String \fIapplication_class\fP;
+.br
+       XrmOptionDescRec *\fIoptions\fP;
+.br
+       Cardinal \fInum_options\fP;
+.br
+       Cardinal *\fIargc\fP;
+.br
+       String *\fIargv\fP;
+.LP
+void XtCloseDisplay(\fIdisplay\fP)
+.br
+      Display *\fIdisplay\fP;
+.LP
+XrmDatabase XtDatabase(\fIdisplay\fP)
+.br
+      Display *\fIdisplay\fP;
+.SH ARGUMENTS
+.IP \fIargc\fP 1i
+Specifies a pointer to the number of command line parameters.
+.IP \fIargv\fP 1i
+Specifies the command line parameters.
+.IP \fIapp_context\fP 1i
+Specifies the application context.
+.ds Ac , which usually is the generic name for all instances of this application
+.IP \fIapplication_class\fP 1i
+Specifies the class name of this application\*(Ac.
+.IP \fIapplication_name\fP 1i
+Specifies the name of the application instance.
+.IP \fIdisplay\fP 1i
+Specifies the display\*(Di.
+Note that a display can be in at most one application context.
+.IP \fInum_options\fP 1i
+Specifies the number of entries in the options list.
+.IP \fIoptions\fP 1i
+Specifies how to parse the command line for any application-specific resources.
+The options argument is passed as a parameter to
+.ZN XrmParseCommand .
+For further information,
+see \fI\*(xL\fP.
+.SH DESCRIPTION
+The
+.ZN XtDisplayInitialize
+function builds the resource database, calls the Xlib
+.ZN XrmParseCommand
+function to parse the command line, 
+and performs other per display initialization.
+After 
+.ZN XrmParseCommand 
+has been called,
+argc and argv contain only those parameters that
+were not in the standard option table or in the table specified by the
+options argument.
+If the modified argc is not zero,
+most applications simply print out the modified argv along with a message
+listing the allowable options.
+On UNIX-based systems,
+the application name is usually the final component of argv[0].
+If the synchronize resource is
+.ZN True
+for the specified application,
+.ZN XtDisplayInitialize
+calls the Xlib
+.ZN XSynchronize
+function to put Xlib into synchronous mode for this display connection.
+If the reverseVideo resource is
+.ZN True ,
+the \*(xI exchange
+.ZN XtDefaultForeground
+and
+.ZN XtDefaultBackground
+for widgets created on this display.
+(See Section 9.6.1).
+.LP
+The
+.ZN XtOpenDisplay
+function calls
+.ZN XOpenDisplay 
+the specified display name.
+If display_string is NULL,
+.ZN XtOpenDisplay
+uses the current value of the \-display option specified in argv 
+and if no display is specified in argv,
+uses the user's default display (on UNIX-based systems, 
+this is the value of the DISPLAY environment variable).
+.LP
+If this succeeds, it then calls
+.ZN XtDisplayInitialize
+and pass it the opened display and
+the value of the \-name option specified in argv as the application name.
+If no name option is specified,
+it uses the application name passed to
+.ZN XtOpenDisplay .
+If the application name is NULL,
+it uses the last component of argv[0].
+.ZN XtOpenDisplay
+returns the newly opened display or NULL if it failed.
+.LP
+.ZN XtOpenDisplay
+is provided as a convenience to the application programmer.
+.LP
+The
+.ZN XtCloseDisplay
+function closes the specified display as soon as it is safe to do so.
+If called from within an event dispatch (for example, a callback procedure),
+.ZN XtCloseDisplay
+does not close the display until the dispatch is complete.
+Note that applications need only call
+.ZN XtCloseDisplay
+if they are to continue executing after closing the display; 
+otherwise, they should call
+.ZN XtDestroyApplicationContext
+or just exit.
+.LP
+The
+.ZN XtDatabase
+function returns the fully merged resource database that was built by
+.ZN XtDisplayInitialize
+associated with the display that was passed in.
+If this display has not been initialized by
+.ZN XtDisplayInitialize ,
+the results are not defined.
+.SH "SEE ALSO"
+XtAppCreateShell(3Xt),
+XtCreateApplicationContext(3Xt)
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

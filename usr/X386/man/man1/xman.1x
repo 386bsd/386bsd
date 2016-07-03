@@ -1,0 +1,379 @@
+.\" $XConsortium: xman.man,v 1.19 91/07/31 23:46:11 gildea Exp $
+.TH XMAN 1 "Release 5" "X Version 11"
+.SH NAME
+xman \- Manual page display program for the X Window System
+.SH SYNOPSIS
+.B xman
+[
+.I \-options
+\&.\|.\|. ]
+.SH DESCRIPTION
+.I Xman
+is a manual page browser.  The default size of the initial \fIxman\fP
+window is small so that you can leave it running throughout your entire login
+session.  In the initial window there are three options:
+\fIHelp\fP will pop up a window with on-line help, \fIQuit\fP will
+exit, and \fIManual Page\fP will pop up a window with a manual page
+browser in it.
+Typing Control-S will pop up a window prompting for a specific manual
+page to display.
+You may display more than one manual page browser window at a time
+from a single execution of \fIxman\fP.
+.PP
+For further information on using \fIxman\fP, please read the on-line
+help information.  Most of this manual will discuss
+customization of \fIxman\fP.
+.SH "OPTIONS"
+.PP
+Xman supports all standard Toolkit command line arguments (see
+\fIX\fP(1)).  The following additional arguments are supported.
+.sp
+.IP "\fB\-helpfile\fP \fIfilename\fP"
+Specifies a helpfile to use other than the default.
+.IP \fB\-bothshown\fP
+Allows both the manual page and manual directory to be on the screen at
+the same time.
+.IP \fB\-notopbox\fP
+Starts without the Top Menu with the three buttons in it.
+.IP "\fB\-geometry\fP \fIWxH+X+Y\fP"
+Sets the size and location of the Top Menu with the three buttons in it.
+.IP "\fB\-pagesize\fP \fIWxH+X+Y\fP"
+Sets the size and location of all the Manual Pages.
+.SH "CUSTOMIZING XMAN"
+.PP
+.I Xman
+allows customization of both the directories to be searched for manual pages,
+and the name that each directory will map to in the \fISections\fP
+menu.  Xman determines which directories it will
+search by reading the \fIMANPATH\fP environment variable.  If no
+\fIMANPATH\fP is found then the directory is /usr/man is searched on
+POSIX systems.  This environment
+is expected to be a colon-separated list of directories for xman to search.
+.sp
+.nf
+setenv MANPATH /mit/kit/man:/usr/man
+.fi
+.PP
+By default,
+.I xman
+will search each of the following directories (in each of the directories 
+specified in the users MANPATH) for manual pages.  If manual pages exist
+in that directory then they are added to list of manual pages for 
+the corresponding menu item.
+A menu item is only displayed for those sections that actually contain
+manual pages.
+.ta 1.5i
+.nf
+
+Directory	Section Name
+---------	------------
+man1	(1) User Commands
+man2	(2) System Calls
+man3	(3) Subroutines
+man4	(4) Devices
+man5	(5) File Formats
+man6	(6) Games       
+man7	(7) Miscellaneous
+man8	(8) Sys. Administration
+manl	(l) Local
+mann	(n) New
+mano	(o) Old
+
+.fi     
+For instance, a user has three directories in her manual path and each
+contain a directory called \fIman3\fP.  All these manual pages will appear
+alphabetically sorted when the user selects the menu item called
+\fI(3) Subroutines\fP.  If there is no directory called \fImano\fP in
+any of the directories in her MANPATH, or there are no manual pages
+in any of the directories called \fImano\fP then no menu item will be
+displayed for the section called \fI(o) Old\fP.
+.SH "THE MANDESC FILE"        
+.PP
+By using the \fImandesc\fP file a user or system manager is able to 
+more closely control which manual pages will appear in each of the sections
+represented by menu items in the \fISections\fP menu.  This 
+functionality is only available on a section by section basis, and individual
+manual pages may not be handled in this manner.
+(Although generous use of 
+symbolic links \(em see \fIln\fP(1) \(em will allow
+almost any configuration you can imagine.)
+.PP
+The format of the mandesc file is a character followed by a label.  The
+character determines which of the sections will be added under this label.
+For instance suppose that you would like to create an extra menu item that 
+contains all programmer subroutines.  This label should contain all manual
+pages in both sections two and three.  The \fImandesc\fP file
+would look like this:
+.nf     
+        
+2Programmer Subroutines
+3Programmer Subroutines
+
+.fi
+This will add a menu item to the \fISections\fP menu that would
+bring up a listing of all manual pages in sections two and three of
+the Programmers Manual.  Since the label names are \fIexactly\fP the
+same they will be added to the same section. Note, however, that the
+original sections still exist.
+.PP
+If you want to completely ignore the default sections in a manual directory
+then add the line:
+.nf
+
+no default sections
+
+.fi
+anywhere in your mandesc file.  This keeps xman from searching
+the default manual sections \fIIn that directory only\fP.  As an example,
+suppose you want to do the same thing as above, but you don't think that
+it is useful to have the \fISystem Calls\fP or \fISubroutines\fP sections
+any longer.  You would need to duplicate the default entries, as well as
+adding your new one.
+.nf
+
+no default sections
+1(1) User Commands
+2Programmer Subroutines
+3Programmer Subroutines
+4(4) Devices
+5(5) File Formats
+6(6) Games
+7(7) Miscellaneous
+8(8) Sys. Administration
+l(l) Local
+n(n) New
+o(o) Old
+
+.fi
+Xman will read any section that is of the from \fIman<character>\fP, where
+<character> is an upper or lower case letter (they are treated distinctly) or
+a numeral (0-9).  Be warned, however, that man(1) and catman(8) will 
+not search directories that are non-standard.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxman\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.ta .5i 1.0i 1.5i 2.0i 2.5i 3.0i 3.5i
+Xman xman	\fI(This widget is never used)\fP
+	TopLevelShell  topbox
+		Form  form
+			Label  topLabel
+			Command  helpButton
+			Command  quitButton
+			Command  manpageButton
+		TransientShell  search
+			DialogWidgetClass  dialog
+				Label  label
+				Text  value
+				Command  manualPage
+				Command  apropos
+				Command  cancel
+		TransientShell  pleaseStandBy
+			Label  label
+	TopLevelShell  manualBrowser
+		Paned  Manpage_Vpane
+			Paned  horizPane
+				MenuButton  options
+				MenuButton  sections
+				Label  manualBrowser
+			Viewport  directory
+				List  directory	
+				List  directory	
+				.
+				. (one for each section, 
+				.  created on the fly)
+				.
+			ScrollByLine  manualPage
+		SimpleMenu  optionMenu
+			SmeBSB  displayDirectory
+			SmeBSB  displayManualPage
+			SmeBSB  help
+			SmeBSB  search
+			SmeBSB  showBothScreens
+			SmeBSB  removeThisManpage
+			SmeBSB  openNewManpage
+			SmeBSB  showVersion
+			SmeBSB  quit
+		SimpleMenu  sectionMenu
+			SmeBSB  <name of section>
+			 	.
+				. (one for each section)
+				.
+		TransientShell  search
+			DialogWidgetClass  dialog
+				Label  label
+				Text  value
+				Command  manualPage
+				Command  apropos
+				Command  cancel
+		TransientShell  pleaseStandBy
+			Label  label
+		TransientShell  likeToSave
+			Dialog  dialog
+				Label  label
+				Text  value
+				Command  yes
+				Command  no
+	TopLevelShell  help
+		Paned  Manpage_Vpane
+			Paned  horizPane
+				MenuButton  options
+				MenuButton  sections
+				Label  manualBrowser
+			ScrollByLine  manualPage
+		SimpleMenu  optionMenu
+			SmeBSB  displayDirectory
+			SmeBSB  displayManualPage
+			SmeBSB  help
+			SmeBSB  search
+			SmeBSB  showBothScreens
+			SmeBSB  removeThisManpage
+			SmeBSB  openNewManpage
+			SmeBSB  showVersion
+			SmeBSB  quit
+
+.fi
+.SH "APPLICATION RESOURCES"
+\fIxman\fP has the following application-specific resources which allow
+customizations unique to \fIxman\fP.
+.PP
+.TP 18
+\fBmanualFontNormal\fP (Class \fBFont\fP)
+The font to use for normal text in the manual pages.
+.TP 18
+\fBmanualFontBold\fP (Class \fBFont\fP)
+The font to use for bold text in the manual pages.
+.TP 18
+\fBmanualFontItalic\fP (Class \fBFont\fP)
+The font to use for italic text in the manual pages.
+.TP 18
+\fBdirectoryFontNormal\fP (Class \fBFont\fP)
+The font to use for the directory text.
+.TP 18
+\fBbothShown\fP (Class \fBBoolean\fP)
+Either `true' or `false,' specifies whether or not you want both the
+directory and the manual page shown at start up.
+.TP 18
+\fBdirectoryHeight\fP (Class \fBDirectoryHeight\fP)
+The height in pixels of the directory, when the directory and the manual page
+are shown simultaneously.
+.TP 18
+\fBtopCursor\fP (Class \fBCursor\fP)
+The cursor to use in the top box.
+.TP 18
+\fBhelpCursor\fP (Class \fBCursor\fP)
+The cursor to use in the help window.
+.TP 18
+\fBmanpageCursor\fP (Class \fBCursor\fP)
+The cursor to use in the manual page window.
+.TP 18
+\fBsearchEntryCursor\fP (Class \fBCursor\fP)
+The cursor to use in the search entry text widget.
+.TP 18
+\fBpointerColor\fP (Class \fBForeground\fP)
+This is the color of all the cursors (pointers) specified above.  The
+name was chosen to be compatible with xterm.
+.TP 18 
+\fBhelpFile\fP  (Class \fBFile\fP)
+Use this rather than the system default helpfile.
+.TP 18
+\fBtopBox\fP (Class \fBBoolean\fP)
+Either `true' or `false,' determines whether the top box (containing
+the help, quit and manual page buttons) or a manual page is put on the screen
+at start-up.  The default is true.
+.TP 18
+\fBverticalList\fP (Class \fBBoolean\fP)
+Either `true' or `false,' determines whether the directory listing is 
+vertically or horizontally organized.  The default is horizontal (false).
+.SH "GLOBAL ACTIONS"
+\fIXman\fP defines all user interaction through global actions.  This allows
+the user to modify the translation table of any widget, and bind any event
+to the new user action.  The list of actions supported by \fIxman\fP are:
+.TP 1.5i
+.B GotoPage(\fIpage\fB) 
+When used in a manual page display window this will allow the user to
+move between a directory and manual page display.  The \fIpage\fP argument can
+be either \fBDirectory\fP or \fBManualPage\fP.
+.TP 1.5i
+.B Quit()
+This action may be used anywhere, and will exit xman.
+.TP 1.5i
+.B Search(\fItype\fB, \fIaction\fB)
+Only useful when used in a search popup, this action will cause the search
+widget to perform the named search type on the string in the search popup's
+value widget. This action will also pop down the search widget. The
+\fItype\fP argument can be either \fBApropos\fP, \fBManpage\fP or
+\fBCancel\fP.  If an \fIaction\fP of \fBOpen\fP is specified then xman
+will open a new manual page to display the results of the search, otherwise
+xman will attempt to display the results in the parent of the search popup.
+.TP 1.5i
+.B PopupHelp()
+This action may be used anywhere, and will popup the help widget.
+.TP 1.5i
+.B PopupSearch()
+This action may be used anywhere except in a help window.  It will cause
+the search popup to become active and visible on the screen, allowing
+the user search for a manual page.
+.TP 1.5i
+.B CreateNewManpage()
+This action may be used anywhere, and will create a new manual page
+display window.
+.TP 1.5i
+.B RemoveThisManpage()
+This action may be used in any manual page or help display window.  When
+called it will remove the window, and clean up all resources
+associated with it.
+.TP 1.5i
+.B SaveFormattedPage(\fIaction\fP)
+This action can only be used in the \fBlikeToSave\fP popup widget, and
+tells xman whether to \fBSave\fP or \fBCancel\fP a save of the 
+manual page that has just been formatted.
+.TP 1.5i
+.B ShowVersion()
+This action may be called from any manual page or help display window, and
+will cause the informational display line to show the current version
+of xman.
+.SH FILES
+.IP "\fI<manpath directory>\fP/man<\fIcharacter\fP>" 2.5i
+.IP "\fI<manpath directory>\fP/cat<\fIcharacter\fP>" 
+.IP "\fI<manpath directory>\fP/mandesc" 
+.IP /usr/lib/X11/app-defaults/Xman
+specifies required resources
+.IP /tmp
+.I Xman
+creates temporary files in /tmp for all unformatted man pages and all apropos
+searches.
+.SH "SEE ALSO"
+.IR X (1),
+.IR man (1),
+.IR apropos (1),
+.IR catman (8),
+.I "Athena Widget Set"
+.SH ENVIRONMENT
+.TP 1.5i
+.B DISPLAY 
+the default host and display to use.
+.TP 1.5i
+.B MANPATH
+the search path for manual pages.  Directories are separated by
+colons (e.g. /usr/man:/mit/kit/man:/foo/bar/man).
+.TP 1.5i
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.TP 1.5i
+.B XAPPLRESDIR
+A string that will have ``Xman'' appended to it.  This string will be
+the full path name of a user app-defaults file to be merged into the
+resource database after the system app-defaults file, and before
+the resources that are attached to the display.
+.SH COPYRIGHT
+Copyright 1988 by Massachusetts Institute of Technology.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+Chris Peterson, MIT X Consortium from the V10 version written by Barry
+Shein formerly of Boston University.

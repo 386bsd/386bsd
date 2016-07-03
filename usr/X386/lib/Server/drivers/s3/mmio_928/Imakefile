@@ -1,0 +1,26 @@
+XCOMM $XFree86: mit/server/ddx/x386/accel/s3/drivers/mmio_928/Imakefile,v 2.2 1993/09/12 11:26:51 dawes Exp $
+XCOMM $XConsortium: Imakefile,v 1.1 91/07/16 22:59:40 gildea Exp $
+#include <Server.tmpl>
+
+SRCS = mmio_928.c
+
+OBJS = mmio_928.o
+
+#if X386LinkKit
+INCLUDES = -I. -I../../../include -I../..
+#else
+INCLUDES = -I. -I../.. -I../../../../common -I../../../../common_hw \
+	   -I../../../../os-support -I$(SERVERSRC)/ddx/mi \
+           -I../../../../vga256/vga -I$(SERVERSRC)/include -I$(INCLUDESRC)
+#endif
+
+NormalLibraryObjectRule()
+NormalAsmObjectRule()
+
+all:: mmio_928.o
+
+InstallLinkKitNonExecFile(Imakefile,$(LINKKITDIR)/drivers/s3/mmio_928)
+InstallLinkKitNonExecFile(mmio_928.c,$(LINKKITDIR)/drivers/s3/mmio_928)
+
+DependTarget()
+

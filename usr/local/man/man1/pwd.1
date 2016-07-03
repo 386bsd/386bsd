@@ -1,0 +1,29 @@
+.TH PWD 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+pwd \- print name of current/working directory
+.SH SYNOPSIS
+.B pwd
+.br
+.B pwd
+{\-\-help,\-\-version}
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR pwd .
+.B pwd
+prints the fully resolved name of the current directory.
+That is, all components of the printed name will be actual
+directory names \-\- none will be symbolic links.
+.PP
+Note that most Unix shells provide a built-in
+.B pwd
+command with similar functionality so the unadorned, interactive
+.B pwd
+command will usually execute the built-in version and not this one.
+.SS OPTIONS
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.

@@ -1,0 +1,424 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XChangeWindowAttributes 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XChangeWindowAttributes, XSetWindowBackground, XSetWindowBackgroundPixmap, XSetWindowBorder, XSetWindowBorderPixmap, XSetWindowColormap \- change window attributes
+.SH SYNTAX
+.\" $Header: XChWAttr.f,v 1.1 88/02/26 09:58:34 mento Exp $
+XChangeWindowAttributes\^(\^\fIdisplay\fP, \fIw\fP\^, \fIvaluemask\fP\^, \fIattributes\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      unsigned long \fIvaluemask\fP\^;
+.br
+      XSetWindowAttributes *\fIattributes\fP\^;
+.LP
+.\" $Header: XBackground.f,v 1.1 88/02/26 09:58:16 mento Exp $
+XSetWindowBackground\^(\^\fIdisplay\fP, \fIw\fP\^, \fIbackground_pixel\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      unsigned long \fIbackground_pixel\fP\^;
+.LP
+.\" $Header: XPmapBgnd.f,v 1.1 88/02/26 10:01:52 mento Exp $
+XSetWindowBackgroundPixmap\^(\^\fIdisplay\fP, \fIw\fP\^, \fIbackground_pixmap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Pixmap \fIbackground_pixmap\fP\^;
+.LP 
+.\" $Header: XBorder.f,v 1.1 88/02/26 09:58:27 mento Exp $
+XSetWindowBorder\^(\^\fIdisplay\fP, \fIw\fP\^, \fIborder_pixel\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      unsigned long \fIborder_pixel\fP\^;
+.LP
+.\" $Header: XPmapBorder.f,v 1.1 88/02/26 10:01:53 mento Exp $
+XSetWindowBorderPixmap\^(\^\fIdisplay\fP, \fIw\fP\^, \fIborder_pixmap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Pixmap \fIborder_pixmap\fP\^;
+.LP
+.\" $Header: XChCmap.f,v 1.2 88/05/09 06:54:34 mento Exp $
+XSetWindowColormap\^(\^\fIdisplay\fP, \fIw\fP\^, \fIcolormap\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      Colormap \fIcolormap\fP\^;
+.SH ARGUMENTS
+.\" $Header: attributes.a,v 1.4 88/05/07 11:49:37 mento Exp $
+.IP \fIattributes\fP 1i
+Specifies the structure from which the values (as specified by the value mask)
+are to be taken.
+The value mask should have the appropriate bits
+set to indicate which attributes have been set in the structure.
+.\" $Header: back_pix.a,v 1.2 88/04/05 14:24:47 mento Exp $
+.IP \fIbackground_pixel\fP 1i
+Specifies the pixel that is to be used for the background.
+.\" $Header: tile.a,v 1.3 88/05/07 13:12:11 mento Exp $
+.IP \fIbackground_pixmap\fP 1i
+Specifies the background pixmap,
+.ZN ParentRelative ,
+or
+.ZN None .
+.\" $Header: bord_pix.a,v 1.2 88/05/07 13:15:29 mento Exp $
+.IP \fIborder_pixel\fP 1i
+Specifies the entry in the colormap. 
+.\" $Header: bord_pixmap.a,v 1.2 88/05/07 13:17:18 mento Exp $
+.IP \fIborder_pixmap\fP 1i
+Specifies the border pixmap or
+.ZN CopyFromParent .
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: valuemask.a,v 1.1 88/02/26 10:32:07 mento Exp $
+.IP \fIvaluemask\fP 1i
+Specifies which window attributes are defined in the attributes
+argument.
+This mask is the bitwise inclusive OR of the valid attribute mask bits.
+If valuemask is zero,
+the attributes are ignored and are not referenced.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.\" $Header: cmap.a,v 1.2 88/05/09 06:39:13 mento Exp $
+.IP \fIcolormap\fP 1i
+Specifies the colormap.
+.SH DESCRIPTION
+.\" $Header: XChWAttr.d,v 1.2 88/06/11 07:49:11 mento Exp $
+Depending on the valuemask,
+the
+.ZN XChangeWindowAttributes
+function uses the window attributes in the
+.ZN XSetWindowAttributes
+structure to change the specified window attributes.
+Changing the background does not cause the window contents to be
+changed.
+To repaint the window and its background, use 
+.ZN XClearWindow .
+Setting the border or changing the background such that the
+border tile origin changes causes the border to be repainted.
+Changing the background of a root window to 
+.ZN None 
+or 
+.ZN ParentRelative
+restores the default background pixmap.
+Changing the border of a root window to
+.ZN CopyFromParent
+restores the default border pixmap.
+Changing the win-gravity does not affect the current position of the
+window.
+Changing the backing-store of an obscured window to 
+.ZN WhenMapped 
+or
+.ZN Always , 
+or changing the backing-planes, backing-pixel, or
+save-under of a mapped window may have no immediate effect.
+Changing the colormap of a window (that is, defining a new map, not
+changing the contents of the existing map) generates a 
+.ZN ColormapNotify
+event.
+Changing the colormap of a visible window may have no
+immediate effect on the screen because the map may not be installed
+(see
+.ZN XInstallColormap ).
+Changing the cursor of a root window to 
+.ZN None 
+restores the default
+cursor.
+Whenever possible, you are encouraged to share colormaps.
+.LP
+Multiple clients can select input on the same window. 
+Their event masks are maintained separately.
+When an event is generated, 
+it is reported to all interested clients. 
+However, only one client at a time can select for 
+.ZN SubstructureRedirectMask , 
+.ZN ResizeRedirectMask , 
+and
+.ZN ButtonPressMask .
+If a client attempts to select any of these event masks 
+and some other client has already selected one, 
+a
+.ZN BadAccess
+error results.
+There is only one do-not-propagate-mask for a window, 
+not one per client.
+.LP
+.ZN XChangeWindowAttributes
+can generate
+.ZN BadAccess ,
+.ZN BadColor ,
+.ZN BadCursor ,
+.ZN BadMatch ,
+.ZN BadPixmap ,
+.ZN BadValue ,
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XBackground.d,v 1.4 88/06/11 07:48:45 mento Exp $
+The
+.ZN XSetWindowBackground
+function sets the background of the window to the specified pixel value.
+Changing the background does not cause the window contents to be changed.
+.ZN XSetWindowBackground
+uses a pixmap of undefined size filled with the pixel value you passed.
+If you try to change the background of an 
+.ZN InputOnly
+window, a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetWindowBackground
+can generate
+.ZN BadMatch
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XPmapBgnd.d,v 1.3 88/06/11 07:52:14 mento Exp $
+The
+.ZN XSetWindowBackgroundPixmap
+function sets the background pixmap of the window to the specified pixmap.
+The background pixmap can immediately be freed if no further explicit
+references to it are to be made.
+If 
+.ZN ParentRelative
+is specified, 
+the background pixmap of the window's parent is used,
+or on the root window, the default background is restored.
+If you try to change the background of an 
+.ZN InputOnly
+window, a
+.ZN BadMatch
+error results.
+If the background is set to
+.ZN None ,
+the window has no defined background.
+.LP
+.ZN XSetWindowBackgroundPixmap
+can generate
+.ZN BadMatch ,
+.ZN BadPixmap ,
+and
+.ZN BadWindow 
+errors.
+.LP 
+.\" $Header: XBorder.d,v 1.3 88/06/11 07:48:47 mento Exp $
+The
+.ZN XSetWindowBorder
+function sets the border of the window to the pixel value you specify.
+If you attempt to perform this on an
+.ZN InputOnly
+window, a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetWindowBorder
+can generate
+.ZN BadMatch
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XPmapBorder.d,v 1.3 88/06/11 07:52:14 mento Exp $
+The
+.ZN XSetWindowBorderPixmap
+function sets the border pixmap of the window to the pixmap you specify.
+The border pixmap can be freed immediately if no further explicit
+references to it are to be made.
+If you specify
+.ZN CopyFromParent ,
+a copy of the parent window's border pixmap is used.
+If you attempt to perform this on an
+.ZN InputOnly
+window, a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetWindowBorderPixmap
+can generate
+.ZN BadMatch ,
+.ZN BadPixmap ,
+and
+.ZN BadWindow 
+errors.
+.LP
+.\" $Header: XChCmap.d,v 1.3 88/05/09 06:57:38 mento Exp $
+The
+.ZN XSetWindowColormap
+function sets the specified colormap of the specified window.
+The colormap must have the same visual type as the window,
+or a
+.ZN BadMatch
+error results.
+.LP
+.ZN XSetWindowColormap
+can generate
+.ZN BadColor ,
+.ZN BadMatch ,
+and
+.ZN BadWindow 
+errors.
+.SH DIAGNOSTICS
+.\" $Header: badaccess2.e,v 1.1 87/09/04 08:22:45 mento Exp $
+.TP 1i
+.ZN BadAccess
+A client attempted
+to free a color map entry that it did not already allocate.
+.\" $Header: badaccess3.e,v 1.1 87/09/04 08:22:50 mento Exp $
+.TP 1i
+.ZN BadAccess
+A client attempted
+to store into a read-only color map entry.
+.\" $Header: badcolor.e,v 1.1 87/09/04 08:22:57 mento Exp $
+.TP 1i
+.ZN BadColor
+A value for a Colormap argument does not name a defined Colormap.
+.\" $Header: badcursor.e,v 1.1 87/09/04 08:22:58 mento Exp $
+.TP 1i
+.ZN BadCursor
+A value for a Cursor argument does not name a defined Cursor.
+.\" $Header: badmatch2.e,v 1.3 87/09/11 11:53:42 mento Exp $
+.TP 1i
+.ZN BadMatch
+Some argument or pair of arguments has the correct type and range but fails
+to match in some other way required by the request.
+.\" $Header: badmatch3.e,v 1.1 87/09/10 18:55:44 mento Exp $
+.TP 1i
+.ZN BadMatch
+An
+.ZN InputOnly
+window locks this attribute.
+.\" $Header: badpixmap.e,v 1.1 87/09/04 08:23:16 mento Exp $
+.TP 1i
+.ZN BadPixmap
+A value for a Pixmap argument does not name a defined Pixmap.
+.\" $Header: badvalue.e,v 1.1 87/09/04 08:23:19 mento Exp $
+.TP 1i
+.ZN BadValue
+Some numeric value falls outside the range of values accepted by the request.
+Unless a specific range is specified for an argument, the full range defined
+by the argument's type is accepted.  Any argument defined as a set of
+alternatives can generate this error.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XConfigureWindow(3X11),
+XCreateWindow(3X11),
+XDestroyWindow(3X11),
+XInstallColormap(3X11),
+XMapWindow(3X11),
+XRaiseWindow(3X11),
+XUnmapWindow(3X11)
+.br
+\fI\*(xL\fP

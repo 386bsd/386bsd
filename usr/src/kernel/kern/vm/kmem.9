@@ -1,0 +1,146 @@
+.\" Copyright (c) 1994 William F. Jolitz, TeleMuse
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This software is a component of "386BSD" developed by 
+.\"	William F. Jolitz, TeleMuse.
+.\" 4. Neither the name of the developer nor the name "386BSD"
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\" 5. Non-commercial distribution of this complete file in either source and/or
+.\"    binary form at no charge to the user (such as from an official Internet 
+.\"    archive site) is permitted. 
+.\" 6. Commercial distribution and sale of this complete file in either source
+.\"    and/or binary form on any media, including that of floppies, tape, or 
+.\"    CD-ROM, or through a per-charge download such as that of a BBS, is not 
+.\"    permitted without specific prior written permission.
+.\" 7. Non-commercial and/or commercial distribution of an incomplete, altered, 
+.\"    or otherwise modified file in either source and/or binary form is not 
+.\"    permitted.
+.\"
+.\" THIS SOFTWARE IS A COMPONENT OF 386BSD DEVELOPED BY WILLIAM F. JOLITZ 
+.\" AND IS INTENDED FOR RESEARCH AND EDUCATIONAL PURPOSES ONLY. THIS 
+.\" SOFTWARE SHOULD NOT BE CONSIDERED TO BE A COMMERCIAL PRODUCT. 
+.\" THE DEVELOPER URGES THAT USERS WHO REQUIRE A COMMERCIAL PRODUCT 
+.\" NOT MAKE USE OF THIS WORK.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE DEVELOPER ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE DEVELOPER BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\" $Id: kmem.9,v 1.1 94/10/19 17:37:14 bill Exp $
+.\"
+.Dd August 29, 1994
+.Dt KMEM 9
+.Os 386BSD 1
+.Sh NAME
+.Nm kmem
+.Nd primary kernel memory / address space management functions
+.Sh SYNOPSIS
+.Fd #include """vm.h"""
+.Fd #include """kmem.h"""
+.Fd #include """malloc.h"""
+.Ft vm_offset_t
+.Fn kmem_alloc "vm_map_t map" "vm_size_t size" "int flags"
+.Ft void
+.Fn kmem_free "vm_map_t map" "vm_offset_t addr", "vm_size_t size"
+.Ft vm_map_t
+.Fn kmem_suballoc "vm_size_t size" "boolean_t pageable"
+.Ft vm_offset_t
+.Fn kmem_mmap "vm_map_t map" "vm_offset_t addr" "vm_size_t size"
+.Ft vm_offset_t
+.Fn kmem_phys "vm_offset_t kva"
+.Sh DESCRIPTION
+Kernel program memory in the 386BSD kernel is managed by the "kmem" facility, which
+allows for shared used by kernel threads of portions of kernel memory (or address space).
+It is an interface to the virtual memory system as a way to allocate its resources
+for application in the kernel.
+.Pp
+The
+.Fn kmem_alloc
+function allocates page-granularity uninitialized space for an object whose
+size is specified by
+.Fa size
+from the address space or subspace specified by
+.Fa map .
+Either memory or just address space reservation can be allocated.
+If no resource is available, 
+.Fn kmem_alloc
+can optionally wait indefinitely for the resource to become available
+with the M_WAITOK option passed via the
+.Fa flags 
+(note that this allocator can be also used from interrupt level without the
+blocking flag).
+Since this function is used by the kernel
+.Xr malloc 9
+allocator, both share the same option flags.
+.Pp
+.Fn kmem_free
+is called to return the resource to the free pool. Since static array
+elements are consumed with certain maps (kmem_map), indefinite allocation
+is not always possible.
+.Pp
+The
+.Fn kmem_suballoc
+function is used to create a subspace map within the kernel for independant
+management. It reserves a portion of the kernel address space for sole use
+by requestors using the allocated subspace map as an argument.
+.Pp
+The
+.Fn kmem_mmap
+function is used to remap a region of the current process into the kernel
+memory (not unlike the
+.Xr mmap 2
+system call), allowing access to the processes memory region globally. The
+user address space mapped at 
+.Fa addr 
+and for length
+.Fa size
+is mapped into the kernel within the address space (or subspace)
+.Fa map .
+.Pp
+The
+.Fn kmem_phys
+function returns the physical address associated with the
+.Fa kva
+address in the kernel.
+.Pp
+.Sh RETURN VALUES
+The
+.Fn kmem_malloc
+function returns
+a address of the allocated resource if successful; otherwise
+a null address is returned.
+The
+.Fn kmem_suballoc
+function returns a new map instance as a handle to be used
+in memory allocation from that subspace, otherwise it returns a
+null value. The
+.Fn kmem_mmap
+function returns an address of where the requested contents of
+a process may be located in the kernel program's address space. The
+.Fn kmem_phys
+function returns the physical address or the null address if ther is
+no page.
+.Sh SEE ALSO
+.Xr malloc 9 ,
+.Xr free 9 ,
+.Xr mmap 2 ,
+.Xr pageout 9

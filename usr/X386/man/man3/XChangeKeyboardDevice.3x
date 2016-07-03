@@ -1,0 +1,58 @@
+.ds xL Programming With Xlib
+.TH XChangeKeyboardDevice 3X11 "Release 5" "X Version 11" "X FUNCTIONS"
+.SH NAME
+XChangeKeyboardDevice \- change which device is used as the X keyboard
+.SH SYNTAX
+Status XChangeKeyboardDevice\^(\^\fIdisplay\fP, \fIdevice\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      XDevice *\fIdevice\fP\^; 
+.br
+.SH ARGUMENTS
+.TP 12
+.I display
+Specifies the connection to the X server.
+.TP 12
+.I device
+Specifies the device to be used as the X keyboard.
+.SH DESCRIPTION
+The \fIXChangeKeyboardDevice\fP request causes the server to use the specified
+device as the X keyboard.  The device must have been previously opened by the
+requesting client via \fIXOpenDevice\fP or a \fIBadDevice\fP error will result.
+The device must support input class \fIKeys\fP, or a \fIBadMatch\fP error
+will result.  If the server implementation does not support using the requested
+device as the X keyboard, a \fIBadDevice\fP error will result.
+.P
+If the specified device is grabbed by another client, \fIAlreadyGrabbed\fP
+is returned.  If the specified device is frozen by a grab on another device,
+\fIGrabFrozen\fP is returned.
+If the request is successful, \fISuccess\fP is returned.
+.P
+If the request succeeds,
+a \fIChangeDeviceNotify\fP event is sent to all clients that have selected that
+event.  A \fIMappingNotify\fP event with request = \fIMappingKeyboard\fP
+is sent to all clients.
+The specified device becomes the X keyboard and 
+the old X keyboard becomes accessible through the input extension
+protocol requests.
+.P
+\fIXChangeKeyboardDevice\fP can generate a \fIBadDevice\fP or a \fIBadMatch\fP
+error.
+.SH DIAGNOSTICS
+.TP 12
+\fIBadDevice\fP
+An invalid device was specified.  The specified device does not exist, has 
+not been opened by this client via \fIXOpenInputDevice\fP,  or is already
+one of the core X device (pointer or keyboard).  This error may
+also occur if 
+the server implementation does not support using the specified device as
+the X keyboard.
+.TP 12
+\fIBadMatch\fP
+This error may occur if an \fIXChangeKeyboardDevice\fP request was made 
+specifying a device that has no keys.
+.SH "SEE ALSO"
+XChangePointerDevice
+.br
+\fI\*(xL\fP

@@ -1,0 +1,110 @@
+.TH XCLIPBOARD 1 "Release 5" "X Version 11"
+.SH NAME
+xclipboard - X clipboard client
+.SH SYNOPSIS
+\fBxclipboard\fP [ \fI-toolkitoption\fP ...] [-w] [-nw]
+.SH DESCRIPTION
+The \fIxclipboard\fP program is used to collect and display text selections 
+that are sent to the CLIPBOARD by other clients.  It is typically used to
+save CLIPBOARD selections for later use.  It stores each CLIPBOARD selection
+as a separate string, each of which can be selected.  Each time CLIPBOARD
+is asserted by another application, \fIxclipboard\fP transfers the contents
+of that selection to a new buffer and displays it in the text window.
+Buffers are never automatically deleted, so you'll want to use the delete
+button to get rid of useless items.
+.PP
+Since \fIxclipboard\fP uses a Text Widget to display the contents of the
+clipboard, text sent to the CLIPBOARD may be re-selected for use in other
+applications.  \fIxclipboard\fP also responds to requests for the CLIPBOARD
+selection from other clients by sending the entire contents of the currently
+displayed buffer.
+.PP
+An \fIxclipboard\fP window has the following buttons across the top:
+.TP 8
+.I quit
+When this button is pressed, \fIxclipboard\fP exits.
+.TP 8
+.I delete
+When this button is pressed, the current buffer is deleted and the
+next one displayed.
+.TP 8
+.I new
+Creates a new buffer with no contents.  Useful in constructing a new
+CLIPBOARD selection by hand.
+.TP 8
+.I next
+Displays the next buffer in the list.
+.TP 8
+.I previous
+Displays the previous buffer.
+.SH OPTIONS
+The \fIxclipboard\fP program accepts all of the standard X Toolkit command 
+line options as well as the following:
+.TP 8
+.B \-w
+This option indicates that lines of text that are too long to be displayed on
+one line in the clipboard should wrap around to the following lines.
+.TP 8
+.B \-nw
+This option indicates that long lines of text should not wrap around.  This
+is the default behavior.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of
+the widgets which compose \fIxclipboard\fR.  In the notation below,
+indentation indicates hierarchical structure.  The widget class name
+is given first, followed by the widget instance name.
+.sp
+.nf
+.TA .5i 1.0i 1.5i
+.ta .5i 1.0i 1.5i
+XClipboard  xclipboard
+	Form  form
+		Command  quit
+		Command  delete
+		Command  new
+		Command  next
+		Command  prev
+		Text  text
+.fi
+.sp
+.SH SENDING/RETRIEVING CLIPBOARD CONTENTS
+Text is copied to the clipboard whenever a client asserts ownership of the
+\fBCLIPBOARD\fP selection.  Text is copied from the clipboard whenever a
+client requests the contents of the \fBCLIPBOARD\fP selection.  Examples of
+event bindings that a user may wish to include in a resource configuration
+file to use the clipboard are:
+.sp
+.nf
+.TA .5i
+.ta .5i 3.0i
+*VT100.Translations: #override \\
+	<Btn3Up>:	select-end(CLIPBOARD) \\n\\
+	<Btn2Up>:	insert-selection(PRIMARY,CLIPBOARD) \\n\\
+	<Btn2Down>:	ignore ()
+
+.fi
+.sp
+.SH "SEE ALSO"
+X(1), xcutsel(1), xterm(1), individual client documentation for how to make a 
+selection and send it to the CLIPBOARD.
+.SH ENVIRONMENT
+.PP
+.TP 8
+.B DISPLAY
+to get the default host and display number.
+.TP 8
+.B XENVIRONMENT
+to get the name of a resource file that overrides the global resources
+stored in the RESOURCE_MANAGER property.
+.SH FILES
+/usr/lib/X11/app-defaults/XClipboard - specifies required resources
+.SH COPYRIGHT
+Copyright 1988, Massachusetts Institute of Technology
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHOR
+Ralph R. Swick, DEC/MIT Project Athena
+.br
+Chris D. Peterson, MIT X Consortium
+.br
+Keith Packard, MIT X Consortium

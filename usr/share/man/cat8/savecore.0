@@ -1,0 +1,66 @@
+SAVECORE(8)             386BSD System Manager's Manual             SAVECORE(8)
+
+NNAAMMEE
+     ssaavveeccoorree - save the details of a crash of the operating system
+
+SSYYNNOOPPSSIISS
+     ssaavveeccoorree _d_i_r_n_a_m_e [_s_y_s_t_e_m]
+
+DDEESSCCRRIIPPTTIIOONN
+     SSaavveeccoorree is meant to be called near the end of the initialization file
+     /_e_t_c/_r_c (see rc(8)).  Its function is to detect the presence and save the
+     state of the operating system's previous abnormal termination, assuming
+     the state was recorded for this purpose. If this state information is
+     found, ssaavveeccoorree will also write a reboot message in the shutdown log.
+     The state information is a snapshot of all RAM memory at the time of
+     abnormal termination, untranslated by the processor's memory management
+     unit, in physical rather than virtual order (like the memory device, see
+     mem(4)).
+
+     Operands supported by ssaavveeccoorree:
+
+     _d_i_r_n_a_m_e       The directory name where the core dump will be written.
+
+     _s_y_s_t_e_m        If the core dump was from a system other than /_3_8_6_b_s_d, the
+                   name of that system must be supplied as _s_y_s_t_e_m.
+
+     SSaavveeccoorree looks for a physical RAM memory image of the current system
+     (currently recorded during system crashes in the system's swap space) and
+     it checks the image for veracity.  If the saved memory image is valid, it
+     saves this in _d_i_r_n_a_m_e/_r_a_m._n and the current version of the operating
+     system's executable file in _d_i_r_n_a_m_e/_s_y_s_t_e_m._n Sequence numbers are
+     incremented and appended to the end of the pathnames each time ssaavveeccoorree
+     is run in the directory.
+
+     Before savecore writes out a memory image, it reads a number from the
+     file _d_i_r_n_a_m_e/_m_i_n_f_r_e_e. If the number of free kilobytes on the filesystem
+     which contains _d_i_r_n_a_m_e is less than the number obtained from the minfree
+     file, the core dump is not saved.  If the minfree file does not exist,
+     savecore always writes out the core file (assuming that a core dump was
+     taken).
+
+     SSaavveeccoorree also logs a reboot message using facility LOG_AUTH (see
+     syslog(3))  If the system crashed as a result of a panic, ssaavveeccoorree logs
+     the panic string too.
+
+FFIILLEESS
+     /386bsd  current system executable file
+
+BBUUGGSS
+     Can be fooled into thinking a core dump is the wrong size.
+
+HHIISSTTOORRYY
+     The ssaavveeccoorree command appeared in 4.1BSD.
+
+4th Berkeley Distribution       March 16, 1991                               1
+
+
+
+
+
+
+
+
+
+
+

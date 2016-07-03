@@ -1,0 +1,36 @@
+XCOMM $XFree86: mit/config/ack_ux_i386.cf,v 1.1 1993/03/23 12:56:35 dawes Exp $
+
+#include "x_am_i386.cf"
+
+#define AckToolset		YES
+#define CrossCompiling		YES
+
+#define CcCmd			ack
+#define ServerCcCmd		ack
+#define LdCmd			ack
+#define	YaccCmd			byacc
+#define DefaultCCOptions	-mam_i80386
+#define LibraryCCOptions	-mam_i80386
+#define LdCombineFlags          -Rled-r -c.out
+#define	ExtraLoadFlags		-fp
+#define TermcapLibrary		/* in libajax */
+
+#if HasLargeTmp
+#define ArCmd aal crv		/* use /tmp for temp files */
+#else
+#define ArCmd aal clrv		/* use local dir for temp files */
+#endif
+#define RanlibCmd /bin/true
+
+#define AsCmd			AmoebaConf/$(ARCH).$(TOOLSET)/toolset/do_as
+#define AsIncl			-I$(ATOP)/src/h/machdep/arch/$(ARCH)
+#define AsmDefines		-DACK_ASSEMBLER
+
+#define AssembleObject(flags) $(RM) $@                                  @@\
+	AsCmd -mam_i80386 -o $*.o AsmDefines $(INCLUDES) AsIncl flags $*.s
+
+ARCH		= i80386
+TOOLSET		= ack
+ALDFLAGS	= -mam_i80386 -.c -Rcv-s32
+
+#include "x386.cf"

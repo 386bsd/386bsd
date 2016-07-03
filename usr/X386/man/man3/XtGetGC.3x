@@ -1,0 +1,154 @@
+.ds tk X Toolkit
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xI Intrinsics
+.ds xW X Toolkit Athena Widgets \- C Language Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.ds Rn 3
+.ds Vn 2.2
+.hw XtMake-Geometry-Request XtQuery-Geometry wid-get
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XtGetGC 3Xt "Release 3" "X Version 11" "XT FUNCTIONS"
+.SH NAME
+XtGetGC, XtReleaseGC \- obtain and destroy a sharable GC
+.SH SYNTAX
+GC XtGetGC(\fIw\fP, \fIvalue_mask\fP, \fIvalues\fP)
+.br
+      Widget \fIw\fP;
+.br
+      XtGCMask \fIvalue_mask\fP;
+.br
+      XGCValues *\fIvalues\fP;
+.LP
+void XtReleaseGC(\fIw\fP, \fIgc\fP)
+.br
+      Widget \fIw\fP;
+.br
+      GC \fIgc\fP;
+.SH ARGUMENTS
+.IP \fIgc\fP 1i
+Specifies the GC to be deallocated.
+.IP \fIvalues\fP 1i
+Specifies the actual values for this GC.
+.ds Vm fields of the values are specified
+.IP \fIvalue_mask\fP 1i
+Specifies which \*(Vm.
+.IP \fIw\fP 1i
+Specifies the widget.
+.SH DESCRIPTION
+The
+.ZN XtGetGC
+function returns a sharable, read-only GC.
+The parameters to this function are the same as those for
+.ZN XCreateGC 
+except that a widget is passed instead of a display.
+.ZN XtGetGC
+shares only GCs in which all values in the GC returned by
+.ZN XCreateGC
+are the same.
+In particular, it does not use the value_mask provided to
+determine which fields of the GC a widget considers relevant.
+The value_mask is used only to tell the server which fields should be
+filled in with widget data and which it should fill in with default values.
+For further information about value_mask and values,
+see
+.ZN XCreateGC
+in the \fI\*(xL\fP.
+.LP
+The
+.ZN XtReleaseGC
+function deallocate the specified shared GC.
+.SH "SEE ALSO"
+.br
+\fI\*(xT\fP
+.br
+\fI\*(xL\fP

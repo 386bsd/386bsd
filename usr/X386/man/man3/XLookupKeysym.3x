@@ -1,0 +1,251 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XLookupKeysym 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XLookupKeysym, XRefreshKeyboardMapping, XLookupString, XRebindKeySym \- handle keyboard input events in Latin-1
+.SH SYNTAX
+KeySym XLookupKeysym(\^\fIkey_event\fP, \fIindex\fP\^)
+.br
+      XKeyEvent *\fIkey_event\fP\^;
+.br
+      int \fIindex\fP\^;
+.LP
+XRefreshKeyboardMapping(\^\fIevent_map\fP\^)
+.br
+      XMappingEvent *\fIevent_map\fP\^;
+.LP
+int XLookupString(\^\fIevent_struct\fP, \fIbuffer_return\fP,\
+ \fIbytes_buffer\fP, \fIkeysym_return\fP, \fIstatus_in_out\fP\^)
+.br
+      XKeyEvent *\fIevent_struct\fP\^;
+.br
+      char *\fIbuffer_return\fP\^;
+.br
+      int \fIbytes_buffer\fP\^;
+.br
+      KeySym *\fIkeysym_return\fP\^;
+.br
+      XComposeStatus *\fIstatus_in_out\fP\^;
+.LP
+XRebindKeysym(\^\fIdisplay\fP, \fIkeysym\fP, \fIlist\fP, \fImod_count\fP, \fIstring\fP, \fInum_bytes\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      KeySym \fIkeysym\fP\^;
+.br
+      KeySym \fIlist\fP\^[\^]\^;
+.br
+      int \fImod_count\fP\^;
+.br
+      unsigned char *\fIstring\fP\^;
+.br
+      int \fInum_bytes\fP\^;
+.SH ARGUMENTS
+.IP \fIbuffer_return\fP 1i
+Returns the translated characters.
+.IP \fIbytes_buffer\fP 1i
+Specifies the length of the buffer.
+No more than bytes_buffer of translation are returned.
+.IP \fInum_bytes\fP 1i
+Specifies the number of bytes in the string argument.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.IP \fIevent_map\fP 1i
+Specifies the mapping event that is to be used.
+.IP \fIevent_struct\fP 1i
+Specifies the key event structure to be used.
+You can pass
+.ZN XKeyPressedEvent
+or
+.ZN XKeyReleasedEvent .
+.IP \fIindex\fP 1i
+Specifies the index into the KeySyms list for the event's KeyCode.
+.IP \fIkey_event\fP 1i
+Specifies the 
+.ZN KeyPress
+or
+.ZN KeyRelease
+event.
+.IP \fIkeysym\fP 1i
+Specifies the KeySym that is to be \*(Fn.
+.IP \fIkeysym_return\fP 1i
+Returns the KeySym computed from the event if this argument is not NULL.
+.IP \fIlist\fP 1i
+Specifies the KeySyms to be used as modifiers.
+.IP \fImod_count\fP 1i
+Specifies the number of modifiers in the modifier list.
+.IP \fIstatus_in_out\fP 1i
+Specifies or returns the 
+.ZN XComposeStatus 
+structure or NULL.
+.IP \fIstring\fP 1i
+Specifies the string that is copied and will be returned by 
+.ZN XLookupString .
+.SH DESCRIPTION
+.\" $Header: XLKeysym.d,v 1.3 88/04/07 15:54:30 mento Exp $
+The
+.ZN XLookupKeysym
+function uses a given keyboard event and the index you specified to return
+the KeySym from the list that corresponds to the KeyCode member in the
+.ZN XKeyPressedEvent
+or
+.ZN XKeyReleasedEvent
+structure.
+If no KeySym is defined for the KeyCode of the event,
+.ZN XLookupKeysym
+returns
+.ZN NoSymbol .
+.LP
+.\" $Header: XRKMap.d,v 1.2 88/06/11 07:52:44 mento Exp $
+The
+.ZN XRefreshKeyboardMapping
+function refreshes the stored modifier and keymap information.
+You usually call this function when a
+.ZN MappingNotify
+event with a request member of
+.ZN MappingKeyboard
+or
+.ZN MappingModifier
+occurs.
+The result is to update Xlib's knowledge of the keyboard.
+.LP
+.\" $Header: XLookStr.d,v 1.4 88/08/20 10:08:02 mento Exp $
+The
+.ZN XLookupString
+function translates a key event to a KeySym and a string.
+The KeySym is obtained by using the standard interpretation of the Shift,
+Lock, and group modifiers as defined in the X Protocol specification.
+If the KeySym has been rebound (see
+.ZN XRebindKeysym ),
+the bound string will be stored in the buffer.
+Otherwise, the KeySym is mapped, if possible, to an ISO Latin-1 character
+or (if the Control modifier is on) to an ASCII control character,
+and that character is stored in the buffer.
+.ZN XLookupString
+returns the number of characters that are stored in the buffer.
+.LP
+If present (non-NULL),
+the
+.ZN XComposeStatus
+structure records the state,
+which is private to Xlib,
+that needs preservation across calls to
+.ZN XLookupString
+to implement compose processing.
+The creation of
+.ZN XComposeStatus
+structures is implementation dependent;
+a portable program must pass NULL for this argument.
+.LP
+.\" $Header: XRKeySym.d,v 1.3 88/06/11 07:52:44 mento Exp $
+The
+.ZN XRebindKeysym
+function can be used to rebind the meaning of a KeySym for the client.
+It does not redefine any key in the X server but merely
+provides an easy way for long strings to be attached to keys.
+.ZN XLookupString
+returns this string when the appropriate set of
+modifier keys are pressed and when the KeySym would have been used for
+the translation.
+No text conversions are performed;
+the client is responsible for supplying appropriately encoded strings.
+Note that you can rebind a KeySym that may not exist.
+.SH "SEE ALSO"
+XButtonEvent(3X11),
+XMapEvent(3X11),
+XStringToKeysym(3X11)
+.br
+\fI\*(xL\fP

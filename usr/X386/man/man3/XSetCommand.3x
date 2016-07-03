@@ -1,0 +1,196 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XSetCommand 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XSetCommand, XGetCommand \- set or read a window's WM_COMMAND property
+.SH SYNTAX
+XSetCommand\^(\^\fIdisplay\fP, \fIw\fP, \fIargv\fP, \fIargc\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      char **\fIargv\fP\^;
+.br
+      int \fIargc\fP\^;
+.LP
+Status XGetCommand\^(\^\fIdisplay\fP, \fIw\fP, \fIargv_return\fP, \
+\fIargc_return\fP\^)
+.br
+      Display *\fIdisplay\fP\^;
+.br
+      Window \fIw\fP\^;
+.br
+      char ***\fIargv_return\fP\^;
+.br
+      int *\fIargc_return\fP\^;
+.SH ARGUMENTS
+.IP \fIargc\fP 1i
+Specifies the number of arguments.
+.IP \fIargc_return\fP 1i
+Returns the number of arguments returned.
+.IP \fIargv\fP 1i
+Specifies the application's argument list.
+.IP \fIargv_return\fP 1i
+Returns the application's argument list.
+.\" $Header: display.a,v 1.1 88/02/26 10:26:29 mento Exp $
+.IP \fIdisplay\fP 1i
+Specifies the connection to the X server.
+.\" $Header: w.a,v 1.2 88/05/07 11:35:31 mento Exp $
+.IP \fIw\fP 1i
+Specifies the window.
+.SH DESCRIPTION
+.\" $Header: XSetCmd.d,v 1.3 88/06/11 07:53:04 mento Exp $
+The
+.ZN XSetCommand
+function sets the command and arguments used to invoke the
+application.
+(Typically, argv is the argv array of your main program.)
+If the strings are not in the Host Portable Character Encoding
+the result is implementation dependent.
+.LP
+.ZN XSetCommand
+can generate
+.ZN BadAlloc
+and
+.ZN BadWindow 
+errors.
+.LP
+The 
+.ZN XGetCommand 
+function reads the WM_COMMAND property from the specified window 
+and returns a string list.
+If the WM_COMMAND property exists, 
+it is of type STRING and format 8.
+If sufficient memory can be allocated to contain the string list, 
+.ZN XGetCommand
+fills in the argv_return and argc_return arguments
+and returns a nonzero status.
+Otherwise, it returns a zero status.
+If the data returned by the server is in the Latin Portable Character Encoding,
+then the returned strings are in the Host Portable Character Encoding.
+Otherwise, the result is implementation dependent.
+To free the memory allocated to the string list, use
+.ZN XFreeStringList .
+.SH PROPERTIES
+.TP 1i
+\s-1WM_COMMAND\s+1
+The command and arguments, null-separated, used to invoke the
+application.
+.SH DIAGNOSTICS
+.\" $Header: badalloc.e,v 1.3 87/09/11 11:17:14 mento Exp $
+.TP 1i
+.ZN BadAlloc
+The server failed to allocate the requested resource or server memory.
+.\" $Header: badwindow.e,v 1.1 87/09/04 08:23:20 mento Exp $
+.TP 1i
+.ZN BadWindow
+A value for a Window argument does not name a defined Window.
+.SH "SEE ALSO"
+XAllocClassHint(3X11),
+XAllocIconSize(3X11),
+XAllocSizeHints(3X11),
+XAllocWMHints(3X11),
+XSetTransientForHint(3X11),
+XSetTextProperty(3X11),
+XSetWMClientMachine(3X11),
+XSetWMColormapWindows(3X11),
+XSetWMIconName(3X11),
+XSetWMName(3X11),
+XSetWMProperties(3X11),
+XSetWMProtocols(3X11),
+XStringListToTextProperty(3X11)
+.br
+\fI\*(xL\fP

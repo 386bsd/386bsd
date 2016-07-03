@@ -1,0 +1,488 @@
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/filebuf.cc
+In file included from /usr/src/lib/libg++/libg++/filebuf.cc:31:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/filebuf.h:31, from /usr/src/lib/libg++/libg++/filebuf.cc:31:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/streambuf.h:39, from /usr/src/lib/libg++/libg++/../g++-include/filebuf.h:31, from /usr/src/lib/libg++/libg++/filebuf.cc:31:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/streambuf.h:40, from /usr/src/lib/libg++/libg++/../g++-include/filebuf.h:31, from /usr/src/lib/libg++/libg++/filebuf.cc:31:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/filebuf.cc:32:
+/usr/src/lib/libg++/libg++/../g++-include/open.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/open.h:9, from /usr/src/lib/libg++/libg++/filebuf.cc:32:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/filebuf.cc: In method `class streambuf* filebuf::open (int, enum io_mode)':
+/usr/src/lib/libg++/libg++/filebuf.cc:137: incompatible pointer types for argument 1 of `int  open (const char *, int, ...)'
+*** Error code 1 (continuing)
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Filebuf.cc
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/open.cc
+In file included from /usr/src/lib/libg++/libg++/open.cc:1:
+/usr/src/lib/libg++/libg++/../g++-include/open.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/open.h:9, from /usr/src/lib/libg++/libg++/open.cc:1:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/open.h:9, from /usr/src/lib/libg++/libg++/open.cc:1:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/open.h:9, from /usr/src/lib/libg++/libg++/open.cc:1:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/PlotFile.cc
+In file included from /usr/src/lib/libg++/libg++/PlotFile.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/PlotFile.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/PlotFile.h:37, from /usr/src/lib/libg++/libg++/PlotFile.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/PlotFile.h:37, from /usr/src/lib/libg++/libg++/PlotFile.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/PlotFile.h:37, from /usr/src/lib/libg++/libg++/PlotFile.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/PlotFile.cc: In method `PlotFile::PlotFile (const char *, enum io_mode, enum access_mode)':
+/usr/src/lib/libg++/libg++/PlotFile.cc:39: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/PlotFile.cc: In method `PlotFile::PlotFile (const char *, const char *)':
+/usr/src/lib/libg++/libg++/PlotFile.cc:42: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/PlotFile.cc: In method `PlotFile::PlotFile (int, enum io_mode (=  io_writeonly  0 ))':
+/usr/src/lib/libg++/libg++/PlotFile.cc:45: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/PlotFile.cc: In method `PlotFile::PlotFile (struct __sFILE*)':
+/usr/src/lib/libg++/libg++/PlotFile.cc:48: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/SFile.cc
+In file included from /usr/src/lib/libg++/libg++/SFile.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/SFile.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/SFile.h:31, from /usr/src/lib/libg++/libg++/SFile.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/SFile.h:31, from /usr/src/lib/libg++/libg++/SFile.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/SFile.h:31, from /usr/src/lib/libg++/libg++/SFile.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/SFile.cc: In method `SFile::SFile (const char *, int, enum io_mode, enum access_mode)':
+/usr/src/lib/libg++/libg++/SFile.cc:32: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/SFile.cc: In method `SFile::SFile (const char *, int, const char *)':
+/usr/src/lib/libg++/libg++/SFile.cc:38: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/SFile.cc: In method `SFile::SFile (int, int, enum io_mode)':
+/usr/src/lib/libg++/libg++/SFile.cc:44: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/SFile.cc: In method `SFile::SFile (struct __sFILE*, int)':
+/usr/src/lib/libg++/libg++/SFile.cc:50: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/builtin.cc
+In file included from /usr/src/lib/libg++/libg++/builtin.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/regex.cc
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Regex.cc
+In file included from /usr/src/lib/libg++/libg++/Regex.cc:32:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Regex.cc:33:
+/usr/src/lib/libg++/libg++/../g++-include/new.h:3: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Regex.cc:34:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Regex.cc:40:
+/usr/src/lib/libg++/libg++/../g++-include/Regex.h:27: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/String.cc
+In file included from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/String.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/String.h:37, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/String.h:38, from /usr/src/lib/libg++/libg++/String.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Regex.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/String.cc:33:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/String.cc:34:
+/usr/src/lib/libg++/libg++/../g++-include/new.h:3: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Integer.cc
+In file included from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/Integer.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/Integer.cc:36:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Integer.cc:40:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Integer.cc:41:
+/usr/src/lib/libg++/libg++/../g++-include/Obstack.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Integer.cc:42:
+/usr/src/lib/libg++/libg++/../g++-include/AllocRing.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Integer.cc:43:
+/usr/src/lib/libg++/libg++/../g++-include/new.h:3: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Rational.cc
+In file included from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Rational.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Integer.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/Integer.h:32, from /usr/src/lib/libg++/libg++/../g++-include/Rational.h:32, from /usr/src/lib/libg++/libg++/Rational.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Rational.cc:29:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Complex.cc
+In file included from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Complex.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/Complex.h:32, from /usr/src/lib/libg++/libg++/Complex.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Random.cc
+In file included from /usr/src/lib/libg++/libg++/Random.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Random.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/BitSet.cc
+In file included from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/BitSet.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:32, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/BitSet.h:33, from /usr/src/lib/libg++/libg++/BitSet.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitSet.cc:33:
+/usr/src/lib/libg++/libg++/../g++-include/Obstack.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitSet.cc:34:
+/usr/src/lib/libg++/libg++/../g++-include/AllocRing.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitSet.cc:35:
+/usr/src/lib/libg++/libg++/../g++-include/new.h:3: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/BitString.cc
+In file included from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/BitString.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:32, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/BitString.h:33, from /usr/src/lib/libg++/libg++/BitString.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitString.cc:33:
+/usr/src/lib/libg++/libg++/../g++-include/Obstack.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitString.cc:34:
+/usr/src/lib/libg++/libg++/../g++-include/AllocRing.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/BitString.cc:35:
+/usr/src/lib/libg++/libg++/../g++-include/new.h:3: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/LogNorm.cc
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/LogNorm.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h:25: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/LogNorm.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h: In method `Normal::Normal (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h:53: warning: ANSI C++ forbids old style base class initialization
+/usr/src/lib/libg++/libg++/../g++-include/LogNorm.h: In method `LogNormal::LogNormal (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/LogNorm.cc:30:
+/usr/src/lib/libg++/libg++/../g++-include/LogNorm.h:56: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/SmplHist.cc
+In file included from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/SmplHist.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/SmplHist.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/SmplHist.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/SmplHist.h:32, from /usr/src/lib/libg++/libg++/SmplHist.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/SmplStat.h:25: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/SmplHist.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/SmplHist.h:61: warning: class `SampleHistogram' has virtual functions but non-virtual destructor
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/SmplStat.cc
+In file included from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/SmplStat.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/SmplStat.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/SmplStat.h:25: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Normal.cc
+In file included from /usr/src/lib/libg++/libg++/Normal.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Normal.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Normal.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Normal.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h: In method `Normal::Normal (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Normal.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Normal.h:53: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/NegExp.cc
+In file included from /usr/src/lib/libg++/libg++/NegExp.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/NegExp.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/NegExp.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/NegExp.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/NegExp.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/NegExp.h: In method `NegativeExpntl::NegativeExpntl (double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/NegExp.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/NegExp.h:52: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Weibull.cc
+In file included from /usr/src/lib/libg++/libg++/Weibull.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Weibull.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Weibull.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Weibull.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Weibull.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Weibull.h: In method `Weibull::Weibull (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Weibull.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Weibull.h:58: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Erlang.cc
+In file included from /usr/src/lib/libg++/libg++/Erlang.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Erlang.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Erlang.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Erlang.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Erlang.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Erlang.h: In method `Erlang::Erlang (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Erlang.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Erlang.h:59: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/DiscUnif.cc
+In file included from /usr/src/lib/libg++/libg++/DiscUnif.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/DiscUnif.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/DiscUnif.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/DiscUnif.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/DiscUnif.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/DiscUnif.h: In method `DiscreteUniform::DiscreteUniform (long int, long int, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/DiscUnif.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/DiscUnif.h:53: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Uniform.cc
+In file included from /usr/src/lib/libg++/libg++/Uniform.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Uniform.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Uniform.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Uniform.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Uniform.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Uniform.h: In method `Uniform::Uniform (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Uniform.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Uniform.h:54: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Poisson.cc
+In file included from /usr/src/lib/libg++/libg++/Poisson.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Poisson.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Poisson.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Poisson.cc:29:
+/usr/src/lib/libg++/libg++/../g++-include/Poisson.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Poisson.h: In method `Poisson::Poisson (double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Poisson.cc:29:
+/usr/src/lib/libg++/libg++/../g++-include/Poisson.h:47: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/HypGeom.cc
+In file included from /usr/src/lib/libg++/libg++/HypGeom.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/HypGeom.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/HypGeom.cc:27:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/HypGeom.cc:29:
+/usr/src/lib/libg++/libg++/../g++-include/HypGeom.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/HypGeom.h: In method `HyperGeometric::HyperGeometric (double, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/HypGeom.cc:29:
+/usr/src/lib/libg++/libg++/../g++-include/HypGeom.h:58: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Geom.cc
+In file included from /usr/src/lib/libg++/libg++/Geom.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Geom.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Geom.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Geom.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Geom.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Geom.h: In method `Geometric::Geometric (double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Geom.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Geom.h:47: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Binomial.cc
+In file included from /usr/src/lib/libg++/libg++/Binomial.cc:25:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Binomial.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Random.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Random.h:35, from /usr/src/lib/libg++/libg++/Binomial.cc:26:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Binomial.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Binomial.h:25: warning: `#pragma once' is obsolete
+/usr/src/lib/libg++/libg++/../g++-include/Binomial.h: In method `Binomial::Binomial (int, double, class RNG*)':
+In file included from /usr/src/lib/libg++/libg++/Binomial.cc:28:
+/usr/src/lib/libg++/libg++/../g++-include/Binomial.h:52: warning: ANSI C++ forbids old style base class initialization
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/max.cc
+In file included from /usr/src/lib/libg++/libg++/../g++-include/max.h:1, from /usr/src/lib/libg++/libg++/max.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/min.cc
+In file included from /usr/src/lib/libg++/libg++/../g++-include/min.h:1, from /usr/src/lib/libg++/libg++/min.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/RNG.cc
+In file included from /usr/src/lib/libg++/libg++/RNG.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/values.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/RNG.cc:6:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/RNG.cc:7:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/ACG.cc
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ACG.h:26, from /usr/src/lib/libg++/libg++/ACG.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/ACG.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/ACG.h:29: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/MLCG.cc
+In file included from /usr/src/lib/libg++/libg++/MLCG.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/MLCG.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/MLCG.h:30, from /usr/src/lib/libg++/libg++/MLCG.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/RndInt.cc
+In file included from /usr/src/lib/libg++/libg++/RndInt.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/RndInt.h:25: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/RndInt.h:38, from /usr/src/lib/libg++/libg++/RndInt.cc:4:
+/usr/src/lib/libg++/libg++/../g++-include/RNG.h:26: warning: `#pragma once' is obsolete
+g++ -O -felide-constructors -I/usr/src/lib/libg++/libg++/../g++-include -DHAVE_VPRINTF -DHAVE_VSCANF  -DHAVE_SETVBUF -DHAVE_SETLINEBUF -DHAVE_GETPAGESIZE -c /usr/src/lib/libg++/libg++/Fix.cc
+In file included from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/Fix.h:7: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/stream.h:5: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/ostream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/File.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:31, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/builtin.h:32: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/File.h:35, from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:39, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/Fmodes.h:4: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:40, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/streambuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:41, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/ostream.h:42, from /usr/src/lib/libg++/libg++/../g++-include/stream.h:10, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/Filebuf.h:26: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/stream.h:11, from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:12, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/istream.h:30: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/../g++-include/Fix.h:15, from /usr/src/lib/libg++/libg++/Fix.cc:8:
+/usr/src/lib/libg++/libg++/../g++-include/Integer.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Fix.cc:10:
+/usr/src/lib/libg++/libg++/../g++-include/Obstack.h:27: warning: `#pragma once' is obsolete
+In file included from /usr/src/lib/libg++/libg++/Fix.cc:11:
+/usr/src/lib/libg++/libg++/../g++-include/AllocRing.h:27: warning: `#pragma once' is obsolete

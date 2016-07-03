@@ -1,0 +1,227 @@
+.ds xT X Toolkit Intrinsics \- C Language Interface
+.ds xW Athena X Widgets \- C Language X Toolkit Interface
+.ds xL Xlib \- C Language X Interface
+.ds xC Inter-Client Communication Conventions Manual
+.na
+.de Ds
+.nf
+.\\$1D \\$2 \\$1
+.ft 1
+.\".ps \\n(PS
+.\".if \\n(VS>=40 .vs \\n(VSu
+.\".if \\n(VS<=39 .vs \\n(VSp
+..
+.de De
+.ce 0
+.if \\n(BD .DF
+.nr BD 0
+.in \\n(OIu
+.if \\n(TM .ls 2
+.sp \\n(DDu
+.fi
+..
+.de FD
+.LP
+.KS
+.TA .5i 3i
+.ta .5i 3i
+.nf
+..
+.de FN
+.fi
+.KE
+.LP
+..
+.de IN		\" send an index entry to the stderr
+..
+.de C{
+.KS
+.nf
+.D
+.\"
+.\"	choose appropriate monospace font
+.\"	the imagen conditional, 480,
+.\"	may be changed to L if LB is too
+.\"	heavy for your eyes...
+.\"
+.ie "\\*(.T"480" .ft L
+.el .ie "\\*(.T"300" .ft L
+.el .ie "\\*(.T"202" .ft PO
+.el .ie "\\*(.T"aps" .ft CW
+.el .ft R
+.ps \\n(PS
+.ie \\n(VS>40 .vs \\n(VSu
+.el .vs \\n(VSp
+..
+.de C}
+.DE
+.R
+..
+.de Pn
+.ie t \\$1\fB\^\\$2\^\fR\\$3
+.el \\$1\fI\^\\$2\^\fP\\$3
+..
+.de ZN
+.ie t \fB\^\\$1\^\fR\\$2
+.el \fI\^\\$1\^\fP\\$2
+..
+.de NT
+.ne 7
+.ds NO Note
+.if \\n(.$>$1 .if !'\\$2'C' .ds NO \\$2
+.if \\n(.$ .if !'\\$1'C' .ds NO \\$1
+.ie n .sp
+.el .sp 10p
+.TB
+.ce
+\\*(NO
+.ie n .sp
+.el .sp 5p
+.if '\\$1'C' .ce 99
+.if '\\$2'C' .ce 99
+.in +5n
+.ll -5n
+.R
+..
+.		\" Note End -- doug kraft 3/85
+.de NE
+.ce 0
+.in -5n
+.ll +5n
+.ie n .sp
+.el .sp 10p
+..
+.ny0
+.TH XcmsColor 3X11 "Release 5" "X Version 11" "XLIB FUNCTIONS"
+.SH NAME
+XcmsColor, XcmsRGB, XcmsRGBi, XcmsCIEXYZ, XcmsCIEuvY, XcmsCIExyY, XcmsCIELab, XcmsCIELuv, XcmsTekHVC, XcmsPad \- Xcms color struture
+.SH STRUCTURES
+The structure for
+.ZN XcmsColor
+contains:
+.LP
+.Ds 0
+.TA .5i 1i 2.5i
+.ta .5i 1i 2.5i
+typedef unsigned long XcmsColorFormat;			/* Color Specification Format */
+
+typedef struct {
+	union {
+		XcmsRGB RGB;
+		XcmsRGBi RGBi;
+		XcmsCIEXYZ CIEXYZ;
+		XcmsCIEuvY CIEuvY;
+		XcmsCIExyY CIExyY;
+		XcmsCIELab CIELab;
+		XcmsCIELuv CIELuv;
+		XcmsTekHVC TekHVC;
+		XcmsPad Pad;
+	} spec;
+	XcmsColorFormat format;
+	unsigned long pixel;
+} XcmsColor;			/* Xcms Color Structure */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef double XcmsFloat;
+
+typedef struct {
+	unsigned short red;	/* 0x0000 to 0xffff */
+	unsigned short green;	/* 0x0000 to 0xffff */
+	unsigned short blue;	/* 0x0000 to 0xffff */
+} XcmsRGB;		/* RGB Device */
+.De
+LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat red;	/* 0.0 to 1.0 */
+	XcmsFloat green;	/* 0.0 to 1.0 */
+	XcmsFloat blue;	/* 0.0 to 1.0 */
+} XcmsRGBi;		/* RGB Intensity */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat X;
+	XcmsFloat Y;	/* 0.0 to 1.0 */
+	XcmsFloat Z;
+} XcmsCIEXYZ;		/* CIE XYZ */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat u_prime;	/* 0.0 to ~0.6 */
+	XcmsFloat v_prime;	/* 0.0 to ~0.6 */
+	XcmsFloat Y; 	/* 0.0 to 1.0 */
+} XcmsCIEuvY;		/* CIE u'v'Y */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat x; 	/* 0.0 to ~.75 */
+	XcmsFloat y; 	/* 0.0 to ~.85 */
+	XcmsFloat Y; 	/* 0.0 to 1.0 */
+} XcmsCIExyY;		/* CIE xyY */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat L_star; 	/* 0.0 to 100.0 */
+	XcmsFloat a_star;
+	XcmsFloat b_star;
+} XcmsCIELab;		/* CIE L*a*b* */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat L_star; 	/* 0.0 to 100.0 */
+	XcmsFloat u_star;
+	XcmsFloat v_star;
+} XcmsCIELuv;		/* CIE L*u*v* */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat H; 	/* 0.0 to 360.0 */
+	XcmsFloat V; 	/* 0.0 to 100.0 */
+	XcmsFloat C; 	/* 0.0 to 100.0 */
+} XcmsTekHVC;		/* TekHVC */
+.De
+.LP
+.Ds 0
+.TA .5i 2.5i
+.ta .5i 2.5i
+typedef struct {
+	XcmsFloat pad0;
+	XcmsFloat pad1;
+	XcmsFloat pad2;
+	XcmsFloat pad3;
+} XcmsPad;		/* four doubles */
+.De
+.SH DESCRIPTION
+The
+.ZN XcmsColor
+structure contains a union of substructures,
+each supporting color specification encoding for a particular color space.
+.SH "SEE ALSO"
+XcmsAllocColor(3X11),
+XcmsStoreColor(3X11),
+XcmsConvertColors(3X11),
+.br
+\fI\*(xL\fP

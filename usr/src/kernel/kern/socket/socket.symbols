@@ -1,0 +1,4 @@
+# $Id: socket.symbols,v 1.1 94/10/19 23:49:58 bill Exp $
+
+#netstat
+	_mbstat

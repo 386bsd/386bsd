@@ -1,0 +1,168 @@
+.\" Copyright (c) 1994 William F. Jolitz, TeleMuse
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This software is a component of "386BSD" developed by 
+.\"	William F. Jolitz, TeleMuse.
+.\" 4. Neither the name of the developer nor the name "386BSD"
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\" 5. Non-commercial distribution of this complete file in either source and/or
+.\"    binary form at no charge to the user (such as from an official Internet 
+.\"    archive site) is permitted. 
+.\" 6. Commercial distribution and sale of this complete file in either source
+.\"    and/or binary form on any media, including that of floppies, tape, or 
+.\"    CD-ROM, or through a per-charge download such as that of a BBS, is not 
+.\"    permitted without specific prior written permission.
+.\" 7. Non-commercial and/or commercial distribution of an incomplete, altered, 
+.\"    or otherwise modified file in either source and/or binary form is not 
+.\"    permitted.
+.\"
+.\" THIS SOFTWARE IS A COMPONENT OF 386BSD DEVELOPED BY WILLIAM F. JOLITZ 
+.\" AND IS INTENDED FOR RESEARCH AND EDUCATIONAL PURPOSES ONLY. THIS 
+.\" SOFTWARE SHOULD NOT BE CONSIDERED TO BE A COMMERCIAL PRODUCT. 
+.\" THE DEVELOPER URGES THAT USERS WHO REQUIRE A COMMERCIAL PRODUCT 
+.\" NOT MAKE USE OF THIS WORK.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE DEVELOPER ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE DEVELOPER BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\" $Id: vmspace.9,v 1.1 94/10/19 17:37:28 bill Exp $
+.\"
+.Dd August 29, 1994
+.Dt VMSPACE 9
+.Os 386BSD 1
+.Sh NAME
+.Nm vmspace
+.Nd virtual memory program interface functions
+.Sh SYNOPSIS
+.Fd #include """vm.h"""
+.Fd #include """vmspace.h"""
+.Ft "struct vmspace *"
+.Fn vmspace_fork "struct vmspace *" "struct proc *"
+.Ft void
+.Fn vmspace_free "struct vmspace *"
+.Ft int
+.Fn vmspace_allocate "struct vmspace *vs" "vm_offset_t *addr" "vm_size_t size" "int findspace"
+.Ft void
+.Fn vmspace_delete "struct vmspace *vs" "caddr_t va" "unsigned sz"
+.Ft int
+.Fn vmspace_mmap "struct vmspace *vs" "vm_offset_t *addr" "vm_size_t size" "vm_prot_t prot" "int flags" "caddr_t handle" "vm_offset_t foff"
+.Ft int
+.Fn vmspace_protect "struct vmspace *vs" "caddr_t va" "unsigned sz" "int set_max" "vm_prot_t new_prot"
+.Ft int
+.Fn vmspace_access "struct vmspace *vs" "caddr_t va" "unsigned sz" "int prot"
+.Ft void
+.Fn vmspace_pageable "struct vmspace *vs" "caddr_t va" "unsigned sz"
+.Ft void
+.Fn vmspace_notpageable "struct vmspace *vs" "caddr_t va" "unsigned sz"
+.Ft int
+.Fn vmspace_activate "struct vmspace *vs" "caddr_t va" "unsigned sz"
+.Ft int
+.Fn vmspace_inherit "struct vmspace *vs" "caddr_t va" "unsigned sz" "vm_inherit_t new_inheritance"
+.Sh DESCRIPTION
+Access to the facilities of the virtual memory system is made available via
+the "vmspace" program interface, which provides the methods to create new
+address spaces and allocate contents within them. In addition, the attributes
+and contents of the allocated address space can be adjusted as needed by the
+kernel to suite its needs. These functions can be applied to both kernel
+and user program address spaces, however, the kernel program has its own
+special interfaces as well (see
+.Xr kmem 9 ).
+.Pp
+Each program has a small structure (struct vmspace) that is used to describe
+the characteristics of a particular address space. Modifications to an address
+space may be done from other process or thread contexts, however they currently
+may not be done from interrupt level as they may block for memory allocation
+or contention (a special exception is made for kernel memory allocation --
+see
+.Xr kmem 9 ).
+.Pp
+The
+.Fn vmspace_fork
+function creates a user address space for a new process by replicating an existing processes
+user address space. The 
+.Fn vmspace_free
+function reclaims a user address space and any resources consumed by it. The
+.Fn vmspace_allocate
+function reserves a region of address space of a requested
+.Fa size .
+This region can either begin at a specific desired location, or the caller
+can request that a search for an adjacent, allocatable region be performed
+in order to locate a free portion of address space. The
+.Fn vmspace_delete
+function deallocates a region of an address space, along with any resources
+consumed within it. The
+.Fn vmspace_mmap
+function provides an interface similar the the
+.Xr mmap 2
+system call to associate a region of address space with a device driver
+or file, and adjust the attributes of the region of memory to suite the
+needs of a mapped object.
+.Pp
+The
+.Fn vmspace_protect
+function adjusts the current and maximum memory protection of a region of
+an address space, to alter the level of access allowed by programs. Similarly,
+the function
+.Fn vmspace_access
+can be used to check if a operation associated with a given memory protection
+level can be performed over a specified region of an address space.
+.Pp
+The
+.Fn vmspace_notpageable
+function forces a region of an address space to be entirely resident and
+allocated (however, not actively mapped -- just insured to be resident).
+The
+.Fn vmspace_pageable
+function releases this restriction, allowing the memory to become reclaimable
+again. The
+.Fn vmspace_active
+function forces a region of address space to become addressable without
+fault at its maximum protection level (this will cause any copy-on-write
+portions of the region to have distinct copies as a side-effect), and can
+be used in concert with the resident state functions.
+.Pp
+The
+.Fn vmspace_inherit
+function can be used to assign the inheritance attribute of regions of
+address space to determine the disposition of any contents upon the next
+address space replication operation (contents stays with original, contents
+passes to the copy, contents are copied).
+.Sh RETURN VALUES
+The
+.Fn vmspace_fork
+function returns the address of the vmspace instance associated with the
+new user address space copy. The
+.Fn vmspace_allocate ,
+.Fn vmspace_mmap ,
+.Fn vmspace_protect ,
+.Fn vmspace_access ,
+and
+.Fn vmspace_activate 
+functions returns the status of the requested operation attempt. The 
+.Fn vmspace_inherit
+function returns failure if an unimplemented inheritance type is requested.
+.Sh SEE ALSO
+.Xr kmem 9 ,
+.Xr mmap 2 ,
+.Xr fork 2 ,
+.Xr exit 2

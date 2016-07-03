@@ -1,0 +1,789 @@
+.\" $XConsortium: x11perf.man,v 1.10 91/08/26 18:00:44 gildea Exp $
+.TH X11PERF 1 "Release 5" "X Version 11"
+.SH NAME
+x11perf \- X11 server performance test program
+.SH SYNTAX
+.B x11perf
+[ \-option ... ]
+.SH DESCRIPTION
+The
+.I x11perf
+program runs one or more performance tests and reports how fast an X server can
+execute the tests.
+.PP
+Many graphics benchmarks assume that the graphics device is used to display the
+output of a single fancy graphics application, and that the user gets his work
+done on some other device, like a terminal.  Such benchmarks usually measure
+drawing speed for lines, polygons, text, etc.
+.PP
+Since workstations are not used as standalone graphics engines, but as
+super-terminals, 
+.I x11perf 
+measures window management performance as well as
+traditional graphics performace.  
+.I x11perf 
+includes benchmarks for the time it
+takes to create and map windows (as when you start up an application); to map a
+pre-existing set of windows onto the screen (as when you deiconify an
+application or pop up a menu); and to rearrange windows (as when you slosh
+windows to and fro trying to find the one you want).
+.PP
+.I x11perf 
+also measures graphics performance for operations not normally used in
+standalone graphics displays, but are nonetheless used frequently by X
+applications.  Such operations include CopyPlane (used to map bitmaps into
+pixels), scrolling (used in text windows), and various stipples and tiles
+(used for CAD and color half-toning, respectively).
+.PP
+.I x11perf 
+should be used to analyze particular strengths and weaknesses
+of servers, and is most useful to a server writer who wants to
+analyze and improve a server.
+.I x11perf
+is meant to comprehensively exercise just about every X11 operation you can
+perform; it does not purport to be a representative sample of the
+operations that X11 applications actually use.
+While it can be used as a benchmark, it was written and is intended as
+a performance testing tool.
+.PP
+As such,
+.I x11perf 
+DOES NOT whittle down measurements to a single ``HeXStones''
+or ``MeXops'' number.  We consider such numbers to be uninformative 
+at best and misleading at worst.  
+Some servers which are very fast for certain applications can be
+very slow for others.
+No single number or small set of numbers are sufficient to
+characterize how an X implementation will perform on all applications.
+However, by knowledge of your favorite application, you
+may be able to use the numbers
+.I x11perf
+reports to predict its performance on a given X implementation.
+.PP
+That said, you might also want to look at
+.I x11perfcomp(1),
+a program to compare the outputs of different 
+.I x11perf
+runs.  You provide a list of files containing results from
+.I x11perf,
+and it lays them out in a nice tabular format.
+.PP
+For repeatable results, 
+.I x11perf 
+should be run using a local connection on a
+freshly-started server.  The default configuration runs each test 5 times, in
+order to see if each trial takes approximately the same amount of time.
+Strange glitches should be examined; if non-repeatable one might
+chalk them up to
+daemons and network traffic.  Each trial is run for 5 seconds, in order to
+reduce random time differences.  The number of objects processed per second is
+displayed to 3 significant digits, but you'll be lucky on most UNIX system if
+the numbers are actually consistent to 2 digits.
+.I x11perf
+moves the cursor out of the test window; you should be careful not
+to bump the mouse and move it back into the window.
+(A prize to people who correctly explain why!!).
+.PP
+Before running a test,
+.I x11perf
+determines what the round trip time to the server is, and factors this out of
+the final timing reported.  It ensures that the server has actually performed
+the work requested by fetching a pixel back from the test window, which means
+that servers talking to graphics accelerators can't claim that they are done,
+while in the meantime the accelerator is painting madly.
+.PP
+By default 
+.I x11perf
+automatically calibrates the number of repetitions of each test,
+so that each should take approximately the same length of time to run across
+servers of widely differing speeds.  However, since each test must be run to
+completion at least once, some slow servers may take a very long time,
+particularly on the window moving and resizing tests, and on the arc drawing
+tests.
+.PP
+All timing reports are for the smallest object involved.  For example, the line
+tests use a PolyLine request to paint several lines at once, but report how
+many lines per second the server can paint, not how many PolyLine requests per
+second.  Text tests paint a line of characters, but report on the number of
+characters per second.  Some window tests map, unmap, or move a single parent
+window, but report on how many children windows per second the server can map,
+unmap, or move.
+.PP
+The current program is mostly the responsibility of Joel McCormack.  It is
+based upon the x11perf developed by Phil Karlton, Susan Angebranndt, and Chris
+Kent, who wanted to assess performance differences between various servers.
+Mary Walker, Todd Newman, and several tests were added 
+in order to write and tune
+the PMAX (DECStation 3100) servers.  
+For a general release to the world, 
+.I x11perf 
+was rewritten to ease making comparisons between widely varying
+machines, to cover most important (and unimportant) X functionality,
+and to exercise graphics operations in as many different
+orientations and alignments as possible.
+.SH OPTIONS
+.I x11perf 
+is solely Xlib based, and
+accepts the options listed below:
+.TP 14
+.B \-display host:dpy
+Specifies which display to use.
+.TP 14
+.B \-sync
+Runs the tests in synchronous mode.
+Normally only useful for debugging 
+.I x11perf .
+.TP 14
+.B \-pack
+Runs rectangle tests so that they pack rectangles right next to each other.
+This makes it easy to debug server code for stipples and tiles...if the
+pattern looks ugly, you've got alignment problems.
+.TP 14
+.B \-repeat \fI<n>\fP
+Repeats each test 
+.I n
+times (by default each test is run 5 times).
+.TP 14
+.B \-time \fI<s>\fP
+Specifies how long in seconds each test should be run (default 5 seconds).
+.TP 14
+.B \-all
+Runs all tests.  This may take a while.
+.TP 14
+.B \-range \fI<test1>\fP[,\fI<test2>\fP]
+Runs all the tests starting from the specified name \fItest1\fP until
+the name \fItest2\fP, including both the specified tests. The testnames
+should be one of the options starting from -dot. (eg) -range line100
+will peform the tests from the 100 pixel line test, and go on till the
+last test, -range line100,dline10 will do the tests from line100 to
+dline10.
+.TP 14
+.B \-labels
+Generates just the descriptive labels for each test specified.  See
+.I x11perfcomp
+for more details.
+.TP 14
+.B \-fg \fIcolor\fP
+Specifies the foreground color to use.
+.TP 14
+.B \-bg \fIcolor\fP
+Specifies the background color to use.
+.TP 14
+.B \-rop <rop0 rop1 ...>
+Use specified raster ops (default is GXcopy).
+This option only affects graphics
+benchmarks in which the graphics function is actually used.
+.TP 14
+.B \-pm <pm0 pm1 ...>
+Use specified planemasks (default is ~0).
+This option only affects graphics
+benchmarks in which the planemask is actually used.
+.TP 14
+.B \-depth <depth>
+Use a visual with <depth> planes per pixel (default is the default
+visual).
+.TP 14
+.B \-dot
+Dot.
+.TP 14
+.B \-rect1
+1x1 solid-filled rectangle.
+.TP 14
+.B \-rect10
+10x10 solid-filled rectangle.
+.TP 14
+.B \-rect100
+100x100 solid-filled rectangle.
+.TP 14
+.B \-rect500
+500x500 solid-filled rectangle.
+.TP 14
+.B \-srect1
+1x1 transparent stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-srect10
+10x10 transparent stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-srect100
+100x100 transparent stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-srect500
+500x500 transparent stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-osrect1
+1x1 opaque stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-osrect10
+10x10 opaque stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-osrect100
+100x100 opaque stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-osrect500
+500x500 opaque stippled rectangle, 8x8 stipple pattern.
+.TP 14
+.B \-tilerect1
+1x1 tiled rectangle, 4x4 tile pattern.
+.TP 14
+.B \-tilerect10
+10x10 tiled rectangle, 4x4 tile pattern.
+.TP 14
+.B \-tilerect100
+100x100 tiled rectangle, 4x4 tile pattern.
+.TP 14
+.B \-tilerect500
+500x500 tiled rectangle, 4x4 tile pattern.
+.TP 14
+.B \-bigsrect1
+1x1 stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigsrect10
+10x10 stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigsrect100
+100x100 stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigsrect500
+500x500 stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigosrect1
+1x1 opaque stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigosrect10
+10x10 opaque stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigosrect100
+100x100 opaque stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigosrect500
+500x500 opaque stippled rectangle, 161x145 stipple pattern.
+.TP 14
+.B \-bigtilerect1
+1x1 tiled rectangle, 161x145 tile pattern.
+.TP 14
+.B \-bigtilerect10
+10x10 tiled rectangle, 161x145 tile pattern.
+.TP 14
+.B \-bigtilerect100
+100x100 tiled rectangle, 161x145 tile pattern.
+.TP 14
+.B \-bigtilerect500
+500x500 tiled rectangle, 161x145 tile pattern.
+.TP 14
+.B \-eschertilerect1
+1x1 tiled rectangle, 215x208 tile pattern.
+.TP 14
+.B \-eschertilerect10
+10x10 tiled rectangle, 215x208 tile pattern.
+.TP 14
+.B \-eschertilerect100
+100x100 tiled rectangle, 215x208 tile pattern.
+.TP 14
+.B \-eschertilerect500
+500x500 tiled rectangle, 215x208 tile pattern.
+.TP 14
+.B \-seg1
+1-pixel thin line segment.
+.TP 14
+.B \-seg10
+10-pixel thin line segment.
+.TP 14
+.B \-seg100
+100-pixel thin line segment.
+.TP 14
+.B \-seg500
+500-pixel thin line segment.
+.TP 14
+.B \-seg100c1
+100-pixel thin line segment (1 obscuring rectangle).
+.TP 14
+.B \-seg100c2
+100-pixel thin line segment (2 obscuring rectangles).
+.TP 14
+.B \-seg100c3
+100-pixel thin line segment (3 obscuring rectangles).
+.TP 14
+.B \-dseg10
+10-pixel thin dashed segment (3 on, 2 off).
+.TP 14
+.B \-dseg100
+100-pixel thin dashed segment (3 on, 2 off).
+.TP 14
+.B \-ddseg100
+100-pixel thin double-dashed segment (3 fg, 2 bg).
+.TP 14
+.B \-hseg10
+10-pixel thin horizontal line segment.
+.TP 14
+.B \-hseg100
+100-pixel thin horizontal line segment.
+.TP 14
+.B \-hseg500
+500-pixel thin horizontal line segment.
+.TP 14
+.B \-vseg10
+10-pixel thin vertical line segment.
+.TP 14
+.B \-vseg100
+100-pixel thin vertical line segment.
+.TP 14
+.B \-vseg500
+500-pixel thin vertical line segment.
+.TP 14
+.B \-whseg10
+10-pixel wide horizontal line segment.
+.TP 14
+.B \-whseg100
+100-pixel wide horizontal line segment.
+.TP 14
+.B \-whseg500
+500-pixel wide horizontal line segment.
+.TP 14
+.B \-wvseg10
+10-pixel wide vertical line segment.
+.TP 14
+.B \-wvseg100
+100-pixel wide vertical line segment.
+.TP 14
+.B \-wvseg500
+500-pixel wide vertical line segment.
+.TP 14
+.B \-line1
+1-pixel thin (width 0) line.
+.TP 14
+.B \-line10
+10-pixel thin line.
+.TP 14
+.B \-line100
+100-pixel thin line.
+.TP 14
+.B \-line500
+500-pixel thin line.
+.TP 14
+.B \-dline10
+10-pixel thin dashed line (3 on, 2 off).
+.TP 14
+.B \-dline100
+100-pixel thin dashed line (3 on, 2 off).
+.TP 14
+.B \-ddline100
+100-pixel thin double-dashed line (3 fg, 2 bg).
+.TP 14
+.B \-wline10
+10-pixel line, line width 1.
+.TP 14
+.B \-wline100
+100-pixel line, line width 10.
+.TP 14
+.B \-wline500
+500-pixel line, line width 50.
+.TP 14
+.B \-wdline100
+100-pixel dashed line, line width 10 (30 on, 20 off).
+.TP 14
+.B \-wddline100
+100-pixel double-dashed line, line width 10 (30 fg, 20 bg).
+.TP 14
+.B \-orect10
+10x10 thin rectangle outline.
+.TP 14
+.B \-orect100
+100-pixel thin vertical line segment.
+.TP 14
+.B \-orect500
+500-pixel thin vertical line segment.
+.TP 14
+.B \-worect10
+10x10 wide rectangle outline.
+.TP 14
+.B \-worect100
+100-pixel wide vertical line segment.
+.TP 14
+.B \-worect500
+500-pixel wide vertical line segment.
+.TP 14
+.B \-circle1
+1-pixel diameter thin (line width 0) circle.
+.TP 14
+.B \-circle10
+10-pixel diameter thin circle.
+.TP 14
+.B \-circle100
+100-pixel diameter thin circle.
+.TP 14
+.B \-circle500
+500-pixel diameter thin circle.
+.TP 14
+.B \-dcircle100
+100-pixel diameter thin dashed circle (3 on, 2 off).
+.TP 14
+.B \-ddcircle100
+100-pixel diameter thin double-dashed circle (3 fg, 2 bg).
+.TP 14
+.B \-wcircle10
+10-pixel diameter circle, line width 1.
+.TP 14
+.B \-wcircle100
+100-pixel diameter circle, line width 10.
+.TP 14
+.B \-wcircle500
+500-pixel diameter circle, line width 50.
+.TP 14
+.B \-wdcircle100
+100-pixel diameter dashed circle, line width 10 (30 on, 20 off).
+.TP 14
+.B \-wddcircle100
+100-pixel diameter double-dashed circle, line width 10 (30 fg, 20 bg).
+.TP 14
+.B \-pcircle10
+10-pixel diameter thin partial circle,
+orientation and arc angle evenly distributed.
+.TP 14
+.B \-pcircle100
+100-pixel diameter thin partial circle.
+.TP 14
+.B \-wpcircle10
+10-pixel diameter wide partial circle.
+.TP 14
+.B \-wpcircle100
+100-pixel diameter wide partial circle.
+.TP 14
+.B \-fcircle1
+1-pixel diameter filled circle.
+.TP 14
+.B \-fcircle10
+10-pixel diameter filled circle.
+.TP 14
+.B \-fcircle100
+100-pixel diameter filled circle.
+.TP 14
+.B \-fcircle500
+500-pixel diameter filled circle.
+.TP 14
+.B \-fcpcircle10
+10-pixel diameter partial filled circle, chord fill,
+orientation and arc angle evenly distributed.
+.TP 14
+.B \-fcpcircle100
+100-pixel diameter partial filled circle, chord fill.
+.TP 14
+.B \-fspcircle10
+10-pixel diameter partial filled circle, pie slice fill,
+orientation and arc angle evenly distributed.
+.TP 14
+.B \-fspcircle100
+100-pixel diameter partial filled circle, pie slice fill.
+.TP 14
+.B \-ellipse10
+10-pixel diameter thin (line width 0) ellipse, major and
+minor axis sizes evenly distributed.
+.TP 14
+.B \-ellipse100
+100-pixel diameter thin ellipse.
+.TP 14
+.B \-ellipse500
+500-pixel diameter thin ellipse.
+.TP 14
+.B \-dellipse100
+100-pixel diameter thin dashed ellipse (3 on, 2 off).
+.TP 14
+.B \-ddellipse100
+100-pixel diameter thin double-dashed ellipse (3 fg, 2 bg).
+.TP 14
+.B \-wellipse10
+10-pixel diameter ellipse, line width 1.
+.TP 14
+.B \-wellipse100
+100-pixel diameter ellipse, line width 10.
+.TP 14
+.B \-wellipse500
+500-pixel diameter ellipse, line width 50.
+.TP 14
+.B \-wdellipse100
+100-pixel diameter dashed ellipse, line width 10 (30 on, 20 off).
+.TP 14
+.B \-wddellipse100
+100-pixel diameter double-dashed ellipse, line width 10 (30 fg, 20 bg).
+.TP 14
+.B \-pellipse10
+10-pixel diameter thin partial ellipse.
+.TP 14
+.B \-pellipse100
+100-pixel diameter thin partial ellipse.
+.TP 14
+.B \-wpellipse10
+10-pixel diameter wide partial ellipse.
+.TP 14
+.B \-wpellipse100
+100-pixel diameter wide partial ellipse.
+.TP 14
+.B \-fellipse10
+10-pixel diameter filled ellipse.
+.TP 14
+.B \-fellipse100
+100-pixel diameter filled ellipse.
+.TP 14
+.B \-fellipse500
+500-pixel diameter filled ellipse.
+.TP 14
+.B \-fcpellipse10
+10-pixel diameter partial filled ellipse, chord fill.
+.TP 14
+.B \-fcpellipse100
+100-pixel diameter partial filled ellipse, chord fill.
+.TP 14
+.B \-fspellipse10
+10-pixel diameter partial filled ellipse, pie slice fill.
+.TP 14
+.B \-fspellipse100
+100-pixel diameter partial filled ellipse, pie slice fill.
+.TP 14
+.B \-triangle1
+Fill 1-pixel/side triangle.
+.TP 14
+.B \-triangle10
+Fill 10-pixel/side triangle.
+.TP 14
+.B \-triangle100
+Fill 100-pixel/side triangle.
+.TP 14
+.B \-trap10
+Fill 10x10 trapezoid.
+.TP 14
+.B \-trap100
+Fill 100x100 trapezoid.
+.TP 14
+.B \-strap10
+Fill 10x10 transparent stippled trapezoid, 8x8 stipple pattern.
+.TP 14
+.B \-strap100
+Fill 100x100 transparent stippled trapezoid, 8x8 stipple pattern.
+.TP 14
+.B \-ostrap10
+Fill 10x10 opaque stippled trapezoid, 8x8 stipple pattern.
+.TP 14
+.B \-ostrap100
+Fill 100x100 opaque stippled trapezoid, 8x8 stipple pattern.
+.TP 14
+.B \-tiletrap10
+Fill 10x10 tiled trapezoid, 4x4 tile pattern.
+.TP 14
+.B \-tiletrap100
+Fill 100x100 tiled trapezoid, 4x4 tile pattern.
+.TP 14
+.B \-bigstrap10
+Fill 10x10 transparent stippled trapezoid, 161x145 stipple pattern.
+.TP 14
+.B \-bigstrap100
+Fill 100x100 transparent stippled trapezoid, 161x145 stipple pattern.
+.TP 14
+.B \-bigostrap10
+Fill 10x10 opaque stippled trapezoid, 161x145 stipple pattern.
+.TP 14
+.B \-bigostrap100
+Fill 100x100 opaque stippled trapezoid, 161x145 stipple pattern.
+.TP 14
+.B \-bigtiletrap10
+Fill 10x10 tiled trapezoid, 161x145 tile pattern.
+.TP 14
+.B \-bigtiletrap100
+Fill 100x100 tiled trapezoid, 161x145 tile pattern.
+.TP 14
+.B \-eschertiletrap10
+Fill 10x10 tiled trapezoid, 216x208 tile pattern.
+.TP 14
+.B \-eschertiletrap100
+Fill 100x100 tiled trapezoid, 216x208 tile pattern.
+.TP 14
+.B \-complex10
+Fill 10-pixel/side complex polygon.
+.TP 14
+.B \-complex100
+Fill 100-pixel/side complex polygon.
+.TP 14
+.B \-ftext
+Character in 80-char line (6x13).
+.TP 14
+.B \-f8text
+Character in 70-char line (8x13).
+.TP 14
+.B \-f9text
+Character in 60-char line (9x15).
+.TP 14
+.B \-f14text16
+2-byte character in 40-char line (k14).
+.TP 14
+.B \-tr10text
+Character in 80-char line (Times-Roman 10).
+.TP 14
+.B \-tr24text
+Character in 30-char line (Times-Roman 24).
+.TP 14
+.B \-polytext
+Character in 20/40/20 line (6x13, Times-Roman 10, 6x13).
+.TP 14
+.B \-fitext
+Character in 80-char image line (6x13).
+.TP 14
+.B \-f8itext
+Character in 70-char image line (8x13).
+.TP 14
+.B \-f9itext
+Character in 60-char image line (9x15).
+.TP 14
+.B \-f14itext16
+2-byte character in 40-char image line (k14).
+.TP 14
+.B \-tr10itext
+Character in 80-char image line (Times-Roman 10).
+.TP 14
+.B \-tr24itext
+Character in 30-char image line (Times-Roman 24).
+.TP 14
+.B \-scroll10
+Scroll 10x10 pixels vertically.
+.TP 14
+.B \-scroll100
+Scroll 100x100 pixels vertically.
+.TP 14
+.B \-scroll500
+Scroll 500x500 pixels vertically.
+.TP 14
+.B \-copywinwin10
+Copy 10x10 square from window to window.
+.TP 14
+.B \-copywinwin100
+Copy 100x100 square from window to window.
+.TP 14
+.B \-copywinwin500
+Copy 500x500 square from window to window.
+.TP 14
+.B \-copypixwin10
+Copy 10x10 square from pixmap to window.
+.TP 14
+.B \-copypixwin100
+Copy 100x100 square from pixmap to window.
+.TP 14
+.B \-copypixwin500
+Copy 500x500 square from pixmap to window.
+.TP 14
+.B \-copywinpix10
+Copy 10x10 square from window to pixmap.
+.TP 14
+.B \-copywinpix100
+Copy 100x100 square from window to pixmap.
+.TP 14
+.B \-copywinpix500
+Copy 500x500 square from window to pixmap.
+.TP 14
+.B \-copypixpix10
+Copy 10x10 square from pixmap to pixmap.
+.TP 14
+.B \-copypixpix100
+Copy 100x100 square from pixmap to pixmap.
+.TP 14
+.B \-copypixpix500
+Copy 500x500 square from pixmap to pixmap.
+.TP 14
+.B \-copyplane10
+Copy 10x10 1-bit deep plane.
+.TP 14
+.B \-copyplane100
+Copy 100x100 1-bit deep plane.
+.TP 14
+.B \-copyplane500
+Copy 500x500 1-bit deep plane.
+.TP 14
+.B \-putimage10
+PutImage 10x10 square.
+.TP 14
+.B \-putimage100
+PutImage 100x100 square.
+.TP 14
+.B \-putimage500
+PutImage 500x500 square.
+.TP 14
+.B \-shmput10
+PutImage 10x10 square, MIT shared memory extension.
+.TP 14
+.B \-shmput100
+PutImage 100x100 square, MIT shared memory extension.
+.TP 14
+.B \-shmput500
+PutImage 500x500 square, MIT shared memory extension.
+.TP 14
+.B \-getimage10
+GetImage 10x10 square.
+.TP 14
+.B \-getimage100
+GetImage 100x100 square.
+.TP 14
+.B \-getimage500
+GetImage 500x500 square.
+.TP 14
+.B \-noop
+X protocol NoOperation.
+.TP 14
+.B \-atom
+GetAtomName.
+.TP 14
+.B \-prop
+GetProperty.
+.TP 14
+.B \-gc
+Change graphics context.
+.TP 14
+.B \-create
+Create child window and map using MapSubwindows.
+.TP 14
+.B \-ucreate
+Create unmapped window.
+.TP 14
+.B \-map
+Map child window via MapWindow on parent.
+.TP 14
+.B \-unmap
+Unmap child window via UnmapWindow on parent.
+.TP 14
+.B \-destroy
+Destroy child window via DestroyWindow parent.
+.TP 14
+.B \-popup
+Hide/expose window via Map/Unmap popup window.
+.TP 14
+.B \-move
+Move window.
+.TP 14
+.B \-umove
+Moved unmapped window.
+.TP 14
+.B \-movetree
+Move window via MoveWindow on parent.
+.TP 14
+.B \-resize
+Resize window.
+.TP 14
+.B \-uresize
+Resize unmapped window.
+.TP 14
+.B \-circulate
+Circulate lowest window to top.
+.TP 14
+.B \-ucirculate
+Circulate unmapped window to top.
+.SH X DEFAULTS
+There are no X defaults used by this program.
+.SH "SEE ALSO"
+X(1), xbench(1), x11perfcomp(1)
+.SH COPYRIGHT
+Copyright 1988, 1989 Digital Equipment Corporation.
+.br
+See \fIX(1)\fP for a full statement of rights and permissions.
+.SH AUTHORS
+Joel McCormack
+.br
+Phil Karlton
+.br
+Susan Angebranndt
+.br
+Chris Kent

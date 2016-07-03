@@ -1,0 +1,55 @@
+.TH ID 1L "GNU Shell Utilities" "FSF" \" -*- nroff -*-
+.SH NAME
+id \- print real and effective UIDs and GIDs
+.SH SYNOPSIS
+.B id
+[\-gnruG] [\-\-group] [\-\-name] [\-\-real] [\-\-user] [\-\-groups]
+[\-\-help] [\-\-version] [username]
+.SH DESCRIPTION
+This manual page
+documents the GNU version of
+.BR id .
+.B id
+prints information about the given user, or the process running it if
+no user is specified.  By default, it prints the real user ID, real
+group ID, effective user ID if different from the real user ID,
+effective group ID if different from the real group ID, and
+supplemental group IDs.  It prints each of these values preceded by a
+string identifying it and followed by the corresponding user or group
+name in parentheses.
+.PP
+The options cause
+.B id
+to print only part of the above information.
+.SS OPTIONS
+.TP
+.I "\-g, \-\-group"
+Print only the group ID.
+.TP
+.I "\-G, \-\-groups"
+Print only the supplementary groups.
+.TP
+.I "\-\-help"
+Print a usage message on standard output and exit successfully.
+.TP
+.I "\-n, \-\-name"
+Print the user or group name instead of the ID number.
+Requires
+.IR \-u ,
+.IR \-g ,
+or
+.IR \-G .
+.TP
+.I "\-r, \-\-real"
+Print the real, instead of effective, user or group ID.
+Requires
+.IR \-u ,
+.IR \-g ,
+or
+.IR \-G .
+.TP
+.I "\-u, \-\-user"
+Print only the user ID.
+.TP
+.I "\-\-version"
+Print version information on standard output then exit successfully.
