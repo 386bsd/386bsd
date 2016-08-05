@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sock_sys.c,v 1.1 94/10/19 23:49:53 bill Exp $
+ * $Id: sock_sys.c,v 1.2 95/02/24 11:04:00 bill Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -40,8 +40,8 @@
 #include "proc.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "socketvar.h"
+#include "protosw.h"
 #ifdef KTRACE
 #include "sys/ktrace.h"
 #endif
@@ -56,25 +56,11 @@ extern	struct fileops socketops;
 /* strings for sleep message: */
 static char	netcon[] = "netcon";
 
-/*extern inline */ int	/* used by nfssvc syscall */
-getsock(struct filedesc *fdp, int fdes, struct file **fpp)
-{
-	struct file *fp;
-
-	if ((unsigned)fdes >= fdp->fd_nfiles ||
-	    (fp = fdp->fd_ofiles[fdes]) == NULL)
-		return (EBADF);
-
-	if (fp->f_type != DTYPE_SOCKET)
-		return (ENOTSOCK);
-
-	*fpp = fp;
-	return (0);
-}
-
+/* create a socket */
+int
 socket(p, uap, retval)
 	struct proc *p;
-	register struct args {
+	struct args {
 		int	domain;
 		int	type;
 		int	protocol;
@@ -86,8 +72,11 @@ socket(p, uap, retval)
 	struct file *fp;
 	int fd, error;
 
+	/* allocate a file descriptor */
 	if (error = falloc(p, &fp, &fd))
 		return (error);
+
+	/* have socket layer create a socket, attach to file descriptor */
 	fp->f_flag = FREAD|FWRITE;
 	fp->f_type = DTYPE_SOCKET;
 	fp->f_ops = &socketops;
@@ -98,10 +87,12 @@ socket(p, uap, retval)
 		fp->f_data = (caddr_t)so;
 		*retval = fd;
 	}
+
 	return (error);
 }
 
-/* ARGSUSED */
+/* bind a name appropriate to the domain to the socket */
+int
 bind(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -115,16 +106,22 @@ bind(p, uap, retval)
 	struct mbuf *nam;
 	int error;
 
+	/* locate socket */
 	if (error = getsock(p->p_fd, uap->s, &fp))
 		return (error);
+
+	/* pack name arguement into mbuf */
 	if (error = sockargs(&nam, uap->name, uap->namelen, MT_SONAME))
 		return (error);
+
+	/* tell socket layer to attach name */
 	error = sobind((struct socket *)fp->f_data, nam);
 	m_freem(nam);
 	return (error);
 }
 
-/* ARGSUSED */
+/* change stream socket to passive listen mode with a connection queue */
+int
 listen(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -136,55 +133,22 @@ listen(p, uap, retval)
 	struct file *fp;
 	int error;
 
+	/* locate socket */
 	if (error = getsock(p->p_fd, uap->s, &fp))
 		return (error);
+
+	/* tell socket layer to change the socket to listen mode */
 	return (solisten((struct socket *)fp->f_data, uap->backlog));
 }
 
-#ifdef COMPAT_43
+/* accept a new connection from a passive listen socket */
+
 accept(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	s;
-		caddr_t	name;
-		int	*anamelen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 0;
-	return (accept1(p, uap, retval));
-}
-
-oaccept(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	s;
-		caddr_t	name;
-		int	*anamelen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 1;
-	return (accept1(p, uap, retval));
-}
-#else /* COMPAT_43 */
-
-#define	accept1	accept
-#endif
-
-accept1(p, uap, retval)
 	struct proc *p;
 	register struct args {
 		int	s;
 		caddr_t	name;
 		int	*anamelen;
-#ifdef COMPAT_43
-		int	compat_43;
-#endif
 	} *uap;
 	int *retval;
 {
@@ -193,7 +157,7 @@ accept1(p, uap, retval)
 	int namelen, error, s;
 	register struct socket *so;
 
-	if (uap->name && (error = copyin(p, (caddr_t)uap->anamelen,
+	if (uap->name && (error = copyin_(p, (caddr_t)uap->anamelen,
 	    (caddr_t)&namelen, sizeof (namelen))))
 		return (error);
 	if (error = getsock(p->p_fd, uap->s, &fp))
@@ -241,11 +205,6 @@ accept1(p, uap, retval)
 	nam = m_get(M_WAIT, MT_SONAME);
 	(void) soaccept(so, nam);
 	if (uap->name) {
-#ifdef COMPAT_43
-		if (uap->compat_43)
-			mtod(nam, struct osockaddr *)->sa_family =
-			    mtod(nam, struct sockaddr *)->sa_family;
-#endif
 		if (namelen > nam->m_len)
 			namelen = nam->m_len;
 		/* SHOULD COPY OUT A CHAIN HERE */
@@ -258,8 +217,8 @@ accept1(p, uap, retval)
 	splx(s);
 	return (error);
 }
-
 /* ARGSUSED */
+int
 connect(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -276,18 +235,23 @@ connect(p, uap, retval)
 
 	if (error = getsock(p->p_fd, uap->s, &fp))
 		return (error);
+
 	so = (struct socket *)fp->f_data;
 	if ((so->so_state & SS_NBIO) && (so->so_state & SS_ISCONNECTING))
 		return (EALREADY);
+
 	if (error = sockargs(&nam, uap->name, uap->namelen, MT_SONAME))
 		return (error);
+
 	error = soconnect(so, nam);
 	if (error)
 		goto bad;
+
 	if ((so->so_state & SS_NBIO) && (so->so_state & SS_ISCONNECTING)) {
 		m_freem(nam);
 		return (EINPROGRESS);
 	}
+
 	s = splnet();
 	while ((so->so_state & SS_ISCONNECTING) && so->so_error == 0)
 		if (error = tsleep((caddr_t)&so->so_timeo, PSOCK | PCATCH,
@@ -298,6 +262,7 @@ connect(p, uap, retval)
 		so->so_error = 0;
 	}
 	splx(s);
+
 bad:
 	so->so_state &= ~SS_ISCONNECTING;
 	m_freem(nam);
@@ -306,6 +271,8 @@ bad:
 	return (error);
 }
 
+/* */
+int
 socketpair(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -325,6 +292,7 @@ socketpair(p, uap, retval)
 		return (error);
 	if (error = socreate(uap->domain, &so2, uap->type, uap->protocol))
 		goto free1;
+
 	if (error = falloc(p, &fp1, &fd))
 		goto free2;
 	sv[0] = fd;
@@ -332,13 +300,15 @@ socketpair(p, uap, retval)
 	fp1->f_type = DTYPE_SOCKET;
 	fp1->f_ops = &socketops;
 	fp1->f_data = (caddr_t)so1;
+
 	if (error = falloc(p, &fp2, &fd))
 		goto free3;
+	sv[1] = fd;
 	fp2->f_flag = FREAD|FWRITE;
 	fp2->f_type = DTYPE_SOCKET;
 	fp2->f_ops = &socketops;
 	fp2->f_data = (caddr_t)so2;
-	sv[1] = fd;
+
 	if (error = soconnect2(so1, so2))
 		goto free4;
 	if (uap->type == SOCK_DGRAM) {
@@ -365,6 +335,7 @@ free1:
 	return (error);
 }
 
+int
 sendto(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -379,83 +350,18 @@ sendto(p, uap, retval)
 {
 	struct msghdr msg;
 	struct iovec aiov;
-	int error;
 
 	msg.msg_name = uap->to;
 	msg.msg_namelen = uap->tolen;
 	msg.msg_iov = &aiov;
 	msg.msg_iovlen = 1;
 	msg.msg_control = 0;
-#ifdef COMPAT_43
-	msg.msg_flags = 0;
-#endif
 	aiov.iov_base = uap->buf;
 	aiov.iov_len = uap->len;
 	return (sendit(p, uap->s, &msg, uap->flags, retval));
 }
 
-#ifdef COMPAT_43
-osend(p, uap, retval)
-	struct proc *p;
-	register struct args {
-		int	s;
-		caddr_t	buf;
-		int	len;
-		int	flags;
-	} *uap;
-	int *retval;
-{
-	struct msghdr msg;
-	struct iovec aiov;
-
-	msg.msg_name = 0;
-	msg.msg_namelen = 0;
-	msg.msg_iov = &aiov;
-	msg.msg_iovlen = 1;
-	aiov.iov_base = uap->buf;
-	aiov.iov_len = uap->len;
-	msg.msg_control = 0;
-	msg.msg_flags = 0;
-	return (sendit(p, uap->s, &msg, uap->flags, retval));
-}
-
-#define MSG_COMPAT	0x8000
-osendmsg(p, uap, retval)
-	struct proc *p;
-	register struct args {
-		int	s;
-		caddr_t	msg;
-		int	flags;
-	} *uap;
-	int *retval;
-{
-	struct msghdr msg;
-	struct iovec aiov[UIO_SMALLIOV], *iov;
-	int error;
-
-	if (error = copyin(p, uap->msg, (caddr_t)&msg, sizeof (struct omsghdr)))
-		return (error);
-	if ((u_int)msg.msg_iovlen >= UIO_SMALLIOV) {
-		if ((u_int)msg.msg_iovlen >= UIO_MAXIOV)
-			return (EMSGSIZE);
-		MALLOC(iov, struct iovec *,
-		      sizeof(struct iovec) * (u_int)msg.msg_iovlen, M_IOV, 
-		      M_WAITOK);
-	} else
-		iov = aiov;
-	if (error = copyin(p, (caddr_t)msg.msg_iov, (caddr_t)iov,
-	    (unsigned)(msg.msg_iovlen * sizeof (struct iovec))))
-		goto done;
-	msg.msg_flags = MSG_COMPAT;
-	msg.msg_iov = iov;
-	error = sendit(p, uap->s, &msg, uap->flags, retval);
-done:
-	if (iov != aiov)
-		FREE(iov, M_IOV);
-	return (error);
-}
-#endif
-
+int
 sendmsg(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -471,6 +377,7 @@ sendmsg(p, uap, retval)
 
 	if (error = copyin(p, uap->msg, (caddr_t)&msg, sizeof (msg)))
 		return (error);
+
 	if ((u_int)msg.msg_iovlen >= UIO_SMALLIOV) {
 		if ((u_int)msg.msg_iovlen >= UIO_MAXIOV)
 			return (EMSGSIZE);
@@ -479,21 +386,22 @@ sendmsg(p, uap, retval)
 		       M_WAITOK);
 	} else
 		iov = aiov;
+
 	if (msg.msg_iovlen &&
 	    (error = copyin(p, (caddr_t)msg.msg_iov, (caddr_t)iov,
 	    (unsigned)(msg.msg_iovlen * sizeof (struct iovec)))))
 		goto done;
+
 	msg.msg_iov = iov;
-#ifdef COMPAT_43
-	msg.msg_flags = 0;
-#endif
 	error = sendit(p, uap->s, &msg, uap->flags, retval);
+
 done:
 	if (iov != aiov)
 		FREE(iov, M_IOV);
 	return (error);
 }
 
+int
 sendit(p, s, mp, flags, retsize)
 	register struct proc *p;
 	int s;
@@ -534,9 +442,6 @@ sendit(p, s, mp, flags, retsize)
 		to = 0;
 	if (mp->msg_control) {
 		if (mp->msg_controllen < sizeof(struct cmsghdr)
-#ifdef COMPAT_43
-		    && mp->msg_flags != MSG_COMPAT
-#endif
 		) {
 			error = EINVAL;
 			goto bad;
@@ -544,22 +449,6 @@ sendit(p, s, mp, flags, retsize)
 		if (error = sockargs(&control, mp->msg_control,
 		    mp->msg_controllen, MT_CONTROL))
 			goto bad;
-#ifdef COMPAT_43
-		if (mp->msg_flags == MSG_COMPAT) {
-			register struct cmsghdr *cm;
-
-			M_PREPEND(control, sizeof(*cm), M_WAIT);
-			if (control == 0) {
-				error = ENOBUFS;
-				goto bad;
-			} else {
-				cm = mtod(control, struct cmsghdr *);
-				cm->cmsg_len = control->m_len;
-				cm->cmsg_level = SOL_SOCKET;
-				cm->cmsg_type = SCM_RIGHTS;
-			}
-		}
-#endif
 	} else
 		control = 0;
 #ifdef KTRACE
@@ -595,25 +484,7 @@ bad:
 	return (error);
 }
 
-#ifdef COMPAT_43
-orecvfrom(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	s;
-		caddr_t	buf;
-		int	len;
-		int	flags;
-		caddr_t	from;
-		int	*fromlenaddr;
-	} *uap;
-	int *retval;
-{
-
-	uap->flags |= MSG_COMPAT;
-	return (recvfrom(p, uap, retval));
-}
-#endif
-
+int
 recvfrom(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -646,77 +517,7 @@ recvfrom(p, uap, retval)
 	return (recvit(p, uap->s, &msg, (caddr_t)uap->fromlenaddr, retval));
 }
 
-#ifdef COMPAT_43
-orecv(p, uap, retval)
-	struct proc *p;
-	register struct args {
-		int	s;
-		caddr_t	buf;
-		int	len;
-		int	flags;
-	} *uap;
-	int *retval;
-{
-	struct msghdr msg;
-	struct iovec aiov;
-
-	msg.msg_name = 0;
-	msg.msg_namelen = 0;
-	msg.msg_iov = &aiov;
-	msg.msg_iovlen = 1;
-	aiov.iov_base = uap->buf;
-	aiov.iov_len = uap->len;
-	msg.msg_control = 0;
-	msg.msg_flags = uap->flags;
-	return (recvit(p, uap->s, &msg, (caddr_t)0, retval));
-}
-
-/*
- * Old recvmsg.  This code takes advantage of the fact that the old msghdr
- * overlays the new one, missing only the flags, and with the (old) access
- * rights where the control fields are now.
- */
-orecvmsg(p, uap, retval)
-	struct proc *p;
-	register struct args {
-		int	s;
-		struct	omsghdr *msg;
-		int	flags;
-	} *uap;
-	int *retval;
-{
-	struct msghdr msg;
-	struct iovec aiov[UIO_SMALLIOV], *iov;
-	int error;
-
-	if (error = copyin(p, (caddr_t)uap->msg, (caddr_t)&msg,
-	    sizeof (struct omsghdr)))
-		return (error);
-	if ((u_int)msg.msg_iovlen >= UIO_SMALLIOV) {
-		if ((u_int)msg.msg_iovlen >= UIO_MAXIOV)
-			return (EMSGSIZE);
-		MALLOC(iov, struct iovec *,
-		      sizeof(struct iovec) * (u_int)msg.msg_iovlen, M_IOV,
-		      M_WAITOK);
-	} else
-		iov = aiov;
-	msg.msg_flags = uap->flags | MSG_COMPAT;
-	if (error = copyin(p, (caddr_t)msg.msg_iov, (caddr_t)iov,
-	    (unsigned)(msg.msg_iovlen * sizeof (struct iovec))))
-		goto done;
-	msg.msg_iov = iov;
-	error = recvit(p, uap->s, &msg, (caddr_t)&uap->msg->msg_namelen, retval);
-
-	if (msg.msg_controllen && error == 0)
-		error = copyout(p, (caddr_t)&msg.msg_controllen,
-		    (caddr_t)&uap->msg->msg_accrightslen, sizeof (int));
-done:
-	if (iov != aiov)
-		FREE(iov, M_IOV);
-	return (error);
-}
-#endif
-
+int
 recvmsg(p, uap, retval)
 	struct proc *p;
 	register struct args {
@@ -740,11 +541,7 @@ recvmsg(p, uap, retval)
 		       M_WAITOK);
 	} else
 		iov = aiov;
-#ifdef COMPAT_43
-	msg.msg_flags = uap->flags &~ MSG_COMPAT;
-#else
 	msg.msg_flags = uap->flags;
-#endif
 	uiov = msg.msg_iov;
 	msg.msg_iov = iov;
 	if (error = copyin(p, (caddr_t)uiov, (caddr_t)iov,
@@ -760,6 +557,7 @@ done:
 	return (error);
 }
 
+int
 recvit(p, s, mp, namelenp, retsize)
 	register struct proc *p;
 	int s;
@@ -825,11 +623,6 @@ recvit(p, s, mp, namelenp, retsize)
 		if (len <= 0 || from == 0)
 			len = 0;
 		else {
-#ifdef COMPAT_43
-			if (mp->msg_flags & MSG_COMPAT)
-				mtod(from, struct osockaddr *)->sa_family =
-				    mtod(from, struct sockaddr *)->sa_family;
-#endif
 			if (len > from->m_len)
 				len = from->m_len;
 			/* else if len < from->m_len ??? */
@@ -840,35 +633,10 @@ recvit(p, s, mp, namelenp, retsize)
 		mp->msg_namelen = len;
 		if (namelenp &&
 		    (error = copyout(p, (caddr_t)&len, namelenp, sizeof (int)))) {
-#ifdef COMPAT_43
-			if (mp->msg_flags & MSG_COMPAT)
-				error = 0;	/* old recvfrom didn't check */
-			else
-#endif
 			goto out;
 		}
 	}
 	if (mp->msg_control) {
-#ifdef	COMPAT_43
-		/*
-		 * We assume that old recvmsg calls won't receive access
-		 * rights and other control info, esp. as control info
-		 * is always optional and those options didn't exist in 4.3.
-		 * If we receive rights, trim the cmsghdr; anything else
-		 * is tossed.
-		 */
-		if (control && mp->msg_flags & MSG_COMPAT) {
-			if (mtod(control, struct cmsghdr *)->cmsg_level !=
-			    SOL_SOCKET ||
-			    mtod(control, struct cmsghdr *)->cmsg_type !=
-			    SCM_RIGHTS) {
-				mp->msg_controllen = 0;
-				goto out;
-			}
-			control->m_len -= sizeof (struct cmsghdr);
-			control->m_data += sizeof (struct cmsghdr);
-		}
-#endif
 		len = mp->msg_controllen;
 		if (len <= 0 || control == 0)
 			len = 0;
@@ -1028,51 +796,15 @@ free1:
 /*
  * Get socket name.
  */
-#ifdef COMPAT_43
-getsockname(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	fdes;
-		caddr_t	asa;
-		int	*alen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 0;
-	return (getsockname1(p, uap, retval));
-}
-
-ogetsockname(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	fdes;
-		caddr_t	asa;
-		int	*alen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 1;
-	return (getsockname1(p, uap, retval));
-}
-#else /* COMPAT_43 */
-
-#define	getsockname1	getsockname
-#endif
 
 /* ARGSUSED */
-getsockname1(p, uap, retval)
+int
+getsockname(p, uap, retval)
 	struct proc *p;
 	register struct args {
 		int	fdes;
 		caddr_t	asa;
 		int	*alen;
-#ifdef COMPAT_43
-		int	compat_43;
-#endif
 	} *uap;
 	int *retval;
 {
@@ -1093,11 +825,6 @@ getsockname1(p, uap, retval)
 		goto bad;
 	if (len > m->m_len)
 		len = m->m_len;
-#ifdef COMPAT_43
-	if (uap->compat_43)
-		mtod(m, struct osockaddr *)->sa_family =
-		    mtod(m, struct sockaddr *)->sa_family;
-#endif
 	error = copyout(p, mtod(m, caddr_t), (caddr_t)uap->asa, (u_int)len);
 	if (error == 0)
 		error = copyout(p, (caddr_t)&len, (caddr_t)uap->alen,
@@ -1110,51 +837,15 @@ bad:
 /*
  * Get name of peer for connected socket.
  */
-#ifdef COMPAT_43
-getpeername(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	fdes;
-		caddr_t	asa;
-		int	*alen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 0;
-	return (getpeername1(p, uap, retval));
-}
-
-ogetpeername(p, uap, retval)
-	struct proc *p;
-	struct args {
-		int	fdes;
-		caddr_t	asa;
-		int	*alen;
-		int	compat_43;
-	} *uap;
-	int *retval;
-{
-
-	uap->compat_43 = 1;
-	return (getpeername1(p, uap, retval));
-}
-#else /* COMPAT_43 */
-
-#define	getpeername1	getpeername
-#endif
 
 /* ARGSUSED */
-getpeername1(p, uap, retval)
+int
+getpeername(p, uap, retval)
 	struct proc *p;
 	register struct args {
 		int	fdes;
 		caddr_t	asa;
 		int	*alen;
-#ifdef COMPAT_43
-		int	compat_43;
-#endif
 	} *uap;
 	int *retval;
 {
@@ -1171,17 +862,14 @@ getpeername1(p, uap, retval)
 	m = m_getclr(M_WAIT, MT_SONAME);
 	if (m == NULL)
 		return (ENOBUFS);
-	if (error = copyin(p, (caddr_t)uap->alen, (caddr_t)&len, sizeof (len)))
+	if (error = copyin_(p, (caddr_t)uap->alen, (caddr_t)&len, sizeof (len)))
 		return (error);
 	if (error = (*so->so_proto->pr_usrreq)(so, PRU_PEERADDR, 0, m, 0))
 		goto bad;
+	if (len < 0)
+		len = 0;
 	if (len > m->m_len)
 		len = m->m_len;
-#ifdef COMPAT_43
-	if (uap->compat_43)
-		mtod(m, struct osockaddr *)->sa_family =
-		    mtod(m, struct sockaddr *)->sa_family;
-#endif
 	if (error = copyout(p, mtod(m, caddr_t), (caddr_t)uap->asa, (u_int)len))
 		goto bad;
 	error = copyout(p, (caddr_t)&len, (caddr_t)uap->alen, sizeof (len));
@@ -1198,14 +886,9 @@ sockargs(mp, buf, buflen, type)
 	register struct mbuf *m;
 	int error;
 
-	if ((u_int)buflen > MLEN) {
-#ifdef COMPAT_43
-		if (type == MT_SONAME && (u_int)buflen <= 112)
-			buflen = MLEN;		/* unix domain compat. hack */
-		else
-#endif
+	if ((u_int)buflen > MLEN)
 		return (EINVAL);
-	}
+	
 	m = m_get(M_WAIT, type);
 	if (m == NULL)
 		return (ENOBUFS);
@@ -1217,12 +900,8 @@ sockargs(mp, buf, buflen, type)
 	}
 	*mp = m;
 	if (type == MT_SONAME) {
-		register struct sockaddr *sa = mtod(m, struct sockaddr *);
+		struct sockaddr *sa = mtod(m, struct sockaddr *);
 
-#if defined(COMPAT_43) && BYTE_ORDER != BIG_ENDIAN
-		if (sa->sa_family == 0 && sa->sa_len < AF_MAX)
-			sa->sa_family = sa->sa_len;
-#endif
 		sa->sa_len = buflen;
 	}
 	return (0);

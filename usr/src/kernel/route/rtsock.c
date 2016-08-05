@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtsock.c,v 1.1 94/10/20 10:55:44 root Exp $
+ * $Id: rtsock.c,v 1.1 94/10/20 10:55:44 root Exp Locker: bill $
  */
 
 static char *route_config = "route 17.";	/* AF_ROUTE */
@@ -49,13 +49,16 @@ static char *route_config = "route 17.";	/* AF_ROUTE */
 
 #include "af.h"
 #include "if.h"
+#define _ROUTE_PROTOTYPES
 #include "route.h"
-#include "route_.h"
+#undef _ROUTE_PROTOTYPES
+/*#include "route_.h"*/
 #include "raw_cb.h"
 
 struct sockaddr route_dst = { 2, PF_ROUTE, };
 struct sockaddr route_src = { 2, PF_ROUTE, };
 struct sockproto route_proto = { PF_ROUTE, };
+struct route_cb route_cb;
 
 /*ARGSUSED*/
 route_usrreq(so, req, m, nam, control)
@@ -442,7 +445,7 @@ out:	if (((m = m0)->m_flags & M_PKTHDR) && (m->m_pkthdr.len < totlen))
  * The miss message and losing message are very similar.
  */
 void
-rt_missmsg(int type, struct sockaddr *dst, struct sockaddr *gate,
+rtmissmsg(int type, struct sockaddr *dst, struct sockaddr *gate,
 	struct sockaddr *mask, struct sockaddr *src, int flags, int error)
 {
 	struct rt_msghdr *rtm;

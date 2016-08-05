@@ -25,7 +25,10 @@
  */
 /*
  * HISTORY
- * $Log: db_trap.c,v $
+ * $Log:	db_trap.c,v $
+ * Revision 1.1  95/01/18  17:52:54  bill
+ * Initial revision
+ * 
  * Revision 1.1  1992/03/25  21:45:31  pace
  * Initial revision
  *
@@ -69,6 +72,7 @@
 #include "db_command.h"
 #include "db_break.h"
 
+int enterddb;
 extern void		db_restart_at_pc();
 extern boolean_t	db_stop_at_pc();
 

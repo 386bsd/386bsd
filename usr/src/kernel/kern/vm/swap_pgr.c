@@ -785,8 +785,8 @@ swap_pager_finish(swp_clean_t spc)
 	if (--object->paging_in_progress == 0)
 		wakeup((caddr_t) object);
 		/*thread_wakeup((int) object);*/
-	if (object->paging_in_progress > 10000)
-		Debugger();
+	/*if (object->paging_in_progress > 10000)
+		Debugger();*/
 
 #ifdef DEBUG
 	/*

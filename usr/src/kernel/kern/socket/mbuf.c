@@ -30,9 +30,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: mbuf.c,v 1.1 94/10/19 23:49:51 bill Exp $
+ * Message buffer operations.
+ *
+ * $Id: mbuf.c,v 1.1 94/10/19 23:49:51 bill Exp Locker: bill $
  */
-
 #include "sys/param.h"
 #include "sys/syslog.h"
 #include "sys/errno.h"
@@ -41,28 +42,30 @@
 #define MBTYPES
 #include "mbuf.h"
 #include "domain.h"
+#include "socketvar.h"	/* for protosw.h */
 #include "protosw.h"
 #include "vm.h"
 #include "kmem.h"
 #include "prototypes.h"
 
-struct mbuf *mbutl;		/* virtual address of mclusters */
-char *mclrefcnt;		/* cluster reference counts */
+extern	vm_map_t mb_map;
+struct	mbuf *mbutl;
+char	*mclrefcnt;
 struct mbstat mbstat;
 int nmbclusters;
 union mcluster *mclfree;
-int max_linkhdr;		/* largest link-level header */
+int max_linkhdr;			/* largest link-level header */
 int max_protohdr;		/* largest protocol header */
 int max_hdr;			/* largest link+protocol header */
-int max_datalen;		/* MHLEN - max_hdr */
+int max_datalen;			/* MHLEN - max_hdr */
 
-vm_map_t mb_map;
-
+/* initialize message buffers */
 void
 mbinit(void)
 {
 	int s;
 
+	/* get an initial buffer */
 #if CLBYTES < 4096
 #define NCL_INIT	(4096/CLBYTES)
 #else
@@ -70,11 +73,8 @@ mbinit(void)
 #endif
 	s = splimp();
 	if (m_clalloc(NCL_INIT, M_DONTWAIT) == 0)
-		goto bad;
+		panic("mbinit");
 	splx(s);
-	return;
-bad:
-	panic("mbinit");
 }
 
 /*
@@ -86,10 +86,11 @@ int
 m_clalloc(int ncl, int canwait)
 {
 	int npg, mbx;
-	register caddr_t p;
-	register int i;
+	caddr_t p;
+	int i;
 	static int logged;
 
+	/* allocate "real" memory from virtual memory system */
 	npg = ncl * CLSIZE;
 	p = (caddr_t)kmem_alloc(mb_map, ctob(npg), canwait);
 	if (p == NULL) {
@@ -98,7 +99,10 @@ m_clalloc(int ncl, int canwait)
 			log(LOG_ERR, "mb_map full\n");
 		}
 		return (0);
-	}
+	} else
+		logged = 0;
+
+	/* add to free list */
 	ncl = ncl * CLBYTES / MCLBYTES;
 	for (i = 0; i < ncl; i++) {
 		((union mcluster *)p)->mcl_next = mclfree;
@@ -111,7 +115,7 @@ m_clalloc(int ncl, int canwait)
 }
 
 /*
- * When MGET failes, ask protocols to free space when short of memory,
+ * When MGET fails, ask protocols to free space when short of memory,
  * then re-attempt to allocate an mbuf.
  */
 struct mbuf *
@@ -132,7 +136,7 @@ m_retry(int i, int t)
 struct mbuf *
 m_retryhdr(int i, int t)
 {
-	register struct mbuf *m;
+	struct mbuf *m;
 
 	m_reclaim();
 #define m_retryhdr(i, t) (struct mbuf *)0
@@ -203,13 +207,13 @@ m_free(struct mbuf *m)
 void
 m_freem(struct mbuf *m)
 {
-	register struct mbuf *n;
+	struct mbuf *n;
 
-	if (m == NULL)
+	if (m == (struct mbuf *)NULL)
 		return;
 	do {
 		MFREE(m, n);
-	} while (m = n);
+	} while ((m = n) != (struct mbuf *)NULL);
 }
 
 /*
@@ -375,18 +379,16 @@ m_cat(struct mbuf *m, struct mbuf *n)
  * Trim "req_len" bytes from either the front (positive) or
  * rear (negative) of the mbuf chain.
  */
-int
+void
 m_adj(struct mbuf *mp, int req_len)
 {
 	int len;
 	struct mbuf *m;
 
-	if (mp == NULL)
+	if (mp == NULL || req_len == 0)
 		return;
-	if (req_len >= 0) {
-		/*
-		 * Trim from head.
-		 */
+	/* trim from front or back */
+	if (req_len > 0) {
 		for (m = mp, len = req_len; m != NULL && len > 0;) {
 			if (m->m_len <= len) {
 				len -= m->m_len;
@@ -457,9 +459,8 @@ int MPFail;
 struct mbuf *
 m_pullup(struct mbuf *n, int len)
 {
-	register struct mbuf *m;
-	register int count;
-	int space;
+	struct mbuf *m;
+	int count, space;
 
 	/*
 	 * If first mbuf has no cluster, and has room for len bytes

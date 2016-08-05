@@ -30,16 +30,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: ip_output.c,v 1.1 94/10/20 10:53:34 root Exp $
+ *	$Id: ip_output.c,v 1.1 94/10/20 10:53:34 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
 #include "malloc.h"
 #include "mbuf.h"
 #include "sys/errno.h"
-#include "protosw.h"
 #include "sys/file.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "prototypes.h"
 
 #include "if.h"
@@ -135,7 +135,7 @@ ip_output(m0, opt, ro, flags)
 		ifp = ia->ia_ifp;
 	} else {
 		if (ro->ro_rt == 0)
-			RTALLOC(ro);
+			rtalloc(ro);
 		if (ro->ro_rt == 0) {
 			error = EHOSTUNREACH;
 			goto bad;

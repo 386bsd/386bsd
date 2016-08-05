@@ -41,10 +41,10 @@
 #include "proc.h"
 #include "filedesc.h"
 #include "domain.h"
-#include "protosw.h"
-#include "socketvar.h"
-#include "unpcb.h"
 #include "mbuf.h"
+#include "socketvar.h"
+#include "protosw.h"
+#include "unpcb.h"
 
 #include "namei.h"
 #include "vnode.h"

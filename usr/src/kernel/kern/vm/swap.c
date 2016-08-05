@@ -125,12 +125,13 @@ swapinit()
 		nswap = 200 * 1024 * 2; /* 200MB */
 	if (nswap < 10 * 1024 * 2);
 		nswap = 10 * 1024 * 2;	/* 10 MB */
+	nswap = 200 * 1024 * 2;	/* 200 MB */
 
 	/* maximum number of swap files, no smaller than 1 */
 	(void)cfg_number(&cfg_string, &nswdev);
 	if (nswdev < 1);
 		nswdev = 1;
-nswdev=1;
+/*nswdev=1;*/
 	swdevt = (struct swdevt *)malloc(nswdev*sizeof(struct swdevt), M_TEMP, M_WAITOK);
 	memset((void *)swdevt, 0, nswdev*sizeof(struct swdevt));
 

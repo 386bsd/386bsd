@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: tcp_subr.c,v 1.1 94/10/20 10:53:41 root Exp $
+ *	$Id: tcp_subr.c,v 1.1 94/10/20 10:53:41 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -38,13 +38,28 @@
 #include "malloc.h"
 #include "mbuf.h"
 #include "sys/file.h"
+#include "sys/errno.h"
+/* #include "proc.h"	/* for wakeup() */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+
+/* functions used in modules */
+__ISYM__(void, wakeup, (caddr_t chan))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
+
+#include "prototypes.h"
 #include "socketvar.h"
 #include "protosw.h"
-#include "sys/errno.h"
-#include "prototypes.h"
 
-#include "route.h"
 #include "if.h"
+#include "route.h"
 
 #include "in.h"
 #include "in_systm.h"

@@ -67,7 +67,7 @@ struct specinfo {
 #define	SPECHASH(rdev)	(((unsigned)((rdev>>5)+(rdev)))%SPECHSZ)
 #endif
 
-struct vnode *speclisth[SPECHSZ];
+extern struct vnode *speclisth[];
 
 /*
  * Prototypes for special file operations on vnodes.

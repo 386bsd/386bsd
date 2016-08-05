@@ -34,11 +34,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *	@(#) $RCSfile: mcd.c,v $	$Revision: 1.4 $ $Date: 93/07/06 12:56:39 $
+ *	@(#) $RCSfile: mcd.c,v $	$Revision: 1.8 $ $Date: 95/01/09 14:15:05 $
  */
 static char COPYRIGHT[] = "mcd-driver (C)1993 by H.Veit & B.Moore";
 static char *mcd_conf =
-	"mcd 5 16 (0x300 10).	# mitsumi CDROM $Revision$";
+	"mcd 5 14 (0x300 10).	# mitsumi CDROM $Revision: 1.8 $";
 
 #define NMCD 1
 #include "sys/types.h"
@@ -58,6 +58,7 @@ static char *mcd_conf =
 #include "machine/icu.h"
 #include "isa_driver.h"
 #include "mcdreg.h"
+#include "kernel.h" /* for lbolt */
 #include "modconfig.h"
 #include "prototypes.h"
 #include "machine/inline/io.h"	/* inline i/o port functions */
@@ -92,6 +93,11 @@ static char *mcd_conf =
 #define	MCDVOLINFO	0x0080	/* already read volinfo */
 #define	MCDTOC		0x0100	/* already read toc */
 #define	MCDMBXBSY	0x0200	/* local mbx is busy */
+#define	MCDMBXRD	0x0400	/* local mbx is in doread */
+#define	MCDDS		0x0800	/* double speed drive */
+#define	MCDMBXTIMEO	0x1000	/* timeout */
+#define	MCDMBXRTRY	0x2000	/* retrying */
+#define	MCDMBXSTUCK	0x4000	/* possibly stuck */
 
 /* status */
 #define	MCDAUDIOBSY	MCD_ST_AUDIOBSY		/* playing audio */
@@ -177,13 +183,16 @@ static	int	mcd_play(int unit, struct mcd_read2 *pb);
 static	int	mcd_pause(int unit);
 static	int	mcd_resume(int unit);
 #endif
+static void mcd_setport(int unit, int port, u_char data);
+static u_char mcd_getport(int unit, int port);
 
 extern	int	hz;
 static	int	mcd_probe(struct isa_device *dev);
-static	int	mcd_attach(struct isa_device *dev);
-static	int	mcdintr(int unit);
+static	void	mcd_attach(struct isa_device *dev);
+static	void	mcdintr(int unit);
 struct	isa_driver	mcddriver = { mcd_probe, mcd_attach, mcdintr, "mcd", &biomask};
 
+static int mcd_drv_rdy(int unit);
 #define mcd_put(port,byte)	outb(port,byte)
 
 #define MCD_RETRYS	5
@@ -193,33 +202,87 @@ struct	isa_driver	mcddriver = { mcd_probe, mcd_attach, mcdintr, "mcd", &biomask}
 #define MCDRBLK	2352	/* for raw mode */
 
 /* several delays */
-#define RDELAY_WAITSTAT	300
-#define RDELAY_WAITMODE	300
-#define RDELAY_WAITREAD	800
+#define RDELAY_WAITSTAT	30
+#define RDELAY_WAITMODE	30
+#define RDELAY_WAITREAD	40
 
 #define DELAY_STATUS	10000l		/* 10000 * 1us */
 #define DELAY_GETREPLY	200000l		/* 200000 * 2us */
 #define DELAY_SEEKREAD	20000l		/* 20000 * 1us */
 #define mcd_delay	DELAY
 
-static int
+static void
 mcd_attach(struct isa_device *dev)
 {
 	struct mcd_data *cd = mcd_data + dev->id_unit;
-	int i;
+	int i, port;
+	char vers[2];
 	
-	cd->iobase = dev->id_iobase;
+	port = cd->iobase = dev->id_iobase;
 	cd->flags = MCDINIT;
 	cd->openflags = 0;
 	for (i=0; i<MAXPARTITIONS; i++) cd->partflags[i] = 0;
+
+#ifdef nope
+	(void)mcd_getstat(dev->id_unit, 1);
+	/* kind of drive */
+	if (mcd_send(dev->id_unit, MCD_CMDGETVERS, 6) < 0 ||
+	    mcd_get(dev->id_unit, vers, sizeof vers) != sizeof vers)
+		printf("can't get drive version\n");
+	/* presume future versions are at least double speed ... */
+	else {
+		/* if (vers[0] != MCD_VER_LU && vers[0] != MCD_VER_FX)*/
+		if (vers[0] == MCD_VER_FXD)
+			cd->flags |= MCDDS;
+		printf("version %c rev %x", vers[0], (unsigned)vers[1]);
+	}
+#endif
+		
+	/* seek retrys */
+	outb(port+mcd_Data, MCD_SETPARAMS);
+	outb(port+mcd_Data, MCD_SP_SRETRYS);
+	outb(port+mcd_Data, 3);
+	(void)mcd_getstat(dev->id_unit, 0);
+
+	/* non dma mode */
+	outb(port+mcd_Data, MCD_SETPARAMS);
+	outb(port+mcd_Data, MCD_SP_MODE);
+	outb(port+mcd_Data, MCDSP_PIO);	/* ??? */
+	(void)mcd_getstat(dev->id_unit, 0);
+
+	/* ask for interrupt before transfer instead of after */
+	outb(port+mcd_Data, MCD_SETPARAMS);
+	outb(port+mcd_Data, MCD_SP_INTR);
+	outb(port+mcd_Data, MCDSP_PRE);
+	(void)mcd_getstat(dev->id_unit, 0);
+
+#ifdef notyet
+	/* XXX: set data length 2+ bytes bigger than sector */
+	outb(port+mcd_Data, MCD_SETPARAMS);
+	outb(port+mcd_Data, MCD_SP_DLEN);
+#ifdef notyet
+	outb(port+mcd_Data, 0x8);
+	outb(port+mcd_Data, 0x1);
+#else
+	outb(port+mcd_Data, 0x7);
+	outb(port+mcd_Data, 0xff);
+#endif
+	(void)mcd_getstat(dev->id_unit, 0);
+#endif
+
+	/* set timeout to 36ms */
+	outb(port+mcd_Data, MCD_SETPARAMS);
+	outb(port+mcd_Data, MCD_SP_TIMEO);
+	outb(port+mcd_Data, 18);
+	(void)mcd_getstat(dev->id_unit, 0);
 
 #ifdef NOTYET
 	/* wire controller for interrupts and dma */
 	mcd_configure(cd);
 #endif
-
-	return 1;
 }
+
+static void mcd_monitor(void);
 
 static int
 mcdopen(dev_t dev, int flags, int fmt, struct proc *p)
@@ -227,13 +290,13 @@ mcdopen(dev_t dev, int flags, int fmt, struct proc *p)
 	int unit,part,phys;
 	struct mcd_data *cd;
 	int rv;
+	static int monitor;
 	
 	unit = mcd_unit(dev);
 	if (unit >= NMCD)
 		return ENXIO;
 
 	cd = mcd_data + unit;
-/*cd->debug=1;*/
 	part = mcd_part(dev);
 	phys = mcd_phys(dev);
 	
@@ -245,17 +308,30 @@ mcdopen(dev_t dev, int flags, int fmt, struct proc *p)
 	if (!(cd->flags & MCDVALID) && cd->openflags)
 		return ENXIO;
 
-	/* if (mcd_getstat(unit,1) < 0)
-		return ENXIO; */
+	if (monitor == 0) {
+		monitor++;
+		timeout((int (*)())mcd_monitor, (caddr_t)0, hz/2);
+	}
+
+	/* mountable block device presumes non-audio media is present */
+	if (fmt == S_IFBLK)
+{ int i, sts, error;
+	while ((sts = mcd_getstat(unit, 1)) < 0 ||
+	    (sts & (MCD_ST_DOOROPEN | MCD_ST_DSKIN | MCD_ST_DSKCHNG | MCD_ST_AUDIOBSY))
+		!= MCD_ST_DSKIN) {
+		if (error = tsleep((caddr_t)&lbolt, PRIBIO|PCATCH, "mcdopen", 0))
+			return (error);
+	}
+}
 
 	/* XXX get a default disklabel */
 	mcd_getdisklabel(unit);
 { int i;
-for(i=1 ; i < 20; i++) {
+for (i = 1 ; i < 20; i++) {
 	if ((rv = mcdsize(dev))>= 0)
 		break;
-	DELAY((1<<i)*1000);
-	/* printf("%d", i);*/
+	DELAY((1<<i) * 1000);
+	printf("%d", i);
 }
 }
 	if (rv < 0) {
@@ -275,6 +351,14 @@ MCD_TRACE("open: partition=%d, disksize = %d, blksize=%d\n",
 		if (part == RAW_PART && phys != 0)
 			cd->partflags[part] |= MCDREADRAW;
 /*cd->debug=0;*/
+		/* mountable block device presumes media won't change */
+		if (fmt == S_IFBLK) {
+			int port = cd->iobase;	
+
+			mcd_put(port+mcd_command, MCD_CMDLOCKDRV);
+			mcd_put(port+mcd_command, MCD_LK_LOCK);
+			(void)mcd_getstat(unit, 0);
+		}
 		return 0;
 	}
 	
@@ -298,7 +382,16 @@ mcdclose(dev_t dev, int flags, int fmt, struct proc *p)
 	if (!(cd->flags & MCDINIT))
 		return ENXIO;
 
-	mcd_getstat(unit,1);	/* get status */
+	/* mountable block device presumes media won't change */
+	if (fmt == S_IFBLK) {
+		int port = cd->iobase;	
+
+		mcd_put(port+mcd_command, MCD_CMDLOCKDRV);
+		mcd_put(port+mcd_command, MCD_LK_UNLOCK);
+		(void)mcd_getstat(unit, 0);
+	}
+
+	(void) mcd_getstat(unit,1);	/* get status */
 
 	/* close channel */
 	cd->partflags[part] &= ~(MCDOPEN|MCDREADRAW);
@@ -320,12 +413,12 @@ mcdstrategy(struct buf *bp)
 	cd = mcd_data + unit;
 
 	/* test validity */
-/*MCD_TRACE("strategy: buf=0x%lx, unit=%ld, block#=%ld bcount=%ld\n",
-	bp,unit,bp->b_blkno,bp->b_bcount);*/
+MCD_TRACE("strategy: buf=0x%lx, unit=%ld, block#=%ld bcount=%ld\n",
+	bp,unit,bp->b_blkno,bp->b_bcount);
 	if (unit >= NMCD || bp->b_blkno < 0) {
 		printf("mcdstrategy: unit = %d, blkno = %d, bcount = %d\n",
 			unit, bp->b_blkno, bp->b_bcount);
-		pg("mcd: mcdstratregy failure");
+		printf("mcd: mcdstratregy failure");
 		bp->b_error = EINVAL;
 		bp->b_flags |= B_ERROR;
 		goto bad;
@@ -378,6 +471,9 @@ done:
 	return;
 }
 
+static mcd_expire(int unit);
+static mcd_pollintr(int unit);
+static int mcd_getreply(int unit,int dly);
 static void
 mcd_start(int unit)
 {
@@ -385,11 +481,29 @@ mcd_start(int unit)
 	struct buf *bp, *qp = &cd->head;
 	struct partition *p;
 	int part;
-	register s = splbio();
-	
+	int s = splbio();
+	struct mcd_mbx *mbx = &cd->mbx;
+	int port;
+
+	int	rm,i,k, x, sts;
+	struct mcd_read2 rbuf;
+	int	blknum;
+	caddr_t	addr;
+
+restart:	
+	/* transfer in progress */
 	if (cd->flags & MCDMBXBSY) {
 		splx(s);
 		return;
+	}
+
+	/* issue a retry */
+	if (cd->flags & MCDMBXRTRY) {
+printf("retry ");
+		cd->flags |= MCDMBXBSY;
+		bp = mbx->bp;
+		port = mbx->port;
+		goto retry;
 	}
 
 	if ((bp = qp->b_actf) != 0) {
@@ -403,27 +517,190 @@ mcd_start(int unit)
 		return;
 	}
 
+	cd->flags |= MCDMBXBSY;
+
 	/* changed media? */
 	if (!(cd->flags	& MCDVALID)) {
 		MCD_TRACE("mcd_start: drive not valid\n",0,0,0,0);
+readerr:
+		bp->b_flags |= B_ERROR;
+		bp->b_resid = bp->b_bcount;
+		biodone(bp);
+		cd->flags &= ~MCDMBXBSY;
 		splx(s);
-		return;
+		goto restart;
 	}
 
 	p = cd->dlabel.d_partitions + mcd_part(bp->b_dev);
 
-	cd->flags |= MCDMBXBSY;
 	cd->mbx.unit = unit;
-	cd->mbx.port = cd->iobase;
-	cd->mbx.retry = MCD_RETRYS;
+	port = cd->mbx.port = cd->iobase;
+	cd->mbx.retry = MCD_RDRETRYS;
 	cd->mbx.bp  = bp;
 	cd->mbx.p_offset = p->p_offset;
+	cd->mbx.skip = 0;
 
-	/* calling the read routine */
-	mcd_doread(MCD_S_BEGIN,&(cd->mbx));
-	/* triggers mcd_start, when successful finished */
+retry:
+	mbx->count = RDELAY_WAITSTAT;
+
+	/* check drive state */
+	for(i=1 ; i <5; i++)
+		if ((i = mcd_getstat(unit, 1)) > 0)
+			break;
+
+	if((i&(MCD_ST_DOOROPEN|MCD_ST_DSKIN|MCD_ST_DSKSPIN)) == MCD_ST_DSKIN) {
+		if (mcd_send(unit, MCD_CMDSTOP, MCD_RETRYS) < 0)
+			printf("can't stop ");
+		else if (mcd_send(unit, MCD_CMDSTOPAUDIO, MCD_RETRYS) < 0)
+			printf("can't pause ");
+		else	printf("cha-cha");
+		printf("%x ", i = mcd_getstat(unit,1));
+	}
+	/*mcd_setflags(unit,cd);*/
+
+	/* reject, if audio active */
+	if (cd->status & MCDAUDIOBSY) {
+		printf("mcd%d: audio is active %x\n",unit, cd->status);
+		/* printf("%x ", i = mcd_getstat(unit,1));
+			goto readerr;*/
+	}
+
+	/*
+	 * select drive mode and transfer size
+	 */
+
+	/* to check for raw/cooked mode */
+	if (cd->flags & MCDREADRAW) {
+		rm = MCD_MD_RAW;
+		mbx->sz = MCDRBLK;
+	} else {
+		rm = MCD_MD_COOKED;
+		mbx->sz = cd->blksize;
+	}
+
+	mcd_put(port+mcd_command, MCD_CMDSETMODE);
+	mcd_put(port+mcd_command, rm);
+
+	if (mcd_getreply(unit,DELAY_GETREPLY) < 0) {
+		printf("sm");
+		if (mcd_getreply(unit,DELAY_GETREPLY) < 0)
+		printf("2");
+	}
+
+	mcd_setflags(unit,cd);
+
+	/*
+	 * calculate sector address and other command paramters
+	 */
+
+	/* for first sector in the block */
+	if (mbx->skip == 0) 
+		mbx->nblk = (bp->b_bcount + (mbx->sz-1)) / mbx->sz;
+	blknum = (bp->b_blkno / (mbx->sz/DEV_BSIZE)) + mbx->p_offset + mbx->skip/mbx->sz;
+
+	MCD_TRACE("mcdstart: read blknum=%d for bp=0x%x\n",blknum,bp,0,0);
+
+	/* build parameter block */
+	hsg2msf(blknum, rbuf.start_msf);
+
+	/* k = inb(port+mcd_xfer);
+	if((k&0xf) != 0xf)
+		failcmd = 1;
+	else
+		failcmd = 0;
+ char mcd_readcmd[7] = { MCD_CMDREAD2, 0,0,0, 0,0,1 } ;
+	insb(port+mcd_command, rbuf.start_msf, */
+	/* send the read command */
+	if (cd->flags & MCDDS)
+		mcd_put(port+mcd_command, MCD_CMDREAD2D);
+	else
+		mcd_put(port+mcd_command, MCD_CMDREAD2);
+	mcd_put(port+mcd_command,rbuf.start_msf[0]);
+	mcd_put(port+mcd_command,rbuf.start_msf[1]);
+	mcd_put(port+mcd_command,rbuf.start_msf[2]);
+	mcd_put(port+mcd_command,0);
+	mcd_put(port+mcd_command,0);
+	mcd_put(port+mcd_command,1);
+		
+	/*k = inb(port+mcd_xfer);
+	if ((k & MCD_STEN)==0) {
+		int j;
+
+		printf("rb ");
+		do {
+			printf("%2x ", (j = inb(port+mcd_rdata)));
+		} while(((k = inb(port+mcd_Status)) & MCD_STEN) == 0); 
+		goto nextblock;
+	}*/
+	
+	/* fire off a interrupt poll or lost interrupt monitor */
+	/* if (irq) { */
+		/* timeout((int (*)())mcd_expire, (caddr_t)unit, hz*2); */
+	/* } else {
+		mbx->count = hz*2;
+		timeout((int (*)())mcd_pollintr, (caddr_t)unit, 1);
+	} */
 	splx(s);
 	return;
+}
+
+/* check for stuck drive or lost interrupts */
+static void
+mcd_monitor(void) {
+	int port, ists;
+	int i, unit;
+
+	i = splbio();
+	for (unit = 0; unit < NMCD; unit++) {
+		port = mcd_data[unit].iobase;
+		if (port == 0)
+			continue;
+		ists = inb(port+mcd_Status);
+		if ((ists & (MCD_STEN | MCD_DTEN)) != (MCD_STEN | MCD_DTEN)) {
+			if (mcd_data[unit].flags & MCDMBXSTUCK) {
+				printf("monitor intr ");
+				mcd_data[unit].flags |= MCDMBXTIMEO;
+				mcdintr(unit);
+			} else
+				mcd_data[unit].flags |= MCDMBXSTUCK;
+		} else
+			mcd_data[unit].flags &= ~MCDMBXSTUCK;
+	}
+	splx(i);
+	timeout((int (*)())mcd_monitor, (caddr_t)0, hz/2);
+}
+
+/* lost interrupt catcher */
+mcd_expire(int unit) {
+	int i;
+
+	i = splbio();
+printf("expire %d\n", unit);
+	mcd_data[unit].flags |= MCDMBXTIMEO;
+	mcdintr(unit);
+	splx(i);
+}
+
+/* simulate interrupt with a polling timeout */
+mcd_pollintr(unit) {
+	int port =  mcd_data[unit].iobase, ists;
+	struct mcd_data *cd = mcd_data + unit;
+	
+	/* if data or status is present, call interrupt */
+	ists = inb(port+mcd_Status);
+	if ((ists & (MCD_STEN | MCD_DTEN)) != (MCD_STEN | MCD_DTEN))
+		mcdintr(unit);
+	else {
+		/* if operation has not yet timed out, set poll */
+		if (mcd_data[unit].mbx.count-- > 0)
+			timeout((int (*)())mcd_pollintr, (caddr_t)unit, 1);
+
+		/* timed out, signal a retry on timeout */
+		else {
+			cd->flags |= MCDMBXTIMEO;
+			mcdintr(unit);
+		}
+	}
 }
 
 static int
@@ -570,15 +847,20 @@ static void mcd_configure(struct mcd_data *cd)
 /* check if there is a cdrom */
 int mcd_probe(struct isa_device *dev)
 {
+	struct mcd_data *cd;
 	int port = dev->id_iobase;	
 	static lastunit;
 	int unit;
 	int st;
+	int i;
+	char vers[2];
 
 	if (dev->id_unit == '?')
 		dev->id_unit = lastunit;
 
 	unit = dev->id_unit;
+	cd = mcd_data + dev->id_unit;
+	cd->iobase = port;	
 	mcd_data[unit].flags = MCDPROBING;
 
 #ifdef NOTDEF
@@ -588,18 +870,76 @@ int mcd_probe(struct isa_device *dev)
 	mcd_data[unit].config = 0;
 #endif
 
-	/* send a reset */
-	outb(port+mcd_reset, MCD_CMDRESET);
-	mcd_delay(300000);
+	/* attempt a soft reset */
+	/* outb(port+mcd_config, 2);  /* LU version only */
+printf("soft reset ");
+	mcd_setport(unit, mcd_Data, MCD_SOFTRESET);
 
+	/* if drive still does not respond, do a hard reset */
+	if (mcd_drv_rdy(unit) < 0 ||
+	    mcd_data[unit].status & (MCD_ST_DOOROPEN | MCD_ST_DSKIN) == 0) {
+		int i;
+
+printf("hard reset ");
+		/* send a reset */
+		mcd_setport(unit, mcd_reset, 0);
+		for (i = 0 ; i < 4; i++)
+			if (mcd_getstat(unit, 1) > 0)
+				break;
+		/* If not resettable, no drive */
+		if (i >= 3)
+			return (0);
+	}
+	/* XXX: obtain drive version and firmware revision */
+
+printf("get status ");
 	/* get status */
 	st = mcd_getstat(unit, 1);
 	mcd_data[unit].flags = 0;
-	if (st >= 0) {
-		lastunit++;
-		return (1);
+	if (st <= 0)
+		return (0);
+
+printf("get drive type ");
+	/* kind of drive */
+	if (mcd_send(unit, MCD_CMDGETVERS, 4) < 0 ||
+	    mcd_get(dev->id_unit, vers, sizeof vers) != sizeof vers)
+		return (0);
+		/* printf("can't get drive version\n");*/
+	else {
+		cd->flags = MCDINIT;
+		/* double speed drive uses different read command */
+		if (vers[0] == MCD_VER_FXD)
+			cd->flags |= MCDDS;
+		/* printf("version %c rev %x", vers[0], (unsigned)vers[1]); */
 	}
-	return (0);
+	lastunit++;
+	return (1);
+}
+
+/* obtain drive status */
+static int
+mcd_drv_rdy(int unit) {
+	struct	mcd_data *cd = mcd_data + unit;
+	int	i, port = cd->iobase;
+	unsigned sts;
+
+	/* wait until drive signals that status is available */
+	for (i = 0; i < 3000*4; i++) {
+		if ((mcd_getport(unit, mcd_Status) & MCD_STEN) == 0)
+			goto status_is_available;
+		mcd_delay(250);
+	}
+	return (-1);
+
+status_is_available:
+	sts =  mcd_getport(unit, mcd_Data);
+
+	/* if door is open, diskette state is meaningless */
+	if (sts & MCD_ST_DOOROPEN)
+		sts &= ~(MCD_ST_DSKIN | MCD_ST_DSKCHNG | MCD_ST_DSKSPIN);
+
+	cd->status = sts;
+	return (sts & 0xff);
 }
 
 static int mcd_waitrdy(int port,int dly) 
@@ -633,7 +973,7 @@ static int mcd_getreply(int unit,int dly)
 	return inb(port+mcd_status) & 0xFF;
 }
 
-static int mcd_getstat(int unit,int sflg)
+static int mcd_getstat(int unit, int sflg)
 {
 	int	i;
 	struct	mcd_data *cd = mcd_data + unit;
@@ -642,13 +982,18 @@ static int mcd_getstat(int unit,int sflg)
 	/* get the status */
 	if (sflg)
 		outb(port+mcd_command, MCD_CMDGETSTAT);
+#ifdef was
 	i = mcd_getreply(unit,DELAY_GETREPLY);
 	if (i<0) return -1;
 
 	cd->status = i;
-
 	mcd_setflags(unit,cd);
 	return cd->status;
+#else
+	i = mcd_drv_rdy(unit);
+	mcd_setflags(unit, cd);
+	return i;
+#endif
 }
 
 static void mcd_setflags(int unit, struct mcd_data *cd) 
@@ -656,7 +1001,7 @@ static void mcd_setflags(int unit, struct mcd_data *cd)
 	/* check flags */
 	if (cd->status & (MCDDSKCHNG|MCDDOOROPEN)) {
 		MCD_TRACE("getstat: sensed DSKCHNG or DOOROPEN\n",0,0,0,0);
-		cd->flags &= ~MCDVALID;
+		cd->flags &= ~(MCDVALID | MCDTOC);
 	}
 
 #ifndef MCDMINI
@@ -691,17 +1036,36 @@ static int mcd_send(int unit, int cmd,int nretrys)
 	int i,k;
 	int port = mcd_data[unit].iobase;
 	
-/*MCD_TRACE("mcd_send: command = 0x%x\n",cmd,0,0,0);*/
+MCD_TRACE("mcd_send: command = 0x%x\n",cmd,0,0,0);
 	for (i=0; i<nretrys; i++) {
 		outb(port+mcd_command, cmd);
 		if ((k=mcd_getstat(unit,0)) != -1)
 			break;
 	}
 	if (i == nretrys) {
-		printf("mcd%d: mcd_send retry cnt exceeded\n",unit);
+		printf("mcd%d: mcd_send cmd %x retry cnt exceeded\n",unit, cmd);
 		return -1;
 	}
-/*MCD_TRACE("mcd_send: status = 0x%x\n",k,0,0,0);*/
+MCD_TRACE("mcd_send: status = 0x%x\n",k,0,0,0);
+	return 0;
+}
+
+static int mcd_Send(int unit, char *cmdp, int ncmd, int nretrys)
+{
+	int i, sts;
+	int port = mcd_data[unit].iobase;
+	
+MCD_TRACE("mcd_send: command = 0x%x\n", *cmdp,0,0,0);
+	for (i = 0; i < nretrys; i++) {
+		outsb (port+mcd_command, cmdp, ncmd);
+		if ((sts = mcd_getstat(unit, 0)) != -1)
+			break;
+	}
+	if (i == nretrys) {
+		printf("mcd%d: mcd_send cmd %x retry cnt exceeded\n", unit, *cmdp);
+		return -1;
+	}
+MCD_TRACE("mcd_send: status = 0x%x\n", sts, 0, 0, 0);
 	return 0;
 }
 
@@ -717,9 +1081,9 @@ static bcd_t bin2bcd(int b)
 
 static void hsg2msf(int hsg, bcd_t *msf)
 {
-	hsg += 150;
-	M_msf(msf) = bin2bcd(hsg / 4500);
-	hsg %= 4500;
+	hsg += 2*75;
+	M_msf(msf) = bin2bcd(hsg / (60*75));
+	hsg %= 60*75;
 	S_msf(msf) = bin2bcd(hsg / 75);
 	F_msf(msf) = bin2bcd(hsg % 75);
 }
@@ -728,7 +1092,7 @@ static int msf2hsg(bcd_t *msf)
 {
 	return (bcd2bin(M_msf(msf)) * 60 +
 		bcd2bin(S_msf(msf))) * 75 +
-		bcd2bin(F_msf(msf)) - 150;
+		bcd2bin(F_msf(msf)) - (2*75);
 }
 
 static int mcd_volinfo(int unit)
@@ -745,12 +1109,12 @@ static int mcd_volinfo(int unit)
 	if (cd->flags & MCDVOLINFO) return 0;
 
 	/* send volume info command */
-	if (mcd_send(unit,MCD_CMDGETVOLINFO,MCD_RETRYS) < 0)
+	if (mcd_send(unit, MCD_CMDGETVOLINFO, MCD_RETRYS) < 0)
 		return -1;
 
 	/* get data */
 	if (mcd_get(unit,(char*) &cd->volinfo,sizeof(struct mcd_volinfo)) < 0) {
-		/*printf("mcd%d: mcd_volinfo: error read data\n",unit);*/
+		printf("mcd%d: mcd_volinfo: error read data\n",unit);
 		return -1;
 	}
 
@@ -762,191 +1126,154 @@ static int mcd_volinfo(int unit)
 	return -1;
 }
 
-int mcdintr(unit)
+static void
+mcdintr(unit)
 {
-	int	port = mcd_data[unit].iobase;
-	u_int	i;
-	
-	MCD_TRACE("stray interrupt xfer=0x%x\n",inb(port+mcd_xfer),0,0,0);
-
-	/* just read out status and ignore the rest */
-	if ((inb(port+mcd_xfer)&0xFF) != 0xFF) {
-		i = inb(port+mcd_status);
-	}
-}
-
-/* state machine to process read requests
- * initialize with MCD_S_BEGIN: calculate sizes, and read status
- * MCD_S_WAITSTAT: wait for status reply, set mode
- * MCD_S_WAITMODE: waits for status reply from set mode, set read command
- * MCD_S_WAITREAD: wait for read ready, read data
- */
-static struct mcd_mbx *mbxsave;
-
-static void mcd_doread(int state, struct mcd_mbx *mbxin)
-{
-	struct mcd_mbx *mbx = (state!=MCD_S_BEGIN) ? mbxsave : mbxin;
-	int	unit = mbx->unit;
-	int	port = mbx->port;
-	struct	buf *bp = mbx->bp;
+	int port = mcd_data[unit].iobase;
 	struct	mcd_data *cd = mcd_data + unit;
-
-	int	rm,i,k;
-	struct mcd_read2 rbuf;
-	int	blknum;
+	int i, ists, sts;
+	struct mcd_mbx *mbx = &cd->mbx;
+	struct buf *bp;
 	caddr_t	addr;
+	
+	MCD_TRACE("interrupt ists 0x%x\n",inb(port+mcd_Status),0,0,0);
 
-loop:
-	switch (state) {
-	case MCD_S_BEGIN:
-		mbx = mbxsave = mbxin;
+	bp = mbx->bp;
+	ists = inb(port+mcd_Status);
+	if ((cd->flags & MCDMBXBSY) == 0) {
+		/* non-transfer interrupt XXX */
+		printf("I%2x ", ists);
+		
+		for (sts = -1;
+		    (ists & (MCD_STEN | MCD_DTEN)) != (MCD_STEN | MCD_DTEN); )
+		{
+			int flg = 0, data;
 
-	case MCD_S_BEGIN1:
-		/* get status */
-		outb(port+mcd_command, MCD_CMDGETSTAT);
-		mbx->count = RDELAY_WAITSTAT;
-		timeout((int (*)())mcd_doread, (caddr_t)MCD_S_WAITSTAT, hz/100);
-		return;
-	case MCD_S_WAITSTAT:
-		untimeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITSTAT);
-		if (mbx->count-- >= 0) {
-			if (inb(port+mcd_xfer) & MCD_ST_BUSY) {
-				timeout((int (*)())mcd_doread, (caddr_t)MCD_S_WAITSTAT,hz/100);
-				return;
+			if ((ists & MCD_STEN) == 0) {
+				sts = inb(port+mcd_rdata);
+				if (flg != MCD_STEN)
+					printf("sts ");
+				printf("%2x ", sts);
+				flg = MCD_STEN;
 			}
-			mcd_setflags(unit,cd);
-			MCD_TRACE("got WAITSTAT delay=%d\n",RDELAY_WAITSTAT-mbx->count,0,0,0);
-			/* reject, if audio active */
-			if (cd->status & MCDAUDIOBSY) {
-				printf("mcd%d: audio is active\n",unit);
+			if ((ists & MCD_DTEN) == 0) {
+				data = inb(port+mcd_rdata);
+				/* if (flg != MCD_DTEN)
+					printf("data ");
+				printf("%2x ", data); */
+				flg = MCD_DTEN;
+			}
+			ists = inb(port+mcd_Status);
+		}
+		return;
+	}
+
+	/* transfer interrupt */
+	/* kill timeout */
+	/* untimeout((int (*)())mcd_expire,(caddr_t)unit); */
+	mcd_data[unit].flags &= ~MCDMBXSTUCK;
+	if (ists != 0xed) printf("i%2x ", ists);
+
+	/* wait til status or data become available */
+	do
+		ists = inb(port+mcd_Status);
+	while ((ists & (MCD_STEN|MCD_DTEN)) == (MCD_STEN|MCD_DTEN));
+
+	/* status, transfer has failed */
+	if ((ists & MCD_STEN) == 0) {
+		sts = inb(port+mcd_rdata);
+		printf("sb %2x", sts);
+		/*if (sts & MCD_ST_INVCMD)
+			goto nextblock;
+		if (sts & MCD_ST_READERR)*/
+			goto readerr;
+	}
+
+	/* data, transfer is successful */
+	if ((ists & MCD_DTEN) == 0) {
+		addr = bp->b_un.b_addr + mbx->skip;
+#ifndef eight
+		outb(port+mcd_ctl2,0x00);	/* XXX */
+		insb (port+mcd_rdata, addr, mbx->sz);
+		outb(port+mcd_ctl2,0x08);	/* XXX */
+#else
+		outb(port+mcd_ctl2,0xc1);	/* XXX */
+		insw (port+mcd_rdata, addr, mbx->sz/2);
+		outb(port+mcd_ctl2,0x41);	/* XXX */
+#endif
+#ifdef dontbother
+		/* transfer dribbled? */
+		ists = inb(port+mcd_Status);
+		if ((ists & MCD_DTEN) ==0) {
+#ifndef eight
+			outb(port+mcd_ctl2,0x00);	/* XXX */
+			(void)inb(port+mcd_rdata);
+			(void)inb(port+mcd_rdata);
+			outb(port+mcd_ctl2,0x08);	/* XXX */
+#else
+			outb(port+mcd_ctl2,0xc1);	/* XXX */
+			(void)inw(port+mcd_rdata);
+			outb(port+mcd_ctl2,0x41);	/* XXX */
+#endif
+			ists = inb(port+mcd_Status);
+			printf("F");
+		}
+		if ((ists & MCD_DTEN)==0)
+			printf("G");
+		if ((ists & MCD_STEN)==0) {
+			printf("sa ");
+			do printf("%2x ", inb(port+mcd_rdata));
+			while(((ists = inb(port+mcd_Status)) & MCD_STEN) == 0); 
 				goto readerr;
 			}
+#endif
 
-			/* to check for raw/cooked mode */
-			if (cd->flags & MCDREADRAW) {
-				rm = MCD_MD_RAW;
-				mbx->sz = MCDRBLK;
-			} else {
-				rm = MCD_MD_COOKED;
-				mbx->sz = cd->blksize;
-			}
+		/* this must be here!! */
+		/* check drive status to insure correct state */
+		if ((sts = mcd_getstat(unit, 1)) != (MCD_ST_DSKIN | MCD_ST_DSKSPIN)) {
+			printf("S%x ", sts);
+			goto readerr;
+		}
 
-			mbx->count = RDELAY_WAITMODE;
-		
-			mcd_put(port+mcd_command, MCD_CMDSETMODE);
-			mcd_put(port+mcd_command, rm);
-			timeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITMODE,hz/100);
-			return;
+		if (--mbx->nblk > 0) {
+			mbx->skip += mbx->sz;
 		} else {
-#ifdef MCD_TO_WARNING_ON
-			printf("mcd%d: timeout getstatus\n",unit);
-#endif
-			goto readerr;
+			/* return buffer */
+			bp->b_resid = 0;
+			biodone(bp);
 		}
 
-	case MCD_S_WAITMODE:
-		untimeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITMODE);
-		if (mbx->count-- < 0) {
-#ifdef MCD_TO_WARNING_ON
-			printf("mcd%d: timeout set mode\n",unit);
-#endif
-			goto readerr;
-		}
-		if (inb(port+mcd_xfer) & MCD_ST_BUSY) {
-			timeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITMODE,hz/100);
-			return;
-		}
-		mcd_setflags(unit,cd);
-		MCD_TRACE("got WAITMODE delay=%d\n",RDELAY_WAITMODE-mbx->count,0,0,0);
-		/* for first block */
-		mbx->nblk = (bp->b_bcount + (mbx->sz-1)) / mbx->sz;
-		mbx->skip = 0;
-
-nextblock:
-		blknum 	= (bp->b_blkno / (mbx->sz/DEV_BSIZE)) 
-			+ mbx->p_offset + mbx->skip/mbx->sz;
-
-		MCD_TRACE("mcd_doread: read blknum=%d for bp=0x%x\n",blknum,bp,0,0);
-
-		/* build parameter block */
-		hsg2msf(blknum,rbuf.start_msf);
-
-		/* send the read command */
-		mcd_put(port+mcd_command,MCD_CMDREAD2);
-		mcd_put(port+mcd_command,rbuf.start_msf[0]);
-		mcd_put(port+mcd_command,rbuf.start_msf[1]);
-		mcd_put(port+mcd_command,rbuf.start_msf[2]);
-		mcd_put(port+mcd_command,0);
-		mcd_put(port+mcd_command,0);
-		mcd_put(port+mcd_command,1);
-		mbx->count = RDELAY_WAITREAD;
-		timeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITREAD,hz/100);
+		cd->flags &= ~(MCDMBXBSY | MCDMBXRTRY);
+		mcd_start(mbx->unit);
 		return;
-	case MCD_S_WAITREAD:
-		untimeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITREAD);
-		if (mbx->count-- > 0) {
-			k = inb(port+mcd_xfer);
-			if ((k & 2)==0) {
-			MCD_TRACE("got data delay=%d\n",RDELAY_WAITREAD-mbx->count,0,0,0);
-				/* data is ready */
-				addr	= bp->b_un.b_addr + mbx->skip;
-				outb(port+mcd_ctl2,0x04);	/* XXX */
-				for (i=0; i<mbx->sz; i++)
-					*addr++	= inb(port+mcd_rdata);
-				outb(port+mcd_ctl2,0x0c);	/* XXX */
 
-				if (--mbx->nblk > 0) {
-					mbx->skip += mbx->sz;
-					goto nextblock;
-				}
-
-				/* return buffer */
-				bp->b_resid = 0;
-				biodone(bp);
-
-				cd->flags &= ~MCDMBXBSY;
-				mcd_start(mbx->unit);
-				return;
-			}
-			if ((k & 4)==0)
-				mcd_getstat(unit,0);
-			timeout((int (*)())mcd_doread,(caddr_t)MCD_S_WAITREAD,hz/100);
-			return;
-		} else {
-#ifdef MCD_TO_WARNING_ON
-			printf("mcd%d: timeout read data\n",unit);
-#endif
+		/*if ((k & MCD_STEN)==0) {
+			sts = inb(port+mcd_rdata);
+			printf("srt %2x", sts);
 			goto readerr;
 		}
-	}
+		if(failcmd) printf("fail"); */
+	} else {
 
 readerr:
-	if (mbx->retry-- > 0) {
+		if (mbx->retry-- > 0) {
 #ifdef MCD_TO_WARNING_ON
-		printf("mcd%d: retrying\n",unit);
+			printf("mcd%d: retry %d\n", unit, mbx->retry);
 #endif
-		state = MCD_S_BEGIN1;
-		goto loop;
+printf("r%d ", mbx->retry);
+			mbx->skip = 0;
+			cd->flags |= MCDMBXRTRY;
+		} else {
+
+printf("failed ");
+			/* invalidate the buffer */
+			bp->b_flags |= B_ERROR;
+			bp->b_resid = bp->b_bcount;
+			biodone(bp);
+		}
+		cd->flags &= ~MCDMBXBSY;
+		mcd_start(mbx->unit);
 	}
-
-	/* invalidate the buffer */
-	bp->b_flags |= B_ERROR;
-	bp->b_resid = bp->b_bcount;
-	biodone(bp);
-	mcd_start(mbx->unit);
-	return;
-
-#ifdef NOTDEF
-	printf("mcd%d: unit timeout, resetting\n",mbx->unit);
-	outb(mbx->port+mcd_reset,MCD_CMDRESET);
-	DELAY(300000);
-	(void)mcd_getstat(mbx->unit,1);
-	(void)mcd_getstat(mbx->unit,1);
-	/*cd->status &= ~MCDDSKCHNG; */
-	cd->debug = 1; /* preventive set debug mode */
-
-#endif
-
 }
 
 #ifndef MCDMINI
@@ -996,7 +1323,7 @@ static int mcd_read_toc(int unit)
 		return ENXIO;
 
 	printf("mcd%d: stopping play\n", unit);
-	if ((rc=mcd_stop(unit)) != 0)
+	if ((rc = mcd_stop(unit)) != 0)
 		return rc;
 
 	/* try setting the mode twice */
@@ -1247,4 +1574,18 @@ DRIVER_MODCONFIG() {
 
 	/* probe for hardware */
 	new_isa_configure(&cfg_string, &mcddriver);
+}
+
+static void
+mcd_setport(int unit, int port, u_char data) {
+	struct mcd_data *cd = mcd_data + unit;
+
+	outb(cd->iobase + port, data);
+}
+
+static u_char
+mcd_getport(int unit, int port) {
+	struct mcd_data *cd = mcd_data + unit;
+
+	return (inb(cd->iobase + port));
 }

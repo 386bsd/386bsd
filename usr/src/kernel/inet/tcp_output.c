@@ -30,19 +30,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: tcp_output.c,v 1.1 94/10/20 10:53:39 root Exp $
+ *	$Id: tcp_output.c,v 1.1 94/10/20 10:53:39 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
 #include "systm.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/file.h"
-#include "socketvar.h"
 #include "sys/errno.h"
 #include "prototypes.h"
+#include "socketvar.h"
+#include "protosw.h"
 
+#include "if.h"
 #include "route.h"
 
 #include "in.h"

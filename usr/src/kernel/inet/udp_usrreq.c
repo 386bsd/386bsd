@@ -30,16 +30,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: udp_usrreq.c,v 1.1 94/10/20 10:53:46 root Exp $
+ *	$Id: udp_usrreq.c,v 1.1 94/10/20 10:53:46 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
 #include "sys/errno.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/file.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "sys/stat.h"
 #include "prototypes.h"
 

@@ -36,6 +36,10 @@
 #include <sys/param.h>
 
 #include "ufs.h"
+#ifdef KERNEL
+#include "sys/errno.h"
+#include "prototypes.h"
+#endif
 
 
 extern	int around[9];

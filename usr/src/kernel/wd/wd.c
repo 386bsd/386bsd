@@ -61,6 +61,7 @@ static char *wd_config =
 #include "isa_irq.h"
 #include "machine/icu.h"
 #include "wdreg.h"
+#include "atapi.h"
 #include "vm.h"
 #include "modconfig.h"
 #include "prototypes.h"
@@ -112,7 +113,9 @@ struct	disk {
 #define	DKFL_BSDLABEL	0x00010	 /* has a BSD disk label */
 #define	DKFL_BADSECT	0x00020	 /* has a bad144 badsector table */
 #define	DKFL_WRITEPROT	0x00040	 /* manual unit write protect */
+#define	DKFL_ATAPI	0x00080	 /* ATAPI protocol */
 	struct wdparams dk_params; /* ESDI/IDE drive/controller parameters */
+	struct atapi_params dk_atapiparams; /* ATAPI controller parameters */
 	struct disklabel dk_dd;	/* device configuration data */
 	struct	dos_partition
 		dk_dospartitions[NDOSPART];	/* DOS view of disk */
@@ -475,29 +478,8 @@ loop:
 		while (inb(wdc+wd_status) & WDCS_BUSY)
 			;
 
-		/* stuff the task file */
-		outb(wdc+wd_precomp, lp->d_precompcyl / 4);
-#ifdef	B_FORMAT
-		if (bp->b_flags & B_FORMAT) {
-			outb(wdc+wd_sector, lp->d_gap3);
-			outb(wdc+wd_seccnt, lp->d_nsectors);
-		} else {
-#endif
-		if (du->dk_flags & DKFL_SINGLE)
-			outb(wdc+wd_seccnt, 1);
-		else
-			outb(wdc+wd_seccnt, howmany(du->dk_bc, DEV_BSIZE));
-
-		outb(wdc+wd_sector, sector);
-
-#ifdef	B_FORMAT
-		}
-#endif
-
-		outb(wdc+wd_cyl_lo, cylin);
-		outb(wdc+wd_cyl_hi, cylin >> 8);
-
 		/* grab the drive */
+		/* XXX ATAPI commands don't look at DRDY */
 		if (wdselect(du, unit, head) < 0) {
 			bp->b_flags |= B_ERROR;
 			bp->b_error = EIO;	/* XXX needs translation */
@@ -505,18 +487,68 @@ loop:
 			goto loop;
 		}
 
-		/* initiate command! */
+		/* choose controller protocol */
+		if (du->dk_flags & DKFL_ATAPI) {
+			static struct atapi_read_10 ac;
+
+			/* construct a SCSI command packet */
+asm(".globl atapi; atapi:");
+			du->dk_flags |=  DKFL_SINGLE;
+			/* memset((caddr_t)&ac, 0, sizeof(ac)); */
+			ac.ac_cmd = ATAPI10OP;
+			*(long *)ac.ac_lba = htonl(blknum/4);
+			*(short *)ac.ac_tfr = htons(du->dk_bc/2048);
+
+			/* stuff the task file with an ATAPI PKT sequence */
+			outb(wdc+wd_cyl_lo, du->dk_bc);
+			outb(wdc+wd_cyl_hi, du->dk_bc >> 8);
+			
+			/* issue command and wait for packet to be accepted */
+			if (wdcommand(du, ATAPI_PKT, 1) < 0) {
+				bp->b_flags |= B_ERROR;
+				bp->b_error = EIO;	/* XXX needs translation */
+				wdfinished(dp, bp);
+				goto loop;
+			}
+
+			/* stuff command packet */
+			outsw (wdc+wd_data, (char *)&ac, 12/2);
+		} else {
+			/* stuff the task file with an ATA sequence */
+			outb(wdc+wd_precomp, lp->d_precompcyl / 4);
 #ifdef	B_FORMAT
-		if (bp->b_flags & B_FORMAT)
-			outb(wdc+wd_command, WDCC_FORMAT);
-		else
+			if (bp->b_flags & B_FORMAT) {
+				outb(wdc+wd_sector, lp->d_gap3);
+				outb(wdc+wd_seccnt, lp->d_nsectors);
+			} else {
 #endif
-		if (wdcommand(du,
-		    (bp->b_flags & B_READ)? WDCC_READ : WDCC_WRITE, 0) < 0) {
-			bp->b_flags |= B_ERROR;
-			bp->b_error = EIO;	/* XXX needs translation */
-			wdfinished(dp, bp);
-			goto loop;
+			if (du->dk_flags & DKFL_SINGLE)
+				outb(wdc+wd_seccnt, 1);
+			else
+				outb(wdc+wd_seccnt, howmany(du->dk_bc, DEV_BSIZE));
+
+			outb(wdc+wd_sector, sector);
+
+#ifdef	B_FORMAT
+			}
+#endif
+
+			outb(wdc+wd_cyl_lo, cylin);
+			outb(wdc+wd_cyl_hi, cylin >> 8);
+
+			/* initiate command! */
+#ifdef	B_FORMAT
+			if (bp->b_flags & B_FORMAT)
+				outb(wdc+wd_command, WDCC_FORMAT);
+			else
+#endif
+			if (wdcommand(du,
+			    (bp->b_flags & B_READ)? WDCC_READ : WDCC_WRITE, 0) < 0) {
+				bp->b_flags |= B_ERROR;
+				bp->b_error = EIO;	/* XXX needs translation */
+				wdfinished(dp, bp);
+				goto loop;
+			}
 		}
 #ifdef	WDDEBUG
 		printf("sector %d cylin %d head %d addr %x sts %x\n",
@@ -582,6 +614,34 @@ wdintr(int dev)
 
 		du->dk_status = status;
 		du->dk_error = inb(wdc + wd_error);
+
+		/* if atapi, do a request sense */
+		if(du->dk_flags & DKFL_ATAPI) {
+			static char rs[12], sns[32];
+			int len;
+			rs[0] = 3;
+			rs[4] = 32;
+			
+			/* stuff the task file with an ATAPI PKT sequence */
+			outb(wdc+wd_cyl_lo, 32);
+			outb(wdc+wd_cyl_hi, 0);
+			
+			/* issue command and wait for packet to be accepted */
+			(void) wdcommand(du, ATAPI_PKT, 1);
+			/* if (wdcommand(du, ATAPI_PKT, 1) < 0) {
+				bp->b_flags |= B_ERROR;
+				bp->b_error = EIO;
+				wdfinished(dp, bp);
+				goto loop;
+			}*/
+
+			/* stuff command packet */
+			outsw (wdc+wd_data, rs, 12/2);
+			while ((inb(wdc+wd_status) & WDCS_DRQ) == 0) ;
+			len = inb(wdc+wd_cyl_lo) + 256*inb(wdc+wd_cyl_hi); 
+			insw (wdc+wd_data, sns, len/2);
+			printf("atapi error code %x\n",  len);
+		}
 #ifdef	WDDEBUG
 		printf("status %x error %x\n", status, du->dk_error);
 #endif
@@ -628,7 +688,7 @@ outt:
 	if (((bp->b_flags & (B_READ | B_ERROR)) == B_READ) && wdtab.b_active) {
 		int chk, dummy;
 
-		chk = min(DEV_BSIZE / sizeof(short), du->dk_bc / sizeof(short));
+		chk = min(du->dk_dd.d_secsize / sizeof(short), du->dk_bc / sizeof(short));
 
 		/* ready to receive data? */
 		while ((inb(wdc+wd_status) & WDCS_DRQ) == 0)
@@ -636,11 +696,11 @@ outt:
 
 		/* suck in data */
 		insw (wdc+wd_data,
-			bp->b_un.b_addr + du->dk_skip * DEV_BSIZE, chk);
+			bp->b_un.b_addr + du->dk_skip * du->dk_dd.d_secsize, chk);
 		du->dk_bc -= chk * sizeof(short);
 
 		/* for obselete fractional sector reads */
-		while (chk++ < 256) insw (wdc+wd_data, (caddr_t) &dummy, 1);
+		/* while (chk++ < 256) insw (wdc+wd_data, (caddr_t) &dummy, 1);*/
 	}
 
 	wdxfer[du->dk_unit]++;
@@ -739,7 +799,12 @@ wdopen(dev_t dev, int flags, int fmt, struct proc *p)
 		du->dk_state = WANTOPEN;
 		du->dk_unit = unit;
 		if (part == WDRAW)
+{
 			du->dk_flags |= DKFL_QUIET;
+		du->dk_state = OPEN+1;
+		du->dk_dd.d_secsize = 2048;
+goto nope;
+}
 		else
 			du->dk_flags &= ~DKFL_QUIET;
 
@@ -751,7 +816,7 @@ wdopen(dev_t dev, int flags, int fmt, struct proc *p)
 				log(LOG_WARNING, "wd%d: cannot find label (%s)\n",
 					unit, msg);
 				error = EINVAL;		/* XXX needs translation */
-			} else printf("quiet ");
+			} /* else printf("quiet ");*/
 			goto done;
 		} else {
 
@@ -767,6 +832,7 @@ done:
 			return(error);
 
 	}
+nope:
         /*
          * Warn if a partion is opened
          * that overlaps another partition which is open
@@ -919,7 +985,7 @@ wdcommand(struct disk *du, int cmd, int wait) {
 	}
 	if (timeout <= 0)
 		return(-1);
-	if (cmd != WDCC_READP && cmd != WDCC_READ
+	if (cmd != WDCC_READP && cmd != WDCC_READ && cmd != ATAPI_PKT
 	    && cmd != WDCC_WRITE && cmd != WDCC_FORMAT)
 		return (0);
 
@@ -1008,19 +1074,25 @@ wdgetctlr(int u, struct disk *du) {
 	outb(wdc+wd_sdh, WDSD_IBM | (u << 4));
 	stat = wdcommand(du, WDCC_READP, 1);
 
-	/* if (stat < 0)
-		return(stat);
-	if (stat & WDCS_ERR) {
-		splx(x);
-		return(inb(wdc+wd_error));
-	} */
+	if (stat == 0) {
+		goto found;
+	}
+
+	/* XXX check for ATAPI signature */
+
+	outb(wdc+wd_sdh, WDSD_IBM | (u << 4));
+	stat = wdcommand(du, ATAPI_IDENT, 1);
 
 	if (stat < 0) {
 		splx(x);
 		return(stat);
 	}
+	printf(" ATAPI ");
+	du->dk_flags |= DKFL_ATAPI;
+	du->dk_flags |= DKFL_WRITEPROT;	/* presume a CDROM */
 
 	/* obtain parameters */
+found:
 	wp = &du->dk_params;
 	insw(wdc+wd_data, (caddr_t) tb, sizeof(tb)/sizeof(short));
 	(void)memcpy(wp, tb, sizeof(struct wdparams));
@@ -1031,9 +1103,9 @@ wdgetctlr(int u, struct disk *du) {
 		p = (u_short *) (wp->wdp_model + i);
 		*p = ntohs(*p);
 	}
-/*printf("gc %x cyl %d trk %d sec %d type %d sz %d model %s\n", wp->wdp_config,
+printf("gc %x cyl %d trk %d sec %d type %d sz %d model %s\n", wp->wdp_config,
 wp->wdp_fixedcyl+wp->wdp_removcyl, wp->wdp_heads, wp->wdp_sectors,
-wp->wdp_cntype, wp->wdp_cnsbsz, wp->wdp_model);*/
+wp->wdp_cntype, wp->wdp_cnsbsz, wp->wdp_model);
 
 	/* update disklabel given drive information */
 	du->dk_dd.d_ncylinders = wp->wdp_fixedcyl + wp->wdp_removcyl /*+- 1*/;
@@ -1290,7 +1362,7 @@ wddump(dev_t dev)			/* dump core after a system crash */
 			blkcnt = secpercyl - (blknum % secpercyl);
 			    /* keep transfer within current cylinder */
 #endif
-		pmap_enter(kernel_pmap, (vm_offset_t)CADDR1, trunc_page(addr),
+		pmap_enter(kernel_pmap, (vm_offset_t)vmmap, trunc_page(addr),
 			VM_PROT_READ, TRUE, AM_NONE);
 
 		/* compute disk address */
@@ -1347,7 +1419,7 @@ wddump(dev_t dev)			/* dump core after a system crash */
 		if (wdcommand(du, WDCC_WRITE, 1) < 0)
 			return(EIO);
 		
-		outsw (wdc+wd_data, CADDR1+((int)addr&(NBPG-1)), 256);
+		outsw (wdc+wd_data, vmmap+((int)addr&(NBPG-1)), 256);
 
 		if (inb(wdc+wd_status) & WDCS_ERR) return(EIO) ;
 		/* Check data request (should be done).         */

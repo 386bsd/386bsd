@@ -549,10 +549,10 @@ isofs_fhtovp(mp, fhp, vpp)
 	dirp = (struct iso_directory_record *)
 				 (bp->b_un.b_addr + ifhp->ifid_offset);
 
-	if (ifhp->ifid_offset + isonum_711 (dirp->length) >= imp->im_bsize) {
+/*	if (ifhp->ifid_offset + isonum_711 (dirp->length) >= imp->im_bsize) {
 		brelse (bp);
 		return (EINVAL);
-	}
+	}*/
 /*	if (isonum_733(dirp->extent) != ifhp->ifid_ino) {
 		brelse(bp);
 		return(EINVAL);

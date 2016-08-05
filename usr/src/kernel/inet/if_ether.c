@@ -54,11 +54,14 @@
 #include "prototypes.h"
 
 #include "if.h"
+#include "route.h"	/* XXX for looutput */
 #include "in.h"
 #include "in_systm.h"
 #include "in_var.h"
 #include "ip.h"
+#define	_ARP_PROTOTYPES
 #include "if_ether.h"
+#undef _ARP_PROTOYPES
 
 #ifdef GATEWAY
 #define	ARPTAB_BSIZ	16		/* bucket size */
@@ -95,7 +98,6 @@ int	arptab_size = ARPTAB_SIZE;	/* for arp command */
 #define	ARPT_KILLC	20	/* kill completed entry in 20 mins. */
 #define	ARPT_KILLI	3	/* kill incomplete entry in 3 minutes */
 
-extern struct ifnet loif;
 
 /*
  * Timeout routine.  Age arp_tab entries once a minute.
@@ -121,13 +123,12 @@ arptimer()
 /*
  * Broadcast an ARP packet, asking who has addr on interface ac.
  */
-arpwhohas(ac, addr)
-	register struct arpcom *ac;
-	struct in_addr *addr;
+void
+arpwhohas(struct arpcom *ac, struct in_addr *addr)
 {
-	register struct mbuf *m;
-	register struct ether_header *eh;
-	register struct ether_arp *ea;
+	struct mbuf *m;
+	struct ether_header *eh;
+	struct ether_arp *ea;
 	struct sockaddr sa;
 
 	if ((m = m_gethdr(M_DONTWAIT, MT_DATA)) == NULL)
@@ -172,12 +173,9 @@ int	useloopback = 1;	/* use loopback interface for local traffic */
  * arptab is also altered from input interrupt service (ecintr/ilintr
  * calls arpinput when ETHERTYPE_ARP packets come in).
  */
-arpresolve(ac, m, destip, desten, usetrailers)
-	register struct arpcom *ac;
-	struct mbuf *m;
-	register struct in_addr *destip;
-	register u_char *desten;
-	int *usetrailers;
+int
+arpresolve(struct arpcom *ac, struct mbuf *m, struct in_addr *destip,
+	u_char *desten, int *usetrailers)
 {
 	register struct arptab *at;
 	struct sockaddr_in sin;
@@ -207,9 +205,10 @@ arpresolve(ac, m, destip, desten, usetrailers)
 		 * to force traffic out to the hardware.
 		 */
 		if (useloopback) {
+			const struct ifnet *lif = esym_fetch(loif);
 			sin.sin_family = AF_INET;
 			sin.sin_addr = *destip;
-			(void) looutput(&loif, m, (struct sockaddr *)&sin, 0);
+			(void) looutput((struct ifnet *)lif, m, (struct sockaddr *)&sin, 0);
 			/*
 			 * The packet has already been sent and freed.
 			 */
@@ -268,9 +267,8 @@ arpresolve(ac, m, destip, desten, usetrailers)
  * is received.  Common length and type checks are done here,
  * then the protocol-specific routine is called.
  */
-arpinput(ac, m)
-	struct arpcom *ac;
-	struct mbuf *m;
+void
+arpinput(struct arpcom *ac, struct mbuf *m)
 {
 	register struct arphdr *ar;
 
@@ -520,13 +518,12 @@ out:
 	return (at);
 }
 
-arpioctl(cmd, data)
-	int cmd;
-	caddr_t data;
+int
+arpioctl(int cmd, caddr_t data)
 {
-	register struct arpreq *ar = (struct arpreq *)data;
-	register struct arptab *at;
-	register struct sockaddr_in *sin;
+	struct arpreq *ar = (struct arpreq *)data;
+	struct arptab *at;
+	struct sockaddr_in *sin;
 	int s;
 
 	sin = (struct sockaddr_in *)&ar->arp_ha;

@@ -90,7 +90,7 @@ extern void	X_db_symbol_values();
 /*
  * Multiple symbol tables
  */
-#define	MAXNOSYMTABS	3	/* mach, ux, emulator */
+#define	MAXNOSYMTABS	30	/* mach, ux, emulator */
 
 db_symtab_t	db_symtabs[MAXNOSYMTABS] = {{0,},};
 int db_nsymtab = 0;

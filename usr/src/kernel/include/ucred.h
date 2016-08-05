@@ -51,8 +51,22 @@ struct ucred {
 
 #ifdef KERNEL
 #define	crhold(cr)	(cr)->cr_ref++
-struct ucred *crget(void), *crdup(const struct ucred *);
-void crfree(struct ucred *);
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+
+/* functions used in modules */
+__ISYM__(struct ucred *, crget, (void))
+__ISYM__(struct ucred *, crdup, (const struct ucred *))
+__ISYM__(void, crfree, (struct ucred *))
+__ISYM__(int, groupmember, (gid_t gid, const struct ucred *cred))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif KERNEL
 
 #endif /* !_UCRED_H_ */

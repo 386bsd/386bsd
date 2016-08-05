@@ -33,7 +33,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: ufs_lockf.c,v 1.1 94/10/20 10:56:39 root Exp $
+ *	$Id: ufs_lockf.c,v 1.1 94/10/20 10:56:39 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -57,8 +57,9 @@
  */
 int maxlockdepth = MAXDEPTH;
 
+#define LOCKF_DEBUG
 #ifdef LOCKF_DEBUG
-int	lockf_debug = 0;
+int	lockf_debug = -1;
 #endif /* LOCKF_DEBUG */
 
 #define NOLOCKF (struct lockf *)0

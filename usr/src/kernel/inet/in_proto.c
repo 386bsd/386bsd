@@ -40,10 +40,12 @@ static char *inet_config = "inet 2.";	/* AF_INET */
 #include "protosw.h"
 #include "domain.h"
 #include "mbuf.h"
+#include "modconfig.h"
+#include "esym.h"
 
 #include "in.h"
 #include "in_systm.h"
-#include "modconfig.h"
+int ipintr();
 
 /*
  * TCP/IP protocol family: IP, ICMP, UDP, TCP.
@@ -134,6 +136,11 @@ struct domain inetdomain =
     { 0, "internet", 0, 0, 0, 
       inetsw, &inetsw[sizeof(inetsw)/sizeof(inetsw[0])] };
 
+int zero; /* XXX */
+extern arpwhohas(), arpinput(), arpresolve(), in_sockmaskof(), arpioctl();	/* XXX */
+extern void (*netintr[32])(void) asm("netintr1");
+extern void printf() asm("printf1");
+
 NETWORK_MODCONFIG() {
 	char *cfg_string = inet_config;
 
@@ -144,4 +151,11 @@ NETWORK_MODCONFIG() {
 		return;
 
 	adddomain(&inetdomain);
+	esym_bind(arpwhohas);
+	esym_bind(arpinput);
+	esym_bind(arpioctl);
+	esym_bind(arpresolve);
+	esym_bind(in_sockmaskof);
+	netintr[2] = (void (*)(void))ipintr;
+	/* printf("ipintr %x netintr %x\n", ipintr, netintr+2); */
 }

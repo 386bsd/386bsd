@@ -50,6 +50,7 @@
 #include "vnode.h"
 #include "ufs_lockf.h"
 #include "ufs_quota.h"
+#define	INODE_TYPE_TABLE
 #include "ufs_inode.h"
 #include "ufs_dir.h"
 #include "ufs.h"
@@ -1875,6 +1876,7 @@ struct vnodeops fifo_inodeops = {
 };
 #endif /* FIFO */
 
+/*
 enum vtype iftovt_tab[16] = {
 	VNON, VFIFO, VCHR, VNON, VDIR, VNON, VBLK, VNON,
 	VREG, VNON, VLNK, VNON, VSOCK, VNON, VNON, VBAD,
@@ -1882,3 +1884,4 @@ enum vtype iftovt_tab[16] = {
 int	vttoif_tab[9] = {
 	0, IFREG, IFDIR, IFBLK, IFCHR, IFLNK, IFSOCK, IFIFO, IFMT,
 };
+*/

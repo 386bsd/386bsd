@@ -116,7 +116,7 @@ const struct {
 } gdtarg = { 0, sizeof gdt - 1, gdt };
 
 #define CRTBASE ((char *)0xb8000)
-#define CHECKPOINT(x) (CRTBASE[0] = x)
+#define CHECKPOINT(x) /* (CRTBASE[0] = x) */
 #define CHECKPOINT2(x) (CRTBASE[2] = x)
 
 volatile struct mailbox_entry mailbox[2];
@@ -139,7 +139,7 @@ const char ccb[] = {
 
 	/* scsi cdb */
 	0x28, /* read opcode */
-	0x1, /* logical unit number */
+	0, /* logical unit number */
 	0, 0, 0, 0, /* logical block address */
 	0,	/* reserved */
 	0, NBLOCKS, /* transfer length */
@@ -153,8 +153,8 @@ main ()
 {
 	int i;
 	extern char edata[], end[];
+	extern char base();
 	char volatile * volatile p, *q;
-	int physaddr;
 
 	CHECKPOINT ('a');
 
@@ -164,7 +164,7 @@ main ()
 
 	f = (int (*)())SECOND_LEVEL_BOOT_START;
 
-	/* dma setup: see page 5-31 in the Adaptech manual */
+	/* dma setup: see page 5-31 in the Adaptec manual */
 	/* this knows we are using drq 5 */
 	outb (0xd6, 0xc1);
 	outb (0xd4, 0x01);
@@ -172,27 +172,37 @@ main ()
 	outb (as_port + AS_CONTROL, AS_CONTROL_SRST);
 
 	/* delay a little */
-	/* inb (0x84); */
+	/*for (i=100000; i > 0 ; i--)
+		(void)inb (0x84);*/
 	
-	for (i=10000; i > 0 ; i--) ;
+	/*if (inb (as_port + AS_INTR) & AS_INTR_HACC)
+		outb (as_port + AS_CONTROL, AS_CONTROL_IRST); */
 
 	while (inb (as_port + AS_STATUS) != (AS_STATUS_INIT | AS_STATUS_IDLE))
 		;
 
 	/*if (inb (as_port + AS_INTR))
-		outb (as_port + AS_CONTROL, AS_CONTROL_IRST);
+		outb (as_port + AS_CONTROL, AS_CONTROL_IRST); */
+	/* if (inb (as_port + AS_INTR) & AS_INTR_HACC)
+		outb (as_port + AS_CONTROL, AS_CONTROL_IRST); */
 
 	CHECKPOINT ('A');
-	while (inb (as_port + AS_STATUS) & AS_STATUS_DF)
-		; */
+	/*while (inb (as_port + AS_STATUS) & AS_STATUS_DF) {
+		for (i=10000; i > 0 ; i--)
+			(void)inb (0x84);
+		(void) inb (as_port + AS_INTR);
+	}*/
 
-	CHECKPOINT ('b');
+	/*CHECKPOINT ('b');*/
 
 	as_put_byte (AS_CMD_MAILBOX_INIT);
 	as_put_byte (1); /* one mailbox out, one in */
 	as_put_byte ((int)mailbox >> 16);
 	as_put_byte ((int)mailbox >> 8);
 	as_put_byte ((int)mailbox);
+
+	/*if (inb (as_port + AS_INTR) & AS_INTR_HACC)
+		outb (as_port + AS_CONTROL, AS_CONTROL_IRST);*/
 
 	/* CHECKPOINT ('B'); */
 	/* while ((inb (as_port + AS_INTR) & AS_INTR_HACC) == 0)
@@ -210,6 +220,12 @@ main ()
 	mailbox[0].mid = (int)ccb >> 8;
 	mailbox[0].lsb = (int)ccb;
 	mailbox[0].cmd = 1;
+	p = (char *)base;
+	q = (char *)ccb;
+	q[20] = p[3];
+	q[21] = p[2];
+	q[22] = p[1];
+	q[23] = p[0];
 
 	as_put_byte (AS_CMD_START_SCSI_COMMAND);
 
@@ -217,21 +233,24 @@ main ()
 	while (mailbox[1].cmd == 0)
 		;
 
+#ifdef NOPE
 	CHECKPOINT ('d');
 
 	if (mailbox[1].cmd != 1) {
 		/* some error */
-		CHECKPOINT ('X');
-		while (1);
+		CHECKPOINT2 ('@' + mailbox[1].cmd);
+	for (i=100000; i > 0 ; i--)
+		(void)inb (0x84);
 	}
 
 	CHECKPOINT ('e');
+#endif
 
 	/* the optimazation that gcc uses when it knows we are jumpping
 	 * to a constant address is broken, so we have to use a variable 
 	 * here
 	 */
-	(*f)(dev, unit, off);
+	(*f)(dev, unit, *(long *)p);
 }
 
 int
@@ -245,7 +264,9 @@ int val;
 
 asm ("
 ebootblkcode:
-	. = 510
+	. = 506
+	.globl _base
+_base:	.long 0x0000
 	.byte 0x55
 	.byte 0xaa
 ebootblk: 			/* MUST BE EXACTLY 0x200 BIG FOR SURE */

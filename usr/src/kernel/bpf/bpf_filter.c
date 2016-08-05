@@ -171,15 +171,10 @@ m_xhalf(m, k, err)
  * buflen is the amount of data present
  */
 u_int
-bpf_filter(pc, p, wirelen, buflen)
-	register struct bpf_insn *pc;
-	register u_char *p;
-	u_int wirelen;
-	register u_int buflen;
+bpf_filter(struct bpf_insn *pc, char *p, u_int wirelen, u_int buflen)
 {
-	register long A, X;
-	register int k;
-	long mem[BPF_MEMWORDS];
+	long A, X, mem[BPF_MEMWORDS];
+	int k;
 
 	if (pc == 0)
 		/*

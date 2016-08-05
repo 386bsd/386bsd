@@ -30,24 +30,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: raw_cb.c,v 1.1 94/10/20 00:01:35 bill Exp $
+ * $Id: raw_cb.c,v 1.1 94/10/20 00:01:35 bill Exp Locker: bill $
  */
 
 #include "sys/param.h"
-#include "sys/file.h"
+/*#include "sys/file.h"*/
 #include "sys/errno.h"
 #include "systm.h"
 #include "mbuf.h"
 #include "socketvar.h"
 #include "domain.h"
 #include "protosw.h"
+#include "prototypes.h"
 
 #include "if.h"
 #include "route.h"
 #include "raw_cb.h"
 #include "in.h"
 
-#include "prototypes.h"
 /*
  * Routines to manage the raw protocol control blocks. 
  *
@@ -59,6 +59,7 @@
 
 u_long	raw_sendspace = RAWSNDQ;
 u_long	raw_recvspace = RAWRCVQ;
+struct rawcb rawcb;
 
 /*
  * Allocate a control block and a nominal amount

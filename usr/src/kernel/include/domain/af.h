@@ -59,6 +59,6 @@ struct afhash {
 };
 
 #ifdef KERNEL
-struct	afswitch afswitch[];
+extern struct	afswitch afswitch[];
 #endif
  */

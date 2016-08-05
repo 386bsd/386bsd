@@ -2,7 +2,7 @@
  * Copyright (c) 1994 William F. Jolitz.
  * 386BSD Copyright Restrictions Apply. All Other Rights Reserved.
  *
- * $Id: $
+ * $Id: copystr.h,v 1.1 95/01/21 16:03:49 bill Exp Locker: bill $
  * Copy kernel to kernel variable length strings from finite buffers.
  */
 

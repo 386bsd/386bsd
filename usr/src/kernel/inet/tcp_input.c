@@ -30,18 +30,18 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: tcp_input.c,v 1.1 94/10/20 10:53:37 root Exp $
+ *	$Id: tcp_input.c,v 1.1 94/10/20 10:53:37 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
 #include "systm.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/file.h"
-#include "socketvar.h"
 #include "sys/errno.h"
 #include "prototypes.h"
+#include "socketvar.h"
+#include "protosw.h"
 
 #include "if.h"
 #include "route.h"
@@ -1400,7 +1400,7 @@ tcp_mss(tp, offer)
 			ro->ro_dst.sa_len = sizeof(ro->ro_dst);
 			((struct sockaddr_in *) &ro->ro_dst)->sin_addr =
 				inp->inp_faddr;
-			RTALLOC(ro);
+			rtalloc(ro);
 		}
 		if ((rt = ro->ro_rt) == (struct rtentry *)0)
 			return (tcp_mssdflt);

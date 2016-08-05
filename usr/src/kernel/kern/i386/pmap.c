@@ -1084,11 +1084,11 @@ pmap_enter(register struct pmap *pmap, vm_offset_t va,
 {
 				if (pmap == npv->pv_pmap && va == npv->pv_va)
 					panic("pmap_enter: pvtable");
-	   if (npv->pv_va >= vm_map_min(kmem_map) && npv->pv_va < vm_map_max(kmem_map))
-			panic("kmem: in pv list ");
+	   /*if (npv->pv_va >= vm_map_min(kmem_map) && npv->pv_va < vm_map_max(kmem_map))
+			panic("kmem: in pv list "); */
 }
-	   if (va >= vm_map_min(kmem_map) && va < vm_map_max(kmem_map))
-			panic("kmem: into pv list");
+	   /*if (va >= vm_map_min(kmem_map) && va < vm_map_max(kmem_map))
+			panic("kmem: into pv list");*/
 			mflags = pmap == kernel_pmap? M_NOWAIT : M_WAITOK;
 			npv = (pv_entry_t)
 				malloc(sizeof *npv, M_VMPVENT, mflags);

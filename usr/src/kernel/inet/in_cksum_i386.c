@@ -30,15 +30,17 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: in_cksum_i386.c,v 1.1 94/10/20 10:53:26 root Exp $
+ * $Id: in_cksum_i386.c,v 1.1 94/10/20 10:53:26 root Exp Locker: bill $
  *	TODO:	obselete, incorporate inline special checksum routines,
  *		that work accumulatively inside a special memcpy.
  */
 
 #include "sys/param.h"
+#include "sys/errno.h"
 #include "mbuf.h"
 #include "in.h"
 #include "in_systm.h"
+#include "prototypes.h"
 
 /*
  * Checksum routine for Internet Protocol family headers.

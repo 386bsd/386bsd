@@ -30,22 +30,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: raw_usrreq.c,v 1.1 94/10/20 00:01:36 bill Exp $
+ * $Id: raw_usrreq.c,v 1.1 94/10/20 00:01:36 bill Exp Locker: bill $
  */
 
 #include "sys/param.h"
-#include "sys/file.h"
+/*#include "sys/file.h"*/
 #include "sys/errno.h"
 #include "mbuf.h"
 #include "domain.h"
-#include "protosw.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "prototypes.h"
 
 #include "if.h"
 #include "route.h"
 #include "netisr.h"
 #include "raw_cb.h"
+
+struct ifqueue rawintrq;	/* raw protocol input queue */
 
 /*
  * Initialize raw connection block q.

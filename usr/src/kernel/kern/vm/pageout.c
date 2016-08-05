@@ -295,6 +295,8 @@ vm_pageout(void)
 	for (;;) {
 		int rate;
 
+		if (vm_page_free_count <= vm_page_free_target) {
+
 		/* reclaim any outstanding pageouts from previous scan */
 		vm_pager_sync();
 
@@ -318,6 +320,8 @@ vm_pageout(void)
 					/ (vm_scan_min - vm_scan_max);
 		}
 		else
+			rate = 0;
+		} else
 			rate = 0;
 
 		(void) tsleep((caddr_t)&proc0, PVM, "pageout", rate);

@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: trap.c,v 1.1 94/10/19 17:40:12 bill Exp $
+ *	$Id: trap.c,v 1.1 94/10/19 17:40:12 bill Exp Locker: bill $
  *
  * Exception trap and system call handlers.
  *
@@ -82,6 +82,9 @@ extern int npxlasterror;
 
 extern iret, syscall_entry, syscall_lret;	/* see locore.s */
 static void trapexcept(struct trapframe *tf, int *);
+#ifdef DDB
+extern int enterddb;
+#endif
 
 /*
  * trap(frame):
@@ -110,22 +113,22 @@ trap(struct trapframe frame)
 		/* record trap evaluation start time */
 		syst = p->p_stime;
 
-		/* engauge this instantiation of fault handling */
+		/* engage this instantiation of fault handling */
 		onfault = (int)p->p_md.md_onfault;
 		p->p_md.md_onfault = 0;
 
-		/* if a anticapated fault with a "handler" */
+#ifdef DDB
+		/* if an anticapated fault with a "handler" */
 		if (onfault)
 			switch (frame.tf_trapno) {
 
 			case T_BPTFLT:	/* always pass to debugger regardless */
 			case T_TRCTRAP:
-#ifdef DDB
 			if (kdb_trap (frame.tf_trapno, frame.tf_err, &frame))
 				return;
-#endif
 			break;
 		}
+#endif
 	}
 
 	/* check for botched cs register on return to user */
@@ -165,7 +168,9 @@ trap(struct trapframe frame)
 	default:
 	we_re_toast:
 #ifdef DDB
-		if (kdb_trap (type, code, &frame))
+		/* always pass to debugger regardless */
+		if ((type == T_BPTFLT || type == T_TRCTRAP || enterddb)
+		    && kdb_trap(type, code, &frame))
 			return;
 #endif
 
@@ -339,8 +344,10 @@ trap(struct trapframe frame)
 		    FALSE) != KERN_SUCCESS) {
 		nogo:
 			/* handle via prearranged kernel handler */
-			if (onfault)
+			if (onfault) {
 				frame.tf_eip = onfault;
+				return;
+			}
 
 			/* kernel fault panic */
 			if (type == T_PAGEFLT) {
@@ -390,8 +397,8 @@ trap(struct trapframe frame)
 		 *  used to short NMI accross to ground in an ISA slot
 		 *  -- be very careful! -wfj)
 		 */
-		printf ("NMI ... going to debugger\n");
-		if (kdb_trap (type, code, &frame))
+		printf("NMI ... going to debugger\n");
+		if (kdb_trap(type, code, &frame))
 			return;
 #endif
 		/* machine/parity/power fail/"kitchen sink" faults */

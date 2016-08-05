@@ -52,7 +52,6 @@
 #include "mbuf.h"
 #include "domain.h"
 #include "protosw.h"
-#include "socketvar.h"
 #include "tprintf.h"
 
 #include "in.h"
@@ -67,6 +66,7 @@
 #include "nfs_msubs.h"
 #include "nfs_mount.h"
 #include "prototypes.h"
+#include "socketvar.h"
 
 #define	TRUE	1
 #define	FALSE	0

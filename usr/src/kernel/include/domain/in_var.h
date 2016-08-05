@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  *
  *	@(#)in_var.h	7.6 (Berkeley) 6/28/90
- *	386BSD:		$Id: in_var.h,v 1.1 93/01/29 14:35:17 bill Exp $
+ *	386BSD:		$Id: in_var.h,v 1.1 95/02/27 22:41:17 bill Exp Locker: bill $
  */
 
 /*
@@ -73,5 +73,36 @@ struct	in_aliasreq {
 #ifdef	KERNEL
 struct	in_ifaddr *in_ifaddr;
 struct	in_ifaddr *in_iaonnetof();
-struct	ifqueue	ipintrq;		/* ip packet input queue */
+/* extern struct	ifqueue	ipintrq;		/* ip packet input queue */
+
+#ifndef _IN_PROTOTYPES
+/* private functions, accessed via external symbol stub when loaded */
+static void in_sockmaskof(struct in_addr in, struct sockaddr_in *sockmask);
+
+/* inline external symbol table function stubs */
+/*#include "esym.h"*/
+extern inline void
+in_sockmaskof(struct in_addr in, struct sockaddr_in *sockmask) {
+	void (*f)(struct in_addr in, struct sockaddr_in *);
+
+	(const void *) f = esym_fetch(in_sockmaskof);
+	if (f)
+		(*f)(in, sockmask);
+}
+
+#else
+extern void in_sockmaskof(struct in_addr in, struct sockaddr_in *sockmask);
+
+#endif /* _IN_PROTOTYPES */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct ifqueue, ipintrq,)	/* ip packet input queue */
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif

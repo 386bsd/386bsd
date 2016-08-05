@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)namei.h	7.15 (Berkeley) 5/15/91
+ *	$Id$
  */
 
 #ifndef _NAMEI_H_
@@ -146,10 +146,24 @@ struct	namecache {
 };
 
 #ifdef KERNEL
-u_long	nextvnodeid;
-int	namei(struct nameidata *ndp, struct proc *p);
-void	nameiexec(struct nameidata *ndp, struct proc *p);
-int	lookup(struct nameidata *ndp, struct proc *p);
+extern u_long nextvnodeid;
+void nameiexec(struct nameidata *ndp, struct proc *p);
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+
+/* functions used in modules */
+__ISYM__(int, namei, (struct nameidata *ndp, struct proc *p))
+__ISYM__(int, lookup, (struct nameidata *ndp, struct proc *p))
+__ISYM__(int, cache_lookup, (struct nameidata *ndp))
+__ISYM__(int, cache_enter, (struct nameidata *ndp))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif
 
 /*

@@ -33,7 +33,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: nfs_bio.c,v 1.1 94/10/20 10:57:29 root Exp $
+ *	$Id: nfs_bio.c,v 1.1 94/10/20 10:57:29 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -43,6 +43,7 @@
 #include "ucred.h"
 #include "sys/time.h"
 #include "sys/errno.h"
+#include "proc.h"	/* for curproc only */
 #include "buf.h"
 
 #include "namei.h"
@@ -79,7 +80,8 @@ nfs_bioread(vp, uio, ioflag, cred)
 #ifdef lint
 	ioflag = ioflag;
 #endif /* lint */
-#ifdef DIAGNOSTIC
+/*#ifdef DIAGNOSTIC*/
+#ifdef DEBUG
 	if (uio->uio_rw != UIO_READ)
 		panic("nfs_read mode");
 #endif
@@ -201,7 +203,8 @@ nfs_write(vp, uio, ioflag, cred)
 	daddr_t lbn, bn;
 	int n, on, error = 0;
 
-#ifdef DIAGNOSTICx
+/* #ifdef DIAGNOSTIC */
+#ifdef DEBUG
 	if (uio->uio_rw != UIO_WRITE)
 		panic("nfs_write mode");
 	if (uio->uio_segflg == UIO_USERSPACE && uio->uio_procp != curproc)

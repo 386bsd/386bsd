@@ -46,6 +46,7 @@
 #include "uio.h"
 #include "sys/errno.h"
 #include "proc.h"
+#include "kernel.h"
 #include "filedesc.h"
 #include "mbuf.h"
 
@@ -80,7 +81,6 @@ u_long nfs_vers, nfs_prog, nfs_true, nfs_false;
 static u_long *rpc_uidp = (u_long *)0;
 static u_long nfs_xid = 1;
 static char *rpc_unixauth;
-extern long hostid;
 enum vtype ntov_type[7] = { VNON, VREG, VDIR, VBLK, VCHR, VLNK, VNON };
 extern struct proc *nfs_iodwant[NFS_MAXASYNCDAEMON];
 extern struct nfsreq nfsreqh;
@@ -642,6 +642,7 @@ nfs_loadattrcache(vpp, mdp, dposp, vaper)
 			vp->v_type = type = VFIFO;
 		else
 			vp->v_type = type;
+#ifdef was
 		if (vp->v_type == VFIFO) {
 #ifdef FIFO
 			extern struct vnodeops fifo_nfsv2nodeops;
@@ -653,6 +654,12 @@ nfs_loadattrcache(vpp, mdp, dposp, vaper)
 		if (vp->v_type == VCHR || vp->v_type == VBLK) {
 			vp->v_op = &spec_nfsv2nodeops;
 			if (nvp = checkalias(vp, (dev_t)rdev, vp->v_mount)) {
+#else
+		if (type == VFIFO || type == VCHR || type == VBLK) {
+			if (error = vt_reassign(vp, (dev_t) rdev, &nvp))
+				return (error);
+			if (nvp && (type == VCHR || type == VBLK)) {
+#endif
 				/*
 				 * Reinitialize aliased node.
 				 */

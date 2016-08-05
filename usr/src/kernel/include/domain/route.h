@@ -197,41 +197,159 @@ struct route_cb {
 #define RTA_AUTHOR	0x40	/* sockaddr for author of redirect */
 
 #ifdef KERNEL
-/* Routing facility module interface. */
-struct route_ops {
-	char *rt_name;
-	int (*rt_init)(struct ifaddr *ifa, int cmd, int flags);
-	void (*rt_alloc)(struct route *ro);
-	void (*rt_free)(struct rtentry *rt);
-	int (*rt_request)(int req, struct sockaddr *dst,
-		struct sockaddr *gateway, struct sockaddr *netmask,
-		int flags, struct rtentry **ret_nrt);
-	void (*rt_redirect)(struct sockaddr *dst, struct sockaddr *gateway,
-		struct sockaddr *netmask, int flags, struct sockaddr *src,
-    		struct rtentry **rtp);
-	void (*rt_missmsg)(int type, struct sockaddr *dst,
-		struct sockaddr *gate, struct sockaddr *mask,
-		struct sockaddr *src, int flags, int error);
-	int (*rt_ioctl)(int req, caddr_t data, struct proc *p);
-};
-extern struct route_ops _router_;	/* XXX */
+#ifndef _ROUTE_PROTOTYPES
+/* private route functions, accessed via external symbol stub when loaded */
+static int rtinit(struct ifaddr *ifa, int cmd, int flags);
+static void rtalloc(struct route *ro);
+static void rtfree(struct rtentry *rt);
+static int rtrequest(int req, struct sockaddr *dst,
+	struct sockaddr *gateway, struct sockaddr *netmask,
+	int flags, struct rtentry **ret_nrt);
+static void rtredirect(struct sockaddr *dst, struct sockaddr *gateway,
+	struct sockaddr *netmask, int flags, struct sockaddr *src,
+    	struct rtentry **rtp);
+static void rtmissmsg(int type, struct sockaddr *dst,
+	struct sockaddr *gate, struct sockaddr *mask,
+	struct sockaddr *src, int flags, int error);
+static int rtioctl(int req, caddr_t data, struct proc *p);
 
-#define	RTINIT(ifa, cmd, flags)	 (_router_.rt_init)(ifa, cmd, flags)
-#define	RTALLOC(ro)		 (_router_.rt_alloc)(ro)
-#define	RTFREE(rt)		 (_router_.rt_free)(rt)
-#define	RTREQUEST(req, dst, gateway, netmask, flags, ret)	\
-	(_router_.rt_request)(req, dst, gateway, netmask, flags, ret)
-#define	RTREDIRECT(dst, gateway, netmask, flags, src, ret)	\
-	(_router_.rt_redirect)(dst, gateway, netmask, flags, src, ret)
-#define	RTMISSMSG(typ, dst, gateway, netmask, src, flags, err)	\
-	(_router_.rt_missmsg)(typ, dst, gateway, netmask, src, flags, err)
-#define	RTIOCTL(req, data, p)	 (_router_.rt_ioctl)(req, data, p)
+/* loopback interface */
+static int looutput(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
+	struct rtentry *rt);
 
-struct route_cb route_cb;
+/* inline external symbol table function stubs */
+#include "esym.h"
+extern inline int
+rtinit(struct ifaddr *ifa, int cmd, int flags) {
+	int (*f)(struct ifaddr *, int, int);
+
+	(const void *) f = esym_fetch(rtinit);
+	if (f == 0) {
+		ifa->ifa_rt = 0;
+		return (0);
+	}
+	return ((*f)(ifa, cmd, flags));
+}
+
+extern inline void
+rtalloc(struct route *ro)
+{
+	void (*f)(struct route *);
+
+	(const void *) f = esym_fetch(rtalloc);
+	if (f == 0)
+		ro->ro_rt = 0;
+	else
+		(*f)(ro);
+}
+
+extern inline void
+rtfree(struct rtentry *rt)
+{
+	void (*f)(struct rtentry *);
+	/*extern void panic(const char *);*/
+
+	(const void *) f = esym_fetch(rtfree);
+	if (f == 0)
+		panic("no rtfree");
+	else
+		(*f)(rt);
+}
+
+extern inline void
+rtredirect(struct sockaddr *dst, struct sockaddr *gateway,
+    struct sockaddr *netmask, int flags, struct sockaddr *src,
+    struct rtentry **rtp)
+{
+	void (*f) (struct sockaddr *, struct sockaddr *, struct sockaddr *,
+		int, struct sockaddr *, struct rtentry **);
+	/*extern void panic(const char *);*/
+
+	(const void *) f = esym_fetch(rtredirect);
+	if (f == 0)
+		panic("no rtredirect");
+	else
+		(*f)(dst, gateway, netmask, flags, src, rtp);
+}
+
+extern inline int
+rtioctl(int req, caddr_t data, struct proc *p)
+{
+	int (*f)(int, caddr_t , struct proc *);
+
+	(const void *) f = esym_fetch(rtioctl);
+	if (f == 0)
+		return (EOPNOTSUPP);
+	else
+		return ((*f)(req, data, p));
+}
+
+extern inline int
+rtrequest(int req, struct sockaddr *dst, struct sockaddr *gateway,
+   struct sockaddr *netmask, int flags, struct rtentry **ret_nrt)
+{
+	int (*f)(int, struct sockaddr *, struct sockaddr *,
+		struct sockaddr *, int, struct rtentry **);
+
+	(const void *) f = esym_fetch(rtrequest);
+	if (f == 0)
+		return (EINVAL);
+	else
+		return ((*f)(req, dst, gateway, netmask, flags, ret_nrt));
+}
+
+extern inline void
+rtmissmsg(int type, struct sockaddr *dst, struct sockaddr *gate,
+    struct sockaddr *mask, struct sockaddr *src, int flags, int error)
+{
+	void (*f) (int, struct sockaddr *, struct sockaddr *,
+		struct sockaddr *, struct sockaddr *, int, int);
+	/*extern void panic(const char *);*/
+
+	(const void *) f = esym_fetch(rtmissmsg);
+	if (f == 0)
+		panic("no rtmissmsg");
+	else
+		(*f)(type, dst, gate, mask, src, flags, error);
+}
+
+extern inline int
+looutput(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
+	struct rtentry *rt)
+{
+	int (*f)(struct ifnet *, struct mbuf *, struct sockaddr *,
+		struct rtentry *);
+
+	(const void *) f = esym_fetch(looutput);
+	if (f == 0)
+		return (EOPNOTSUPP);
+	else
+		return ((*f)(ifp, m, dst, rt));
+}
+
+#define	route_cb	*(struct route_cb *)esym_fetch(route_cb)
+#else
+extern int rtinit(struct ifaddr *ifa, int cmd, int flags);
+extern void rtalloc(struct route *ro);
+extern void rtfree(struct rtentry *rt);
+extern int rtrequest(int req, struct sockaddr *dst,
+	struct sockaddr *gateway, struct sockaddr *netmask,
+	int flags, struct rtentry **ret_nrt);
+extern void rtredirect(struct sockaddr *dst, struct sockaddr *gateway,
+	struct sockaddr *netmask, int flags, struct sockaddr *src,
+    	struct rtentry **rtp);
+extern void rtmissmsg(int type, struct sockaddr *dst,
+	struct sockaddr *gate, struct sockaddr *mask,
+	struct sockaddr *src, int flags, int error);
+extern int rtioctl(int req, caddr_t data, struct proc *p);
+
+extern struct route_cb route_cb;
+#endif /* _ROUTE_PROTOTYPES */
+
 
 #define	RTFREE_(rt) \
 	if ((rt)->rt_refcnt <= 1) \
-		RTFREE(rt); \
+		rtfree(rt); \
 	else \
 		(rt)->rt_refcnt--;
 
@@ -245,11 +363,7 @@ struct route_cb route_cb;
 #else
 #define RTHASHMOD(h)	((h) % RTHASHSIZ)
 #endif
-struct	mbuf *rthost[RTHASHSIZ];
-struct	mbuf *rtnet[RTHASHSIZ];
-struct	rtstat	rtstat;
-/*struct	rtentry *rtalloc1(); */
-/*int (*route_rtioctl) (int cmd, caddr_t data, struct proc *p);*/
-int (*route_looutput) (struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
-	struct rtentry *rt);
+extern struct	mbuf *rthost[RTHASHSIZ];
+extern struct	mbuf *rtnet[RTHASHSIZ];
+extern struct	rtstat	rtstat;
 #endif

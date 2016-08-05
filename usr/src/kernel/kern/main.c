@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: main.c,v 1.1 94/10/20 00:03:02 bill Exp $
+ * $Id: main.c,v 1.1 94/10/20 00:03:02 bill Exp Locker: bill $
  */
 static char *kern_config =
 	"kernel maxusers 5 hz 100.";
@@ -369,6 +369,23 @@ isa_configure();
 	VOP_UNLOCK(rootdir);
 	fdp->fd_fd.fd_rdir = NULL;
 
+{ volatile int sstart, send;
+if (load_module("inet", &sstart, &send)) {
+printf("\n init ");
+smodscaninit(__MODT_ALL__, sstart, send);
+}
+if(load_module("ed", &sstart, &send)) {
+printf("\n init ");
+smodscaninit(__MODT_ALL__, sstart, send);
+}
+if(load_module("nfs", &sstart, &send)) {
+printf("\n init ");
+smodscaninit(__MODT_ALL__, sstart, send);
+}
+printf("after init\n");
+/*ifinit();*/
+/*domaininit();*/
+}
 	swapinit();	/* XXX */
 
 	/*

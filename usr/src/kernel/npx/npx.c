@@ -31,12 +31,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: npx.c,v 1.1 94/06/26 15:16:40 bill Exp Locker: bill $
+ *	$Id: npx.c,v 1.1 95/01/18 18:40:58 root Exp Locker: root $
  */
 
 /* standard AT configuration: (will always be configured if loaded) */
 static	char *npx_config =
-	"npx (0 13).	# hardware floating point $Revision$";
+	"npx (0 13).	# hardware floating point $Revision: 1.1 $";
 
 #include "sys/param.h"
 #include "systm.h"
@@ -58,7 +58,8 @@ static	char *npx_config =
  * 387 and 287 Numeric Coprocessor Extension (NPX) Driver.
  */
 
-int	npxprobe(), npxattach();
+int	npxprobe();
+void	npxattach();
 void	npxintr();
 struct	isa_driver npxdriver = {
 	npxprobe, npxattach, npxintr, "npx", 0
@@ -107,11 +108,11 @@ npxprobe(dvp)
 /*
  * Attach routine - announce which it is, and wire into system
  */
+void
 npxattach(dvp)
 	struct isa_device *dvp;
 {
 
-printf("npx:");
 	/* npxinit(__INITIAL_NPXCW__); */
 	npxexists++;
 	/* lock out npx exception during interrupt processing */

@@ -2,7 +2,7 @@
  * Copyright (c) 1994 William F. Jolitz.
  * 386BSD Copyright Restrictions Apply. All Other Rights Reserved.
  *
- * $Id: $
+ * $Id: copyoutstr.h,v 1.1 95/01/21 16:03:47 bill Exp Locker: bill $
  * Copy a variable length segment from a kernel buffer into a user process.
  */
 
@@ -15,8 +15,9 @@ copyoutstr(struct proc *p, void *from, void *to, u_int size,
 	int rv;
 
 	/* is this in the range of a valid user process address? */
-	/* if ((unsigned)to > ENDUSERMEM || (unsigned)to + size > ENDUSERMEM)
-		return(EFAULT); */
+	/* XXX (see copyinstr.h) */
+	if ((unsigned)to > ENDUSERMEM /* || (unsigned)to + size > ENDUSERMEM */)
+		return(EFAULT);
 
 	lencopied += zero;
 	from += zero;

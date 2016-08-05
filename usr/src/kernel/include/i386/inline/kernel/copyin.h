@@ -2,7 +2,7 @@
  * Copyright (c) 1994 William F. Jolitz.
  * 386BSD Copyright Restrictions Apply. All Other Rights Reserved.
  *
- * $Id: $
+ * $Id: copyin.h,v 1.1 95/01/21 16:03:41 bill Exp Locker: bill $
  * Copy a fixed length segment from a user process to the kernel.
  */
 
@@ -14,8 +14,8 @@ copyin(struct proc *p, void *from, void *toaddr, u_int size)
 	int rv;
 
 	/* is this in the range of a valid user process address? */
-	/*if ((unsigned)from > ENDUSERMEM || (unsigned)from + size > ENDUSERMEM)
-		return(EFAULT);*/
+	if ((unsigned)from > ENDUSERMEM || (unsigned)from + size > ENDUSERMEM)
+		return(EFAULT);
 
 	/* set fault vector */
 	asm volatile ("movl $4f, %0" : "=m" (p->p_md.md_onfault));

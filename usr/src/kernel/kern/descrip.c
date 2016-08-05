@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: descrip.c,v 1.1 94/10/20 00:02:49 bill Exp $
+ * $Id: descrip.c,v 1.1 94/10/20 00:02:49 bill Exp Locker: bill $
  *
  * File instance and file descriptor management and system calls.
  */
@@ -46,7 +46,7 @@
 #include "malloc.h"
 #include "modconfig.h"
 #include "proc.h"
-#include "socketvar.h"
+/*#include "socketvar.h"*/
 #include "resourcevar.h"
 #include "uio.h"
 #ifdef KTRACE
@@ -185,7 +185,7 @@ fcntl(p, uap, retval)
 	struct file *fp;
 	char *pop;
 	struct vnode *vp;
-	int i, tmp, error, flg = F_POSIX;
+	int cmd, i, tmp, error, flg = F_POSIX;
 	struct flock fl;
 
 	if ((unsigned)uap->fd >= fdp->fd_nfiles ||
@@ -236,30 +236,30 @@ fcntl(p, uap, retval)
 		return (error);
 
 	case F_GETOWN:
-		if (fp->f_type == DTYPE_SOCKET) {
-			*retval = ((struct socket *)fp->f_data)->so_pgid;
-			return (0);
-		}
-		error = (*fp->f_ops->fo_ioctl)
-			(fp, (int)TIOCGPGRP, (caddr_t)retval, p);
-		*retval = -*retval;
+		if (fp->f_type == DTYPE_SOCKET)
+			cmd = SIOCGPGRP;
+		else
+			cmd = TIOCGPGRP;
+		error = (*fp->f_ops->fo_ioctl) (fp, cmd, (caddr_t)retval, p);
+		if (fp->f_type != DTYPE_SOCKET)
+			*retval = -*retval;
 		return (error);
 
 	case F_SETOWN:
-		if (fp->f_type == DTYPE_SOCKET) {
-			((struct socket *)fp->f_data)->so_pgid = uap->arg;
-			return (0);
+		if (fp->f_type == DTYPE_SOCKET)
+			cmd = SIOCSPGRP;
+		else {
+			cmd = TIOCSPGRP;
+			if (uap->arg <= 0) {
+				uap->arg = -uap->arg;
+			} else {
+				struct proc *p1 = pfind(uap->arg);
+				if (p1 == 0)
+					return (ESRCH);
+				uap->arg = p1->p_pgrp->pg_id;
+			}
 		}
-		if (uap->arg <= 0) {
-			uap->arg = -uap->arg;
-		} else {
-			struct proc *p1 = pfind(uap->arg);
-			if (p1 == 0)
-				return (ESRCH);
-			uap->arg = p1->p_pgrp->pg_id;
-		}
-		return ((*fp->f_ops->fo_ioctl)
-			(fp, (int)TIOCSPGRP, (caddr_t)&uap->arg, p));
+		return((*fp->f_ops->fo_ioctl)(fp, cmd, (caddr_t)&uap->arg, p)); 
 
 	case F_SETLKW:
 		flg |= F_WAIT;
@@ -376,6 +376,7 @@ fstat(p, uap, retval)
 	    (fp = fdp->fd_ofiles[uap->fd]) == NULL)
 		return (EBADF);
 
+#ifdef foo
 	switch (fp->f_type) {
 
 	case DTYPE_VNODE:
@@ -390,6 +391,8 @@ fstat(p, uap, retval)
 		panic("fstat");
 		/*NOTREACHED*/
 	}
+#endif
+	error = (*fp->f_ops->fo_stat)(fp, &ub, p);
 
 	if (error == 0)
 		error = copyout(p, (caddr_t)&ub, (caddr_t)uap->sb, sizeof (ub));
@@ -734,7 +737,7 @@ ioctl(p, uap, retval)
 {
 	struct file *fp;
 	struct filedesc *fdp = p->p_fd;
-	int com, error;
+	int com, cmd, error;
 	u_int size;
 	caddr_t memp = 0;
 #define STK_PARAMS	128
@@ -809,33 +812,32 @@ ioctl(p, uap, retval)
 
 	case FIOSETOWN:
 		tmp = *(int *)data;
-		if (fp->f_type == DTYPE_SOCKET) {
-			((struct socket *)fp->f_data)->so_pgid = tmp;
-			error = 0;
-			break;
-		}
-		if (tmp <= 0) {
-			tmp = -tmp;
-		} else {
-			struct proc *p1 = pfind(tmp);
-			if (p1 == 0) {
-				error = ESRCH;
-				break;
+		if (fp->f_type == DTYPE_SOCKET)
+			cmd = SIOCSPGRP;
+		else {
+			cmd = TIOCSPGRP;
+			if (tmp <= 0) {
+				tmp = -tmp;
+			} else {
+				struct proc *p1 = pfind(tmp);
+				if (p1 == 0) {
+					error = ESRCH;
+					break;
+				}
+				tmp = p1->p_pgrp->pg_id;
 			}
-			tmp = p1->p_pgrp->pg_id;
 		}
-		error = (*fp->f_ops->fo_ioctl)
-			(fp, (int)TIOCSPGRP, (caddr_t)&tmp, p);
+		error = (*fp->f_ops->fo_ioctl) (fp, cmd, (caddr_t)&tmp, p);
 		break;
 
 	case FIOGETOWN:
-		if (fp->f_type == DTYPE_SOCKET) {
-			error = 0;
-			*(int *)data = ((struct socket *)fp->f_data)->so_pgid;
-			break;
-		}
-		error = (*fp->f_ops->fo_ioctl)(fp, (int)TIOCGPGRP, data, p);
-		*(int *)data = -*(int *)data;
+		if (fp->f_type == DTYPE_SOCKET)
+			cmd = SIOCGPGRP;
+		else
+			cmd = TIOCGPGRP;
+		error = (*fp->f_ops->fo_ioctl)(fp, cmd, data, p);
+		if (fp->f_type != DTYPE_SOCKET)
+			*(int *)data = -*(int *)data;
 		break;
 
 	default:

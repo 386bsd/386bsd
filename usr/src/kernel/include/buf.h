@@ -128,23 +128,34 @@ extern struct	bufhd bufhash[BUFHSZ];	/* heads of hash lists */
 extern struct	buf bfreelist[BQUEUES];	/* heads of available lists */
 extern struct	buf bswlist;		/* head of free swap header list */
 
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+
+/* functions used in modules */
+__ISYM__(int, bread, (struct vnode *, daddr_t, int, struct ucred *, struct buf **))
+__ISYM__(int, breada, (struct vnode *, daddr_t, int, daddr_t, int, struct ucred *, struct buf **))
+__ISYM__(int, bwrite, (struct buf *))
+__ISYM__(void, bawrite, (struct buf *))
+__ISYM__(void, bdwrite, (struct buf *, struct vnode *))
+__ISYM__(void, brelse, (struct buf *))
+__ISYM__(struct buf *, getblk, (struct vnode *, daddr_t, int))
+__ISYM__(void, biodone, (struct buf *))
+__ISYM__(void, allocbuf, (struct buf *, int))
+__ISYM__(int, rawwrite, (dev_t dev, struct uio *uio, int ioflag))
+__ISYM__(int, rawread, (dev_t dev, struct uio *uio, int ioflag))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
+
 void bufinit();
-int bread(struct vnode *, daddr_t, int, struct ucred *, struct buf **);
-int breada(struct vnode *, daddr_t, int, daddr_t, int, struct ucred *,
-	struct buf **);
-int bwrite(struct buf *);
-void bawrite(struct buf *);
-void bdwrite(struct buf *, struct vnode *);
-void brelse(struct buf *);
+
 /* struct buf *incore(struct vnode *, daddr_t); */
-struct buf *getblk(struct vnode *, daddr_t, int);
 struct buf *geteblk(int);
 int biowait(struct buf *);
-void biodone(struct buf *);
-void allocbuf(struct buf *, int);
-int rawwrite(dev_t dev, struct uio *uio, int ioflag);
-int rawread(dev_t dev, struct uio *uio, int ioflag);
-
 #endif
 
 /*

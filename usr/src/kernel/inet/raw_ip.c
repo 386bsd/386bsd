@@ -30,15 +30,15 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: raw_ip.c,v 1.1 94/10/20 10:53:35 root Exp $
+ *	$Id: raw_ip.c,v 1.1 94/10/20 10:53:35 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/file.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "sys/errno.h"
 #include "prototypes.h"
 

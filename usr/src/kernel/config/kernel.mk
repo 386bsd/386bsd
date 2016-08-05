@@ -14,11 +14,18 @@ CPP?=	cpp
 # XXX overkill, revise include scheme
 INCLUDES= -I$S/include
 
-COPTS+=	${INCLUDES} ${IDENT} -DKERNEL -Di386 -DNPX
+COPTS+=	${INCLUDES} ${IDENT} -DKERNEL -Di386
 DEPEND= depend_mk
 
 ASFLAGS= ${DEBUG}
+.if defined(GDB)
+# CFLAGS=	-m486 -O ${COPTS} -g
+CFLAGS=	-O ${COPTS} -g
+.else
+# CFLAGS=	-m486 -O ${COPTS}
 CFLAGS=	-O ${COPTS}
+.endif
+DBGCFLAGS= -O ${COPTS}
 
 .if defined(KERNBASE)
 CFLAGS+= -DKERNBASE=0x${KERNBASE}
@@ -57,24 +64,34 @@ assym.s: $S/include/sys/param.h $S/include/buf.h $S/include/vmmeter.h \
 		 $S/config/genassym.c -o genassym
 	./genassym >assym.s
 
+isym.o: $S/config/isym.c
+	find $S/include -name "*.h" -a -type f -exec grep -h "^__ISYM__" {} \; > isym
+	cp $S/config/isym.c isym.c
+	${CC} -c -DKERNEL ${IDENT} ${PARAM} ${BASE} isym.c -o isym.o
+	rm isym isym.c
+
 .include "$S/config/kernel.kern.mk"
 .include "$S/config/kernel.dev.mk"
 .include "$S/config/kernel.fs.mk"
 .include "$S/config/kernel.domain.mk"
 
-SRCS= ${KERN_SRCS} ${MACH_SRCS} ${DEV_SRCS} ${FS_SRCS} ${DOMAIN_SRCS}
+SRCS= ${KERN_SRCS} ${KERN_SRCS_DBGC} ${MACH_SRCS} ${DEV_SRCS} ${FS_SRCS} ${DOMAIN_SRCS}
 
-${KERNEL}: Makefile symbols.sort ${FIRSTOBJ} ${OBJS}
+${KERNEL}: Makefile symbols.sort ${FIRSTOBJ} ${OBJS} isym.o
 	@echo loading $@
 	@rm -f $@
 	@$S/config/newvers.sh
 	@${CC} -c ${CFLAGS} ${PROF} ${DEBUG} vers.c
 .if defined(DEBUGSYM)
-	@${LD} -z -T ${KERNBASE} -o $@ -X ${FIRSTOBJ} ${OBJS} vers.o
+	@${LD} -z -T ${KERNBASE} -o $@ -X ${FIRSTOBJ} ${OBJS} vers.o isym.o
 .else
-	@${LD} -z -T ${KERNBASE} -o $@ -x ${FIRSTOBJ} ${OBJS} vers.o
+	@${LD} -z -T ${KERNBASE} -o $@ -x ${FIRSTOBJ} ${OBJS} vers.o isym.o
 .endif
 	@echo rearranging symbols
+.if defined(GDB)
+	cp $@ $@.gdb
+	strip -d $@
+.endif
 	@symorder ${SYMORDER} symbols.sort $@
 .if defined(DBSYM)
 	@${DBSYM} $@

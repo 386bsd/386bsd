@@ -54,5 +54,14 @@ PRV_SIOCSDARP, PRV_SIOCSIFFLAGS, PRV_SIOCSIFMETRIC, PRV_SLIP_OPEN, PRV_RTIOCTL,
 };
 typedef	enum cr_priv cr_priv_t;
 
-int use_priv(const struct ucred *, cr_priv_t, struct proc *);
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* functions used in modules */
+__ISYM__(int, use_priv, (const struct ucred *, cr_priv_t, struct proc *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif

@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: in_pcb.c,v 1.1 94/10/20 10:53:27 root Exp $
+ *	$Id: in_pcb.c,v 1.1 94/10/20 10:53:27 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -38,9 +38,9 @@
 #include "systm.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/file.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "sys/ioctl.h"
 #include "prototypes.h"
 
@@ -191,7 +191,7 @@ in_pcbconnect(inp, nam)
 			ro->ro_dst.sa_len = sizeof(struct sockaddr_in);
 			((struct sockaddr_in *) &ro->ro_dst)->sin_addr =
 				sin->sin_addr;
-			RTALLOC(ro);
+			rtalloc(ro);
 		}
 		/*
 		 * If we found a route, use the address
@@ -257,7 +257,7 @@ in_pcbdetach(inp)
 	if (inp->inp_options)
 		(void)m_free(inp->inp_options);
 	if (inp->inp_route.ro_rt)
-		RTFREE(inp->inp_route.ro_rt);
+		rtfree(inp->inp_route.ro_rt);
 	remque(inp);
 	(void) m_free(dtom(inp));
 }
@@ -365,15 +365,15 @@ in_losing(inp)
 	register struct rtentry *rt;
 
 	if ((rt = inp->inp_route.ro_rt)) {
-		RTMISSMSG(RTM_LOSING, &inp->inp_route.ro_dst,
+		rtmissmsg(RTM_LOSING, &inp->inp_route.ro_dst,
 			rt->rt_gateway, (struct sockaddr *)rt_mask(rt),
 			    (struct sockaddr *)0, rt->rt_flags, 0);
 		if (rt->rt_flags & RTF_DYNAMIC)
-			(void) RTREQUEST(RTM_DELETE, rt_key(rt),
+			(void) rtrequest(RTM_DELETE, rt_key(rt),
 				rt->rt_gateway, rt_mask(rt), rt->rt_flags, 
 				(struct rtentry **)0);
 		inp->inp_route.ro_rt = 0;
-		RTFREE(rt);
+		rtfree(rt);
 		/*
 		 * A new route can be allocated
 		 * the next time output is attempted.
@@ -389,7 +389,7 @@ in_rtchange(inp)
 	register struct inpcb *inp;
 {
 	if (inp->inp_route.ro_rt) {
-		RTFREE(inp->inp_route.ro_rt);
+		rtfree(inp->inp_route.ro_rt);
 		inp->inp_route.ro_rt = 0;
 		/*
 		 * A new route can be allocated the next time

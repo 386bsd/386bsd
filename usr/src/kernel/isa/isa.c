@@ -287,7 +287,7 @@ print_isadev(struct isa_device *idp) {
 		printf ("drq%d ",  idp->id_drq);
 	if (idp->id_maddr)
 		printf ("maddr: %x + %d ",
-			idp->id_maddr, idp->id_msize);
+			kmem_phys(idp->id_maddr), idp->id_msize);
 	printf ("unit: ");
 	if (idp->id_unit == '?')
 		printf("? ");
@@ -322,6 +322,7 @@ config_isadev(isdp)
 	struct isa_device *isdp;
 {
 	struct isa_driver *dp;
+	int rv;
  
 	if (dp = isdp->id_driver) {
 		if (isdp->id_maddr) {
@@ -330,7 +331,8 @@ config_isadev(isdp)
 			isdp->id_maddr -= 0xa0000;
 			isdp->id_maddr += atdevbase;
 		}
-printf("probing for %s port %x: ", dp->name, isdp->id_iobase);
+
+		printf("probing for %s port %x: ", dp->name, isdp->id_iobase);
 		isdp->id_alive = (*dp->probe)(isdp);
 		if (isdp->id_alive) {
 printf("\r                                                                  \r");
@@ -339,6 +341,7 @@ printf("\r                                                                  \r")
 			printf(" ");
 			if (isdp->id_iobase)
 				printf("port %x ", isdp->id_iobase);
+
 			/* XXX handle multiple interrupts */
 			if(isdp->id_irq) {
 				int intrno;
@@ -357,16 +360,18 @@ printf("\r                                                                  \r")
 				driver_for_intr[intrno] = dp;
 				intrnames[intrno] = dp->name; /* XXX - allocate seperate string with unit number */
 			}
+
 			if (isdp->id_drq != -1)
 				printf("drq%d ", isdp->id_drq);
 			printf("\n");
 		}
-		return (1);
+		rv = 1;
 	} else {
 		DELAY(5000);
-		printf("\r                                                       \r");
-		return(0);
+		rv = 0;
 	}
+printf("\r                                                                  \r");
+	return(rv);
 }
 
 #define	IDTVEC(name)	__CONCAT(X,name)
@@ -682,6 +687,7 @@ extern int hz;
  * processing.
  */
 
+void
 microtime(tvp)
 	register struct timeval *tvp;
 {

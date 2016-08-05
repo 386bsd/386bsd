@@ -57,7 +57,11 @@
 #include "vnode.h"
 /* XXX create a generic "inode" */
 #include "ufs_quota.h"
+#ifdef	__MODULE__
+#define	INODE_TYPE_TABLE
+#endif
 #include "ufs_inode.h"
+#undef	INODE_TYPE_TABLE
 #include "ufs_dir.h"
 
 #include "nfs_v2.h"
@@ -113,6 +117,7 @@ struct vnodeops nfsv2_vnodeops = {
 	nfs_advlock,		/* advlock */
 };
 
+#ifdef nope
 /*
  * Special device vnode ops
  */
@@ -151,6 +156,7 @@ struct vnodeops spec_nfsv2nodeops = {
 	nfs_islocked,		/* islocked */
 	spec_advlock,		/* advlock */
 };
+#endif
 
 #ifdef FIFO
 struct vnodeops fifo_nfsv2nodeops = {

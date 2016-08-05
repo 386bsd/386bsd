@@ -215,7 +215,7 @@ pppalloc(pid)
     int n;
     struct ppp_softc *sc;
 
-    for (n = 0, sc = ppp_softc; n < nppp; nppp++, sc++)
+    for (n = 0, sc = ppp_softc; n < nppp; n++, sc++)
 	if (sc->sc_xfer == pid) {
 	    sc->sc_xfer = 0;
 	    break;

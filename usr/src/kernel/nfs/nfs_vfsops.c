@@ -33,10 +33,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: nfs_vfsops.c,v 1.1 94/10/20 10:57:36 root Exp $
+ *	$Id: nfs_vfsops.c,v 1.1 94/10/20 10:57:36 root Exp Locker: bill $
  */
 
-static char *nfs_config = "nfs 2.";
+static char *nfs_config = "nfs 2. # Sun Network Filesystem (NFS) $Revision$";
 /* static char *nfs_config = "nfs 2 ((udp 111) (tcp 111))."; */
 
 #include "sys/param.h"
@@ -44,16 +44,16 @@ static char *nfs_config = "nfs 2.";
 #include "sys/signal.h"
 #include "sys/file.h"
 #include "sys/mount.h"
-#include "sys/socket.h"
 #include "sys/errno.h"
 #include "proc.h"
 #include "buf.h"
 #include "uio.h"
-#include "mbuf.h"
 #include "systm.h"	/* rootvp ... */
 #include "machine/cpu.h"	/* inittodr() */
 #include "modconfig.h"
 
+#include "mbuf.h"
+#include "socketvar.h"
 #include "if.h"
 #include "route.h"
 #include "in.h"
@@ -71,6 +71,7 @@ static char *nfs_config = "nfs 2.";
 #include "prototypes.h"
 
 int nfs_mountroot(); /* XXX */
+int zero;
 
 /*
  * nfs vfs operations.
@@ -99,6 +100,7 @@ FILESYSTEM_MODCONFIG() {
 		return;
 
 	addvfs(&nfs_vfsops);
+	nfs_init();
 }
 
 static u_char nfs_mntid;
@@ -188,7 +190,7 @@ nfs_mountroot()
 	 */
 	if (socreate(nfs_diskless.myif.ifra_addr.sa_family, &so, SOCK_DGRAM, 0))
 		panic("nfs ifconf");
-	if (ifioctl(so, SIOCAIFADDR, &nfs_diskless.myif))
+	if (ifioctl(so, SIOCAIFADDR, (caddr_t)&nfs_diskless.myif, curproc))
 		panic("nfs ifconf2");
 	soclose(so);
 

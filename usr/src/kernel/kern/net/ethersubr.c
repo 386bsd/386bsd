@@ -34,7 +34,7 @@
  */
 
 #include "sys/param.h"
-#include "sys/socket.h"
+/*#include "sys/socket.h"*/
 #include "sys/ioctl.h"
 #include "sys/syslog.h"
 #include "sys/errno.h"
@@ -42,6 +42,7 @@
 #include "kernel.h"
 #include "malloc.h"
 #include "mbuf.h"
+#include "socketvar.h"
 #include "protosw.h"
 
 #include "machine/cpu.h"
@@ -72,6 +73,7 @@
 
 u_char	etherbroadcastaddr[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 /*extern	struct ifnet loif;*/
+struct ifqueue ipintrq;
 
 /*
  * Ethernet output routine.
@@ -130,7 +132,7 @@ ether_output(struct ifnet *ifp, struct mbuf *m0, struct sockaddr *dst,
 		    (caddr_t)&(((struct sockaddr_ns *)dst)->sns_addr.x_host),
 		    sizeof (edst));
 		if (!memcmp((caddr_t)edst, (caddr_t)&ns_thishost, sizeof(edst)))
-			return ((*route_looutput)(ifp, m, dst, rt));
+			return (looutput(ifp, m, dst, rt));
 		if ((ifp->if_flags & IFF_SIMPLEX) && (*edst & 1))
 			mcopy = m_copy(m, 0, (int)M_COPYALL);
 		goto gottype;
@@ -227,7 +229,7 @@ gottrailertype:
 
 gottype:
 	if (mcopy)
-		(void) (*route_looutput)(ifp, mcopy, dst, rt);
+		(void) looutput(ifp, mcopy, dst, rt);
 	/*
 	 * Add local net header.  If no space in first mbuf,
 	 * allocate another.

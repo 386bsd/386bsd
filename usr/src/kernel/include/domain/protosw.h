@@ -205,5 +205,16 @@ char	*prcorequests[] = {
 #endif
 
 #ifdef KERNEL
-extern	struct protosw *pffindproto(), *pffindtype();
+extern	struct protosw *pffindtype();
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* functions used in modules */
+__ISYM__(struct protosw *, pffindproto, (int, int, int))
+__ISYM__(void, pfctlinput, (int, struct sockaddr *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif

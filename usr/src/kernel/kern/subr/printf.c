@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: printf.c,v 1.1 94/10/19 18:33:25 bill Exp $
+ *	$Id: printf.c,v 1.1 94/10/19 18:33:25 bill Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -80,6 +80,7 @@ void  kprintf(const char *fmt, int flags, struct tty *tp, va_list);
  * as flag to indicate that the kernel has already called panic.
  */
 char	*panicstr;
+extern int enterddb;
 
 /*
  * Panic is called on unresolvable fatal errors.  It prints "panic: mesg",
@@ -87,21 +88,23 @@ char	*panicstr;
  * the disks as this often leads to recursive panics.
  */
 void
-panic(char *msg)
+panic(const char *msg)
 {
 	int bootopt = RB_AUTOBOOT | RB_DUMP;
 
 	if (panicstr)
 		bootopt |= RB_NOSYNC;
 	else
-		panicstr = msg;
+		panicstr = (char *)msg;
 	printf("panic: %s\n", msg);
 /*DELAY(100000000);*/
 #ifdef KGDB
 	kgdb_panic();
 #endif
 #ifdef DDB
-	Debugger ();
+	if (enterddb) {
+		Debugger ();
+	}
 #else
 pg("press key to boot/dump");
 #endif

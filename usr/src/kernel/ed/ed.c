@@ -14,11 +14,12 @@
  *   clones.
  *
  * David Greenman Id: if_ed.c,v 2.16 1993/11/29 16:55:56 davidg Exp davidg
- * $Id: ed.c,v 1.4 94/07/07 22:55:18 bill Exp Locker: bill $
+ * $Id: ed.c,v 1.1 95/02/20 19:32:48 bill Exp Locker: bill $
  */
 
 /* null default configuration: (must be added to per host configuration file) */
-static char *ed_config = "ed.	# ns derivative ethernet $Revision: 1.4 $";
+static char *ed_config = /*"ed.	# ns derivative ethernet $Revision: 1.1 $";*/
+"ed 2	(0x250	5 -1 0xd8000 8192) (0x280	9 -1 0xd0000 8192).       # two ns ethernets";
 
 #include "sys/param.h"
 #include "systm.h"
@@ -28,6 +29,8 @@ static char *ed_config = "ed.	# ns derivative ethernet $Revision: 1.4 $";
 #include "sys/socket.h"
 #include "sys/syslog.h"
 #include "esym.h"
+#include "vm.h"
+#include "kmem.h"
 #include "modconfig.h"
 
 #include "if.h"
@@ -66,6 +69,7 @@ static char *ed_config = "ed.	# ns derivative ethernet $Revision: 1.4 $";
 #ifndef IFF_ALTPHYS
 #define IFF_ALTPHYS IFF_LLC0
 #endif
+static const int zero = 0;
  
 /*
  * ed_softc: per line info and status
@@ -498,13 +502,13 @@ ed_probe_WD80x3(isa_dev)
 		 * Set address and enable interface shared memory.
 		 */
 		if(!sc->is790) {
-			outb(sc->asic_addr + ED_WD_MSR, ((kmem_phys(sc->mem_start) >> 13) &
+			outb(sc->asic_addr + ED_WD_MSR, ((kmem_phys((int)sc->mem_start) >> 13) &
 				ED_WD_MSR_ADDR) | ED_WD_MSR_MENB);
 		} else {
 			outb(sc->asic_addr + ED_WD_MSR, ED_WD_MSR_MENB);
 			outb(sc->asic_addr + 0x04, (inb(sc->asic_addr + 0x04) | 0x80));
-			outb(sc->asic_addr + 0x0b, ((kmem_phys(sc->mem_start) >> 13) & 0x0f) |
-				((kmem_phys(sc->mem_start) >> 11) & 0x40) | 
+			outb(sc->asic_addr + 0x0b, ((kmem_phys((int)sc->mem_start) >> 13) & 0x0f) |
+				((kmem_phys((int)sc->mem_start) >> 11) & 0x40) | 
 				(inb(sc->asic_addr + 0x0b) & 0xb0));
 			outb(sc->asic_addr + 0x04, (inb(sc->asic_addr + 0x04) & ~0x80));
 		}
@@ -519,12 +523,12 @@ ed_probe_WD80x3(isa_dev)
 			} else {
 				outb(sc->asic_addr + ED_WD_LAAR, (sc->wd_laar_proto =
 					ED_WD_LAAR_L16EN | ED_WD_LAAR_M16EN |
-					((kmem_phys(sc->mem_start) >> 19) & ED_WD_LAAR_ADDRHI)));
+					((kmem_phys((int)sc->mem_start) >> 19) & ED_WD_LAAR_ADDRHI)));
 			}
 		} else  {
 			if ((sc->type & ED_WD_SOFTCONFIG) || (sc->type == ED_TYPE_WD8013EBT) && (!sc->is790)) {
 				outb(sc->asic_addr + ED_WD_LAAR, (sc->wd_laar_proto =
-					((kmem_phys(sc->mem_start) >> 19) & ED_WD_LAAR_ADDRHI)));
+					((kmem_phys((int)sc->mem_start) >> 19) & ED_WD_LAAR_ADDRHI)));
 			}
 		}
 
@@ -536,7 +540,7 @@ ed_probe_WD80x3(isa_dev)
 		for (i = 0; i < memsize; ++i)
 			if (sc->mem_start[i]) {
 		        	printf("ed%d: failed to clear shared memory at %x - check configuration\n",
-					isa_dev->id_unit, kmem_phys(sc->mem_start + i));
+					isa_dev->id_unit, kmem_phys((int)sc->mem_start + i));
 
 				/*
 				 * Disable 16 bit access to shared memory
@@ -627,19 +631,19 @@ ed_probe_3Com(isa_dev)
 	 */
 	switch (inb(sc->asic_addr + ED_3COM_PCFR)) {
 	case ED_3COM_PCFR_DC000:
-		if (kmem_phys(isa_dev->id_maddr) != 0xdc000)
+		if (kmem_phys((int)isa_dev->id_maddr) != 0xdc000)
 			return(0);
 		break;
 	case ED_3COM_PCFR_D8000:
-		if (kmem_phys(isa_dev->id_maddr) != 0xd8000)
+		if (kmem_phys((int)isa_dev->id_maddr) != 0xd8000)
 			return(0);
 		break;
 	case ED_3COM_PCFR_CC000:
-		if (kmem_phys(isa_dev->id_maddr) != 0xcc000)
+		if (kmem_phys((int)isa_dev->id_maddr) != 0xcc000)
 			return(0);
 		break;
 	case ED_3COM_PCFR_C8000:
-		if (kmem_phys(isa_dev->id_maddr) != 0xc8000)
+		if (kmem_phys((int)isa_dev->id_maddr) != 0xc8000)
 			return(0);
 		break;
 	default:
@@ -823,7 +827,7 @@ ed_probe_3Com(isa_dev)
 	for (i = 0; i < memsize; ++i)
 		if (sc->mem_start[i]) {
 	        	printf("ed%d: failed to clear shared memory at %x - check configuration\n",
-				isa_dev->id_unit, kmem_phys(sc->mem_start + i));
+				isa_dev->id_unit, kmem_phys((int)sc->mem_start + i));
 			return(0);
 		}
 

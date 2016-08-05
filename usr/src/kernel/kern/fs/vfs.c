@@ -54,6 +54,9 @@
 
 #include "prototypes.h"
 
+struct mount *rootfs;
+struct vfsops *vfs;
+
 /*static*/ void insmntque(struct vnode *vp, struct mount *mp);
 
 /*

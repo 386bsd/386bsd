@@ -159,6 +159,7 @@ loop:
 	ip->iso_interleave_gap = isonum_711 (isodir->interleave);
 	ip->iso_volume_seq = isonum_723 (isodir->volume_sequence_number);
 	ip->iso_namelen = isonum_711 (isodir->name_len);
+ip->iso_sl = 0;
 
 	imp = VFSTOISOFS (mntp);
 	vp = ITOV(ip);
@@ -289,13 +290,17 @@ FlameOff:
 	 * Initialize the associated vnode
 	 */
 	if ( result & ISO_SUSP_SLINK ) {
-        	char    symname[NAME_MAX];
+        	/*char    symname[NAME_MAX];*/
+
 		int symlen;
+ip->iso_sl = malloc(NAME_MAX,M_UFSMNT,M_WAITOK);
 
 		vp->v_type = VLNK;	      /* Symbolic Link */
-        	isofs_rrip_getsymname(vp, isodir, symname, &symlen);
-	        ip->i_size = symlen;
-/*printf("SL%d mode %x ", symlen, ip->inode.iso_mode);*/
+        	/*isofs_rrip_getsymname(vp, isodir, symname, &symlen);*/
+        	isofs_rrip_getsymname(vp, isodir, ip->iso_sl, &ip->iso_sl_len);
+	        ip->i_size = ip->iso_sl_len;
+/*if(isosymlink)
+ printf("SL%d mode %x %s\n", symlen, ip->inode.iso_mode, symname);*/
 	}
 	if ( result & ISO_SUSP_DEVICE ) {
 		vp->v_op = &spec_isonodeops;
@@ -365,6 +370,10 @@ isofs_inactive(vp, p)
 #endif
 
 	ip->i_flag = 0;
+if(ip->iso_sl)
+	free(ip->iso_sl, M_UFSMNT);
+ip->iso_sl = 0;
+
 	/*
 	 * If we are done with the inode, reclaim it
 	 * so that it can be reused immediately.

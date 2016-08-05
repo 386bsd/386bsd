@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: tcp_usrreq.c,v 1.1 94/10/20 10:53:44 root Exp $
+ *	$Id: tcp_usrreq.c,v 1.1 94/10/20 10:53:44 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -38,11 +38,11 @@
 #include "malloc.h"
 #include "mbuf.h"
 #include "sys/file.h"
-#include "socketvar.h"
-#include "protosw.h"
 #include "sys/errno.h"
 #include "sys/stat.h"
 #include "prototypes.h"
+#include "socketvar.h"
+#include "protosw.h"
 
 #include "if.h"
 #include "route.h"

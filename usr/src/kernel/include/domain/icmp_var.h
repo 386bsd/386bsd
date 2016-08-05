@@ -54,5 +54,5 @@ struct	icmpstat {
 };
 
 #ifdef KERNEL
-struct	icmpstat icmpstat;
+extern struct	icmpstat icmpstat;
 #endif

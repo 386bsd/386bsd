@@ -47,6 +47,16 @@ struct	domain {
 };
 
 #ifdef KERNEL
-struct	domain *domains;
-void adddomain(struct domain *);
+extern struct	domain *domains;
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* functions used in modules */
+__ISYM__(void, adddomain, (struct domain *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif

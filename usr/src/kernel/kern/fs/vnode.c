@@ -54,6 +54,8 @@
 
 #include "prototypes.h"
 
+u_long nextvnodeid;
+
 /*static*/ void insmntque(struct vnode *vp, struct mount *mp);
 #if defined(DEBUG) || defined(DIAGNOSTIC)
 void vprint(char *label, struct vnode *vp);
@@ -811,4 +813,51 @@ static struct kinfoif
 KERNEL_MODCONFIG() {
 
 	kinfo_addserver(&kinfo_vnode_kif);
+}
+
+/*
+ * Locate vnode operations for a type not implemented by a filesystem.
+ * If implemented, reassign the vnode operations vector to suite.
+ * Otherwise, indicate that the type is not implemented on this system.
+ * If type implies use of an aliased vnode, return the alias.
+ */
+int
+vt_reassign(struct vnode *vp, dev_t dev, struct vnode **aliasvp)
+{
+	static struct vnodeops sv;
+	
+	/* XXX need types, per filesystem */
+	if (sv.vop_open == 0) {
+		struct vnodeops *v = vp->v_op;
+
+		sv = spec_vnodeops;
+		sv.vop_access = v->vop_access;
+		sv.vop_getattr = v->vop_getattr;
+		sv.vop_setattr = v->vop_setattr;
+		sv.vop_inactive = v->vop_inactive;
+		sv.vop_reclaim = v->vop_reclaim;
+		sv.vop_lock = v->vop_lock;
+		sv.vop_unlock = v->vop_unlock;
+		sv.vop_print = v->vop_print;
+		sv.vop_islocked = v->vop_islocked;
+	}
+
+	/* fifo vnode type implemented? */
+	if (vp->v_type == VFIFO) {
+
+#ifdef FIFO
+		extern struct vnodeops fifo_nfsv2nodeops;
+		vp->v_op = &fifo_nfsv2nodeops;
+#else
+		return (EOPNOTSUPP);
+#endif /* FIFO */
+	}
+
+	/* special device type implemented? */
+	if (vp->v_type == VCHR || vp->v_type == VBLK) {
+
+		vp->v_op = &sv;
+		*aliasvp = checkalias(vp, dev, vp->v_mount);
+	} else
+		*aliasvp = 0;
 }

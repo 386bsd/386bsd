@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: locore.s,v 1.1 94/10/19 17:39:58 bill Exp $
+ *	$Id: locore.s,v 1.1 94/10/19 17:39:58 bill Exp Locker: bill $
  *
  * Assembly code for kernel program entry from bootstrap and kernel
  * primatives.
@@ -772,7 +772,7 @@ ENTRY(copyout)
 	popl	%eax
 
 	cmpl	$0, %eax	/* if not ok, return */
-	jne	9f
+	je	9f
 				/* otherwise, continue with reference */
 2:	movl	%edi, %eax	/* calculate the remainder in this page */
 	andl	$NBPG-1, %eax
@@ -840,8 +840,10 @@ Idle:
 
 /*
  * void swtch(void)
+ * volatile void final_swtch(void)
  */
 ENTRY(swtch)
+ALTENTRY(final_swtch)
 	PROC_ENTRY
 	incl	_cnt+V_SWTCH
 
@@ -1261,13 +1263,13 @@ IDTVEC(irq15)	INTR2(15)
 	.data
 	.globl	_imen, _cpl
 	.long 0
-_cpl:	.long	IRHIGH	/* current priority level (all off) */
-_imen:	.word	0xffff	/* interrupt mask enable (all off) */
+_cpl:	.long	IRHIGH - 2	/* current priority level (all off) */
+_imen:	.word	0xffff - 2	/* interrupt mask enable (all off) */
 
 netsirqsem: .word 0	/* network software interrupt request semaphore */
 
 	.globl	_highmask
-_highmask:	.long	IRHIGH
+_highmask:	.long	IRHIGH - 2
 	.globl	_ttymask
 _ttymask:	.long	0
 	.globl	_biomask
@@ -1385,6 +1387,7 @@ je	9f*/
 4:
 	movl	$IRNET|IRSCLK, _cpl	/* mask net and softclock */
 	sti
+	.globl _netintr
 #define DONET(s, c)	; \
 	.globl	c ;  \
 	btrl	$ s , %ebx ;  \
@@ -1393,6 +1396,19 @@ je	9f*/
 	call	c ; \
 1:
 
+#define DONETS(isr, tmp)	;	\
+1:					\
+	bsfl	isr , tmp ;	/* find a software interrupt */ \
+	jz 1f	;			\
+	btrl	tmp , isr ; 		\
+	jnc	1f ; 			\
+	incl	_cnt + V_SOFT ;		\
+	call	*_netintr(, tmp ,4) ;	\
+	jmp	1b ;			\
+1:
+	
+
+#ifdef nope
 #ifdef INET
 	DONET(NETISR_IP, _ipintr)
 #endif
@@ -1401,6 +1417,9 @@ je	9f*/
 #endif
 #ifdef NS
 	DONET(NETISR_NS, _nsintr)
+#endif
+#else
+	DONETS(%ebx, %eax)
 #endif
 	jmp 9b
 
@@ -1508,6 +1527,7 @@ _splsoftclock:
 	je	2f
 	
 	sti
+#ifdef nope
 #ifdef INET
 	DONET(NETISR_IP, _ipintr)
 #endif
@@ -1516,6 +1536,9 @@ _splsoftclock:
 #endif
 #ifdef NS
 	DONET(NETISR_NS, _nsintr)
+#endif
+#else
+	DONETS(%ebx, %eax)
 #endif
 	cli
 	jmp 9b
@@ -1557,6 +1580,7 @@ _splnone:
 	je	5f
 	
 	sti
+#ifdef	nope
 #ifdef INET
 	DONET(NETISR_IP, _ipintr)
 #endif
@@ -1565,6 +1589,9 @@ _splnone:
 #endif
 #ifdef NS
 	DONET(NETISR_NS, _nsintr)
+#endif
+#else
+	DONETS(%ebx, %eax)
 #endif
 	cli
 	jmp	9b
@@ -1605,6 +1632,7 @@ _splx:
 	cmpl	$IRSCLK, %eax
 	je	_splsoftclock		# going to "softclock level" is special
 
+	cli
 	COMMON_SPL
 	
 	.globl	_syscall_entry, _syscall_lret
@@ -1662,6 +1690,7 @@ _syscall_lret:
 5:
 	movl	$IRNET|IRSCLK, _cpl
 	sti
+#ifdef nope
 #ifdef INET
 	DONET(NETISR_IP, _ipintr)
 #endif
@@ -1670,6 +1699,9 @@ _syscall_lret:
 #endif
 #ifdef NS
 	DONET(NETISR_NS, _nsintr)
+#endif
+#else
+	DONETS(%ebx, %eax)
 #endif
 	jmp	9b
 

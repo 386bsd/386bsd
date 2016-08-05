@@ -698,12 +698,14 @@ ptyioctl(dev_t dev, int cmd, caddr_t data, int flag, struct proc *p)
 	 * the queues.  We can't tell anything about the discipline
 	 * from here...
 	 */
+#ifdef nope
 	if (tp->t_line != TTYDISC) {
 		ldiscif_close(tp, flag);
 		tp->t_line = TTYDISC;
 		(void)ldiscif_open(dev, tp, flag);
 		error = ENOTTY;
 	}
+#endif
 
 	if (error < 0) {
 		if (pti->pt_flags & PF_UCNTL &&

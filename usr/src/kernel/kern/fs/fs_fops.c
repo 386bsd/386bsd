@@ -52,22 +52,27 @@
 
 int vn_writechk(struct vnode *vp);
 
+static int
+	vn_read(struct file *fp, struct uio *uio, struct ucred *cred),
+	vn_write(struct file *fp, struct uio *uio, struct ucred *cred),
+	vn_ioctl(struct file *fp, int com, caddr_t data, struct proc *p),
+	vn_select(struct file *fp, int which, struct proc *p),
+	vn_closefile(struct file *fp, struct proc *p),
+	vn_statfile(struct file *fp, struct stat *s, struct proc *p);
+
 struct 	fileops vnops =
-	{ vn_read, vn_write, vn_ioctl, vn_select, vn_closefile };
+	{ vn_read, vn_write, vn_ioctl, vn_select, vn_closefile, vn_statfile };
 
 /*
  * Common code for vnode open operations.
  * Check permissions, and call the VOP_OPEN or VOP_CREATE routine.
  */
-vn_open(ndp, p, fmode, cmode)
-	register struct nameidata *ndp;
-	struct proc *p;
-	int fmode, cmode;
+int
+vn_open(struct nameidata *ndp, struct proc *p, int fmode, int cmode)
 {
-	register struct vnode *vp;
-	register struct ucred *cred = p->p_ucred;
-	struct vattr vat;
-	struct vattr *vap = &vat;
+	struct vnode *vp;
+	struct ucred *cred = p->p_ucred;
+	struct vattr vat, *vap = &vat;
 	int error;
 
 	if (fmode & O_CREAT) {
@@ -235,12 +240,10 @@ vn_rdwr(rw, vp, base, len, offset, segflg, ioflg, cred, aresid, p)
 /*
  * File table vnode read routine.
  */
-vn_read(fp, uio, cred)
-	struct file *fp;
-	struct uio *uio;
-	struct ucred *cred;
+static int
+vn_read(struct file *fp, struct uio *uio, struct ucred *cred)
 {
-	register struct vnode *vp = (struct vnode *)fp->f_data;
+	struct vnode *vp = (struct vnode *)fp->f_data;
 	int count, error;
 
 	VOP_LOCK(vp);
@@ -256,12 +259,10 @@ vn_read(fp, uio, cred)
 /*
  * File table vnode write routine.
  */
-vn_write(fp, uio, cred)
-	struct file *fp;
-	struct uio *uio;
-	struct ucred *cred;
+static int
+vn_write(struct file *fp, struct uio *uio, struct ucred *cred)
 {
-	register struct vnode *vp = (struct vnode *)fp->f_data;
+	struct vnode *vp = (struct vnode *)fp->f_data;
 	int count, error, ioflag = 0;
 
 	if (vp->v_type == VREG && (fp->f_flag & O_APPEND))
@@ -292,13 +293,20 @@ vn_write(fp, uio, cred)
 /*
  * File table vnode stat routine.
  */
-vn_stat(vp, sb, p)
-	struct vnode *vp;
-	register struct stat *sb;
-	struct proc *p;
+static int
+vn_statfile(struct file *fp, struct stat *sb, struct proc *p)
 {
-	struct vattr vattr;
-	register struct vattr *vap;
+
+	return (vn_stat(((struct vnode *)fp->f_data), sb, p));
+}
+
+/*
+ * Vnode stat routine.
+ */
+int
+vn_stat(struct vnode *vp, struct stat *sb, struct proc *p)
+{
+	struct vattr vattr, *vap;
 	int error;
 	u_short mode;
 
@@ -359,13 +367,10 @@ vn_stat(vp, sb, p)
 /*
  * File table vnode ioctl routine.
  */
-vn_ioctl(fp, com, data, p)
-	struct file *fp;
-	int com;
-	caddr_t data;
-	struct proc *p;
+static int
+vn_ioctl(struct file *fp, int com, caddr_t data, struct proc *p)
 {
-	register struct vnode *vp = ((struct vnode *)fp->f_data);
+	struct vnode *vp = ((struct vnode *)fp->f_data);
 	struct vattr vattr;
 	int error;
 
@@ -401,10 +406,8 @@ vn_ioctl(fp, com, data, p)
 /*
  * File table vnode select routine.
  */
-vn_select(fp, which, p)
-	struct file *fp;
-	int which;
-	struct proc *p;
+static int
+vn_select(struct file *fp, int which, struct proc *p)
 {
 
 	return (VOP_SELECT(((struct vnode *)fp->f_data), which, fp->f_flag,
@@ -414,9 +417,8 @@ vn_select(fp, which, p)
 /*
  * File table vnode close routine.
  */
-vn_closefile(fp, p)
-	struct file *fp;
-	struct proc *p;
+static int
+vn_closefile(struct file *fp, struct proc *p)
 {
 
 	return (vn_close(((struct vnode *)fp->f_data), fp->f_flag,
@@ -429,10 +431,8 @@ vn_closefile(fp, p)
  *	- get vp by calling VFS_FHTOVP() macro
  *	- if lockflag lock it with VOP_LOCK()
  */
-vn_fhtovp(fhp, lockflag, vpp)
-	fhandle_t *fhp;
-	int lockflag;
-	struct vnode **vpp;
+int
+vn_fhtovp(fhandle_t *fhp, int lockflag, struct vnode **vpp)
 {
 	register struct mount *mp;
 

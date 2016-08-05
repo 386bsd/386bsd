@@ -10,7 +10,7 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
  *
- *	$Id$
+ *	$Id: prototypes.h,v 1.1 95/02/20 19:45:13 bill Exp Locker: bill $
  *
  * Machine independant kernel function prototypes.
  */
@@ -20,26 +20,31 @@ struct proc;
 struct user;
 struct pcb;
 
-int	nullop (void);
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+__ISYM__(int, nullop, (void))
 int	_ENODEV_ (void);	/* XXX: need to generate dynamically */
 int	_ENOSYS_ (void);
 int	_ENOTTY_ (void);
 int	_ENXIO_ (void);
 int	_EOPNOTSUPP_ (void);
-int	seltrue(dev_t dev, int which, struct proc *p);
+__ISYM__(int, seltrue, (dev_t dev, int which, struct proc *p))
 void	selwakeup(pid_t pid, int coll);
 
-void	panic (char *);
-void	tablefull (char *);
+__ISYM__(void, panic, (const char *))
+__ISYM__(void, tablefull, (char *))
 void	addlog (const char *, ...);
-void	log (int, const char *, ...);
-void	printf (const char *, ...);
+__ISYM__(void, log, (int, const char *, ...))
+__ISYM__(void, printf, (const char *, ...))
+__ISYM__(void, uprintf, (const char *, ...))
 int	sprintf (char *buf, const char *, ...);
 void	ttyprintf (struct tty *, const char *, ...);
 
 int	 memcmp (const void *, const void *, size_t);
 void	*memcpy (void *, const void *, size_t);
-void	*memmove (void *, const void *, size_t);
+__ISYM__(void *, memmove, (void *, const void *, size_t))
 void	*memset (void *, int, size_t);
 
 char	*strcat (char *, const char *);
@@ -50,19 +55,19 @@ char	*strncpy (char *, const char *, size_t);
 int	copystr (void *kfaddr, void *kdaddr, u_int len, u_int *done);
 int	copyinstr (struct proc *, void *udaddr, void *kaddr, u_int len, u_int *done);
 int	copyoutstr (struct proc *, void *kaddr, void *udaddr, u_int len, u_int *done);
-int	copyin (struct proc *, void *udaddr, void *kaddr, u_int len);
-int	copyout (struct proc *, void *kaddr, void *udaddr, u_int len);
+__ISYM__(int, copyin, (struct proc *, void *udaddr, void *kaddr, u_int len))
+__ISYM__(int, copyout, (struct proc *, void *kaddr, void *udaddr, u_int len))
 
-int	fubyte (void *base);
 #ifdef notdef
+int	fubyte (void *base);
 int	fuibyte (void *base);
-#endif
 int	subyte (void *base, int byte);
 int	suibyte (void *base, int byte);
 int	fuword (void *base);
 int	fuiword (void *base);
 int	suword (void *base, int word);
 int	suiword (void *base, int word);
+#endif
 
 int	scanc (unsigned size, u_char *cp, u_char *table, int mask);
 int	skpc (int mask, int size, char *cp);
@@ -75,7 +80,7 @@ void gatherstats(clockframe frame);
 void softclock(clockframe frame);
 #endif
 
-void timeout(int (*func)(), caddr_t arg, int t);
+__ISYM__(void, timeout, (int (*func)(), caddr_t arg, int t))
 void untimeout(int (*func)(), caddr_t arg);
 
 #ifdef _SYS_TIME_H_
@@ -102,6 +107,10 @@ void timevalfix(struct timeval *t1);
 
 /*__BEGIN_DECLS
 __END_DECLS */
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 
 #include "machine/inline/string.h"
 #include "machine/inline/kernel.h"

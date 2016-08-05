@@ -59,19 +59,27 @@
  * any improvements or extensions that they make and grant Carnegie the
  * rights to redistribute these changes.
  *
- *	$Id: kmem.h,v 1.3 93/04/18 10:04:19 bill Exp $
+ *	$Id: kmem.h,v 1.1 95/02/20 19:29:44 bill Exp Locker: bill $
  *
  *	Kernel memory / address space management functions.
  */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
 
 vm_offset_t kmem_alloc(vm_map_t map, vm_size_t size, int flags);
 void        kmem_free(vm_map_t map, vm_offset_t addr, vm_size_t size);
 vm_map_t    kmem_suballoc(vm_size_t size, boolean_t pageable);
 void        kmem_init(void);
-vm_offset_t kmem_mmap(vm_map_t map, vm_offset_t addr, vm_size_t size);
-vm_offset_t kmem_phys(vm_offset_t kva);
+__ISYM__(vm_offset_t, kmem_mmap, (vm_map_t map, vm_offset_t addr, vm_size_t size))
+__ISYM__(vm_offset_t, kmem_phys, (vm_offset_t kva))
 
 
 extern vm_map_t kernel_map;	/* kernel's main map */
 
 extern vm_map_t mb_map, kmem_map, phys_map, pager_map; /* kernel's submaps */
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__

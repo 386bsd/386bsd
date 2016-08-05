@@ -99,6 +99,8 @@ struct vnodeops spec_vnodeops = {
 	spec_advlock,		/* advlock */
 };
 
+struct vnode *speclisth[SPECHSZ];
+
 /* XXX -- belongs in spec_node, spec_vfsops, etc, when moves to ./specfs */
 /*
  * Create a vnode for a block device.

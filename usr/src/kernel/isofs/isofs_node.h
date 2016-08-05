@@ -43,6 +43,8 @@ struct iso_node {
 	int iso_parent;		/* byte offset in beginning of dir record */
 	int iso_parent_ext;	/* block number of dir record */
 	ISO_RRIP_INODE  inode;
+	char *iso_sl;		/* symbolic link */
+	int iso_sl_len;		/* symbolic link */
 };
 
 #define	i_forw		i_chain[0]

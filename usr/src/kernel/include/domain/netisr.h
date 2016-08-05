@@ -62,6 +62,19 @@
 
 #ifndef LOCORE
 #ifdef KERNEL
-int	netisr;				/* scheduling bits for network */
+
+typedef void (*net_intr_t)(void);
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(int, netisr,)		/* scheduling bits for network */
+__ISYM__(net_intr_t, netintr, [32])
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif
 #endif

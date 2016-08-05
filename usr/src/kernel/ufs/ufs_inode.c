@@ -62,6 +62,8 @@ union ihead {
 	struct inode *ih_chain[2];
 } ihead[INOHSZ];
 
+u_long nextgennumber;
+
 /*
  * Initialize hash links for inodes.
  */

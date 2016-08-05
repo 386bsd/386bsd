@@ -2,7 +2,7 @@
  * Copyright (c) 1994 William F. Jolitz.
  * 386BSD Copyright Restrictions Apply. All Other Rights Reserved.
  *
- * $Id: $
+ * $Id: copyout_.h,v 1.1 95/01/21 16:03:46 bill Exp Locker: bill $
  * Copy a constant length segment from the kernel to a user process.
  */
 
@@ -12,8 +12,8 @@ copyout_(struct proc *p, const void *from, void *to, const u_int size)
 	int rv;
 
 	/* is this in the range of a valid user process address? */
-	/* if ((unsigned)to > ENDUSERMEM || (unsigned)to + size > ENDUSERMEM)
-		return(EFAULT); */
+	if ((unsigned)to > ENDUSERMEM || (unsigned)to + size > ENDUSERMEM)
+		return(EFAULT);
 
 	/* set fault vector */
 	asm volatile ("movl $4f, %0" : "=m" (p->p_md.md_onfault));

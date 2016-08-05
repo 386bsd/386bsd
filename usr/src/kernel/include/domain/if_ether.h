@@ -103,11 +103,65 @@ struct	arptab {
 };
 
 #ifdef	KERNEL
-u_char	etherbroadcastaddr[6];
-struct	arptab *arptnew();
+/*u_char	etherbroadcastaddr[6];
+struct	arptab *arptnew();*/
+struct	arptab *arptnew(struct in_addr *);
 
-char *ether_sprintf(u_char *ap);
-void ether_input(struct ifnet *ifp, struct ether_header *eh, struct mbuf *m);
-int ether_output(struct ifnet *ifp, struct mbuf *m0, struct sockaddr *dst,
-	struct rtentry *rt);
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(u_char, etherbroadcastaddr, [6])
+
+/* functions used in modules */
+__ISYM__(void, ether_input, (struct ifnet *, struct ether_header *, struct mbuf *))
+__ISYM__(int, ether_output, (struct ifnet *, struct mbuf *, struct sockaddr *, struct rtentry *))
+__ISYM__(char *, ether_sprintf, (u_char *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
+
+#ifndef _ARP_PROTOTYPES
+/* private arp functions, accessed via external symbol stub when loaded */
+static void arpwhohas(struct arpcom *, struct in_addr *);
+static void arpinput(struct arpcom *ac, struct mbuf *m);
+static int arpresolve(struct arpcom *ac, struct mbuf *m, struct in_addr *destip,
+	u_char *desten, int *usetrailers);
+
+/* inline external symbol table function stubs */
+extern inline void
+arpwhohas(struct arpcom *a, struct in_addr *i) {
+	void (*f)(struct arpcom *, struct in_addr *);
+
+	(const void *) f = esym_fetch(arpwhohas);
+	if (f == 0)
+		return;
+	(*f)(a, i);
+}
+extern inline void
+arpinput(struct arpcom *a, struct mbuf *m) {
+	void (*f)(struct arpcom *, struct mbuf *);
+
+	(const void *) f = esym_fetch(arpinput);
+	if (f == 0)
+		return;
+	(*f)(a, m);
+}
+extern inline int
+arpresolve(struct arpcom *a, struct mbuf *m, struct in_addr *d, u_char *c, int *u) {
+	int (*f)(struct arpcom *, struct mbuf *, struct in_addr *, u_char *, int *);
+
+	(const void *) f = esym_fetch(arpresolve);
+	if (f == 0)
+		return (0);
+	return ((*f)(a, m, d, c, u));
+}
+#else
+extern void arpwhohas(struct arpcom *, struct in_addr *);
+extern void arpinput(struct arpcom *ac, struct mbuf *m);
+extern int arpresolve(struct arpcom *ac, struct mbuf *m, struct in_addr *destip,
+	u_char *desten, int *usetrailers);
+#endif /* _ARP_PROTOTYPES */
 #endif

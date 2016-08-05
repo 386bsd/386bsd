@@ -299,8 +299,16 @@ isofs_readdir(vp, uio, cred, eofflagp)
 			/* illegal directory, so stop looking */
 			break;
 
-		dirent.d_fileno = iso_lblktosize(imp, isonum_733 (ep->extent))
+		/*
+		 * if a directory, fake inode number on extent, otherwise
+		 * make unique with entry offset
+		 */
+		if(ep->flags[0] & 2)
+			dirent.d_fileno = iso_lblktosize(imp, isonum_733 (ep->extent));
+		else
+			dirent.d_fileno = iso_lblktosize(imp, isonum_733 (ep->extent))
 				+ entryoffsetinblock;
+
 		dirent.d_namlen = isonum_711 (ep->name_len);
 
 		if (reclen < sizeof (struct iso_directory_record)
@@ -378,9 +386,10 @@ struct ucred *cred;
         struct  buf *bp;
         int     symlen;
         int     error, rv;
-        char    symname[NAME_MAX];
 
         ip  = VTOI( vp );
+#ifdef nope
+        char    symname[NAME_MAX];
         imp = ip->i_mnt;
 /*printf("readlink mode %x ", ip->inode.iso_mode);*/
         /*
@@ -442,6 +451,12 @@ struct ucred *cred;
          * return with the Symbolic name to caller's.
          */
         return ( uiomove( symname, symlen, uio ) );
+#else
+if(ip->iso_sl == 0)
+	return(EINVAL);
+else
+        return ( uiomove( ip->iso_sl, ip->iso_sl_len, uio ) );
+#endif
 }
 
 /*

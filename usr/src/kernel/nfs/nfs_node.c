@@ -173,7 +173,6 @@ nfs_inactive(vp, p)
 	register struct nfsnode *np;
 	register struct sillyrename *sp;
 	struct nfsnode *dnp;
-	extern int prtactive;
 
 	np = VTONFS(vp);
 #ifdef DEBUG
@@ -228,7 +227,6 @@ nfs_reclaim(vp)
 	register struct vnode *vp;
 {
 	register struct nfsnode *np = VTONFS(vp);
-	extern int prtactive;
 
 #ifdef DEBUG
 	if (prtactive && vp->v_usecount != 0)

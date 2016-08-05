@@ -34,6 +34,8 @@
  * the operation, and only via an existing kernel interface (however obtuse).
  * (No attempts at "caching" this operation is allowed, and no "references"
  * are asserted on the underlying module -- the operation is stateless).
+ *
+ *	$Id$
  */
 
 /*
@@ -153,10 +155,14 @@ struct namelist {
 	cfg_type_t type;	/* type of value to be parsed */
 };
 
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
 /* functions to evaluate configuration */
-int config_scan(char *drv_config, char **cfg); 
+__ISYM__(int, config_scan, (char *drv_config, char **cfg))
 char *cfg_skipwhite(char **cfg);
-int cfg_number(char **cfg, int *pval);
+__ISYM__(int, cfg_number, (char **cfg, int *pval))
 int cfg_string(char **cfg, char *sp, int szval);
 int cfg_char(char **cfg, char t);
 int cfg_namelist(char **cfg, struct namelist *nmp);
@@ -342,3 +348,7 @@ struct ldiscif *ldiscif_probe(char *name);
 int console_config(char **cons_cfg, char **mod_cfg, struct devif *dif);
 void console_putchar(unsigned c);
 unsigned console_getchar(void);
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__

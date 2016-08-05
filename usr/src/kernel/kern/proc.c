@@ -49,6 +49,10 @@
 
 #include "prototypes.h"
 
+struct proc *initproc, *pageproc, *zombproc, *allproc;
+int whichqs;
+struct prochd qs[NQS];
+
 /*
  * Is p an inferior of the current process?
  */

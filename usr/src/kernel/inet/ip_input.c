@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: ip_input.c,v 1.1 94/10/20 10:53:33 root Exp $
+ *	$Id: ip_input.c,v 1.1 94/10/20 10:53:33 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -38,11 +38,11 @@
 #include "malloc.h"
 #include "mbuf.h"
 #include "domain.h"
-#include "protosw.h"
 #include "sys/socket.h"
+#include "protosw.h"
 #include "sys/errno.h"
 #include "sys/time.h"
-#include "kernel.h"
+/* #include "kernel.h" */
 #include "prototypes.h"
 
 #include "if.h"
@@ -788,7 +788,7 @@ ip_rtaddr(dst)
 		sin->sin_len = sizeof(*sin);
 		sin->sin_addr = dst;
 
-		RTALLOC(&ipforward_rt);
+		rtalloc(&ipforward_rt);
 	}
 	if (ipforward_rt.ro_rt == 0)
 		return ((struct in_ifaddr *)0);
@@ -975,7 +975,7 @@ ip_forward(m, srcrt)
 		sin->sin_len = sizeof(*sin);
 		sin->sin_addr = ip->ip_dst;
 
-		RTALLOC(&ipforward_rt);
+		rtalloc(&ipforward_rt);
 		if (ipforward_rt.ro_rt == 0) {
 			icmp_error(m, ICMP_UNREACH, ICMP_UNREACH_HOST, dest);
 			return;

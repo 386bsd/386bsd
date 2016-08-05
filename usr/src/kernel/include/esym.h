@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: $
+ * $Id: esym.h,v 1.1 95/02/20 19:18:07 bill Exp Locker: bill $
  *
  * External symbol table (esym):
  *  name space of symbols visable globally to modules. Symbols are
@@ -59,16 +59,28 @@ struct _esym_entry_ {
 	const char *es_name;
 	const void *es_address;
 	struct _esym_entry_ *es_next;
-} *_esym_elist_, *_esym_llist_;
+};
 
 #ifdef KERNEL
-extern struct _esym_entry_ *_esym_elist_, *_esym_llist_;
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct _esym_entry_ *, _esym_elist_,)	/* export list */
+__ISYM__(struct _esym_entry_ *, _esym_llist_,)	/* reference list */
+
+/* functions used in core kernel and modules */
 
 /* hidden symbol search and unbind functions */ 
-const void *_esymtab_search_(struct _esym_entry_ *es);
+__ISYM__(const void *, _esymtab_search_, (struct _esym_entry_ *es))
 void _esymtab_unbind_(const char *name);
 void _esym_check_(struct _esym_entry_ *os);
 void _esym_dump_(void);
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif /* KERNEL */
 
 /* enter new symbol into the external symbol table into the kernel */

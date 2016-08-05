@@ -55,5 +55,19 @@ struct rawcb {
 #define	RAWRCVQ		8192
 
 #ifdef KERNEL
-struct rawcb rawcb;			/* head of list */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct rawcb, rawcb,)	/* head of list */
+
+/* functions used in modules */
+__ISYM__(int, raw_input, (struct mbuf *, struct sockproto *, struct sockaddr *, struct sockaddr *))	/* XXX void */
+__ISYM__(int, raw_usrreq, (struct socket *, int, struct mbuf *, struct mbuf *, struct mbuf *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif

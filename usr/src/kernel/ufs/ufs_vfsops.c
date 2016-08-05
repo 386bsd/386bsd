@@ -42,7 +42,6 @@ static char *ufs_config = "ufs 1.";
 #include "sys/ioctl.h"
 #include "uio.h"
 #include "sys/errno.h"
-#include "systm.h"	/* nblkdev */
 #include "proc.h"
 #include "specdev.h"
 #include "buf.h"
@@ -122,7 +121,6 @@ static int
 ufs_mountroot(void)
 {
 	register struct mount *mp;
-	extern struct vnode *rootvp;
 	struct proc *p = curproc;	/* XXX */
 	struct ufsmount *ump;
 	register struct fs *fs;
@@ -264,7 +262,6 @@ mountfs(struct vnode *devvp, struct mount *mp, struct proc *p)
 	int error, i, size;
 	int needclose = 0;
 	int ronly = (mp->mnt_flag & MNT_RDONLY) != 0;
-	extern struct vnode *rootvp;
 
 	if (error = VOP_OPEN(devvp, (ronly ? FREAD : FREAD|FWRITE) | FMOUNT,
 	    NOCRED, p))

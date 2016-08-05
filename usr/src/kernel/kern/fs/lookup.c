@@ -213,6 +213,7 @@ nameiexec(struct nameidata *ndp, struct proc *p) {
 
 	/* if supplied a process, name the process */
 	if (p) {
+		ndp->ni_vp->v_flag |= VTEXT;
 		len = min(ndp->ni_namelen, MAXCOMLEN);
 		memcpy(p->p_comm, ndp->ni_ptr, len);
 		p->p_comm[len] = 0;

@@ -38,18 +38,21 @@
  */
 
 #include "sys/param.h"
-#include "sys/socket.h"
 #include "sys/ioctl.h"
 #include "sys/errno.h"
 #include "mbuf.h"
 #include "modconfig.h"
+#include "esym.h"
 
 #include "machine/cpu.h"
 
+#include "socketvar.h"
 #include "if.h"
 #include "if_types.h"
 #include "netisr.h"
+#define	_ROUTE_PROTOTYPES /* XXX */
 #include "route.h"
+#undef	_ROUTE_PROTOTYPES /* XXX */
 
 #ifdef	INET
 #include "in.h"
@@ -70,12 +73,15 @@
 
 #define	LOMTU	(1024+512)
 
-struct	ifnet loif;
-int looutput(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
+static struct	ifnet loif;
+static int looutput(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 	struct rtentry *rt);
-int	loioctl();
+static int loioctl(struct ifnet *ifp, int cmd, caddr_t data);
+static void loattach(void);
+static int lortrequest(int cmd, struct rtentry *rt, struct sockaddr *sa);
 
-loattach()
+static void
+loattach(void)
 {
 	register struct ifnet *ifp = &loif;
 
@@ -90,7 +96,7 @@ loattach()
 	if_attach(ifp);
 }
 
-int
+static int
 looutput(struct ifnet *ifp, struct mbuf *m, struct sockaddr *dst,
 	struct rtentry *rt)
 {
@@ -155,10 +161,8 @@ x = m->m_pkthdr.time;
 	return (0);
 }
 
-/* ARGSUSED */
-lortrequest(cmd, rt, sa)
-struct rtentry *rt;
-struct sockaddr *sa;
+static int
+lortrequest(int cmd, struct rtentry *rt, struct sockaddr *sa)
 {
 	if (rt)
 		rt->rt_rmx.rmx_mtu = LOMTU;
@@ -167,13 +171,10 @@ struct sockaddr *sa;
 /*
  * Process an ioctl request.
  */
-/* ARGSUSED */
-loioctl(ifp, cmd, data)
-	register struct ifnet *ifp;
-	int cmd;
-	caddr_t data;
+static int
+loioctl(struct ifnet *ifp, int cmd, caddr_t data)
 {
-	register struct ifaddr *ifa;
+	struct ifaddr *ifa;
 	int error = 0;
 
 	switch (cmd) {
@@ -195,7 +196,9 @@ loioctl(ifp, cmd, data)
 }
 
 LOCALNET_MODCONFIG() {
+
 	loattach();
-	route_looutput = looutput;
+	esym_bind(looutput);
+	esym_bind(loif);
 }
 

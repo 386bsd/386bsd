@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: config.c,v 1.1 94/10/20 00:02:46 bill Exp $
+ * $Id: config.c,v 1.1 94/10/20 00:02:46 bill Exp Locker: bill $
  * Software module configuration.
  */
 
@@ -324,6 +324,28 @@ modscaninit(modtype_t modtype) {
 	int *sigp;
 
 	for (sigp = &etext; sigp < &edata; sigp++)
+
+		/* if valid signature ... */
+		if (*sigp == MODULE_SIGNATURE) {
+			struct modconfig *mcp = (struct modconfig *)sigp;
+			
+			/* ... and a valid type ... */
+			if (MODT_ISVALID(mcp->mod_type)) {
+
+				/* either to the supplied arg, or to all */
+				if ((mcp->mod_type == modtype
+				    || modtype == __MODT_ALL__)
+				    && mcp->mod_init)
+					(mcp->mod_init)();
+			}
+		}
+}
+
+void
+smodscaninit(modtype_t modtype, int *sstart, int *send) {
+	int *sigp;
+
+	for (sigp = sstart; sigp < send; sigp++)
 
 		/* if valid signature ... */
 		if (*sigp == MODULE_SIGNATURE) {

@@ -207,7 +207,10 @@ struct bpf_insn {
 #define BPF_JUMP(code, k, jt, jf) { (u_short)(code), jt, jf, k }
 
 #ifdef KERNEL
-extern u_int bpf_filter();
+extern u_int
+bpf_filter(struct bpf_insn *pc, char *p, u_int wirelen, u_int buflen);
+
+/* private bpf functions, accessed via external symbol stub when loaded */
 static void bpfattach(caddr_t *driverp, struct ifnet *ifp, u_int dlt, u_int hdrlen);
 static void bpf_mtap(caddr_t arg, struct mbuf *m);
 static void bpf_tap(caddr_t arg, u_char *pkt, u_int pktlen);
@@ -246,7 +249,7 @@ bpf_tap(caddr_t arg, u_char *pkt, u_int pktlen) {
 	(*f)(arg, pkt, pktlen);
 }
 #endif /* _BPF_PROTOTYPES */
-#endif
+#endif /* KERNEL */
 
 /*
  * Number of scratch memory words (for BPF_LD|BPF_MEM and BPF_ST).

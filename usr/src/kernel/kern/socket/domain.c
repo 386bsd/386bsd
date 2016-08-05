@@ -2,7 +2,7 @@
  * Copyright (c) 1982, 1986 Regents of the University of California.
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
+ * +Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: domain.c,v 1.1 94/10/19 23:49:50 bill Exp $
+ * $Id: domain.c,v 1.1 94/10/19 23:49:50 bill Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -41,46 +41,70 @@
 #include "domain.h"
 #include "mbuf.h"
 #include "kernel.h"	/* hz */
+#include "netisr.h"
 
+struct domain *domains;		/* head of list of domains */
+
+/* add a domain module into the domains list */
 void
-adddomain(struct domain *dp) {
+adddomain(struct domain *dp)
+{
+	struct protosw *pr;
 
 	dp->dom_next = domains;
 	domains = dp;
-}
 
-domaininit()
-{
-	register struct domain *dp;
-	register struct protosw *pr;
+	/* initialize the domain, and any protocol within the domain */
+	if (dp->dom_init)
+		(*dp->dom_init)();
 
-	for (dp = domains; dp; dp = dp->dom_next) {
-		if (dp->dom_init)
-			(*dp->dom_init)();
-		for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
-			if (pr->pr_init)
-				(*pr->pr_init)();
-	}
+	for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
+		if (pr->pr_init)
+			(*pr->pr_init)();
 
-if (max_linkhdr < 16)		/* XXX */
-max_linkhdr = 16;
+	if (max_linkhdr < 16)		/* XXX */
+		max_linkhdr = 16;
 	max_hdr = max_linkhdr + max_protohdr;
 	max_datalen = MHLEN - max_hdr;
+}
+
+/* XXX catch bogus software interrupts */
+defaultnetintr() {
+
+	printf("default net interrupt\n");
+}
+
+static void pffasttimo(void), pfslowtimo(void);
+net_intr_t netintr[32];
+
+/* initialize domains */
+void
+domaininit(void)
+{
+	int i;
+
+	/* XXX set default network software interrupts */
+	for (i = 0; i < NBBY*sizeof(netisr); i++)
+		netintr[i] = (void (*)(void)) defaultnetintr;
+
 	pffasttimo();
 	pfslowtimo();
 }
 
+/* locate a protocol in a family by type alone */
 struct protosw *
-pffindtype(family, type)
-	int family, type;
+pffindtype(int family, int type)
 {
-	register struct domain *dp;
-	register struct protosw *pr;
+	struct domain *dp;
+	struct protosw *pr;
 
+	/* walk domain list to find protocol family */
 	for (dp = domains; dp; dp = dp->dom_next)
 		if (dp->dom_family == family)
 			goto found;
 	return (0);
+
+	/* examine all protocols to find first type matching */
 found:
 	for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
 		if (pr->pr_type && pr->pr_type == type)
@@ -88,20 +112,24 @@ found:
 	return (0);
 }
 
+/* locate a protocol in a family by protocol number and type */
 struct protosw *
-pffindproto(family, protocol, type)
-	int family, protocol, type;
+pffindproto(int family, int protocol, int type)
 {
-	register struct domain *dp;
-	register struct protosw *pr;
-	struct protosw *maybe = 0;
+	struct domain *dp;
+	struct protosw *pr, *maybe = 0;
 
+	/* no unspecified */
 	if (family == 0)
 		return (0);
+
+	/* walk domain list to find protocol family */
 	for (dp = domains; dp; dp = dp->dom_next)
 		if (dp->dom_family == family)
 			goto found;
 	return (0);
+
+	/* locate protocol in domain */
 found:
 	for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++) {
 		if ((pr->pr_protocol == protocol) && (pr->pr_type == type))
@@ -114,39 +142,48 @@ found:
 	return (maybe);
 }
 
-pfctlinput(cmd, sa)
-	int cmd;
-	struct sockaddr *sa;
+/* broadcast a control command to all protocols in the sockets family */
+void
+pfctlinput(int cmd, struct sockaddr *sa)
 {
-	register struct domain *dp;
-	register struct protosw *pr;
+	struct domain *dp;
+	struct protosw *pr;
 
+	/* for all protocols in all domains, pass the message */
 	for (dp = domains; dp; dp = dp->dom_next)
 		for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
 			if (pr->pr_ctlinput)
 				(*pr->pr_ctlinput)(cmd, sa, (caddr_t) 0);
 }
 
-pfslowtimo()
+/* poke all protocols slow timeout functions */
+static void
+pfslowtimo(void)
 {
-	register struct domain *dp;
-	register struct protosw *pr;
+	struct domain *dp;
+	struct protosw *pr;
 
+	/* for all protocols in all domains, pass the message */
 	for (dp = domains; dp; dp = dp->dom_next)
 		for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
 			if (pr->pr_slowtimo)
 				(*pr->pr_slowtimo)();
+
 	timeout(pfslowtimo, (caddr_t)0, hz/2);
 }
 
-pffasttimo()
+/* poke all protocols fast timeout functions */
+static void
+pffasttimo(void)
 {
-	register struct domain *dp;
-	register struct protosw *pr;
+	struct domain *dp;
+	struct protosw *pr;
 
+	/* for all protocols in all domains, pass the message */
 	for (dp = domains; dp; dp = dp->dom_next)
 		for (pr = dp->dom_protosw; pr < dp->dom_protoswNPROTOSW; pr++)
 			if (pr->pr_fasttimo)
 				(*pr->pr_fasttimo)();
+
 	timeout(pffasttimo, (caddr_t)0, hz/5);
 }

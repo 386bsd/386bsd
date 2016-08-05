@@ -30,10 +30,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: tcp_debug.c,v 1.1 94/10/20 10:53:37 root Exp $
+ *	$Id: tcp_debug.c,v 1.1 94/10/20 10:53:37 root Exp Locker: bill $
  */
 
-#ifdef TCPDEBUG
+#if	defined(TCPDEBUG) && TCPDEBUG > 1
 /* load symbolic names */
 #define PRUREQUESTS
 #define TCPSTATES
@@ -50,8 +50,8 @@
 #include "sys/errno.h"
 #include "prototypes.h"
 
-#include "route.h"
 #include "if.h"
+#include "route.h"
 
 #include "in.h"
 #include "in_systm.h"
@@ -66,9 +66,10 @@
 #include "tcpip.h"
 #include "tcp_debug.h"
 
-#ifdef TCPDEBUG
+#if	defined(TCPDEBUG) && TCPDEBUG > 1
 int	tcpconsdebug = 0;
 #endif
+#if	defined(TCPDEBUG)
 /*
  * Tcp debug routines
  */
@@ -97,7 +98,7 @@ tcp_trace(act, ostate, tp, ti, req)
 	else
 		(void) memset((caddr_t)&td->td_ti, 0, sizeof (*ti));
 	td->td_req = req;
-#ifdef TCPDEBUG
+#if	defined(TCPDEBUG) && TCPDEBUG > 1
 	if (tcpconsdebug == 0)
 		return;
 	if (tp)
@@ -157,3 +158,4 @@ tcp_trace(act, ostate, tp, ti, req)
 	    tp->snd_wl1, tp->snd_wl2, tp->snd_wnd);
 #endif /* TCPDEBUG */
 }
+#endif

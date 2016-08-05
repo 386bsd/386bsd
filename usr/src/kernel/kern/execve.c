@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: execve.c,v 1.1 94/10/20 00:02:51 bill Exp $
+ * $Id: execve.c,v 1.1 94/10/20 00:02:51 bill Exp Locker: bill $
  *
  * This procedure implements a minimal program execution facility for
  * 386BSD. It interfaces to the BSD kernel as the execve() system call.
@@ -126,7 +126,7 @@ execve(p, uap, retval)
 		return (rv);
 
 	/* is this a valid vnode representing a possibly executable file ? */
-	rv = ENOEXEC;
+	rv = EACCES;
 	if (ndp->ni_vp->v_type != VREG)
 		goto exec_fail;
 
@@ -145,10 +145,8 @@ execve(p, uap, retval)
 	}
 
 	/* does the filesystem it belongs to allow files to be executed? */
-	if ((ndp->ni_vp->v_mount->mnt_flag & MNT_NOEXEC) != 0) {
-		rv = EACCES;
+	if ((ndp->ni_vp->v_mount->mnt_flag & MNT_NOEXEC) != 0)
 		goto exec_fail;
-	}
 
 	/* does it have any attributes? */
 	rv = VOP_GETATTR(ndp->ni_vp, &attr, p->p_ucred, p);
@@ -156,10 +154,8 @@ execve(p, uap, retval)
 		goto exec_fail;
 
 	/* is it an executable file? */
-	if ((attr.va_mode & VANYEXECMASK) == 0) {
-		rv = EACCES;
+	if ((attr.va_mode & VANYEXECMASK) == 0)
 		goto exec_fail;
-	}
 
 	/*
 	 * Step 2. Does the file contain a format we can

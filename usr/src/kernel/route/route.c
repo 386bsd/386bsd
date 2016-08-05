@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: route.c,v 1.1 94/10/20 10:55:41 root Exp $
+ * $Id: route.c,v 1.1 94/10/20 10:55:41 root Exp Locker: bill $
  */
 #include "sys/param.h"
 #include "sys/file.h"
@@ -44,10 +44,13 @@
 #include "protosw.h"
 #include "modconfig.h"
 #include "prototypes.h"
+#include "esym.h"
 
 #include "if.h"
 #include "af.h"
+#define	_ROUTE_PROTOTYPES
 #include "route.h"
+#undef	_ROUTE_PROTOTYPES
 #include "raw_cb.h"
 
 #include "in.h"
@@ -60,20 +63,21 @@
 
 #define	SA(p) ((struct sockaddr *)(p))
 
-static int rt_maskedcopy(struct sockaddr *src, struct sockaddr *dst,
+int rt_maskedcopy(struct sockaddr *src, struct sockaddr *dst,
 	struct sockaddr *netmask);
 
 int	rttrash;		/* routes not in table but not freed */
 struct	sockaddr wildcard;	/* zero valued cookie for wildcard searches */
 int	rthashsize = RTHASHSIZ;	/* for netstat, etc. */
+struct rtstat rtstat;
 
 static int rtinits_done = 0;
 struct radix_node_head *ns_rnhead, *in_rnhead;
 struct radix_node *rn_match(), *rn_delete(), *rn_addroute();
 
-extern void
+/*extern void
 rt_missmsg(int type, struct sockaddr *dst, struct sockaddr *gate,
-	struct sockaddr *mask, struct sockaddr *src, int flags, int error);
+	struct sockaddr *mask, struct sockaddr *src, int flags, int error) asm("rtmissmsg");*/
 
 
 rtinitheads()
@@ -86,12 +90,12 @@ rtinitheads()
 		rtinits_done = 1;
 }
 
-/* static */ struct rtentry *rtalloc1(struct sockaddr *dst, int report);
+struct rtentry *rtalloc1(struct sockaddr *dst, int report);
 
 /*
  * Packet routing routines.
  */
-static void
+void
 rtalloc(struct route *ro)
 {
 	if (ro->ro_rt && ro->ro_rt->rt_ifp && (ro->ro_rt->rt_flags & RTF_UP))
@@ -99,7 +103,7 @@ rtalloc(struct route *ro)
 	ro->ro_rt = rtalloc1(&ro->ro_dst, 0);
 }
 
-/* static */ struct rtentry *
+struct rtentry *
 rtalloc1(struct sockaddr *dst, int report)
 {
 	register struct radix_node_head *rnh;
@@ -125,13 +129,13 @@ rtalloc1(struct sockaddr *dst, int report)
 	} else {
 		rtstat.rts_unreach++;
 	miss:	if (report)
-			rt_missmsg(msgtype, dst, SA(0), SA(0), SA(0), 0, err);
+			rtmissmsg(msgtype, dst, SA(0), SA(0), SA(0), 0, err);
 	}
 	splx(s);
 	return (newrt);
 }
 
-/* static */ void
+void
 rtfree(struct rtentry *rt)
 {
 	struct ifaddr *ifa;
@@ -157,7 +161,7 @@ rtfree(struct rtentry *rt)
  * N.B.: must be called at splnet
  *
  */
-static void
+void
 rtredirect(struct sockaddr *dst, struct sockaddr *gateway,
     struct sockaddr *netmask, int flags, struct sockaddr *src,
     struct rtentry **rtp)
@@ -235,13 +239,13 @@ done:
 		rtstat.rts_badredirect++;
 	else
 		(stat && (*stat)++);
-	rt_missmsg(RTM_REDIRECT, dst, gateway, netmask, src, flags, error);
+	rtmissmsg(RTM_REDIRECT, dst, gateway, netmask, src, flags, error);
 }
 
 /*
 * Routing table ioctl interface.
 */
-static int
+int
 rtioctl(int req, caddr_t data, struct proc *p)
 {
 #ifndef COMPAT_43
@@ -280,7 +284,7 @@ rtioctl(int req, caddr_t data, struct proc *p)
 #ifdef INET
 		case AF_INET:
 			{
-				extern struct sockaddr_in icmpmask;
+				struct sockaddr_in icmpmask;
 				struct sockaddr_in *dst_in = 
 					(struct sockaddr_in *)&entry->rt_dst;
 
@@ -299,7 +303,7 @@ rtioctl(int req, caddr_t data, struct proc *p)
 		}
 	error =  rtrequest(req, &(entry->rt_dst), &(entry->rt_gateway), netmask,
 				entry->rt_flags, (struct rtentry **)0);
-	rt_missmsg((req == RTM_ADD ? RTM_OLDADD : RTM_OLDDEL),
+	rtmissmsg((req == RTM_ADD ? RTM_OLDADD : RTM_OLDDEL),
 		   &(entry->rt_dst), &(entry->rt_gateway),
 		   netmask, SA(0), entry->rt_flags, error);
 	return (error);
@@ -354,7 +358,7 @@ ifa_ifwithroute(int flags, struct sockaddr *dst, struct sockaddr *gateway)
 
 #define ROUNDUP(a) (a>0 ? (1 + (((a) - 1) | (sizeof(long) - 1))) : sizeof(long))
 
-/* static */ int
+int
 rtrequest(int req, struct sockaddr *dst, struct sockaddr *gateway,
    struct sockaddr *netmask, int flags, struct rtentry **ret_nrt)
 {
@@ -447,7 +451,7 @@ bad:
 	return (error);
 }
 
-static int
+int
 rt_maskedcopy(struct sockaddr *src, struct sockaddr *dst,
 	struct sockaddr *netmask)
 {
@@ -470,7 +474,7 @@ rt_maskedcopy(struct sockaddr *src, struct sockaddr *dst,
  * Set up a routing table entry, normally
  * for an interface.
  */
-static int
+int
 rtinit(struct ifaddr *ifa, int cmd, int flags)
 {
 	struct rtentry *rt;
@@ -514,13 +518,19 @@ rtinit(struct ifaddr *ifa, int cmd, int flags)
 	return (error);
 }
 
-static struct route_ops router = {
+/*static struct route_ops router = {
 	"radix",
 	rtinit, rtalloc, rtfree,
 	rtrequest, rtredirect, rt_missmsg, rtioctl
-};
+}; */
 
 KERNEL_MODCONFIG() {
 
-	_router_ = router;
+	/*_router_ = router;*/
+	esym_bind(rtinit);
+	esym_bind(rtalloc);
+	esym_bind(rtfree);
+	esym_bind(rtredirect);
+	esym_bind(rtmissmsg);
+	esym_bind(rtioctl);
 }

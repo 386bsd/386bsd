@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id$
+ *	$Id: malloc.h,v 1.1 95/02/20 19:15:00 bill Exp Locker: bill $
  */
 
 #ifndef _MALLOC_H_
@@ -245,6 +245,8 @@ struct kmembuckets {
 		(space) = (cast)kbp->kb_next; \
 		kbp->kb_next = *(caddr_t *)(space); \
 	} \
+	if ((flags) & M_ZERO_T) \
+		memset((void)(space), 0, (size)); \
 	splx(s); \
 }
 
@@ -263,11 +265,19 @@ struct kmembuckets {
 }
 #endif /* do not collect statistics */
 
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
 extern struct kmemstats kmemstats[];
 extern struct kmemusage *kmemusage;
 extern char *kmembase;
 extern struct kmembuckets bucket[];
-extern void *malloc __P((unsigned long size, int type, int flags));
-extern void free __P((void *addr, int type));
+__ISYM__(void *, malloc, (unsigned long size, int type, int flags))
+__ISYM__(void, free, (void *addr, int type))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif /* KERNEL */
 #endif /* !_MALLOC_H_ */

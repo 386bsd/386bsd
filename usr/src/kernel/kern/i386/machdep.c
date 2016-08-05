@@ -260,8 +260,8 @@ dumpsys()
 		return;
 
 	/* XXX don't dump in case of running off cdrom */
-	if ((minor(bootdev)&07) != 3)
-		return;
+	/* if ((minor(bootdev)&07) != 3)
+		return; */
 
 	/* dump to a non-swap partition? */
 	if ((minor(dumpdev)&07) != 1)
@@ -732,12 +732,14 @@ init386(first) {
 		if (pagesinbase > pagesinext)
 			maxmem = 640/4;
 		else {
-			maxmem = pagesinext + 0x100000/NBPG;
+			if (maxmem < pagesinext + 0x100000/NBPG)
+				maxmem = pagesinext + 0x100000/NBPG;
 			if (first < 0x100000)
 				first = 0x100000; /* skip hole */
 		}
 	} else
 		maxmem = biosbasemem/4;
+
 
 	maxmem -=  1;	/* highest page of usable memory */
 	physmem = maxmem;	/* number of pages of physmem addr space */

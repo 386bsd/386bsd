@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radix.c,v 1.1 94/10/20 10:55:39 root Exp $
+ * $Id: radix.c,v 1.1 94/10/20 10:55:39 root Exp Locker: bill $
  */
 
 /*

@@ -1,7 +1,7 @@
 /*
  * Adaptec 1542 SCSI driver for 386bsd
  *
- * $Id$
+ * $Id: as.c,v 1.1 95/01/21 23:00:53 bill Exp Locker: bill $
  *
  * Pace Willisson     pace@blitz.com    March 28, 1992
  *
@@ -27,12 +27,12 @@
 
 /* manufacturer default configuration: */
 static char *as_config =
-	"as 4 13 1 (0x330).	# Adaptec 1542 SCSI, $Revision$";
+	"as 4 13 1 (0x330).	# Adaptec 1542 SCSI, $Revision: 1.1 $";
 #define	NAS	1
 
 /* maximum configuration, regardless of conflicts: 
 	"as 2 13 4 (0x330) (0x334) (0x230) (0x234) (0x130) (0x134).
-	# Adaptec 1542 SCSI, $Revision$" */
+	# Adaptec 1542 SCSI, $Revision: 1.1 $" */
 
 #include "sys/param.h"
 #include "sys/file.h"
@@ -132,11 +132,11 @@ static int as_port[NAS] = {0};
 /* default ports for 1542 controller */
 static int def_ports[] = { 0x330, 0x334, 0x230, 0x234, 0x130, 0x134 };
 
-static asintr (int ctl /* dev_t dev*/);
+static void asintr (int ctl /* dev_t dev*/);
 static  asintr1 (struct asinfo *as, int val);
-static int	asprobe(struct isa_device *), asattach(struct isa_device *),
-	asintr(int /*dev_t*/);
-static  asstart (struct asinfo *as);
+static int	asprobe(struct isa_device *);
+static void	asattach(struct isa_device *);
+static  void asstart (struct asinfo *as);
 static  asdone (struct asinfo *as, int restart);
 static int as_get_byte (int port);
 static int as_put_byte (int port, int val);
@@ -236,7 +236,7 @@ printf("\nno results %x\n", c);
 	}
 
 DELAY (100000);
-printf("intr %x sts %x ", inb(port+ AS_INTR), inb(port+AS_STATUS));
+/*printf("intr %x sts %x ", inb(port+ AS_INTR), inb(port+AS_STATUS));*/
 	/* if startscsi or enable mailbox out interrupt, don't wait for hacc */
 	if (c != 2 && c != 5 /* && c != 0 */) {
 		for (i = 10000; i > 0; i--) {
@@ -316,7 +316,7 @@ asprobe (struct isa_device *dvp)
 	asctlcmd_mailboxinit[2] = physaddr >> 16;
 	asctlcmd_mailboxinit[3] = physaddr >> 8;
 	asctlcmd_mailboxinit[4] = physaddr;
-printf("intr %x sts %x ", inb(ap+ AS_INTR), inb(ap+AS_STATUS));
+/*printf("intr %x sts %x ", inb(ap+ AS_INTR), inb(ap+AS_STATUS));*/
 	if (asctlcmd(ctl, asctlcmd_nop, sizeof(asctlcmd_nop), 0) == 0 &&
 	    asctlcmd(ctl, asctlcmd_mailboxinit, sizeof(asctlcmd_mailboxinit), 0) == 0) {
 
@@ -336,7 +336,8 @@ fail:
 	return (0);
 }
 
-static asattach (struct isa_device *dvp)
+static void
+asattach (struct isa_device *dvp)
 {
 	int i;
 	unsigned int physaddr;
@@ -416,7 +417,7 @@ asopen(dev_t dev, int flag, int fmt, struct proc *pr)
 	int disksize, ctl;
 
 	ctl = dev_ctlr(dev);
-printf("as %x: ctl %d tgt %d ", dev, ctl, dev_target(dev));
+/*printf("as %x: ctl %d tgt %d ", dev, ctl, dev_target(dev));*/
 	if (ctl > NAS || as_port[ctl] == 0 || dev_target (dev) >= NTARGETS)
 		return (ENXIO);
 
@@ -431,7 +432,7 @@ printf("as %x: ctl %d tgt %d ", dev, ctl, dev_target(dev));
 		if (as->tape)
 			return (EBUSY);
 
-printf("as part %d ", dev_part(dev));
+/*printf("as part %d ", dev_part(dev));*/
 		if (as->have_label == 0 && dev_part (dev) != 3)
 			return (ENXIO);
 		
@@ -646,8 +647,8 @@ if(asverbose)
 
 		
 		/* read label using "d" partition */
-		if ((p = readdisklabel (
-			makeasdev (major (dev), dev_ctlr (dev), dev_target (dev), 3),
+		if ((p = readdisklabel (dev
+			/* makeasdev (major (dev), dev_ctlr (dev), dev_target (dev), 3)*/ ,
 			asstrategy, &as->label, as->dospart, 0, 0)) == NULL){
 			as->have_label = 1;
 		} else {
@@ -809,6 +810,12 @@ asioctl(dev_t dev, int cmd, caddr_t addr, int flag, struct proc *p)
 		as->have_label = 1;
                 break;
 
+        case DIOCGPART:
+                ((struct partinfo *)addr)->disklab = &as->label;
+                ((struct partinfo *)addr)->part =
+                    &as->label.d_partitions[dev_part(dev)];
+                break;
+
         case DIOCWLABEL:
                 if ((flag & FWRITE) == 0) {
                         error = EBADF;
@@ -941,7 +948,7 @@ struct asinfo *as;
 	asstart (as);
 	splx (s);
 }
-static 
+static void
 asstart (as)
 struct asinfo *as;
 {
@@ -1084,8 +1091,8 @@ struct asinfo *as;
 	}
 	splx (s);
 }
-static 
-asintr (int ctl /* dev_t dev*/)
+static void
+asintr (int ctl)
 {
 	int didwork;
 	int i, j;

@@ -30,12 +30,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)vnode.h	7.39 (Berkeley) 6/27/91
+ *	$Id$
  */
-
-/*#ifndef KERNEL
-#include <machine/endian.h>
-#endif*/
 
 /*
  * The vnode is the focus of all file activity in UNIX.
@@ -289,47 +285,58 @@ struct vnodeops {
 /*
  * public vnode manipulation functions
  */
-int 	vn_open __P((struct nameidata *ndp, struct proc *p, int fmode,
-	    int cmode));
-int 	vn_close __P((struct vnode *vp, int flags, struct ucred *cred,
-	    struct proc *p));
-int 	vn_rdwr __P((enum uio_rw rw, struct vnode *vp, caddr_t base,
-	    int len, off_t offset, enum uio_seg segflg, int ioflg,
-	    struct ucred *cred, int *aresid, struct proc *p));
-int	vn_read __P((struct file *fp, struct uio *uio, struct ucred *cred));
-int	vn_write __P((struct file *fp, struct uio *uio, struct ucred *cred));
-int	vn_ioctl __P((struct file *fp, int com, caddr_t data, struct proc *p));
-int	vn_select __P((struct file *fp, int which, struct proc *p));
-int 	vn_closefile __P((struct file *fp, struct proc *p));
 int 	bdevvp __P((dev_t dev, struct vnode **vpp));
-void 	vattr_null __P((struct vattr *vap));
 int 	vcount __P((struct vnode *vp));	/* total references to a device */
-int 	vget __P((struct vnode *vp));	/* get first reference to a vnode */
-void 	vref __P((struct vnode *vp));	/* increase reference to a vnode */
-void 	vput __P((struct vnode *vp));	/* unlock and release vnode */
-void 	vrele __P((struct vnode *vp));	/* release vnode */
-void 	vgone __P((struct vnode *vp));	/* completely recycle vnode */
 void 	vgoneall __P((struct vnode *vp));/* recycle vnode and all its aliases */
 void vfsinit(void);
-void vflushbuf(struct vnode *vp, int flags, struct buf *bp);
 void vwakeup(struct buf *bp);
-int vinvalbuf(struct vnode *vp, int save);
 void bgetvp(struct vnode *vp, struct buf *bp);
 void brelvp(struct buf *bp);
 void reassignbuf(struct buf *bp, struct vnode *newvp);
-void vhold(struct vnode *vp);
-void holdrele(struct vnode *vp);
 int vfinddev(dev_t dev, enum vtype type, struct vnode **vpp);
 void vclean(struct vnode *vp, int flags);
 	/* check for special device aliases */
 struct 	vnode *checkalias __P((struct vnode *vp, dev_t nvp_rdev,
 	    struct mount *mp));
-int 	getnewvnode __P((enum vtagtype tag, struct mount *mp,
-	    struct vnodeops *vops, struct vnode **vpp));
 
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct vattr, va_null,) /* predefined null vattr structure */
+__ISYM__(long, desiredvnodes,)	/* number of vnodes desired */
+__ISYM__(struct vnode *, rootvp,)	/* root vnode */
+#if defined(DEBUG) || defined(DIAGNOSTIC)
+__ISYM__(int, prtactive,)	/* diagnostic flag */
+#endif
+
+/* functions used in modules */
+__ISYM__(int, vget, (struct vnode *vp))	/* get first reference to a vnode */
+__ISYM__(void, vput, (struct vnode *vp)) /* unlock and release vnode */
+__ISYM__(void, vrele, (struct vnode *vp))	/* release vnode */
+__ISYM__(void, vflushbuf, (struct vnode *vp, int flags, struct buf *bp))
+__ISYM__(int, vinvalbuf, (struct vnode *vp, int save))
+__ISYM__(int, getnewvnode, (enum vtagtype tag, struct mount *mp, struct vnodeops *vops, struct vnode **vpp))
+__ISYM__(int, vt_reassign, (struct vnode *, dev_t, struct vnode **))
+__ISYM__(void, vgone, (struct vnode *vp))	/* completely recycle vnode */
+__ISYM__(int, vn_open, (struct nameidata *ndp, struct proc *p, int fmode, int cmode))
+__ISYM__(int, vn_close, (struct vnode *vp, int flags, struct ucred *cred, struct proc *p))
+__ISYM__(int, vn_rdwr, (enum uio_rw rw, struct vnode *vp, caddr_t base, int len, off_t offset, enum uio_seg segflg, int ioflg, struct ucred *cred, int *aresid, struct proc *p))
+__ISYM__(void, vattr_null, (struct vattr *vap))
+__ISYM__(void, vhold, (struct vnode *vp))
+__ISYM__(void, vref, (struct vnode *vp))	/* increase reference to a vnode */
+__ISYM__(void, holdrele, (struct vnode *vp))
+__ISYM__(void, vprint, (char *string, struct vnode *vp))
+__ISYM__(int, cache_purge, (struct vnode *vp))
 /* XXX temp vm interface */
-int vnode_pager_uncache(struct vnode *vp);
-void vnode_pager_setsize(struct vnode *vp, u_long nsize);
+__ISYM__(int, vnode_pager_uncache, (struct vnode *vp))
+__ISYM__(void, vnode_pager_setsize, (struct vnode *vp, u_long nsize))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
+
 
 /*
  * Flags to various vnode functions.
@@ -356,6 +363,4 @@ void vnode_pager_setsize(struct vnode *vp, u_long nsize);
  * Global vnode data.
  */
 extern	struct vnode *rootdir;		/* root (i.e. "/") vnode */
-extern	long desiredvnodes;		/* number of vnodes desired */
-extern	struct vattr va_null;		/* predefined null vattr structure */
 #endif

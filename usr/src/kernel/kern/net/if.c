@@ -34,7 +34,7 @@
  */
 
 #include "sys/param.h"
-#include "sys/file.h"
+/*#include "sys/file.h"*/
 #include "sys/ioctl.h"
 #include "sys/errno.h"
 #include "mbuf.h"
@@ -55,6 +55,7 @@
 /*#include "ether.h"*/
 
 int	ifqmaxlen = IFQ_MAXLEN;
+struct	ifnet *ifnet;	/* head of list of interfaces */
 
 /*
  * Network interface utility routines.
@@ -65,11 +66,13 @@ int	ifqmaxlen = IFQ_MAXLEN;
 
 ifinit()
 {
+#ifdef nope
 	register struct ifnet *ifp;
 
 	for (ifp = ifnet; ifp; ifp = ifp->if_next)
 		if (ifp->if_snd.ifq_maxlen == 0)
 			ifp->if_snd.ifq_maxlen = ifqmaxlen;
+#endif
 	if_slowtimo();
 }
 
@@ -112,6 +115,8 @@ if_attach(ifp)
 		p = &((*p)->if_next);
 	*p = ifp;
 	ifp->if_index = ++if_index;
+	if (ifp->if_snd.ifq_maxlen == 0)
+		ifp->if_snd.ifq_maxlen = ifqmaxlen;
 	if (ifnet_addrs == 0 || if_index >= if_indexlim) {
 		unsigned n = (if_indexlim <<= 1) * sizeof(ifa);
 		struct ifaddr **q = (struct ifaddr **)
@@ -485,6 +490,23 @@ ifunit(name)
 	return (ifp);
 }
 
+#ifndef _ARP_PROTOTYPES
+/* private arp functions, accessed via external symbol stub when loaded */
+static int arpioctl(int cmd, caddr_t data);
+
+/* inline external symbol table function stubs */
+extern inline int
+arpioctl(int cmd, caddr_t data) {
+	int (*f)(int, caddr_t);
+
+	(const void *) f = esym_fetch(arpioctl);
+	if (f == 0)
+		return(0);
+	return ((*f)(cmd, data));
+}
+#else
+extern int arpioctl(int cmd, caddr_t data);
+#endif /* _ARP_PROTOTYPES */
 /*
  * Interface ioctls.
  */

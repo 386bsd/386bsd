@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)mbuf.h	7.14 (Berkeley) 12/5/90
+ *	$Id$
  */
 
 #ifndef M_WAITOK
@@ -171,6 +171,7 @@ struct mbuf {
 		(m)->m_nextpkt = (struct mbuf *)NULL; \
 		(m)->m_data = (m)->m_dat; \
 		(m)->m_flags = 0; \
+		/* m_transient_reserve(MSIZE); */ \
 	} else \
 		(m) = m_retry((how), (type)); \
 }
@@ -186,6 +187,7 @@ struct mbuf {
 		(m)->m_data = (m)->m_pktdat; \
 		(m)->m_flags = M_PKTHDR; \
 		(m)->m_pkthdr.time = getticks(); \
+		/* m_transient_reserve(MSIZE); */ \
 	} else \
 		(m) = m_retryhdrt((how), (type)); \
 }
@@ -199,6 +201,7 @@ struct mbuf {
 		(m)->m_data = (m)->m_pktdat; \
 		(m)->m_flags = M_PKTHDR; \
 		(m)->m_pkthdr.time = 0; \
+		/* m_transient_reserve(MSIZE); */ \
 	} else \
 		(m) = m_retryhdr((how), (type)); \
 }
@@ -212,6 +215,7 @@ struct mbuf {
 		(m)->m_nextpkt = (struct mbuf *)NULL; \
 		(m)->m_data = (m)->m_pktdat; \
 		(m)->m_flags = M_PKTHDR; \
+		/* m_transient_reserve(MSIZE); */ \
 	} else \
 		(m) = m_retryhdr((how), (type)); \
 }
@@ -242,6 +246,7 @@ union mcluster {
 		++mclrefcnt[mtocl(p)]; \
 		mbstat.m_clfree--; \
 		mclfree = ((union mcluster *)(p))->mcl_next; \
+		/* m_transient_reserve(MCLBYTES); */ \
 	  } \
 	  splx(ms); \
 	}
@@ -261,6 +266,7 @@ union mcluster {
 		((union mcluster *)(p))->mcl_next = mclfree; \
 		mclfree = (union mcluster *)(p); \
 		mbstat.m_clfree++; \
+		/* m_transient_release(MCLBYTES); */ \
 	  } \
 	  splx(ms); \
 	}
@@ -281,6 +287,7 @@ union mcluster {
 			MCLFREE((m)->m_ext.ext_buf); \
 	  } \
 	  (n) = (m)->m_next; \
+	  /* m_transient_release(MSIZE); */ \
 	  FREE((m), mbtypes[(m)->m_type]); \
 	}
 #else /* notyet */
@@ -294,6 +301,7 @@ union mcluster {
 		MCLFREE((m)->m_ext.ext_buf); \
 	  } \
 	  (nn) = (m)->m_next; \
+	  /* m_transient_release(MSIZE); */ \
 	  FREE((m), mbtypes[(m)->m_type]); \
 	}
 #else
@@ -303,6 +311,7 @@ union mcluster {
 		MCLFREE((m)->m_ext.ext_buf); \
 	  } \
 	  (nn) = (m)->m_next; \
+	  /* m_transient_release(MSIZE); */ \
 	  FREE((m), mbtypes[(m)->m_type]); \
 	}
 #endif
@@ -393,35 +402,77 @@ struct mbstat {
 };
 
 #ifdef	KERNEL
-extern	struct mbuf *mbutl;		/* virtual address of mclusters */
-extern	char *mclrefcnt;		/* cluster reference counts */
-extern struct mbstat mbstat;
+
+/* global variables used in core kernel */
 extern int nmbclusters;
-extern union mcluster *mclfree;
+#ifdef nope
 extern int max_linkhdr;			/* largest link-level header */
 extern int max_protohdr;		/* largest protocol header */
 extern int max_hdr;			/* largest link+protocol header */
 extern int max_datalen;			/* MHLEN - max_hdr */
+#endif
+
+/* space */
+/* unsigned int mbfspace_free, mbfspace_reserve;
+unsigned int mbspace_free, mbspace_reserve, mbspace_transient; */
+
+/* functions used in core kernel */
 #ifdef PKT_TRACE
 struct	mbuf *m_retryhdrt();
 #endif
-int	m_adj(struct mbuf *mp, int req_len);
-int	m_clalloc (int, int);
-struct	mbuf *m_copym(struct mbuf *, int, int, int);
-struct	mbuf *m_free(struct mbuf *);
+/* struct	mbuf *m_copym(struct mbuf *, int, int, int);
+struct mbuf *m_free(struct mbuf *);
 struct	mbuf *m_get(int, int);
 struct	mbuf *m_getclr(int, int);
 struct	mbuf *m_gethdr(int, int);
 struct	mbuf *m_prepend(struct mbuf *, int, int);
 struct	mbuf *m_pullup(struct mbuf *, int);
-struct	mbuf *m_retry(int, int);
-struct	mbuf *m_retryhdr(int, int);
-void	m_cat(struct mbuf *m, struct mbuf *n);
-void	m_copydata(struct mbuf *m, int off, int len, caddr_t cp);
-void	m_freem(struct mbuf *);
-void	m_reclaim(void);
+void	m_cat(struct mbuf *m, struct mbuf *n); */
 void	mbinit(void);
-extern	int mbtypes[];			/* XXX */
+void	m_reclaim(void);
+
+/* space reservation */
+/* #define	m_commit_reserve(s)	mbfspace_free -= (s); mbfspace_reserve += (s);
+#define	m_commit_release(s)	mbfspace_free += (s); mbfspace_reserve -= (s);
+#define	m_apply_reserve(s)	mbspace_transient -= (s); mbspace_reserve += (s);
+#define	m_apply_release(s)	mbspace_transient += (s); mbspace_reserve -= (s);
+#define	m_transient_reserve(s)	mbspace_free -= (s); mbspace_transient += (s);
+#define	m_transient_release(s)	mbspace_free += (s); mbspace_transient -= (s); */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct mbuf *, mbutl,)		/* virtual address of mclusters */
+__ISYM__(char *, mclrefcnt,)		/* cluster reference counts */
+__ISYM__(struct mbstat, mbstat,)	/* statistics */
+__ISYM__(union mcluster *, mclfree,)	/* head of cluster free list */
+__ISYM__(int, max_linkhdr,)		/* largest link-level header */
+__ISYM__(int, max_protohdr,)		/* largest protocol header */
+__ISYM__(int, max_hdr,)			/* largest link+protocol header */
+__ISYM__(int, max_datalen,)		/* MHLEN - max_hdr */
+
+/* functions used in core kernel and modules */
+__ISYM__(int, m_clalloc, (int, int))
+__ISYM__(struct	mbuf *, m_get, (int, int))
+__ISYM__(struct	mbuf *, m_getclr, (int, int))
+__ISYM__(struct	mbuf *, m_gethdr, (int, int))
+__ISYM__(struct	mbuf *, m_prepend, (struct mbuf *, int, int))
+__ISYM__(struct	mbuf *, m_pullup, (struct mbuf *, int))
+__ISYM__(struct mbuf *, m_copym, (struct mbuf *, int, int, int))
+__ISYM__(struct mbuf *, m_free, (struct mbuf *))
+__ISYM__(struct mbuf *, m_retry, (int, int))
+__ISYM__(struct mbuf *, m_retryhdr, (int, int))
+__ISYM__(void, m_adj, (struct mbuf *mp, int req_len))
+__ISYM__(void, m_cat, (struct mbuf *m, struct mbuf *n))
+__ISYM__(void, m_copydata, (struct mbuf *m, int off, int len, caddr_t cp))
+__ISYM__(void, m_freem, (struct mbuf *))
+
+__ISYM__(int, mbtypes, [])		/* XXX */
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 
 #ifdef MBTYPES
 int mbtypes[] = {				/* XXX */

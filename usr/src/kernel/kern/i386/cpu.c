@@ -46,7 +46,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: cpu.c,v 1.1 94/10/19 17:39:55 bill Exp $
+ * $Id: cpu.c,v 1.1 94/10/19 17:39:55 bill Exp Locker: bill $
  *
  * This file contains functions that implement the machine-dependant
  * portions of the kernel's internal facilities.
@@ -163,6 +163,7 @@ asm(".globl _tfork_child ; _tfork_child: ");
  * Release any remaining resources of this thread and pass control
  * to next process or thread.
  */
+volatile void final_swtch(void);
 volatile void
 cpu_texit(register struct proc *p)
 {
@@ -185,7 +186,7 @@ cpu_texit(register struct proc *p)
 		free(p->p_addr, M_TEMP); */
 
 	/* context switch, never to return */
-	swtch();
+	final_swtch();
 #ifdef	DIAGNOSTIC
 	panic("cpu_exit");
 #endif

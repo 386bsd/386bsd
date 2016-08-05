@@ -30,9 +30,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sockbuf.c,v 1.1 94/10/19 23:49:55 bill Exp $
+ * $Id: sockbuf.c,v 1.3 95/02/24 10:43:16 bill Exp Locker: bill $
  *
- * socket buffer primative operations.
+ * Socket buffer queue utility routines, including allocation / deallocation
+ * of buffer space to a socket buffer, add data to the tail of the queue,
+ * remove data from the head of the queue, and allow exclusive access to
+ * the contents of the buffer by potentially multiple processes.
  */
 
 #include "sys/param.h"
@@ -44,152 +47,126 @@
 #include "buf.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "socketvar.h"
+#include "protosw.h"
 #include "prototypes.h"
 
 /* strings for sleep message: */
 static char	netio[] = "netio";
 
-u_long	sb_max = SB_MAX;		/* patchable */
+u_long	sb_max = SB_MAX;	/* patchable administrative size limit */
+
 
 /*
- * Socket buffer (struct sockbuf) utility routines.
- *
- * Each socket contains two socket buffers: one for sending data and
- * one for receiving data.  Each buffer contains a queue of mbufs,
- * information about the number of mbufs and amount of data in the
- * queue, and other fields allowing select() statements and notification
- * on data availability to be implemented.
- *
- * Data stored in a socket buffer is maintained as a list of records.
- * Each record is a list of mbufs chained together with the m_next
- * field.  Records are chained together with the m_nextpkt field. The upper
- * level routine soreceive() expects the following conventions to be
- * observed when placing information in the receive buffer:
- *
- * 1. If the protocol requires each message be preceded by the sender's
- *    name, then a record containing that name must be present before
- *    any associated data (mbuf's must be of type MT_SONAME).
- * 2. If the protocol supports the exchange of ``access rights'' (really
- *    just additional data associated with the message), and there are
- *    ``rights'' to be received, then a record containing this data
- *    should be present (mbuf's must be of type MT_RIGHTS).
- * 3. If a name or rights record exists, then it must be followed by
- *    a data record, perhaps of zero length.
- *
- * Before using a new socket structure it is first necessary to reserve
- * buffer space to the socket, by calling sbreserve().  This should commit
- * some of the available buffer space in the system buffer pool for the
- * socket (currently, it does nothing but enforce limits).  The space
- * should be released by calling sbrelease() when the socket is destroyed.
+ * Commit storage to sockbuf to allow the desired largest logical
+ * message to be queued(unimplemented). 
  */
-
-soreserve(so, sndcc, rcvcc)
-	register struct socket *so;
-	u_long sndcc, rcvcc;
+int
+sbreserve(struct sockbuf *sb, u_long cc)
 {
 
-	if (sbreserve(&so->so_snd, sndcc) == 0)
-		goto bad;
-	if (sbreserve(&so->so_rcv, rcvcc) == 0)
-		goto bad2;
-	if (so->so_rcv.sb_lowat == 0)
-		so->so_rcv.sb_lowat = 1;
-	if (so->so_snd.sb_lowat == 0)
-		so->so_snd.sb_lowat = MCLBYTES;
-	if (so->so_snd.sb_lowat > so->so_snd.sb_hiwat)
-		so->so_snd.sb_lowat = so->so_snd.sb_hiwat;
-	return (0);
-bad2:
-	sbrelease(&so->so_snd);
-bad:
-	return (ENOBUFS);
-}
-
-/*
- * Allot mbufs to a sockbuf.
- * Attempt to scale mbmax so that mbcnt doesn't become limiting
- * if buffering efficiency is near the normal case.
- */
-sbreserve(sb, cc)
-	struct sockbuf *sb;
-	u_long cc;
-{
-
+	/* bound maximum size by memory commitment of cluster + header mbuf */
 	if (cc > sb_max * MCLBYTES / (MSIZE + MCLBYTES))
 		return (0);
-	sb->sb_hiwat = cc;
+
+	/* presume that mbufs are at least half - full on the average */
 	sb->sb_mbmax = min(cc * 2, sb_max);
+
+	/* adjust watermarks to sane levels */
+	sb->sb_hiwat = cc;
 	if (sb->sb_lowat > sb->sb_hiwat)
 		sb->sb_lowat = sb->sb_hiwat;
+
+	/* account for mbuf memory reserved for use in socket buffer */
+	/* m_commit_reserve(sb->sb_mbmax); */
+
 	return (1);
 }
 
-/* Free mbufs held by a socket, and reserved mbuf space. */
-sbrelease(sb)
-	struct sockbuf *sb;
+/* Free any mbufs held by a socket, and release reserved mbuf resource. */
+void
+sbrelease(struct sockbuf *sb)
 {
 
-	sbflush(sb);
+	/* m_uncommit_reserve(sb->sb_mbmax); */
 	sb->sb_hiwat = sb->sb_mbmax = 0;
+	sbflush(sb);
+}
+
+/* Free all mbufs in a socket buffer. */
+void
+sbflush(struct sockbuf *sb)
+{
+
+	/* cannot be locked */
+	if (sb->sb_flags & SB_LOCK)
+		panic("sbflush");
+
+	/* drop any and all mbuf's present in the socket buffer */
+	while (sb->sb_mbcnt)
+		sbdrop(sb, (int)sb->sb_cc);
+
+#ifdef DIAGNOSTIC
+	/* socket must be empty */
+	if (sb->sb_cc || sb->sb_mb)
+		panic("sbflush 2");
+#endif
 }
 
 /*
- * Routines to add and remove
- * data from an mbuf queue.
+ * The following append functions add information to the tail of the queue,
+ * and the following drop functions discard data from the head of queue.
+ * Data stored in a socket buffer queue is maintained as a structured list of
+ * records, each of which is a chain of mbufs linked together with the m_next
+ * field.  Records are themselves linked together with the m_nextpkt field,
+ * and are strictly ordered into sucessive groups (see soreceive()):
  *
- * The routines sbappend() or sbappendrecord() are normally called to
- * append new mbufs to a socket buffer, after checking that adequate
- * space is available, comparing the function sbspace() with the amount
- * of data to be added.  sbappendrecord() differs from sbappend() in
- * that data supplied is treated as the beginning of a new record.
- * To place a sender's address, optional access rights, and data in a
- * socket receive buffer, sbappendaddr() should be used.  To place
- * access rights and data in a socket receive buffer, sbappendrights()
- * should be used.  In either case, the new data begins a new record.
- * Note that unlike sbappend() and sbappendrecord(), these routines check
- * for the caller that there will be enough space to store the data.
- * Each fails if there is not enough space, or if it cannot find mbufs
- * to store additional information in.
+ *     <group> ::= [[<sockaddr>] <control>] [<oob>] <data>
  *
- * Reliable protocols may use the socket send buffer to hold data
- * awaiting acknowledgement.  Data is normally copied from a socket
- * send buffer in a protocol with m_copy for output to a peer,
- * and then removing the data from the socket buffer with sbdrop()
- * or sbdroprecord() when the data is acknowledged by the peer.
+ * Different versions of sbappend() exist to insert a new group correctly.
+ * Record linking exists to allow potentially zero length chains to be
+ * preserved as record marks.
  */
 
 /*
- * Append mbuf chain m to the last record in the
- * socket buffer sb.  The additional space associated
- * the mbuf chain is recorded in sb.  Empty mbufs are
- * discarded and mbufs are compacted where possible.
+ * Append mbuf chain to the trailing record in the socket buffer,
+ * thus extending the record. Used by a protocol to deliver
+ * a new portion of a record to an existing record.
  */
-sbappend(sb, m)
-	struct sockbuf *sb;
-	struct mbuf *m;
+void
+sbappend(struct sockbuf *sb, struct mbuf *m)
 {
-	register struct mbuf *n;
+	struct mbuf *n;
 
+	/* nothing to add */
 	if (m == 0)
 		return;
+
+	/* socket buffer queue chain present already? */
 	if (n = sb->sb_mb) {
+
+		/* locate trailing record */
 		while (n->m_nextpkt)
 			n = n->m_nextpkt;
+
+		/* locate trailing mbuf in trailing record */
 		do {
+			/* ug. new record ending? then append as new record! */
 			if (n->m_flags & M_EOR) {
-				sbappendrecord(sb, m); /* XXXXXX!!!! */
+				/* redo everything from scratch */
+				sbappendrecord(sb, m);
 				return;
 			}
 		} while (n->m_next && (n = n->m_next));
 	}
+
+	/* clean & reduce mbufs in list, tack on our mbuf chain */
 	sbcompress(sb, m, n);
 }
 
 #ifdef SOCKBUF_DEBUG
-sbcheck(sb)
-	register struct sockbuf *sb;
+void
+sbcheck(struct sockbuf *sb)
 {
 	register struct mbuf *m;
 	register int len = 0, mbcnt = 0;
@@ -210,18 +187,24 @@ sbcheck(sb)
 }
 #endif
 
-/* As above, except the mbuf chain begins a new record. */
-sbappendrecord(sb, m0)
-	register struct sockbuf *sb;
-	register struct mbuf *m0;
+/*
+ * Append mbuf chain as the start of the new trailing record in a socket
+ * buffer. Used by a protocol to deliver data as the start of a new record.
+ */
+void
+sbappendrecord(struct sockbuf *sb, struct mbuf *m0)
 {
-	register struct mbuf *m;
+	struct mbuf *m;
 
+	/* nothing to add. */
 	if (m0 == 0)
 		return;
+
+	/* if contents in the queue, find the last record */
 	if (m = sb->sb_mb)
 		while (m->m_nextpkt)
 			m = m->m_nextpkt;
+
 	/*
 	 * Put the first mbuf on the queue.
 	 * Note this permits zero length records.
@@ -231,8 +214,12 @@ sbappendrecord(sb, m0)
 		m->m_nextpkt = m0;
 	else
 		sb->sb_mb = m0;
+
+	/* isolate remainder of chain past first mbuf */
 	m = m0->m_next;
 	m0->m_next = 0;
+
+	/* relay record mark to chain past first mbuf if present */
 	if (m && (m0->m_flags & M_EOR)) {
 		m0->m_flags &= ~M_EOR;
 		m->m_flags |= M_EOR;
@@ -241,19 +228,19 @@ sbappendrecord(sb, m0)
 }
 
 /*
- * As above except that OOB data
- * is inserted at the beginning of the sockbuf,
- * but after any other OOB data.
+ * Append a mbuf chain of OOB data to any other OOB data in the
+ * trailing record of the socket buffer, which is located ahead of
+ * normal data. Used by a protocol when OOB data spontaineously arrives.
  */
-sbinsertoob(sb, m0)
-	register struct sockbuf *sb;
-	register struct mbuf *m0;
+void
+sbinsertoob(struct sockbuf *sb, struct mbuf *m0)
 {
-	register struct mbuf *m;
-	register struct mbuf **mp;
+	struct mbuf *m, **mp;
 
 	if (m0 == 0)
 		return;
+
+	/* look for trailing OOB packet or ending control chain */ 
 	for (mp = &sb->sb_mb; m = *mp; mp = &((*mp)->m_nextpkt)) {
 	    again:
 		switch (m->m_type) {
@@ -267,6 +254,7 @@ sbinsertoob(sb, m0)
 		}
 		break;
 	}
+
 	/*
 	 * Put the first mbuf on the queue.
 	 * Note this permits zero length records.
@@ -274,8 +262,12 @@ sbinsertoob(sb, m0)
 	sballoc(sb, m0);
 	m0->m_nextpkt = *mp;
 	*mp = m0;
+
+	/* isolate remainder of chain past first mbuf */
 	m = m0->m_next;
 	m0->m_next = 0;
+
+	/* relay end of record mark */
 	if (m && (m0->m_flags & M_EOR)) {
 		m0->m_flags &= ~M_EOR;
 		m->m_flags |= M_EOR;
@@ -284,184 +276,236 @@ sbinsertoob(sb, m0)
 }
 
 /*
- * Append address and data, and optionally, control (ancillary) data
- * to the receive queue of a socket.  If present,
- * m0 must include a packet header with total length.
- * Returns 0 if no space in sockbuf or insufficient mbufs.
+ * Append address, optional control, and optional data, into the recieve
+ * socket buffer as a new trailing record. Data must have a packet header.
+ * Returns 0 if no space in the socket buffer or insufficient mbufs.
+ * Used by a protocol to place message contents and peer address into
+ * socket buffer efficiently.
  */
-sbappendaddr(sb, asa, m0, control)
-	register struct sockbuf *sb;
-	struct sockaddr *asa;
-	struct mbuf *m0, *control;
+int
+sbappendaddr(struct sockbuf *sb, struct sockaddr *asa, struct mbuf *m0,
+	struct mbuf *control)
 {
-	register struct mbuf *m, *n;
+	struct mbuf *m, *n;
 	int space = asa->sa_len;
 
-if (m0 && (m0->m_flags & M_PKTHDR) == 0)
-panic("sbappendaddr");
+	/* use packet header to obtain total length without chain walk */ 
 	if (m0)
 		space += m0->m_pkthdr.len;
+
+	/* find trailing control mbuf, if any control mbufs are supplied */
 	for (n = control; n; n = n->m_next) {
 		space += n->m_len;
-		if (n->m_next == 0)	/* keep pointer to last control buf */
+		if (n->m_next == 0)
 			break;
 	}
+
+	/* can't add to socket buffer? */
 	if (space > sbspace(sb))
 		return (0);
+
+	/* allocate a mbuf to hold a copy of the sockaddr */
+#ifdef DIAGNOSTIC
 	if (asa->sa_len > MLEN)
 		return (0);
+#endif
+
 	MGET(m, M_DONTWAIT, MT_SONAME);
 	if (m == 0)
 		return (0);
+
 	m->m_len = asa->sa_len;
 	(void) memcpy(mtod(m, caddr_t), (caddr_t)asa, asa->sa_len);
+
+	/* concatenate data after control ... */
 	if (n)
-		n->m_next = m0;		/* concatenate data to control */
+		n->m_next = m0;
 	else
 		control = m0;
+
+	/* ... and control after sockaddr */
 	m->m_next = control;
+
+	/* put sockaddr, control, and data mbuf chain into socket buffer ... */
 	for (n = m; n; n = n->m_next)
 		sballoc(sb, n);
+
+	/* ... as next record */
 	if (n = sb->sb_mb) {
 		while (n->m_nextpkt)
 			n = n->m_nextpkt;
 		n->m_nextpkt = m;
 	} else
 		sb->sb_mb = m;
+
 	return (1);
 }
 
-sbappendcontrol(sb, m0, control)
-	struct sockbuf *sb;
-	struct mbuf *control, *m0;
+/*
+ * Append control, and optional data, into the socket buffer as a new
+ * trailing record. Returns 0 if no space in the socket buffer.
+ * Used by a protocol to place control and message into a socket buffer.
+ */
+int
+sbappendcontrol(struct sockbuf *sb, struct mbuf *m0,
+	struct mbuf *control)
 {
-	register struct mbuf *m, *n;
+	struct mbuf *m, *n;
 	int space = 0;
 
+#ifdef DIAGNOSTIC
 	if (control == 0)
 		panic("sbappendcontrol");
+#endif
+	/* use packet header to obtain total length without chain walk */ 
+	if (m0)
+		space += m0->m_pkthdr.len;
+
+	/* find trailing control mbuf, talley control size */
 	for (m = control; ; m = m->m_next) {
 		space += m->m_len;
 		if (m->m_next == 0)
 			break;
 	}
-	n = m;			/* save pointer to last control buffer */
-	for (m = m0; m; m = m->m_next)
-		space += m->m_len;
+
+	/* save pointer to last control buffer */
+	n = m;
+
+	/* socket buffer too small */
 	if (space > sbspace(sb))
 		return (0);
-	n->m_next = m0;			/* concatenate data to control */
+
+	/* concatenate data to control */
+	n->m_next = m0;
+
+	/* place control and data into socket buffer ... */
 	for (m = control; m; m = m->m_next)
 		sballoc(sb, m);
+
+	/* ... as next packet */
 	if (n = sb->sb_mb) {
 		while (n->m_nextpkt)
 			n = n->m_nextpkt;
 		n->m_nextpkt = control;
 	} else
 		sb->sb_mb = control;
+
 	return (1);
 }
 
 /*
- * Compress mbuf chain m into the socket
- * buffer sb following mbuf n.  If n
- * is null, the buffer is presumed empty.
+ * Compress mbuf chain "m" and append into the socket
+ * buffer following mbuf "p".  If "p" is null, the buffer
+ * is presumed empty.
  */
-sbcompress(sb, m, n)
-	register struct sockbuf *sb;
-	register struct mbuf *m, *n;
+void
+sbcompress(struct sockbuf *sb, struct mbuf *m, struct mbuf *p)
 {
-	register int eor = 0;
-	register struct mbuf *o;
+	int eor = 0;
+	struct mbuf *o;
 
+	/* walk new chain to be added to the socket buffer */
 	while (m) {
+
+		/* save end of record mark */
 		eor |= m->m_flags & M_EOR;
+
+		/* free any adjacent empty entry not marking a end of record */
 		if (m->m_len == 0 &&
 		    (eor == 0 ||
-		     (((o = m->m_next) || (o = n)) &&
+		     (((o = m->m_next) || (o = p)) &&
 		      o->m_type == m->m_type))) {
 			m = m_free(m);
 			continue;
 		}
-		if (n && (n->m_flags & (M_EXT | M_EOR)) == 0 &&
-		    (n->m_data + n->m_len + m->m_len) < &n->m_dat[MLEN] &&
-		    n->m_type == m->m_type) {
-			(void) memcpy(mtod(n, caddr_t) + n->m_len, mtod(m, caddr_t),
+
+		/* copy mbuf contents into previous if possible and free */
+		if (p && (p->m_flags & (M_EXT | M_EOR)) == 0 &&
+		    (p->m_data + p->m_len + m->m_len) < &p->m_dat[MLEN] &&
+		    p->m_type == m->m_type) {
+			(void) memcpy(mtod(p, caddr_t) + p->m_len, mtod(m, caddr_t),
 			    (unsigned)m->m_len);
-			n->m_len += m->m_len;
+			p->m_len += m->m_len;
 			sb->sb_cc += m->m_len;
 			m = m_free(m);
 			continue;
 		}
-		if (n)
-			n->m_next = m;
+
+		/* link onto buffer, or become the contents of the empty buffer */
+		if (p)
+			p->m_next = m;
 		else
 			sb->sb_mb = m;
 		sballoc(sb, m);
-		n = m;
+
+		p = m;
 		m->m_flags &= ~M_EOR;
 		m = m->m_next;
-		n->m_next = 0;
+		p->m_next = 0;
 	}
+
+	/* encountered and end of record in new chain */
 	if (eor) {
-		if (n)
-			n->m_flags |= eor;
+		if (p)
+			p->m_flags |= eor;
+#ifdef DIAGNOSTIC
+		/* end of record never in single mbuf additions */
 		else
-			printf("semi-panic: sbcompress\n");
+			panic("sbcompress");
+#endif
 	}
 }
 
 /*
- * Free all mbufs in a sockbuf.
- * Check that all resources are reclaimed.
+ * Reclaim "len" bytes of data from the head of a sockbuf. Used by
+ * protocol and socket delivery code to consume queue contents.
  */
-sbflush(sb)
-	register struct sockbuf *sb;
+void
+sbdrop(struct sockbuf *sb, int len)
 {
+	struct mbuf *m, *mn, *next;
 
-	if (sb->sb_flags & SB_LOCK)
-		panic("sbflush");
-	while (sb->sb_mbcnt)
-		sbdrop(sb, (int)sb->sb_cc);
-	if (sb->sb_cc || sb->sb_mb)
-		panic("sbflush 2");
-}
-
-/*
- * Drop data from (the front of) a sockbuf.
- */
-sbdrop(sb, len)
-	register struct sockbuf *sb;
-	register int len;
-{
-	register struct mbuf *m, *mn;
-	struct mbuf *next;
-
+	/* next record to skip to if we consume leading record */
 	next = (m = sb->sb_mb) ? m->m_nextpkt : 0;
+
+	/* consume mbufs */
 	while (len > 0) {
+
+		/* nothing more to consume in this chain, find another record */
 		if (m == 0) {
+
+			/* no more records to consume */
 			if (next == 0)
 				panic("sbdrop");
+
+			/* consume from next record */
 			m = next;
 			next = m->m_nextpkt;
-			continue;
 		}
+
+		/* consume the partial contents of the mbuf and terminate */
 		if (m->m_len > len) {
 			m->m_len -= len;
 			m->m_data += len;
 			sb->sb_cc -= len;
 			break;
 		}
+
+		/* otherwise, consume the mbuf entirely and find the next */
 		len -= m->m_len;
 		sbfree(sb, m);
 		MFREE(m, mn);
 		m = mn;
 	}
+
+	/* empty mbuf left on list */
 	while (m && m->m_len == 0) {
 		sbfree(sb, m);
 		MFREE(m, mn);
 		m = mn;
 	}
+
+	/* return remainder to socket buffer */
 	if (m) {
 		sb->sb_mb = m;
 		m->m_nextpkt = next;
@@ -469,18 +513,20 @@ sbdrop(sb, len)
 		sb->sb_mb = next;
 }
 
-/*
- * Drop a record off the front of a sockbuf
- * and move the next record to the front.
- */
-sbdroprecord(sb)
-	register struct sockbuf *sb;
+/* Reclaim the leading record of a socket buffer. */
+void
+sbdroprecord(struct sockbuf *sb)
 {
-	register struct mbuf *m, *mn;
+	struct mbuf *m, *mn;
 
+	/* anything in the socket buffer? */
 	m = sb->sb_mb;
 	if (m) {
+
+		/* advance to next record */
 		sb->sb_mb = m->m_nextpkt;
+
+		/* free any mbufs in the record */
 		do {
 			sbfree(sb, m);
 			MFREE(m, mn);
@@ -489,45 +535,18 @@ sbdroprecord(sb)
 }
 
 /*
- * Socantsendmore indicates that no more data will be sent on the
- * socket; it would normally be applied to a socket when the user
- * informs the system that no more data is to be sent, by the protocol
- * code (in case PRU_SHUTDOWN).  Socantrcvmore indicates that no more data
- * will be received, and will normally be applied to the socket by a
- * protocol when it detects that the peer will send no more data.
- * Data queued for reading in the socket may yet be read.
+ * Socket buffer event and exclusive access.
  */
 
-socantsendmore(so)
-	struct socket *so;
-{
-
-	so->so_state |= SS_CANTSENDMORE;
-	sowwakeup(so);
-}
-
-socantrcvmore(so)
-	struct socket *so;
-{
-
-	so->so_state |= SS_CANTRCVMORE;
-	sorwakeup(so);
-}
-
-/*
- * Socket select/wakeup routines.
- */
-
-/*
- * Queue a process for a select on a socket buffer.
- */
-sbselqueue(sb, cp)
-	struct sockbuf *sb;
-	struct proc *cp;
+/* Queue a process for a select on a socket buffer. */
+void
+sbselqueue(struct sockbuf *sb, struct proc *cp)
 {
 	struct proc *p;
 
-	if (sb->sb_sel && (p = pfind(sb->sb_sel)) && p->p_wchan == (caddr_t)&selwait)
+	/* already select()ing by a existing process? */
+	if (sb->sb_sel &&
+	    (p = pfind(sb->sb_sel)) && p->p_wchan == (caddr_t)&selwait)
 		sb->sb_flags |= SB_COLL;
 	else {
 		sb->sb_sel = cp->p_pid;
@@ -535,11 +554,28 @@ sbselqueue(sb, cp)
 	}
 }
 
-/*
- * Wait for data to arrive at/drain from a socket buffer.
- */
-sbwait(sb)
-	struct sockbuf *sb;
+/* Wakeup or select() any processes associated with the socket buffer. */
+void
+sbwakeup(struct sockbuf *sb)
+{
+
+	/* is there a process select()ing the socket buffer? */
+	if (sb->sb_sel) {
+		selwakeup(sb->sb_sel, sb->sb_flags & SB_COLL);
+		sb->sb_sel = 0;
+		sb->sb_flags &= ~(SB_SEL|SB_COLL);
+	}
+
+	/* is there a process waiting for the socket buffer? */
+	if (sb->sb_flags & SB_WAIT) {
+		sb->sb_flags &= ~SB_WAIT;
+		wakeup((caddr_t)&sb->sb_cc);
+	}
+}
+
+/* Wait for data to arrive at/drain from a socket buffer. */
+int
+sbwait(struct sockbuf *sb)
 {
 
 	sb->sb_flags |= SB_WAIT;
@@ -552,8 +588,8 @@ sbwait(sb)
  * Lock a sockbuf already known to be locked;
  * return any error returned from sleep (EINTR).
  */
-sb_lock(sb)
-	register struct sockbuf *sb;
+int
+sb_lock(struct sockbuf *sb)
 {
 	int error;
 
@@ -561,46 +597,9 @@ sb_lock(sb)
 		sb->sb_flags |= SB_WANT;
 		if (error = tsleep((caddr_t)&sb->sb_flags, 
 		    (sb->sb_flags & SB_NOINTR) ? PSOCK : PSOCK|PCATCH,
-		    netio, 0))
+			netio, 0))
 			return (error);
 	}
 	sb->sb_flags |= SB_LOCK;
 	return (0);
 }
-
-/*
- * Wakeup processes waiting on a socket buffer.
- * Do asynchronous notification via SIGIO
- * if the socket has the SS_ASYNC flag set.
- */
-void
-sowakeup(struct socket *so, struct sockbuf *sb)
-{
-
-	if (sb->sb_sel) {
-		selwakeup(sb->sb_sel, sb->sb_flags & SB_COLL);
-		sb->sb_sel = 0;
-		sb->sb_flags &= ~(SB_SEL|SB_COLL);
-	}
-
-	if (sb->sb_flags & SB_WAIT) {
-		sb->sb_flags &= ~SB_WAIT;
-		wakeup((caddr_t)&sb->sb_cc);
-	}
-
-	if (so->so_state & SS_ASYNC) {
-#ifdef nope
-		struct proc *p;
-		struct pgrp *pgrp;
-		pid_t pgid = so->so_pgid;
-
-		if (pgid < 0 && (pgrp = pgfind(-pgid)) != 0)
-			pgsignal(pgrp, SIGIO, 0);
-		else if (pgid > 0 && (p = pfind(pgid)) != 0)
-			psignal(p, SIGIO);
-#else
-		signalpid(so->so_pgid);
-#endif
-	}
-}
-

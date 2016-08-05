@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id: in.c,v 1.1 94/10/20 10:53:24 root Exp $
+ *	$Id: in.c,v 1.1 94/10/20 10:53:24 root Exp Locker: bill $
  */
 
 #include "sys/param.h"
@@ -39,13 +39,15 @@
 #include "sys/errno.h"
 #include "mbuf.h"
 #include "socketvar.h"
+#include "prototypes.h"
 #include "in_systm.h"
 #include "if.h"
-#include "route.h"
 #include "af.h"
 #include "in.h"
+#define	_IN_PROTOTYPES
 #include "in_var.h"
-#include "prototypes.h"
+#undef	_IN_PROTOTYPES
+#include "route.h"
 
 #ifdef INET
 /*
@@ -107,14 +109,13 @@ in_netof(in)
 /*
  * Compute and save network mask as sockaddr from an internet address.
  */
-in_sockmaskof(in, sockmask)
-	struct in_addr in;
-	register struct sockaddr_in *sockmask;
+void
+in_sockmaskof(struct in_addr in, struct sockaddr_in *sockmask)
 {
-	register u_long net;
-	register u_long mask;
+	u_long net;
+	u_long mask;
     {
-	register u_long i = ntohl(in.s_addr);
+	u_long i = ntohl(in.s_addr);
 
 	if (i == 0)
 		net = 0, mask = 0;
@@ -234,7 +235,6 @@ in_canforward(in)
 }
 
 int	in_interfaces;		/* number of external internet interfaces */
-extern	struct ifnet loif;
 
 /*
  * Generic internet control operations (ioctl's).
@@ -315,7 +315,7 @@ in_control(so, cmd, data, ifp)
 				ia->ia_broadaddr.sin_family = AF_INET;
 			}
 			ia->ia_ifp = ifp;
-			if (ifp != &loif)
+			if (ifp != esym_fetch(loif))
 				in_interfaces++;
 		}
 		break;
@@ -371,10 +371,10 @@ in_control(so, cmd, data, ifp)
 		}
 		if (ia->ia_flags & IFA_ROUTE) {
 			ia->ia_ifa.ifa_dstaddr = (struct sockaddr *)&oldaddr;
-			RTINIT(&(ia->ia_ifa), (int)RTM_DELETE, RTF_HOST);
+			(void)rtinit(&(ia->ia_ifa), (int)RTM_DELETE, RTF_HOST);
 			ia->ia_ifa.ifa_dstaddr =
 					(struct sockaddr *)&ia->ia_dstaddr;
-			RTINIT(&(ia->ia_ifa), (int)RTM_ADD, RTF_HOST|RTF_UP);
+			(void)rtinit(&(ia->ia_ifa), (int)RTM_ADD, RTF_HOST|RTF_UP);
 		}
 		break;
 
@@ -472,9 +472,9 @@ in_ifscrub(ifp, ia)
 	if ((ia->ia_flags & IFA_ROUTE) == 0)
 		return;
 	if (ifp->if_flags & (IFF_LOOPBACK|IFF_POINTOPOINT))
-		RTINIT(&(ia->ia_ifa), (int)RTM_DELETE, RTF_HOST);
+		(void)rtinit(&(ia->ia_ifa), (int)RTM_DELETE, RTF_HOST);
 	else
-		RTINIT(&(ia->ia_ifa), (int)RTM_DELETE, 0);
+		(void)rtinit(&(ia->ia_ifa), (int)RTM_DELETE, 0);
 	ia->ia_flags &= ~IFA_ROUTE;
 }
 
@@ -549,7 +549,7 @@ in_ifinit(ifp, ia, sin, scrub)
 			return (0);
 		flags |= RTF_HOST;
 	}
-	if ((error = RTINIT(&(ia->ia_ifa), (int)RTM_ADD, flags)) == 0)
+	if ((error = rtinit(&(ia->ia_ifa), (int)RTM_ADD, flags)) == 0)
 		ia->ia_flags |= IFA_ROUTE;
 	return (error);
 }

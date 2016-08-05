@@ -38,14 +38,15 @@
 #include "systm.h"
 #include "malloc.h"
 #include "mbuf.h"
-#include "protosw.h"
 #include "sys/socket.h"
+#include "protosw.h"
 #include "sys/time.h"
-#include "kernel.h"
+/* #include "kernel.h" */
+#include "raw_cb.h"
 #include "prototypes.h"
 
-#include "route.h"
 #include "if.h"
+#include "route.h"
 
 #include "in.h"
 #include "in_systm.h"
@@ -64,6 +65,7 @@ int	icmpprintfs = 0;
 #endif
 
 extern	struct protosw inetsw[];
+struct icmpstat icmpstat;
 
 /*
  * Generate an error packet of type error
@@ -326,7 +328,7 @@ reflect:
 			icmpsrc.sin_addr =
 			 in_makeaddr(in_netof(icp->icmp_ip.ip_dst), INADDR_ANY);
 			in_sockmaskof(icp->icmp_ip.ip_dst, &icmpmask);
-			RTREDIRECT((struct sockaddr *)&icmpsrc,
+			rtredirect((struct sockaddr *)&icmpsrc,
 			  (struct sockaddr *)&icmpdst,
 			  (struct sockaddr *)&icmpmask, RTF_GATEWAY,
 			  (struct sockaddr *)&icmpgw, (struct rtentry **)0);
@@ -335,7 +337,7 @@ reflect:
 			  (struct sockaddr *)&icmpsrc);
 		} else {
 			icmpsrc.sin_addr = icp->icmp_ip.ip_dst;
-			RTREDIRECT((struct sockaddr *)&icmpsrc,
+			rtredirect((struct sockaddr *)&icmpsrc,
 			  (struct sockaddr *)&icmpdst,
 			  (struct sockaddr *)0, RTF_GATEWAY | RTF_HOST,
 			  (struct sockaddr *)&icmpgw, (struct rtentry **)0);

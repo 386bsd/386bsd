@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)if.h	7.11 (Berkeley) 3/19/91
+ *	$Id$
  */
 
 /*
@@ -57,12 +57,10 @@
  * routing and gateway routines maintaining information used to locate
  * interfaces.  These routines live in the files if.c and route.c
  */
-#ifndef _TIME_ /*  XXX fast fix for SNMP, going away soon */
 #ifdef KERNEL
 #include "sys/time.h"
 #else
 #include <sys/time.h>
-#endif
 #endif
 
 /*
@@ -74,9 +72,9 @@
 struct ifnet {
 	char	*if_name;		/* name, e.g. ``en'' or ``lo'' */
 	short	if_unit;		/* sub-unit for lower level driver */
-	short	if_mtu;			/* maximum transmission unit */
+	u_short	if_mtu;			/* maximum transmission unit */
 	short	if_flags;		/* up/down, broadcast, etc. */
-	short	if_timer;		/* time 'til if_watchdog called */
+	u_short	if_timer;		/* time 'til if_watchdog called */
 	int	if_metric;		/* routing metric (external only) */
 	struct	ifaddr *if_addrlist;	/* linked list of addresses per if */
 	struct	ifqueue {
@@ -247,8 +245,31 @@ struct	ifconf {
 
 #include "if_arp.h"
 #ifdef KERNEL
-struct	ifqueue rawintrq;		/* raw packet input queue */
-struct	ifnet *ifnet;
+#ifdef nope
+extern struct	ifqueue rawintrq;		/* raw packet input queue */
+extern struct	ifnet *ifnet;
 struct	ifaddr *ifa_ifwithaddr(), *ifa_ifwithnet();
 struct	ifaddr *ifa_ifwithdstaddr();
+#endif
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(int, if_index,)	/* */
+__ISYM__(struct	ifqueue, rawintrq,)		/* raw packet input queue */
+__ISYM__(struct	ifnet *, ifnet,)
+
+/* functions used in modules */
+__ISYM__(int, if_attach, (struct ifnet *))	/* XXX void */
+__ISYM__(struct	ifaddr *, ifa_ifwithaddr, (struct sockaddr *))
+__ISYM__(struct	ifaddr *, ifa_ifwithnet, (struct sockaddr *))
+__ISYM__(struct	ifaddr *, ifa_ifwithdstaddr, (struct sockaddr *))
+__ISYM__(int, ifioctl, (struct socket *so, int cmd, caddr_t data, struct proc *p))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
+
 #endif KERNEL

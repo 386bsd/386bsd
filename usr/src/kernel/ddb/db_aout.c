@@ -77,7 +77,7 @@
 	(sp = (struct nlist *)((symtab) + 1), \
 	 ep = (struct nlist *)((char *)sp + *(symtab)))
 
-#define SYMTAB_SPACE 86000
+#define SYMTAB_SPACE 79000
 int db_symtabsize = SYMTAB_SPACE;
 char db_symtab[SYMTAB_SPACE] = { 1 };
 
