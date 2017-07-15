@@ -226,6 +226,7 @@ kbdreset()
 {
 	u_char c;
 
+#ifdef notdef
 	/* Enable interrupts and keyboard controller */
 	while (inb(0x64)&2); outb(0x64,0x60);
 	while (inb(0x64)&2); outb(0x60,0x4D);
@@ -235,6 +236,7 @@ kbdreset()
 	outb(0x60,0xFF);	/* RESET */
 
 	while((c=inb(0x60))!=0xFA) ;
+#endif
 
 	/* While we are here, defeat gatea20 */
 	while (inb(0x64)&2);	/* wait input ready */

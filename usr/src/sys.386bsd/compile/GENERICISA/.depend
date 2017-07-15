@@ -49,14 +49,14 @@ kern_execve.o : ../../kern/kern_execve.c ../../sys/param.h \
   ../../sys/cdefs.h ../../sys/errno.h ../../sys/time.h ../../sys/resource.h \
   ../../sys/ucred.h ../../sys/uio.h ../../sys/signal.h machine/trap.h \
   machine/param.h machine/endian.h machine/limits.h ../../sys/systm.h \
-  ../../sys/proc.h machine/proc.h ../../sys/mount.h ../../sys/namei.h \
-  ../../sys/vnode.h ../../sys/file.h ../../sys/fcntl.h ../../sys/unistd.h \
-  ../../sys/exec.h ../../sys/stat.h ../../sys/wait.h ../../sys/signalvar.h \
-  ../../sys/mman.h ../../sys/malloc.h ../../vm/vm.h ../../vm/vm_param.h \
-  machine/vmparam.h ../../vm/lock.h ../../vm/queue.h ../../vm/vm_prot.h \
-  ../../vm/vm_inherit.h ../../vm/vm_map.h ../../vm/vm_object.h \
-  ../../vm/vm_pager.h ../../vm/vm_statistics.h ../../vm/pmap.h machine/pmap.h \
-  ../../vm/vm_kern.h machine/reg.h 
+  ../../sys/signalvar.h ../../sys/resourcevar.h ../../sys/proc.h \
+  machine/proc.h ../../sys/mount.h ../../sys/namei.h ../../sys/vnode.h \
+  ../../sys/file.h ../../sys/fcntl.h ../../sys/unistd.h ../../sys/exec.h \
+  ../../sys/stat.h ../../sys/wait.h ../../sys/mman.h ../../sys/malloc.h \
+  ../../vm/vm.h ../../vm/vm_param.h machine/vmparam.h ../../vm/lock.h \
+  ../../vm/queue.h ../../vm/vm_prot.h ../../vm/vm_inherit.h ../../vm/vm_map.h \
+  ../../vm/vm_object.h ../../vm/vm_pager.h ../../vm/vm_statistics.h \
+  ../../vm/pmap.h machine/pmap.h ../../vm/vm_kern.h machine/reg.h 
 kern_exit.o : ../../kern/kern_exit.c ../../sys/param.h ../../sys/types.h \
   machine/ansi.h machine/types.h ../../sys/syslimits.h ../../sys/cdefs.h \
   ../../sys/errno.h ../../sys/time.h ../../sys/resource.h ../../sys/ucred.h \
@@ -175,7 +175,8 @@ kern_synch.o : ../../kern/kern_synch.c ../../sys/param.h ../../sys/types.h \
   ../../sys/uio.h ../../sys/signal.h machine/trap.h machine/param.h \
   machine/endian.h machine/limits.h ../../sys/systm.h ../../sys/proc.h \
   machine/proc.h ../../sys/kernel.h ../../sys/buf.h ../../sys/signalvar.h \
-  ../../sys/resourcevar.h machine/cpu.h machine/frame.h machine/segments.h 
+  ../../sys/resourcevar.h machine/cpu.h machine/frame.h machine/segments.h \
+  ddb.h 
 kern_time.o : ../../kern/kern_time.c ../../sys/param.h ../../sys/types.h \
   machine/ansi.h machine/types.h ../../sys/syslimits.h ../../sys/cdefs.h \
   ../../sys/errno.h ../../sys/time.h ../../sys/resource.h ../../sys/ucred.h \
@@ -1139,7 +1140,8 @@ pccons.o : ../../i386/isa/pccons.c ../../sys/param.h ../../sys/types.h \
   ../../sys/termios.h ../../sys/ttydefaults.h ../../i386/isa/isa_device.h \
   ../../sys/callout.h ../../sys/systm.h ../../sys/kernel.h ../../sys/syslog.h \
   ../../i386/isa/icu.h ../../i386/i386/cons.h ../../i386/isa/isa.h \
-  ../../i386/isa/ic/i8042.h ../../i386/isa/kbd.h ddb.h machine/stdarg.h 
+  ../../i386/isa/ic/i8042.h ../../i386/isa/kbd.h machine/pc/display.h ddb.h \
+  machine/stdarg.h 
 clock.o : ../../i386/isa/clock.c ../../sys/param.h ../../sys/types.h \
   machine/ansi.h machine/types.h ../../sys/syslimits.h ../../sys/cdefs.h \
   ../../sys/errno.h ../../sys/time.h ../../sys/resource.h ../../sys/ucred.h \
@@ -1261,7 +1263,7 @@ if_we.o : ../../i386/isa/if_we.c we.h ../../sys/param.h ../../sys/types.h \
   ../../net/../sys/time.h ../../net/../net/if_arp.h ../../net/netisr.h \
   ../../netinet/in.h ../../netinet/in_systm.h ../../netinet/in_var.h \
   ../../netinet/ip.h ../../netinet/if_ether.h ../../i386/isa/isa.h \
-  ../../i386/isa/if_wereg.h ../../i386/isa/isa_device.h 
+  ../../i386/isa/if_wereg.h ../../i386/isa/isa_device.h ../../i386/isa/icu.h 
 if_ec.o : ../../i386/isa/if_ec.c ec.h ../../sys/param.h ../../sys/types.h \
   machine/ansi.h machine/types.h ../../sys/syslimits.h ../../sys/cdefs.h \
   ../../sys/errno.h ../../sys/time.h ../../sys/resource.h ../../sys/ucred.h \
@@ -1334,8 +1336,12 @@ isa.o : ../../i386/isa/isa.c ../../sys/param.h ../../sys/types.h \
   machine/endian.h machine/limits.h ../../sys/systm.h ../../sys/conf.h \
   ../../sys/file.h ../../sys/fcntl.h ../../sys/unistd.h ../../sys/buf.h \
   ../../sys/syslog.h ../../sys/malloc.h ../../sys/rlist.h machine/segments.h \
-  ../../i386/isa/isa_device.h ../../i386/isa/isa.h ../../i386/isa/icu.h \
-  ../../i386/isa/ic/i8237.h ../../i386/isa/ic/i8042.h sl.h 
+  ../../vm/vm.h ../../vm/vm_param.h machine/vmparam.h ../../vm/lock.h \
+  ../../vm/queue.h ../../vm/vm_prot.h ../../vm/vm_inherit.h ../../vm/vm_map.h \
+  ../../vm/vm_object.h ../../vm/vm_pager.h ../../vm/vm_statistics.h \
+  ../../vm/pmap.h machine/pmap.h ../../i386/isa/isa_device.h \
+  ../../i386/isa/isa.h ../../i386/isa/icu.h ../../i386/isa/ic/i8237.h \
+  ../../i386/isa/ic/i8042.h sl.h 
 com.o : ../../i386/isa/com.c com.h ../../sys/param.h ../../sys/types.h \
   machine/ansi.h machine/types.h ../../sys/syslimits.h ../../sys/cdefs.h \
   ../../sys/errno.h ../../sys/time.h ../../sys/resource.h ../../sys/ucred.h \

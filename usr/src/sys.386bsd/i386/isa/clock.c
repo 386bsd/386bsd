@@ -86,7 +86,7 @@ int y;
 	int i;
 	unsigned long ret;
 
-	ret = 0; y = y - 70;
+	ret = 0; y = y - 1970;
 	for(i=0;i<y;i++) {
 		if (i % 4) ret += 365*24*60*60;
 		else ret += 366*24*60*60;
@@ -126,7 +126,7 @@ inittodr(base)
 	time_t base;
 {
 	unsigned long sec;
-	int leap,day_week,t,yd;
+	int leap,day_week,t,yd, years;
 	int sa,s;
 
 	/* do we have a realtime clock present? (otherwise we loop below) */
@@ -136,9 +136,8 @@ inittodr(base)
 	/* ready for a read? */
 	while ((sa&RTCSA_TUP) == RTCSA_TUP)
 		sa = rtcin(RTC_STATUSA);
-
-	sec = bcd(rtcin(RTC_YEAR));
-	leap = !(sec % 4); sec += ytos(sec); /* year    */
+	years = bcd(rtcin(RTC_CENTURY))*100 + bcd(rtcin(RTC_YEAR));
+	leap = !(sec % 4); sec = ytos(years); /* year    */
 	yd = mtos(bcd(rtcin(RTC_MONTH)),leap); sec += yd;	/* month   */
 	t = (bcd(rtcin(RTC_DAY))-1) * 24*60*60; sec += t; yd += t; /* date    */
 	day_week = rtcin(RTC_WDAY);				/* day     */
@@ -156,7 +155,7 @@ inittodr(base)
 		sec -= 60*60;
 	}
 #endif
-	sec += tz.tz_minuteswest * 60;
+	/* sec += tz.tz_minuteswest * 60; */
 
 	time.tv_sec = sec;
 }

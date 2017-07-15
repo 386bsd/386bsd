@@ -83,8 +83,8 @@ main(dev, unit, off)
 	if (lp->d_type == DTYPE_SCSI)		/* XXX */
 		off = htonl(scsisn);		/* XXX */
 
-/*printf("cyl %x %x hd %x sect %x ", biosparams[0], biosparams[1], biosparams[2], biosparams[0xe]);
-	printf("dev %x unit %x off %d\n", dev, unit, off);*/
+printf("cyl %x %x hd %x sect %x ", biosparams[0], biosparams[1], biosparams[2], biosparams[0xe]);
+	printf("dev %x unit %x off %d\n", dev, unit, off);
 
 	if (lp->d_magic == DISKMAGIC) {
 	    /*

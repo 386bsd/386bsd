@@ -1,3 +1,9 @@
+#define DEBUG 2
+#if	DEBUG > 0
+#define PUTC(s)	movw $ s ,(%ebp) ; incl %ebp ; incl %ebp
+#else
+#define PUTC(s)
+#endif
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -88,6 +94,7 @@ start:
 	/* setup stack pointer */
 
 #ifdef REL
+1: jmp 1b
 	leal	4(%esp),%eax	/* ignore old pc */
 	movl	$ RELOC-3*4,%ebx
 	/* copy boot parameters */
@@ -137,7 +144,9 @@ start:
 	call	_bzero
 #endif
 
+	PUTC(0x7034)
 	call	_kbdreset	/* resets keyboard and gatea20 brain damage */
+	PUTC(0x7035)
 	movl	%esi,%esp
 	call	_main
 	jmp	1f

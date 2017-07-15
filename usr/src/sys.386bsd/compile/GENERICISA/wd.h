@@ -1,1 +1,1 @@
-#define NWD 3
+#define NWD 4

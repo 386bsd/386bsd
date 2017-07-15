@@ -168,6 +168,7 @@ struct isa_device *dev;
 	u_char c;
 	int again = 0;
 
+#ifdef nope
 	/* Enable interrupts and keyboard controller */
 	kbc_8042cmd(K_LDCMDBYTE);
 	outb(KBOUTP, CMDBYTE);
@@ -184,6 +185,9 @@ struct isa_device *dev;
 
 	/* pick up keyboard reset return code */
 	while((c = inb(KBDATAP)) != KBR_RSTDONE);
+#else
+kbdreset();
+#endif
 	return 1;
 }
 
@@ -802,7 +806,7 @@ u_char ka;
 
 
 unsigned	__debug = 0; /*0xffe */;
-static char scantokey[] {
+static char scantokey[] = {
 0,
 120,	/* F9 */
 0,
@@ -900,7 +904,7 @@ static char scantokey[] {
 0,
 0,
 0,
-45,	?* na*/
+45,	/* na*/
 0,
 0,
 0,
@@ -936,7 +940,7 @@ static char scantokey[] {
 0,
 118,	/* F7 */
 };
-static char extscantokey[] {
+static char extscantokey[]  = {
 0,
 120,	/* F9 */
 0,
@@ -1034,7 +1038,7 @@ static char extscantokey[] {
 0,
 0,
 0,
-45,	?* na*/
+45,	/* na*/
 0,
 0,
 0,
@@ -1462,4 +1466,31 @@ int pcmmap(dev_t dev, int offset, int nprot)
 	if (offset > 0x20000)
 		return -1;
 	return i386_btop((0xa0000 + offset));
+}
+
+
+kbdreset()
+{
+	u_char c;
+
+#ifdef nope
+	/* Enable interrupts and keyboard controller */
+	while (inb(0x64)&2); outb(0x64,0x60);
+	while (inb(0x64)&2); outb(0x60,0x4D);
+
+	/* Start keyboard stuff RESET */
+	while (inb(0x64)&2);	/* wait input ready */
+	outb(0x60,0xFF);	/* RESET */
+
+	while((c=inb(0x60))!=0xFA) ;
+#endif
+
+	/* While we are here, defeat gatea20 */
+	while (inb(0x64)&2);	/* wait input ready */
+	outb(0x64,0xd1);	
+	while (inb(0x64)&2);	/* wait input ready */
+	outb(0x60,0xdf);	
+	while (inb(0x64)&2);	/* wait input ready */
+	/*odt = bdt = 0;*/
+	inb(0x60);
 }

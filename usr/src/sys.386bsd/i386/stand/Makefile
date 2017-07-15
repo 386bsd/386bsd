@@ -41,7 +41,7 @@ wdbootblk.o: wdbootblk.c
 	${CPP} -E -DLOCORE -DRELOC=0x${RELOC} wdbootblk.c | ${AS} -o $@
 
 fdbootblk.o: fdbootblk.c 
-	${CPP} -E -DLOCORE -DRELOC=0x${RELOC} fdbootblk.c | ${AS} -o $@
+	${CPP} -E -DLOCORE -DDEBUG=99 -DRELOC=0x${RELOC} fdbootblk.c | ${AS} -o $@
 
 asbootblk.o: asbootblk.c 
 	cc -c -O -DRELOC=0x${RELOC} ${INCPATH} asbootblk.c
@@ -55,6 +55,7 @@ wdboot: wdbootblk.o
 bootwd:	wsrt0.o boot.o bmap.o cga.o fs.o kbd.o prf.o wd.o printf.o breadwd.o
 	${LD} -N -T ${RELOC2} wsrt0.o boot.o bmap.o cga.o kbd.o prf.o printf.o \
 		breadwd.o fs.o wd.o -lc
+	cp a.out bootwd.syms
 	size a.out
 	rm -f $@; strip a.out; trimhd 32 <a.out >$@; rm -f a.out; ls -l $@
 

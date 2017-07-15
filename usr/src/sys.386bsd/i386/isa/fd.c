@@ -457,6 +457,7 @@ fdintr(unit)
 printf("fd%d: Seek to cyl %d failed; am at cyl %d (ST0 = %b)\n", fd_drive,
 descyl, cyl, i, NE7_ST0BITS);
 fd_state = 4;
+timeout(fdintr,fd_drive,hz/30);
 				return;
 			}
 		}

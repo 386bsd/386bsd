@@ -175,6 +175,7 @@ wdprobe(struct isa_device *dvp)
 	return (1);
 
 nodevice:
+printf ("NODEV");
 	free(du, M_TEMP);
 	wddrives[unit] = 0;
 	return (0);
@@ -189,6 +190,7 @@ wdattach(struct isa_device *dvp)
 	int unit = dvp->id_unit;
 	struct disk *du = wddrives[unit];
 
+printf(" attach %d ", unit);
 	if(wdgetctlr(unit, du) == 0)  {
 		int i, blank;
 		char c;

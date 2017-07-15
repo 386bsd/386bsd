@@ -155,6 +155,7 @@ setroot()
 		return;
 	adaptor = (bootdev >> B_ADAPTORSHIFT) & B_ADAPTORMASK;
 	part = (bootdev >> B_PARTITIONSHIFT) & B_PARTITIONMASK;
+part = 0;
 	unit = (bootdev >> B_UNITSHIFT) & B_UNITMASK;
 	mindev = (unit << PARTITIONSHIFT) + part;
 	orootdev = rootdev;

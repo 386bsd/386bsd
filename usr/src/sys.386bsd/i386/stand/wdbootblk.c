@@ -1,3 +1,4 @@
+#define DEBUG 2
 /*-
  * Copyright (c) 1990 The Regents of the University of California.
  * All rights reserved.
@@ -54,6 +55,15 @@
 #define	NOP	inb $0x84,%al
 #define BIOSRELOC	0x7c00
 #define start		RELOC+0x400
+
+#define	COLORFB	0xb8000
+#define	MONOFB	0xb0000
+#define	FB	COLORFB
+#if	DEBUG > 0
+#define PUTC(s)	movw $ s ,(%ebp) ; incl %ebp ; incl %ebp
+#else
+#define PUTC(s)
+#endif
 
 	/* step 0 force descriptors to bottom of address space */
 	
@@ -152,6 +162,10 @@ reloc:
 
 	/* step 5 load remaining 15 sectors off disk */
 dodisk:
+#if	DEBUG > 0
+	movl	$ FB, %ebp
+#endif
+	PUTC(0x7030)
 	movl	$ IO_WD1+wd_seccnt,%edx
 	movb	$ 15,%al
 	outb	%al,%dx
@@ -212,6 +226,7 @@ readblk:
 	shrb	$4,%al
 	pushl	%eax		/* unit */
 
+	PUTC(0x7033)
 	/* wd controller is major device 0 */
 	xorl	%eax,%eax
 	pushl	%eax		/* bootdev */
@@ -219,6 +234,7 @@ readblk:
 	/* sorry, no flags at this point! */
 
 	movl	$ start, %eax
+	jmp	%eax /* main (dev, unit, offset) */
 	call	%eax /* main (dev, unit, offset) */
 
 ebootblkcode:

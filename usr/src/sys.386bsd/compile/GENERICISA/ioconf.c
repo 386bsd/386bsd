@@ -34,6 +34,7 @@ extern struct isa_driver wtdriver; extern V(wt0)();
 struct isa_device isa_devtab_bio[] = {
 /* driver 	iobase	irq   drq     maddr    msiz    intr   unit */
 { &wddriver,    IO_WD1, IRQ14, -1,  C 0x00000,     0, V(wd0),   0 },
+{ &wddriver,    IO_WD1, IRQ14, -1,  C 0x00000,     0, V(wd0),   1 },
 { &fddriver,    IO_FD1,  IRQ6,  2,  C 0x00000,     0, V(fd0),   0 },
 { &asdriver,     0x330, IRQ11,  5,  C 0x00000,     0, V(as0),   0 },
 { &wtdriver,     0x300,  IRQ5,  1,  C 0x00000,     0, V(wt0),   0 },

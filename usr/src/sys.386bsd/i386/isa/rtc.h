@@ -49,7 +49,7 @@
 #define RTC_WDAY	0x06	/* week day */
 #define RTC_DAY		0x07	/* day of month */
 #define RTC_MONTH	0x08	/* month of year */
-#define RTC_YEAR	0x09	/* month of year */
+#define RTC_YEAR	0x09	/* year in century */
 #define RTC_STATUSA	0x0a	/* status register A */
 #define  RTCSA_TUP	 0x80	/* time update, don't look now */
 

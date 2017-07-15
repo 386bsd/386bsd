@@ -506,6 +506,7 @@ int	dumpsize = 0;		/* also for savecore */
 dumpsys()
 {
 
+	return; /* XXX until it doesn't overwrite the filesystem/disklabel */
 	if (dumpdev == NODEV)
 		return;
 	if ((minor(dumpdev)&07) != 1)

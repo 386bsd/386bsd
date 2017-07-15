@@ -46,7 +46,7 @@
 #include "saio.h"
 
 #define NUMRETRY 10
-/*#define FDDEBUG*/
+#define FDDEBUG
 
 #define NFD 2
 #define FDBLK 512
