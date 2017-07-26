@@ -1,0 +1,6 @@
+port port1
+type modem
+carrier true
+device /dev/com2
+speed 2400
+dialer hayes

@@ -1,0 +1,7 @@
+system NAME_TO_BE_CALLED_HERE
+chat "" \r\c gin:-BREAK-gin:-BREAK-gin:-BREAK-gin:-BREAK-gin: \d\d\d\L assword: \d\d\P
+call-login YOUR_SYSTEM_NAME_HERE
+call-password YOUR_SYSTEM_NAME_LOGIN_PASSWORD_HERE
+time Any
+phone 5359103
+port port1
