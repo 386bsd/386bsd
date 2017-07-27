@@ -593,8 +593,8 @@ do_swapspec(f, name)
 	if (!eq(name, "generic"))
 		fprintf(f, "swap%s.o: swap%s.c\n", name, name);
 	else
-		fprintf(f, "swapgeneric.o: ../%s/swapgeneric.c\n",
-			machinename);
+		fprintf(f, "swapgeneric.o: ../../%s/%s/swapgeneric.c\n",
+			machinename, machinename);
 	fprintf(f, "\t${NORMAL_C}\n\n");
 }
 

@@ -37,6 +37,7 @@
 #define	BSD	199103	 /* CSRG: March, 1991 system version (year & month) */
 #define BSD4_3	1
 #define BSD4_4	0.5
+#define DES	1	/* contains DES encryption */
 
 #ifndef NULL
 #define	NULL	0
