@@ -112,10 +112,10 @@ struct buf
 #define RND	(MAXBSIZE/DEV_BSIZE)
 #if	((BUFHSZ&(BUFHSZ-1)) == 0)
 #define	BUFHASH(dvp, dblkno)	\
-	((struct buf *)&bufhash[((int)(dvp)+(((int)(dblkno))/RND))&(BUFHSZ-1)])
+	((struct buf *)&bufhash[((int)(dvp)/sizeof(struct vnode)+(((int)(dblkno))/RND))&(BUFHSZ-1)])
 #else
 #define	BUFHASH(dvp, dblkno)	\
-	((struct buf *)&bufhash[((int)(dvp)+(((int)(dblkno))/RND)) % BUFHSZ])
+	((struct buf *)&bufhash[((int)(dvp)/sizeof(struct vnode)+(((int)(dblkno))/RND)) % BUFHSZ])
 #endif
 
 struct	buf *buf;		/* the buffer pool itself */

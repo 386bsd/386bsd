@@ -344,6 +344,7 @@ start:
 		bp->b_flags = B_BUSY | B_INVAL;
 		bremfree(bp);
 		bp->b_un.b_addr = addr;
+		bp->b_bufsize = sz;
 		goto fillin;
 	}
 

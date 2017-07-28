@@ -99,7 +99,6 @@ vm_pageout_scan()
 	splx(s);
 
 	if (free < vm_page_free_target) {
-		swapout_threads();
 
 		/*
 		 *	Be sure the pmap system is updated so
