@@ -218,6 +218,8 @@ spec_read(vp, uio, ioflag, cred)
 				return (error);
 			}
 			error = uiomove(bp->b_un.b_addr + on, n, uio);
+			if (n + on == bsize)
+				bp->b_flags |= B_AGE;
 			brelse(bp);
 		} while (error == 0 && uio->uio_resid > 0 && n != 0);
 		return (error);
