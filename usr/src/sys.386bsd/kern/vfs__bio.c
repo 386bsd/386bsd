@@ -305,6 +305,7 @@ brelse(register struct buf *bp)
 
 int freebufspace;
 int allocbufspace;
+struct buf *mis_sized_bp = (struct buf *) 0;
 
 /*
  * Find a buffer which is available for use.
@@ -344,6 +345,7 @@ start:
 		bp->b_flags = B_BUSY | B_INVAL;
 		bremfree(bp);
 		bp->b_un.b_addr = addr;
+if (round_page(sz) != sz) /* XXX */
 		bp->b_bufsize = sz;
 		goto fillin;
 	}
@@ -441,9 +443,10 @@ getblk(register struct vnode *vp, daddr_t blkno, int size)
 			}
 			bp->b_flags |= B_BUSY | B_CACHE;
 			bremfree(bp);
-			if (size > bp->b_bufsize)
-				panic("now what do we do?");
-			/* if (bp->b_bufsize != size) allocbuf(bp, size); */
+			/*if (size > bp->b_bufsize)
+				panic("now what do we do?");*/
+			if (bp->b_bufsize != size)
+				allocbuf(bp, size);
 		} else {
 
 			if((bp = getnewbuf(size)) == 0) continue;
@@ -503,11 +506,11 @@ allocbuf(register struct buf *bp, int size)
 #endif /* notyet */
 
 	/* copy the old into the new, up to the maximum that will fit */
-	bcopy (bp->b_un.b_addr, newcontents, min(bp->b_bufsize, size));
+	/*if (bp->b_bufsize != 0)*/ bcopy (bp->b_un.b_addr, newcontents, min(bp->b_bufsize, size));
 
 	/* return old contents to free heap */
 #ifndef notyet
-	free (bp->b_un.b_addr, M_TEMP);
+	/*if (bp->b_bufsize != 0)*/ free (bp->b_un.b_addr, M_TEMP);
 #else /* notyet */
 	if (round_page(bp->b_bufsize) == bp->b_bufsize)
 		kmem_free_wakeup(buffer_map, bp->b_un.b_addr, bp->b_bufsize);
