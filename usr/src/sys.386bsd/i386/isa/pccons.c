@@ -348,10 +348,11 @@ pcstart(tp)
 	if (RB_LEN(&tp->t_out) == 0)
 		goto out;
 	c = getc(&tp->t_out);
-	/*tp->t_state |= TS_BUSY;*/
+	tp->t_state |= TS_BUSY;
 	splx(s);
 	sput(c, 0);
 	(void)spltty();
+	tp->t_state &= ~TS_BUSY;
 	} while(1);
 out:
 	splx(s);

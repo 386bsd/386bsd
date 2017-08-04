@@ -876,7 +876,7 @@ dcanon(cp, p)
 	     */
 	    p2 = cp + Strlen(p2);
 	    sp = newcp = (Char *) xmalloc((size_t)
-					  ((cc + Strlen(p2)) * sizeof(Char)));
+					  ((cc + Strlen(p2) + 1) * sizeof(Char)));
 	    while (*p1)
 		*sp++ = *p1++;
 	    while (*p2)

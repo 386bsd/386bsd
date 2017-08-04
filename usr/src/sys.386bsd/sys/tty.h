@@ -59,7 +59,7 @@ struct ringb {
 
 #define	RB_LEN(rp) \
 		((rp)->rb_hd <= (rp)->rb_tl ? (rp)->rb_tl - (rp)->rb_hd : \
-		RBSZ - 1 - ((rp)->rb_hd - (rp)->rb_tl))
+		RBSZ - ((rp)->rb_hd - (rp)->rb_tl))
 
 #define	RB_CONTIGPUT(rp) \
 		(RB_PRED(rp, (rp)->rb_hd) < (rp)->rb_tl ?  \

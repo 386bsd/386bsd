@@ -74,13 +74,15 @@ char *Reboot = "autoboot";
 
 char *newstring(), *malloc();
 extern int errno;
+sigset_t zeromask = 0;
 
 /* signal state of child process */
 #define	SIGNALSFORCHILD	 \
 	signal(SIGHUP, SIG_DFL); signal(SIGINT, SIG_DFL); \
 	signal(SIGTERM, SIG_DFL); signal(SIGALRM, SIG_DFL); \
 	signal(SIGTSTP, SIG_DFL); signal(SIGCHLD, SIG_DFL); \
-	signal(SIGTTIN, SIG_DFL); signal(SIGTTOU, SIG_DFL);
+	signal(SIGTTIN, SIG_DFL); signal(SIGTTOU, SIG_DFL); \
+	sigprocmask(SIG_SETMASK, &zeromask, (sigset_t *) 0);
 
 /* SIGHUP: reread /etc/ttys */
 void
@@ -295,7 +297,7 @@ top:
 	while(1) {
 		sigsetmask(mask);
 		pid = wait(&status);
-		sigblock(sigmask(SIGHUP) | sigmask(SIGTERM));
+		sigblock(sigmask(SIGHUP) | sigmask(SIGTERM) | sigmask(SIGCHLD));
 		if(pid < 0) {
 			sleep(5);
 			continue;
@@ -336,10 +338,11 @@ struct ttytab *tt;
 			tt->tt_status ^= TTY_LOGIN;
 		return;
 	}
-	signal(SIGHUP, SIG_DFL);
+	SIGNALSFORCHILD;
+	/*signal(SIGHUP, SIG_DFL);
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGTSTP, SIG_DFL);
-	sigsetmask(0);
+	sigsetmask(0);*/
 	strcpy(p, tt->tt_getty);
 	while(sp < &sargv[NARG - 2]) {
 		while(isspace(*p))
@@ -396,7 +399,7 @@ char *s;
 	login_tty(open("/dev/console", 2));
 	writes(2, "init FATAL error: ");
 	perror(s);
-	exit(1);
+	_exit(1);
 	/* panic: init died */
 }
 
