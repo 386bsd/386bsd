@@ -72,7 +72,7 @@ bad:
  * Must be called at splimp.
  */
 /* ARGSUSED */
-m_clalloc(ncl, canwait)
+m_clalloc(ncl, nowait)
 	register int ncl;
 {
 	int npg, mbx;
@@ -81,7 +81,7 @@ m_clalloc(ncl, canwait)
 	static int logged;
 
 	npg = ncl * CLSIZE;
-	p = (caddr_t)kmem_malloc(mb_map, ctob(npg), canwait);
+	p = (caddr_t)kmem_malloc(mb_map, ctob(npg), !nowait);
 	if (p == NULL) {
 		if (logged == 0) {
 			logged++;
@@ -153,32 +153,32 @@ m_reclaim()
  * for critical paths.
  */
 struct mbuf *
-m_get(canwait, type)
-	int canwait, type;
+m_get(nowait, type)
+	int nowait, type;
 {
 	register struct mbuf *m;
 
-	MGET(m, canwait, type);
+	MGET(m, nowait, type);
 	return (m);
 }
 
 struct mbuf *
-m_gethdr(canwait, type)
-	int canwait, type;
+m_gethdr(nowait, type)
+	int nowait, type;
 {
 	register struct mbuf *m;
 
-	MGETHDR(m, canwait, type);
+	MGETHDR(m, nowait, type);
 	return (m);
 }
 
 struct mbuf *
-m_getclr(canwait, type)
-	int canwait, type;
+m_getclr(nowait, type)
+	int nowait, type;
 {
 	register struct mbuf *m;
 
-	MGET(m, canwait, type);
+	MGET(m, nowait, type);
 	if (m == 0)
 		return (0);
 	bzero(mtod(m, caddr_t), MLEN);
