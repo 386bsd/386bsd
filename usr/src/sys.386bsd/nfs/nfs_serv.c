@@ -588,9 +588,8 @@ nfsrv_create(mrep, md, dpos, cred, xid, mrq, repstat, p)
 	VATTR_NULL(vap);
 	nfsm_disect(tl, u_long *, NFSX_SATTR);
 	/*
-	 * Iff doesn't exist, create it
-	 * otherwise just truncate to 0 length
-	 *   should I set the mode too ??
+	 * If (and only if) it doesn't exist, create it
+	 * otherwise just assume existing length and new mode.
 	 */
 	if (nd.ni_vp == NULL) {
 		vap->va_type = IFTOVT(fxdr_unsigned(u_long, *tl));
@@ -654,7 +653,8 @@ nfsrv_create(mrep, md, dpos, cred, xid, mrq, repstat, p)
 		else
 			vput(nd.ni_dvp);
 		VOP_ABORTOP(&nd);
-		vap->va_size = 0;
+		vap->va_size = fxdr_unsigned(long, *(tl+3));
+		vap->va_mode = nfstov_mode(*tl);
 		if (error = VOP_SETATTR(vp, vap, cred, p)) {
 			vput(vp);
 			nfsm_reply(0);
