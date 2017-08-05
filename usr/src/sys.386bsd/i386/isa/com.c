@@ -132,7 +132,7 @@ struct isa_device *isdp;
 	int		port = isdp->id_iobase;
 
 	unit = isdp->id_unit - 1;
-	if (unit == comconsole)
+	if (isdp->id_unit == comconsole)
 		DELAY(1000);
 	com_addr[unit] = port;
 	com_active |= 1 << unit;
@@ -149,8 +149,8 @@ struct isa_device *isdp;
 	outb(port+com_ier, 0);
 	outb(port+com_mcr, 0 | MCR_IENABLE);
 #ifdef KGDB
-	if (kgdb_dev == makedev(commajor, unit+1)) {
-		if (comconsole == unit)
+	if (kgdb_dev == makedev(commajor, isdp->unit)) {
+		if (idsp->id_unit == comconsole)
 			kgdb_dev = -1;	/* can't debug over console port */
 		else {
 			(void) cominit(unit, kgdb_rate);
@@ -159,10 +159,10 @@ struct isa_device *isdp;
 				 * Print prefix of device name,
 				 * let kgdb_connect print the rest.
 				 */
-				printf("com%d: ", unit);
+				printf("com%d: ", isdp->unit);
 				kgdb_connect(1);
 			} else
-				printf("com%d: kgdb enabled\n", unit);
+				printf("com%d: kgdb enabled\n", isdp->unit);
 		}
 	}
 #endif
@@ -170,7 +170,7 @@ struct isa_device *isdp;
 	 * Need to reset baud rate, etc. of next print so reset comconsinit.
 	 * Also make sure console is always "hardwired"
 	 */
-	if (unit == comconsole) {
+	if (isdp->id_unit == comconsole) {
 		comconsinit = 0;
 		comsoftCAR |= (1 << unit);
 	}
@@ -185,12 +185,13 @@ comopen(dev_t dev, int flag, int mode, struct proc *p)
 	int error = 0;
  
 	unit = UNIT(dev);
-	if (unit >= NCOM || (com_active & (1 << unit)) == 0)
+	/* labelled com 1/2/3/4, internally 0-3 */
+	if (minor(dev) == 0 || minor(dev) > NCOM || (com_active & (1 << unit)) == 0)
 		return (ENXIO);
 	tp = &com_tty[unit];
 	tp->t_oproc = comstart;
 	tp->t_param = comparam;
-	tp->t_dev = dev;
+	tp->t_dev = minor(dev);
 	if ((tp->t_state & TS_ISOPEN) == 0) {
 		tp->t_state |= TS_WOPEN;
 		ttychars(tp);
@@ -239,7 +240,7 @@ comclose(dev, flag, mode, p)
 	outb(com+com_cfcr, inb(com+com_cfcr) & ~CFCR_SBREAK);
 #ifdef KGDB
 	/* do not disable interrupts if debugging */
-	if (kgdb_dev != makedev(commajor, unit+1))
+	if (kgdb_dev != makedev(commajor, minor(dev)))
 #endif
 	outb(com+com_ier, 0);
 	if (tp->t_cflag&HUPCL || tp->t_state&TS_WOPEN || 
@@ -271,7 +272,7 @@ comwrite(dev, uio, flag)
 	 * is not the console.  In that situation we don't need/want the X
 	 * server taking over the console.
 	 */
-	if (constty && unit == comconsole)
+	if (constty && dev == comconsole)
 		constty = NULL;
 	return ((*linesw[tp->t_line].l_write)(tp, uio, flag));
 }
@@ -300,7 +301,7 @@ comintr(unit)
 #define	RCVBYTE() \
 			code = inb(com+com_data); \
 			if ((tp->t_state & TS_ISOPEN) == 0) { \
-				if (kgdb_dev == makedev(commajor, unit+1) && \
+				if (kgdb_dev == makedev(commajor, tp->t_dev) && \
 				    code == FRAME_END) \
 					kgdb_connect(0); /* trap into kgdb */ \
 			} else \
@@ -337,7 +338,7 @@ comintr(unit)
 			if (code & IIR_NOPEND)
 				return (1);
 			log(LOG_WARNING, "com%d: weird interrupt: 0x%x\n",
-			    unit, code);
+			    tp->t_dev, code);
 			/* fall through */
 		case IIR_MLSC:
 			commint(unit, com);
@@ -359,7 +360,7 @@ comeint(unit, stat, com)
 #ifdef KGDB
 		/* we don't care about parity errors */
 		if (((stat & (LSR_BI|LSR_FE|LSR_PE)) == LSR_PE) &&
-		    kgdb_dev == makedev(commajor, unit+1) && c == FRAME_END)
+		    kgdb_dev == makedev(commajor, tp->t_dev) && c == FRAME_END)
 			kgdb_connect(0); /* trap into kgdb */
 #endif
 		return;
@@ -477,7 +478,7 @@ comparam(tp, t)
 	com = com_addr[unit];
 	outb(com+com_ier, IER_ERXRDY | IER_ETXRDY | IER_ERLS /*| IER_EMSC*/);
 	if (ospeed == 0) {
-		(void) commctl(unit, 0, DMSET);	/* hang up line */
+		(void) commctl(tp->t_dev, 0, DMSET);	/* hang up line */
 		return(0);
 	}
 	outb(com+com_cfcr, inb(com+com_cfcr) | CFCR_DLAB);
@@ -618,6 +619,7 @@ comcnprobe(cp)
 	/* initialize required fields */
 	cp->cn_dev = makedev(commajor, unit+1);
 	cp->cn_tp = &com_tty[unit];
+	cp->cn_tp->t_dev = cp->cn_dev;
 #ifdef	COMCONSOLE
 	cp->cn_pri = CN_REMOTE;		/* Force a serial port console */
 #else
