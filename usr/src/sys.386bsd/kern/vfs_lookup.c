@@ -325,7 +325,7 @@ dirloop:
 	 */
 	if (ndp->ni_isdotdot) {
 		for (;;) {
-			if (dp == ndp->ni_rootdir) {
+			if (dp == ndp->ni_rootdir || dp == rootdir) {
 				ndp->ni_dvp = dp;
 				ndp->ni_vp = dp;
 				VREF(dp);

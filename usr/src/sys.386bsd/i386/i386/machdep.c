@@ -167,6 +167,7 @@ again:
 			bufpages = physmem / 10 / CLSIZE;
 		else
 			bufpages = ((2 * 1024 * 1024 + physmem) / 20) / CLSIZE;
+	bufpages = min(NKMEMCLUSTERS/2, bufpages);
 	if (nbuf == 0) {
 		nbuf = bufpages / 2;
 		if (nbuf < 16)

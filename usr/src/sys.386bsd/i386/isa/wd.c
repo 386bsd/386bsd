@@ -235,7 +235,7 @@ wdstrategy(register struct buf *bp)
 	int	s;
 
 	/* valid unit, controller, and request?  */
-	if (unit >= NWD || bp->b_blkno < 0 || (du = wddrives[unit]) == 0) {
+	if (unit > NWD || bp->b_blkno < 0 || (du = wddrives[unit]) == 0) {
 		bp->b_error = EINVAL;
 		bp->b_flags |= B_ERROR;
 		goto done;
@@ -370,19 +370,18 @@ loop:
 	lp = &du->dk_dd;
 	secpertrk = lp->d_nsectors;
 	secpercyl = lp->d_secpercyl;
+	if ((du->dk_flags & DKFL_BSDLABEL) != 0 && wdpart(bp->b_dev) != WDRAW)
+		blknum += lp->d_partitions[wdpart(bp->b_dev)].p_offset;
 	cylin = blknum / secpercyl;
 	head = (blknum % secpercyl) / secpertrk;
 	sector = blknum % secpertrk;
-	if ((du->dk_flags & DKFL_BSDLABEL) != 0 && wdpart(bp->b_dev) != WDRAW)
-		cylin += lp->d_partitions[wdpart(bp->b_dev)].p_offset
-				/ secpercyl;
 
 	/* 
 	 * See if the current block is in the bad block list.
 	 * (If we have one, and not formatting.)
 	 */
-	if ((du->dk_flags & (/*DKFL_SINGLE|*/DKFL_BADSECT))
-		== (/*DKFL_SINGLE|*/DKFL_BADSECT))
+	if ((du->dk_flags & (DKFL_SINGLE|DKFL_BADSECT))
+		== (DKFL_SINGLE|DKFL_BADSECT))
 	    for (bt_ptr = du->dk_bad.bt_bad; bt_ptr->bt_cyl != -1; bt_ptr++) {
 		if (bt_ptr->bt_cyl > cylin)
 			/* Sorted list, and we passed our cylinder. quit. */
@@ -532,6 +531,7 @@ wdintr(struct intrframe wdif)
 		}
 #ifdef B_FORMAT
 		if (bp->b_flags & B_FORMAT) {
+			bp->b_error = EIO;
 			bp->b_flags |= B_ERROR;
 			goto done;
 		}
@@ -552,6 +552,7 @@ wdintr(struct intrframe wdif)
 						inb(wdc+wd_error), WDERR_BITS);
 #endif
 				}
+				bp->b_error = EIO;
 				bp->b_flags |= B_ERROR;	/* flag the error */
 			}
 		} else if((du->dk_flags&DKFL_QUIET) == 0) {
@@ -644,14 +645,16 @@ wdopen(dev_t dev, int flags, int fmt, struct proc *p)
 	char *msg;
 
 	unit = wdunit(dev);
-	if (unit >= NWD) return (ENXIO) ;
+	if (unit > NWD) return (ENXIO) ;
 
 	du = wddrives[unit];
+#ifdef junk
 	if (du == 0 && (unit&1) && wddrives[unit&~1]) {			/*XXX*/
 		du = wddrives[unit] = (struct disk *)			/*XXX*/
 			malloc (sizeof(struct disk), M_TEMP, M_NOWAIT);	/*XXX*/
 		du->dk_port = wddrives[unit&~1]->dk_port;		/*XXX*/
 	}								/*XXX*/
+#endif
 	if (du == 0) return (ENXIO) ;
 
 	if ((du->dk_flags & DKFL_BSDLABEL) == 0) {
@@ -779,6 +782,11 @@ wdcontrol(register struct buf *bp)
 
 		outb(wdc+wd_sdh, WDSD_IBM | (unit << 4));
 		wdtab.b_active = 1;
+
+ 		/* wait for drive and controller to become ready */
+ 		for (i = 1000000; (inb(wdc+wd_status) & (WDCS_READY|WDCS_BUSY))
+ 				  != WDCS_READY && i-- != 0; )
+ 			;
 		outb(wdc+wd_command, WDCC_RESTORE | WD_STEP);
 		du->dk_state++;
 		splx(s);
@@ -792,8 +800,10 @@ wdcontrol(register struct buf *bp)
 					stat, WDCS_BITS, inb(wdc+wd_error),
 					WDERR_BITS);
 			}
-			if (++wdtab.b_errcnt < RETRIES)
+			if (++wdtab.b_errcnt < RETRIES) {
+				du->dk_state = WANTOPEN;
 				goto tryagainrecal;
+			}
 			bp->b_error = ENXIO;	/* XXX needs translation */
 			goto badopen;
 		}
@@ -819,6 +829,7 @@ badopen:
 		printf(": status %b error %b\n",
 			stat, WDCS_BITS, inb(wdc + wd_error), WDERR_BITS);
 	bp->b_flags |= B_ERROR;
+	bp->b_error = EIO;
 	return(1);
 }
 
@@ -876,8 +887,10 @@ wdsetctlr(dev_t dev, struct disk *du) {
 	outb(wdc+wd_seccnt, du->dk_dd.d_nsectors);
 	stat = wdcommand(du, WDCC_IDC);
 
-	if (stat < 0)
+	if (stat < 0) {
+		splx(x);
 		return(stat);
+	}
 	if (stat & WDCS_ERR)
 		printf("wdsetctlr: status %b error %b\n",
 			stat, WDCS_BITS, inb(wdc+wd_error), WDERR_BITS);
@@ -890,7 +903,7 @@ wdsetctlr(dev_t dev, struct disk *du) {
  */
 static int
 wdgetctlr(int u, struct disk *du) {
-	int stat, x, i, wdc;
+	int stat, x, i, wdc, err;
 	char tb[DEV_BSIZE];
 	struct wdparams *wp;
 
@@ -899,11 +912,14 @@ wdgetctlr(int u, struct disk *du) {
 	outb(wdc+wd_sdh, WDSD_IBM | (u << 4));
 	stat = wdcommand(du, WDCC_READP);
 
-	if (stat < 0)
-		return(stat);
-	if (stat & WDCS_ERR) {
+	if (stat < 0) {
 		splx(x);
-		return(inb(wdc+wd_error));
+		return(stat);
+	}
+	if (stat & WDCS_ERR) {
+		err = inb(wdc+wd_error);
+		splx(x);
+		return(err);
 	}
 
 	/* obtain parameters */
@@ -938,6 +954,7 @@ wp->wdp_cntype, wp->wdp_cnsbsz, wp->wdp_model);*/
 
 	/* XXX sometimes possibly needed */
 	(void) inb(wdc+wd_status);
+	splx(x);
 	return (0);
 }
 
@@ -1091,7 +1108,7 @@ wdsize(dev_t dev)
 	int unit = wdunit(dev), part = wdpart(dev), val;
 	struct disk *du;
 
-	if (unit >= NWD)
+	if (unit > NWD)
 		return(-1);
 
 	du = wddrives[unit];
@@ -1131,7 +1148,7 @@ wddump(dev_t dev)			/* dump core after a system crash */
 	unit = wdunit(dev);		/* eventually support floppies? */
 	part = wdpart(dev);		/* file system */
 	/* check for acceptable drive number */
-	if (unit >= NWD) return(ENXIO);
+	if (unit > NWD) return(ENXIO);
 
 	du = wddrives[unit];
 	if (du == 0) return(ENXIO);

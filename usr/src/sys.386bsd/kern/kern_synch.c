@@ -189,7 +189,7 @@ schedcpu()
 #define	PPQ	(128 / NQS)		/* priorities per queue */
 			if ((p != curproc) &&
 			    p->p_stat == SRUN &&
-			    (p->p_flag & SLOAD) &&
+			    (p->p_flag & (SLOAD|SWEXIT)) == SLOAD &&
 			    (p->p_pri / PPQ) != (p->p_usrpri / PPQ)) {
 				remrq(p);
 				p->p_pri = p->p_usrpri;

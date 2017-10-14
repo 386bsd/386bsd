@@ -689,14 +689,26 @@ void vm_page_deactivate(m)
 	 *	inactive ones.
 	 */
 
-	if (m->active) {
-		pmap_clear_reference(VM_PAGE_TO_PHYS(m));
-		queue_remove(&vm_page_queue_active, m, vm_page_t, pageq);
+	if (!m->inactive && m->wire_count == 0) {
+
+		/* lose reference bit and any adr. trans. to detect reuse */
+                pmap_clear_reference(VM_PAGE_TO_PHYS(m));
+		pmap_page_protect(VM_PAGE_TO_PHYS(m), VM_PROT_NONE);
+
+		/* remove from active queue */
+		if (m->active) {
+			queue_remove(&vm_page_queue_active, m, vm_page_t, pageq);
+			m->active = FALSE;
+			vm_page_active_count--;
+		}
+
+		/* insert in inactive queue */
 		queue_enter(&vm_page_queue_inactive, m, vm_page_t, pageq);
 		m->active = FALSE;
 		m->inactive = TRUE;
-		vm_page_active_count--;
 		vm_page_inactive_count++;
+
+		/* has page been modified? */
 		if (pmap_is_modified(VM_PAGE_TO_PHYS(m)))
 			m->clean = FALSE;
 		m->laundry = !m->clean;

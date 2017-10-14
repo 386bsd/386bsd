@@ -553,13 +553,13 @@ swap_pager_io(swp, m, flags)
 	splx(s);
 			return(VM_PAGER_FAIL);
 		}
-	splx(s);
 #ifdef DEBUG
 		if (swpagerdebug & (SDB_FULL|SDB_ALLOCBLK))
 			printf("swpg_io: %x alloc blk %x at ix %x\n",
 			       swp->sw_blocks, swb->swb_block, ix);
 #endif
 	}
+	/*splx(s);*/
 
 	/*
 	 * Allocate a kernel virtual address and initialize so that PTE
@@ -570,7 +570,7 @@ swap_pager_io(swp, m, flags)
 	/*
 	 * Get a swap buffer header and perform the IO
 	 */
-	s = splbio();
+	/*s = splbio();*/
 	while (bswlist.av_forw == NULL) {
 #ifdef DEBUG
 		if (swpagerdebug & SDB_ANOM)

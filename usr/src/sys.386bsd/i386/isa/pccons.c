@@ -704,11 +704,32 @@ u_char ka;
 					/* crtat -= vs.ncol*vs.cx; /* XXX */
 					vs.esc = 0; vs.ebrac = 0; vs.eparm = 0;
 					break;
+				case 'M': /* delete line. */
+					vs.row = (crtat - Crtat) / vs.ncol;
+					if (vs.row + 1 < vs.nrow) {
+						bcopy(Crtat+vs.ncol*(vs.row+1),
+						Crtat+vs.ncol*vs.row,
+						(vs.nrow-(vs.row+1)) * vs.ncol * CHR);
+					}
+					fillw((at <<8)+' ', Crtat+vs.ncol*(vs.nrow-1), vs.ncol);
+					vs.esc = 0; vs.ebrac = 0; vs.eparm = 0;
+					break;
 				case 'T':  /* scroll down cx lines */
 					if (vs.cx <= 0) vs.cx = 1;
 					bcopy(Crtat, Crtat+vs.ncol*vs.cx, vs.ncol*(vs.nrow-vs.cx)*CHR);
 					fillw((at <<8)+' ', Crtat, vs.ncol*vs.cx);
 					/* crtat += vs.ncol*vs.cx; /* XXX */
+					vs.esc = 0; vs.ebrac = 0; vs.eparm = 0;
+					break;
+				case 'L' : /* insert line */
+					vs.row = (crtat- Crtat) / vs.ncol;
+					if (vs.row +1 < vs.nrow) {
+						bcopy(Crtat+vs.ncol*vs.row,
+						Crtat+vs.ncol*(vs.row+1),
+						(vs.nrow-(vs.row+1)) * vs.ncol * CHR);
+					}
+					fillw((at <<8)+' ', Crtat+vs.ncol*vs.row,
+ 						vs.ncol);
 					vs.esc = 0; vs.ebrac = 0; vs.eparm = 0;
 					break;
 				case ';': /* Switch params in cursor def */

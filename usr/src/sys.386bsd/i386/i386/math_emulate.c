@@ -163,7 +163,7 @@ math_emulate(struct trapframe * info)
 			/* incomplete and totally inadequate -wfj */
 			Fscale(PST(0), PST(1), &tmp);
 			real_to_real(&tmp,&ST(0));
-			/* fall into .. */
+			return(0);
 		case 0x1fc:
 			frndint(PST(0),&tmp);
 			real_to_real(&tmp,&ST(0));
@@ -1388,6 +1388,10 @@ void Fscale(const temp_real *a, const temp_real *b, temp_real *c)
 
 	*c = *a;
 	real_to_int(b, &ti);
+	if(!c->a && !c->b) {
+		c->exponent = 0;
+		return;
+	}
 	if(ti.sign)
 		c->exponent -= ti.a;
 	else

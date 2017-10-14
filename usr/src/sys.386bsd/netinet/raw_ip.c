@@ -189,10 +189,10 @@ rip_ctloutput(op, so, level, optname, m)
 }
 
 /*ARGSUSED*/
-rip_usrreq(so, req, m, nam, rights, control)
+rip_usrreq(so, req, m, nam, control)
 	register struct socket *so;
 	int req;
-	struct mbuf *m, *nam, *rights, *control;
+	struct mbuf *m, *nam, *control;
 {
 	register int error = 0;
 	register struct raw_inpcb *rp = sotorawinpcb(so);

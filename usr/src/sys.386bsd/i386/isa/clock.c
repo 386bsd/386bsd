@@ -137,7 +137,7 @@ inittodr(base)
 	while ((sa&RTCSA_TUP) == RTCSA_TUP)
 		sa = rtcin(RTC_STATUSA);
 	years = bcd(rtcin(RTC_CENTURY))*100 + bcd(rtcin(RTC_YEAR));
-	leap = !(sec % 4); sec = ytos(years); /* year    */
+	leap = !(years % 4); sec = ytos(years); /* year    */
 	yd = mtos(bcd(rtcin(RTC_MONTH)),leap); sec += yd;	/* month   */
 	t = (bcd(rtcin(RTC_DAY))-1) * 24*60*60; sec += t; yd += t; /* date    */
 	day_week = rtcin(RTC_WDAY);				/* day     */

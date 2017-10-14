@@ -299,7 +299,7 @@ wdinit(io)
 	DELAY(1000);
 	outb(wdc+wd_ctlr,2);
 	DELAY(1000);
-	while(inb(wdc+wd_altsts) & WDCS_BUSY);
+	while(inb(wdc+wd_status) & WDCS_BUSY);
 	outb(wdc+wd_ctlr,8);
 
 	/* set SDH, step rate, do restore to recalibrate drive */

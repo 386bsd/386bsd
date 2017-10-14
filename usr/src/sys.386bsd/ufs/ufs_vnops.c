@@ -497,6 +497,8 @@ ufs_read(vp, uio, ioflag, cred)
 			return (error);
 		}
 		error = uiomove(bp->b_un.b_addr + on, (int)n, uio);
+		if (n + on == fs->fs_bsize || uio->uio_offset == ip->i_size)
+			bp->b_flags |= B_AGE;
 		brelse(bp);
 	} while (error == 0 && uio->uio_resid > 0 && n != 0);
 	return (error);

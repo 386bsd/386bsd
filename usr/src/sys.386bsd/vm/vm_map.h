@@ -199,6 +199,6 @@ void		vm_map_verify_done();
 
 /* XXX: number of kernel maps and entries to statically allocate */
 #define MAX_KMAP	10
-#define	MAX_KMAPENT	500
+#define	MAX_KMAPENT	1500
 
 #endif	_VM_MAP_
