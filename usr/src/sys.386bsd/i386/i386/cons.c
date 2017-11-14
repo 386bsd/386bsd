@@ -52,14 +52,19 @@
 #include "cons.h"
 
 /* XXX - all this could be autoconfig()ed */
+#include "pc.h"
+#if NPC > 0
 int pccnprobe(), pccninit(), pccngetc(), pccnputc();
+#endif
 #include "com.h"
 #if NCOM > 0
 int comcnprobe(), comcninit(), comcngetc(), comcnputc();
 #endif
 
 struct	consdev constab[] = {
+#if NPC > 0
 	{ pccnprobe,	pccninit,	pccngetc,	pccnputc },
+#endif
 #if NCOM > 0
 	{ comcnprobe,	comcninit,	comcngetc,	comcnputc },
 #endif

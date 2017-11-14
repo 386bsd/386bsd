@@ -131,7 +131,7 @@ struct isa_device *isdp;
 	u_char		unit;
 	int		port = isdp->id_iobase;
 
-	unit = isdp->id_unit - 1;
+	unit = isdp->id_unit;
 	if (isdp->id_unit == comconsole)
 		DELAY(1000);
 	com_addr[unit] = port;
@@ -284,7 +284,6 @@ comintr(unit)
 	register u_char code;
 	register struct tty *tp;
 
-	unit--;
 	com = com_addr[unit];
 	while (1) {
 		code = inb(com+com_iir);
