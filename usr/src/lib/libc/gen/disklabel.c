@@ -81,6 +81,27 @@ getdiskbyname(name)
 	    (*cq = *cp) && *cq != '|' && *cq != ':')
 		cq++, cp++;
 	*cq = '\0';
+
+	/*
+	 * check for minimal sane disktab entry
+	 */
+
+	/* an entry must have space, either CHS or SCSI / LBA or ...
+	if (dgetnum("su") > 0)
+		;
+	else  {
+		if (dgetnum("nc") > 0 && dgetnum("nt") > 0 && dgetnum("ns") > 0)
+			;
+		else
+			return ((struct disklabel *)0);
+	}
+
+	/* an entry must have at least a 'c' partition of non zero size */
+	if (dgetnum("pc") > 0 && dgetnum("oc") >= 0)
+		;
+	else
+		return ((struct disklabel *)0);
+
 	/*
 	 * boot name (optional)  xxboot, bootxx
 	 */
@@ -96,6 +117,9 @@ getdiskbyname(name)
 	if (dgetflag("sf"))
 		dp->d_flags |= D_BADSECT;
 
+	/*
+	 * build a label from disktab entry
+	 */
 #define getnumdflt(field, dname, dflt) \
 	{ int f = dgetnum(dname); \
 	(field) = f == -1 ? (dflt) : f; }
@@ -194,6 +218,7 @@ dgetent(bp, name)
 				i = 0;
 			}
 			c = ibuf[i++];
+			/* XXX if backslash escapes other white space, warn */
 			if (c == '\n') {
 				if (cp > bp && cp[-1] == '\\'){
 					cp--;

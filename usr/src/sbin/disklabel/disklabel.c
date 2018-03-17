@@ -55,6 +55,7 @@ static char sccsid[] = "@(#)disklabel.c	5.20 (Berkeley) 2/9/91";
 #define DKTYPENAMES
 #include <sys/disklabel.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <ctype.h>
 #include "pathnames.h"
 
@@ -131,6 +132,7 @@ int	debug;
 #endif
 
 #ifdef __386BSD__
+struct dos_partition dos_partitions[NDOSPART];
 struct dos_partition *dosdp;	/* 386BSD DOS partition, if found */
 struct dos_partition *readmbr(int);
 #endif
@@ -144,6 +146,7 @@ main(argc, argv)
 	FILE *t;
 	int ch, f, error = 0;
 	char *name = 0, *type;
+	off_t lseek(int, off_t, int);
 
 	while ((ch = getopt(argc, argv, "NRWerw")) != EOF)
 		switch (ch) {
@@ -217,12 +220,19 @@ main(argc, argv)
 	 * partition.
 	 */
 	dosdp = readmbr(f);
+#ifdef nope
+	/*
+         * This was supposed to be the BIOS Data Area (BDA)
+	 * (and Extended Bios Data Area - EBDA)
+	 * Needed by an storage array I think.
+	 */
 	{ int mfd; unsigned char params[0x10];
 		/* sleezy, but we need it fast! */
 		mfd = open("/dev/mem", 0);
-		lseek(mfd, 0x300, 0);
+		(void)lseek(mfd, (off_t)0x300, L_SET);
 		read (mfd, params, 0x10);
 	}
+#endif
 
 #endif
 
@@ -409,6 +419,7 @@ writelabel(f, boot, lp)
 		 * may prevent us from changing the current (in-core)
 		 * label.
 		 */
+#ifdef nope
 		if (ioctl(f, DIOCSDINFO, lp) < 0 &&
 		    errno != ENODEV && errno != ENOTTY) {
 			l_perror("ioctl DIOCSDINFO");
@@ -422,20 +433,22 @@ writelabel(f, boot, lp)
 		flag = 1;
 		if (ioctl(f, DIOCWLABEL, &flag) < 0)
 			perror("ioctl DIOCWLABEL");
+#endif
 		if (write(f, boot, lp->d_bbsize) != lp->d_bbsize) {
 			perror("write");
 			return (1);
 		}
 		flag = 0;
+#ifdef nope
 		(void) ioctl(f, DIOCWLABEL, &flag);
 	} else if (ioctl(f, DIOCWDINFO, lp) < 0) {
 		l_perror("ioctl DIOCWDINFO");
 		return (1);
+#endif
 	}
 
 	if (lp->d_type != DTYPE_SCSI && lp->d_flags & D_BADSECT) {
 		daddr_t alt;
-
 		alt = lp->d_ncylinders * lp->d_secpercyl - lp->d_nsectors;
 		for (i = 1; i < 11 && i < lp->d_nsectors; i += 2) {
 			(void)lseek(f, (off_t)((alt + i) * lp->d_secsize), L_SET);
@@ -496,7 +509,6 @@ struct dos_partition *
 readmbr(f)
 	int f;
 {
-	static struct dos_partition dos_partitions[NDOSPART];
 	struct dos_partition *dp, *bsdp;
 	char mbr[DEV_BSIZE];
 	int i, npart, nboot, njunk;
@@ -524,7 +536,7 @@ readmbr(f)
 	}
 
 	/* valid partition table? */
-	if (nboot != 1 || npart == 0 || njunk)
+	if (nboot <= 1 || npart == 0 || njunk)
 		return (0);
 	/* if no bsd partition, pass back first one */
 	if (!bsdp) {
@@ -636,9 +648,13 @@ makebootarea(boot, dp)
 	b = open(xxboot, O_RDONLY);
 	if (b < 0)
 		Perror(xxboot);
-	if (read(b, boot, (int)dp->d_secsize) < 0)
+	/* just the bootstrap, not the dos partitions or boot signature*/
+	if (read(b, boot, DOSPARTOFF) < 0)
 		Perror(xxboot);
 	close(b);
+	boot[dp->d_secsize - 2] = DOSBOOTSIG & 0xff;
+	boot[dp->d_secsize - 1] = DOSBOOTSIG >> 8;
+	bcopy(dos_partitions, boot+DOSPARTOFF, sizeof(dos_partitions));
 	b = open(bootxx, O_RDONLY);
 	if (b < 0)
 		Perror(bootxx);

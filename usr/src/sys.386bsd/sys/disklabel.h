@@ -294,6 +294,7 @@ struct partinfo {
 #define	DOSBBSECTOR	0	/* DOS boot block relative sector number */
 #define	DOSPARTOFF	446
 #define NDOSPART	4
+#define DOSBOOTSIG	0xaa55	/* DOS bootstrap signature */
 
 struct dos_partition {
 	unsigned char	dp_flag;	/* bootstrap flags */
