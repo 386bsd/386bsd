@@ -1,1 +1,0 @@
-void bpf_mtap(caddr_t arg, struct mbuf *m);

@@ -63,10 +63,10 @@
 int query(char *s, ...);
 extern char config_string[];
 
-static int console_minor;
-extern struct devif pc_devif;
-struct devif *console_devif = &pc_devif;
-struct devif *default_console_devif = &pc_devif;
+static int console_minor, console_major;
+struct devif *console_devif;
+struct devif *default_console_devif;
+
 static struct ldiscif *ldisc;
 
 /*
@@ -437,7 +437,7 @@ devif_open(dev_t dev, devif_type_t typ, int flag, struct proc *p) {
 	    major < sizeof chrmajtodevif / sizeof chrmajtodevif[0]) {
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_open)(dev, flag, S_IFCHR, p));
 			
@@ -487,7 +487,7 @@ devif_close(dev_t dev, devif_type_t typ, int flag, struct proc *p) {
 	    major < sizeof chrmajtodevif / sizeof chrmajtodevif[0]) {
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_close)(dev, flag, S_IFCHR, p));
 			
@@ -537,7 +537,7 @@ devif_ioctl(dev_t dev, devif_type_t typ, int cmd, caddr_t data, int flag,
 	chrcase:
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_ioctl)(dev, cmd, data, flag, p));
 			
@@ -574,7 +574,7 @@ devif_read(dev_t dev, devif_type_t typ, struct uio *uio, int flag) {
 	    major < sizeof chrmajtodevif / sizeof chrmajtodevif[0]) {
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_read)(dev, uio, flag));
 			
@@ -613,7 +613,7 @@ devif_write(dev_t dev, devif_type_t typ, struct uio *uio, int flag) {
 	    major < sizeof chrmajtodevif / sizeof chrmajtodevif[0]) {
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_write)(dev, uio, flag));
 			
@@ -653,7 +653,7 @@ devif_select(dev_t dev, devif_type_t typ, int rw, struct proc *p) {
 	chrcase:
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_select)(dev, rw, p));
 			
@@ -681,7 +681,7 @@ devif_mmap(dev_t dev, devif_type_t typ, int offset, int nprot) {
 	    major < sizeof chrmajtodevif / sizeof chrmajtodevif[0]) {
 		dif = chrmajtodevif[major];
 		if (dif == console_devif)
-			dev = makedev(major, console_minor);
+			dev = makedev(console_major, console_minor);
 		if (dif)
 			return ((dif->di_mmap)(dev, offset, nprot));
 			
@@ -1096,6 +1096,8 @@ console_config(char **cons_cfg, char **mod_cfg, struct devif *dif) {
 	char modname1[80]; /* XXX - should allow arbitrary size... */
 	int dummy;
 
+	/* XXX what if no console? what if multiple default consoles? */
+
 	/* is this a default console? */
 	cfg = *cons_cfg;
 
@@ -1112,8 +1114,8 @@ console_config(char **cons_cfg, char **mod_cfg, struct devif *dif) {
 	if (config_scan(cfg, mod_cfg) == 0)
 		return (0);
 
-	/* default console */
-	if (strcmp(modname1, "default") == 0)
+	/* select first default console if present */
+	if (strcmp(modname1, "default") == 0 && default_console_devif == 0)
 		default_console_devif = dif;
 
 	/* is it the same module? */
@@ -1121,21 +1123,23 @@ console_config(char **cons_cfg, char **mod_cfg, struct devif *dif) {
 		return(0);
 
 	/* set minor device */
-	console_minor = 0;
 	(void)cfg_number(cons_cfg, &console_minor);
 
-	/* consume major unit */
-	(void)cfg_number(mod_cfg, &dummy);
+	/* consume major unit, so driver config can work on return */
+	(void)cfg_number(mod_cfg, &console_major);
 
 	/* set console device interface */
-	/*console_devif = dif;*/
+	console_devif = dif;
 	chrmajtodevif[0] = dif;
 
-	/* if not default console, record use of console */
-	if (default_console_devif == 0) {
+	/* if not the default console, indicate the console used */
+#ifdef notdef
+	if (default_console_devif != dif) {
 		DELAY(10000);
-		printf("using console %s\n", dif->di_name);
+		/* di_name is setup after driver config, after we return ? */
+		printf("using console %s major %d minor %d\n", /* dif->di_name */ arg, console_major, console_minor);
 	}
+#endif
 
 	return (1);
 }

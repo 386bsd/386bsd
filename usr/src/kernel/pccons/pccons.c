@@ -1671,7 +1671,7 @@ pcselect(dev_t dev, int rw, struct proc *p) {
 }
 
 
-struct devif pc_devif =
+static struct devif pc_devif =
 {
 	{0}, -1, -2, 0, 0, 0, 0, 0, 0,
 	pcopen, pcclose, pcioctl, pcread, pcwrite, pcselect, pcmmap,
@@ -1695,11 +1695,22 @@ CONSOLE_MODCONFIG() {
 
 	if (console_config(&cfg1, &cfg2, &pc_devif) == 0)
 		return;
-#ifdef unneeded
+
 	/* probe for hardware */
+#ifdef notdef
 	new_isa_configure(&cfg2, &pcdriver);
+#else
+/*{
+struct isa_device adev;
+adev.id_unit = 0;
+adev.id_iobase = 0x3d0;
+pcprobe(&adev);
+pcattach(&adev);
+}*/
 #endif
+	printf("(set as console)\n");
 }
+
 
 #ifdef DEBUG
 /*

@@ -1,1 +1,0 @@
-void bpfattach(caddr_t *driverp, struct inet *ifp, u_int dlt, u_int hdrlen);

@@ -1,1 +1,0 @@
-void bpf_tap(caddr_t arg, u_char *pkt, u_int pktlen);

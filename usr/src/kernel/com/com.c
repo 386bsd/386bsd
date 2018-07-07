@@ -89,7 +89,7 @@ int	comconsole = -1;
 int	comconsinit;
 int	comdefaultrate = TTYDEF_SPEED;
 int	commajor;
-short com_addr[NCOM];
+short com_addr[NCOM]  = {0x3f8, 0x2f8}; /* XXX */
 struct	tty com_tty[NCOM];
 
 struct speedtab comspeedtab[] = {
@@ -132,8 +132,8 @@ comprobe(struct isa_device *dev)
 	if (dev->id_unit == '?')
 		dev->id_unit = lastunit;
 
-	if (dev->id_unit == comconsole)
-		return(1);
+	/*if (dev->id_unit == comconsole)
+		return(1);*/
 
 	/* force access to id reg */
 	outb(dev->id_iobase+com_cfcr, 0);
@@ -154,8 +154,8 @@ comattach(struct isa_device *isdp)
 	u_char		unit;
 	int		port = isdp->id_iobase;
 
-	if (isdp->id_unit == comconsole)
-		return;
+	/*if (isdp->id_unit == comconsole)
+		return;*/
 printf("com%d:", isdp->id_unit);
 	unit = isdp->id_unit - 1;
 	if (unit == comconsole)
@@ -751,6 +751,9 @@ comcnputc(dev_t dev, unsigned c)
 #ifdef lint
 	stat = dev; if (stat) return;
 #endif
+	if (com == 0)
+		return;
+
 	if (c == '\n')
 		comcnputc(dev, '\r');
 #ifdef KGDB
@@ -803,14 +806,25 @@ CONSOLE_MODCONFIG() {
 		return;
 
 	/* probe for hardware */
+#ifdef notdef
 	new_isa_configure(&cfg2, &comdriver);
+#else
+{
+struct isa_device adev;
+adev.id_unit = 1;
+adev.id_iobase = 0x3f8;
+comprobe(&adev);
+comattach(&adev);
+}
+#endif
 
 	/* baud rate? */
-	if (cfg_number(&cfg2, &speed) == 0)
+	if (cfg_number(&cfg1, &speed) == 0)
 		speed = TTYDEF_SPEED;
 
 	/* initialize hw */
 	cominit(0x1, speed);	/* XXX */
 	(void) commctl(0x1, MCR_DTR | MCR_RTS, DMSET);
 	comconsole = 1;
+	printf("(set as console)\n");
 }

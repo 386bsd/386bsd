@@ -193,10 +193,10 @@ isa_configure()
 	/*
 	 * Finish configuration of ISA devices.
 	 */
-	ttymask |= biomask + netmask;
+	/*ttymask |= biomask + netmask;
 	netmask |= biomask;
-	/* biomask |= ttymask ;  can some tty devices use buffers? */
-	/*printf("biomask %x ttymask %x netmask %x\n", biomask, ttymask, netmask); */
+	 biomask |= ttymask ;  can some tty devices use buffers? */
+	printf("biomask %x ttymask %x netmask %x\n", biomask, ttymask, netmask);
 
 	/* splat masks into place */
 	for (x = 0; x < 16; x++)
@@ -348,7 +348,11 @@ printf("\r                                                                  \r")
 				INTREN(isdp->id_irq);
 
 				if (dp->mask)
+/*{
+printf("mask before %x", *(dp->mask));*/
 					INTRMASK(*(dp->mask), isdp->id_irq);
+/*printf(" after %x ",  *(dp->mask));
+} */
 
 				setirq(ICU_OFFSET + intrno, irqvec [intrno]);
 				isa_vec[intrno] = dp->intr;
