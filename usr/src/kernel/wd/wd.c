@@ -270,7 +270,7 @@ wdstrategy(register struct buf *bp)
 	int	s;
 
 	/* valid unit, controller, and request?  */
-	if (unit >= NWD || bp->b_blkno < 0 || (du = wddrives[unit]) == 0) {
+	if (unit > NWD || bp->b_blkno < 0 || (du = wddrives[unit]) == 0) {
 		bp->b_error = EINVAL;
 		bp->b_flags |= B_ERROR;
 		goto done;
@@ -716,7 +716,7 @@ wdopen(dev_t dev, int flags, int fmt, struct proc *p)
 	char *msg;
 
 	unit = wdunit(dev);
-	if (unit >= NWD) return (ENXIO) ;
+	if (unit > NWD) return (ENXIO) ;
 
 	du = wddrives[unit];
 	if (du == 0 || du->dk_alive == 0) return (ENXIO) ;
@@ -957,7 +957,7 @@ wdselect(struct disk *du, int unit, int head) {
 	outb(wdc+wd_sdh, WDSD_IBM | (unit<<4) | (head & 0xf));
 
 	/* has drive come ready for a command? */
-	while ((inb(wdc + wd_status) & WDCS_READY) == 0 && timeout > 0) {
+	while ((inb(wdc+wd_status) & (WDCS_READY|WDCS_BUSY)) != WDCS_READY && timeout > 0) {
 		DELAY(10);
 		timeout--;
 	}
@@ -985,11 +985,13 @@ wdsetctlr(dev_t dev, struct disk *du) {
 	outb(wdc+wd_seccnt, du->dk_dd.d_nsectors);
 	stat = wdcommand(du, WDCC_IDC, 1);
 
-	/* if (stat < 0)
+	if (stat < 0) {
+		splx(x);
 		return(stat);
+	}
 	if (stat & WDCS_ERR)
 		printf("wdsetctlr: status %b error %b\n",
-			stat, WDCS_BITS, inb(wdc+wd_error), WDERR_BITS); */
+			stat, WDCS_BITS, inb(wdc+wd_error), WDERR_BITS);
 	splx(x);
 	return(stat);
 }
@@ -999,7 +1001,7 @@ wdsetctlr(dev_t dev, struct disk *du) {
  */
 static int
 wdgetctlr(int u, struct disk *du) {
-	int stat, x, i, wdc;
+	int stat, x, i, wdc, err;
 	char tb[DEV_BSIZE];
 	struct wdparams *wp;
 
@@ -1008,12 +1010,15 @@ wdgetctlr(int u, struct disk *du) {
 	outb(wdc+wd_sdh, WDSD_IBM | (u << 4));
 	stat = wdcommand(du, WDCC_READP, 1);
 
-	/* if (stat < 0)
-		return(stat);
-	if (stat & WDCS_ERR) {
+	if (stat < 0) {
 		splx(x);
-		return(inb(wdc+wd_error));
-	} */
+		return(stat);
+	}
+	if (stat & WDCS_ERR) {
+		err = inb(wdc+wd_error);
+		splx(x);
+		return(err);
+	}
 
 	if (stat < 0) {
 		splx(x);
@@ -1052,6 +1057,7 @@ wp->wdp_cntype, wp->wdp_cnsbsz, wp->wdp_model);*/
 
 	/* XXX sometimes possibly needed */
 	(void) inb(wdc+wd_status);
+	splx(x);
 	return (0);
 }
 
@@ -1205,7 +1211,7 @@ wdsize(dev_t dev)
 	int unit = wdunit(dev), part = wdpart(dev), val;
 	struct disk *du;
 
-	if (unit >= NWD)
+	if (unit > NWD)
 		return(-1);
 
 	du = wddrives[unit];
