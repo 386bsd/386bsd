@@ -52,6 +52,11 @@ int lbolt;				/* once a second sleep address */
 
 fixpt_t	averunnable[3];
 
+int     sclkpending;    /* need to do a softclock() on return to basepri */
+int     netpending;     /* need to do a netintr() on return to basepri */
+int (*cpu_dna)(void *);
+int (*cpu_dna_em)(void *);
+
 #ifdef GPROF
 u_long s_textsize;
 int profiling;

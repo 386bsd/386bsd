@@ -77,6 +77,8 @@ struct domain unixdomain =
 NETWORK_MODCONFIG() {
 	char *cfg_string = un_config;
 
+printf(" probed ");
+
 	if (config_scan(un_config, &cfg_string) == 0)
 		return;
 
@@ -84,5 +86,6 @@ NETWORK_MODCONFIG() {
 		return;
 
 	adddomain(&unixdomain);
+printf(" added ");
 }
 
