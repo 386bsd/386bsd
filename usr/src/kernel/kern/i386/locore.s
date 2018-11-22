@@ -1079,9 +1079,8 @@ common_traps:
 	movb	$2, %al ; 	/* reselect IRR ... */ \
 	outb	%al, $IO_ICU1 ; /* ... ...*/ \
 	NOP ;			/* ... ASAP */ \
-	movb	$(0x20 | unit), %al ; 	/* next, as soon as possible send EOI ... */ \
+	movb	$(0x60 | offst), %al ; 	/* next, as soon as possible send EOI ... */ \
 	outb	%al, $IO_ICU1 ; /* ... so in service bit may be cleared ...*/ \
-	NOP ;			/* wait for 8259 recovery */ \
 	pushl	%ds ; 		/* save our data and extra segments ... */ \
 	pushl	%es ; \
 	movw	$KDSEL, %ax ;	/* ... and reload with kernel's own */ \
@@ -1099,7 +1098,6 @@ common_traps:
 	NOP ;			/* wait for 8259 recovery */ \
 	movb	%ah, %al ; \
 	outb	%al, $IO_ICU2+1	; \
-	NOP ;			/* wait for 8259 recovery */ \
 	WRPOST ; /* do write post */ \
 	sti ; \
 	call	_isa_strayintr ; \
@@ -1109,23 +1107,20 @@ common_traps:
 	pushl	$0 ; \
 	pushl	$T_ASTFLT ; \
 	pushal ; \
-	NOP ;			/* wait for 8259 recovery */ \
 	movb	$3, %al ; 	/* select ISR ... */ \
+	outb	%al, $IO_ICU1 ; /* in 8259 unit 1 ...*/ \
 	outb	%al, $IO_ICU2 ; /* in 8259 unit 2 ...*/ \
-	NOP ;			/* wait for 8259 recovery */ \
-	inb	$IO_ICU2, %al ;	/* grab ISR */ \
-	xorb	%dl, %dl ;	 \
-	movb	%al, %dh ;	/* save ISR */ \
-	NOP ;			/* ... ASAP */ \
+	inb	$IO_ICU1, %al ;	/* grab ISR unit 1 */ \
+	movb	%al, %dl ;	/* save ISR unit 1 */ \
+	inb	$IO_ICU2, %al ;	/* grab ISR unit 2 */ \
+	movb	%al, %dh ;	/* save ISR unit 2 */ \
 	movb	$2, %al ; 	/* reselect IRR ... */ \
+	outb	%al, $IO_ICU1 ; /* ... ...*/ \
 	outb	%al, $IO_ICU2 ; /* ... ...*/ \
 	movb	$0x62, %al ; 	/* next, as soon as possible send EOI ... */ \
 	outb	%al, $IO_ICU1 ; /* ... so in service bit may be cleared ...*/ \
-	NOP ;			/* wait for 8259 recovery */ \
-	movb	$(0x60|(unit-8)), %al ; 	/* next, as soon as possible send EOI ... */ \
-	outb	%al, $IO_ICU1 ; /* ... so in service bit may be cleared ...*/ \
-	outb	%al, $IO_ICU2 ; /* ... ...*/ \
-	NOP ;			/* wait for 8259 recovery */ \
+	movb	$(0x60|(offst-8)), %al ; /* next, as soon as possible send EOI ... */ \
+	outb	%al, $IO_ICU2 ; /* ... so in service bit may be cleared ...*/ \
 	pushl	%ds ; 		/* save our data and extra segments ... */ \
 	pushl	%es ; \
 	movw	$KDSEL, %ax ;	/* ... and reload with kernel's own */ \
@@ -1169,7 +1164,7 @@ IDTVEC(intr14)	INTRSTRAY2(14, _highmask, 14)
 IDTVEC(intr15)	INTRSTRAY2(15, _highmask, 15)
 
 /* all interrupts after first 16 */
-IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 255)
+IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 15)
 
 /*
  * 386 ISA 
@@ -1182,8 +1177,6 @@ IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 255)
 	pushl	$T_ASTFLT; \
 	pushal; \
 	NOP ; \
-	movb	$(0x60|offst), %al; 	/* next, as soon as possible send EOI ... */ \
-	outb	%al, $IO_ICU1; /* ... so in service bit may be cleared ...*/ \
 	pushl	%ds; 		/* save our data and extra segments ... */ \
 	pushl	%es; \
 	movw	$0x10, %ax;	/* ... and reload with kernel's own */ \
@@ -1191,16 +1184,19 @@ IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 255)
 	movw	%ax, %es; \
 	incl	_cnt+V_INTR;	/* tally interrupts */ \
 	incl	_intrcnt+offst*4; \
+	inb	$IO_ICU1+1, %al; \
+	inb	$IO_ICU2+1, %al; \
 	movl	_cpl, %eax; \
-	pushl	%eax; \
-	pushl	_isa_unit+offst*4; \
-	orw	_isa_mask+offst*2, %ax; \
+	pushl	%eax; 			/* save prior masked interrupts to be restored */ \
+	pushl	_isa_unit+offst*4; 	/* stack device driver unit index of this interrupt */ \
+	orw	_isa_mask+offst*2, %ax; /* mask off interrupts related to this one */ \
 	movl	%eax, _cpl; \
 	orw	_imen, %ax; \
-	NOP ; \
 	outb	%al, $IO_ICU1+1; \
 	movb	%ah, %al; \
 	outb	%al, $IO_ICU2+1; \
+	movb	$(0x60|offst), %al; 	/* send master EOI ... */ \
+	outb	%al, $IO_ICU1; /* ... so in service bit may be cleared ...*/ \
 	WRPOST ; /* do write post */ \
 	sti; \
 	call	*(_isa_vec+(offst*4)); \
@@ -1211,11 +1207,6 @@ IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 255)
 	pushl	$0; \
 	pushl	$T_ASTFLT; \
 	pushal; \
-	NOP ; \
-	movb	$(0x60|(offst-8)), %al; 	/* next, as soon as possible send EOI ... */ \
-	outb	%al, $IO_ICU2; \
-	movb	$0x62, %al; 	/* next, as soon as possible send EOI ... */ \
-	outb	%al, $IO_ICU1; /* ... so in service bit may be cleared ...*/ \
 	pushl	%ds; 		/* save our data and extra segments ... */ \
 	pushl	%es; \
 	movw	$0x10, %ax;	/* ... and reload with kernel's own */ \
@@ -1223,16 +1214,23 @@ IDTVEC(intrdefault) INTRSTRAY2(255, _highmask, 255)
 	movw	%ax, %es; \
 	incl	_cnt+V_INTR;	/* tally interrupts */ \
 	incl	_intrcnt+offst*4; \
+	NOP ; 			/* wait for bus cycle to complete on interrupted instruction */ \
+	inb	$IO_ICU2+1, %al; \
+	inb	$IO_ICU1+1, %al; \
 	movl	_cpl,%eax; \
-	pushl	%eax; \
-	pushl	_isa_unit+offst*4; \
-	orw	_isa_mask+offst*2, %ax; \
+	pushl	%eax; 			/* save prior masked interrupts to be restored */ \
+	pushl	_isa_unit+offst*4; 	/* stack device driver unit index of this interrupt */ \
+	orw	_isa_mask+offst*2, %ax; /* mask off interrupts related to this one */ \
 	movl	%ax, _cpl; \
 	orw	_imen, %ax; \
 	outb	%al, $IO_ICU1+1; \
 	NOP ; \
 	movb	%ah, %al; \
 	outb	%al, $IO_ICU2+1; \
+	movb	$(0x60|(offst-8)), %al; 	/* send slave EOI ... */ \
+	outb	%al, $IO_ICU2; \
+	movb	$0x62, %al; 	/* send master EOI ... */ \
+	outb	%al, $IO_ICU1; /* ... so in service bit may be cleared ...*/ \
 	WRPOST ; /* do write post */ \
 	sti; \
 	call	*(_isa_vec+offst*4); \
