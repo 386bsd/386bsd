@@ -1,0 +1,30 @@
+Nonstandard include file namespace - no header files in this directory.
+
+Only subdirectories of uniquely named ones, which maybe in turn composed of other ones
+mapped to this directory as functional groupings.
+
+Point of this is to isolate "annotated", outside of standards header files by limiting
+the scope of pathname dependencies. 
+
+Expected use is that the included file in source has only "leaf" name component
+	(like "foo.h").
+The path would be referenced/registered in a build/make description file
+	(like "-I /usr/include/nonstd/gibberish"),
+which in turn might "loop" through nonstd to a grouping
+	(like "/usr/include/nonstd/gibberish/foo.h"),
+where this then dispatches to actual location in the source tree
+	(like "/usr/src/other/gibberish/.../include/foo.h").
+
+(Obviously this is a kind of filesystem "key value store"  using symlinks, meant
+to limit the commingling of standards, pathnames, and filenames.  It's weakness
+is in reliance on include path ordering (exceptions are considered immediate in
+code's directory thus naming conflicts, one could make things more complicated
+to handle that, but this was "good enough" to extract misleading paths).
+
+Motivation was so that POSIX semantic operating systems wouldn't have so much
+needless difference in common include files/libraries, where they'd needlessly
+diverge and make for arbitrary behavior that a developer would have to contend
+with.
+
+Also, the BSD's themselves always thrashed these as they differed. Why no isolate
+the thrash in a single place?)
