@@ -5,7 +5,7 @@
 NONSTDINC+= ${INCFS} ${INCDEV}	# for disklabel.c
 NONSTDINC+= ${INCOLDBSD} # for getttyent.c
 
-SRCS+=	alarm.c assert.c clock.c closedir.c crypt_dummy.c ctermid.c ctime.c ctype_.c \
+SRCS+=	alarm.c assert.c clock.c closedir.c crypt.c ctermid.c ctime.c ctype_.c \
 	difftime.c disklabel.c err.c errlst.c exec.c fnmatch.c frexp.c fstab.c \
 	fts.c getcap.c getcwd.c getgrent.c getlogin.c getmntinfo.c getpass.c \
 	getpwent.c getsubopt.c getttyent.c getusershell.c glob.c initgroups.c \
