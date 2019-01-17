@@ -786,6 +786,8 @@ addr_6845 = MONO_BASE;
 						crtat = Crtat;
 						vs.col = 0;
 					} else {
+						if (vs.cx > vs.nrow) vs.cx = vs.nrow;
+						if (vs.cx > vs.ncol) vs.cx = vs.ncol;
 						crtat = Crtat + (vs.cx - 1) * vs.ncol + vs.cy - 1;
 						vs.col = vs.cy - 1;
 					}
@@ -835,6 +837,16 @@ addr_6845 = MONO_BASE;
 					vs.so_at = (vs.cx & 0x0f) | ((vs.cy & 0x0f) << 4);
 					vs.esc = 0; vs.ebrac = 0; vs.eparm = 0;
 					break;
+
+				case 'n': /* Device Status Report */
+					if (vs.cx == 6) /* return cursor position - ^[[25;80R */
+        				{	char *p = "\033[25;80R";
+						do
+                					ldiscif_rint(*p++, &pccons);
+        					while (*p);
+					}
+					break;
+
 				case 'x': /* set attributes */
 					switch (vs.cx) {
 					case 0:
