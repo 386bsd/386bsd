@@ -1,3 +1,5 @@
+*.gitlog
+*.core
 *.o
 *.a
 
