@@ -32,14 +32,12 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	$Id$
  */
 
 /* standard ISA/AT configuration: */
 static char *wd_config =
-	"wd 0 3 1 (0x1f0 14).	# ide driver $Revision$ ";
-#define	NWD 2	/* XXX dynamic */
+	"wd 0 3 2 (0x1f0 14) (0x170 15).	# ide driver ";
+#define	NWD 4	/* XXX dynamic */
 
 #include "sys/param.h"
 #include "sys/errno.h"
@@ -138,7 +136,7 @@ struct	isa_driver wddriver = {
 /* default per device */
 static struct isa_device wd_default_devices[] = {
 { &wddriver,    0x1f0, IRQ14, -1,  0x00000,     0,  0 },
-{ &wddriver,    0x170, IRQ14, -1,  0x00000,     0,  2 },
+{ &wddriver,    0x170, IRQ15, -1,  0x00000,     0,  2 },
 { 0 }
 };
 
@@ -180,7 +178,6 @@ wdprobe(struct isa_device *dvp)
 		memset(du, 0, sizeof(struct disk));
 		du->dk_unit = unit;
 	}
-
 	wdc = du->dk_port = dvp->id_iobase;
 	
 	/* unit to select? */
@@ -198,6 +195,8 @@ wdprobe(struct isa_device *dvp)
 	(void) inb(wdc+wd_error);	/* XXX! */
 	outb(wdc+wd_ctlr, WDCTL_4BIT);
 	ok |= 1;
+
+	/* XXX should we do a disklabel read as well? we then could report what media label this controller's drive it is? */
 	continue;
 
 nodevice:
@@ -205,7 +204,7 @@ nodevice:
 	wddrives[unit] = 0;
 	}
 
-	lastunit = unit + 1;
+	lastunit = unit;
 	return (ok);
 }
 
@@ -954,6 +953,7 @@ wdselect(struct disk *du, int unit, int head) {
 		return(-1);
 
 	/* select drive */
+	/* XXX if slave flip drive selects. why?? */ if (unit & 2) outb(wdc+wd_sdh, WDSD_IBM | ((unit^1)<<4) | (head & 0xf)); else
 	outb(wdc+wd_sdh, WDSD_IBM | (unit<<4) | (head & 0xf));
 
 	/* has drive come ready for a command? */
@@ -981,6 +981,7 @@ wdsetctlr(dev_t dev, struct disk *du) {
 	wdc = du->dk_port;
 	outb(wdc+wd_cyl_lo, du->dk_dd.d_ncylinders+1);
 	outb(wdc+wd_cyl_hi, (du->dk_dd.d_ncylinders+1)>>8);
+	/* XXX if slave flip drive selects. why?? */ if (wdunit(dev) & 2) outb(wdc+wd_sdh, WDSD_IBM | ((wdunit(dev)^1)<<4) | ((du->dk_dd.d_ntracks-1) & 0xf)); else
 	outb(wdc+wd_sdh, WDSD_IBM | (wdunit(dev) << 4) + du->dk_dd.d_ntracks-1);
 	outb(wdc+wd_seccnt, du->dk_dd.d_nsectors);
 	stat = wdcommand(du, WDCC_IDC, 1);
@@ -1007,6 +1008,7 @@ wdgetctlr(int u, struct disk *du) {
 
 	x = splbio();		/* not called from intr level ... */
 	wdc = du->dk_port;
+	/* XXX if slave flip drive selects. why?? */ if (u & 2) outb(wdc+wd_sdh, WDSD_IBM | ((u^1)<<4)); else
 	outb(wdc+wd_sdh, WDSD_IBM | (u << 4));
 	stat = wdcommand(du, WDCC_READP, 1);
 
@@ -1415,12 +1417,14 @@ DRIVER_MODCONFIG() {
 	/* allocate driver resources for controllers */
 	nctl = 1;
 	(void)cfg_number(&cfg_string, &nctl);
+	if (nctl*2 > NWD)
+		printf("too many controllers/disk, recompile with larger NWD\n");
 #ifdef notyet
-	/* ? = malloc(vec[2]*?); */
+	/*  how to handle arbitrary controllers ? = malloc(vec[2]*?); */
 
-	/* reserve dkn statistics */
+	/* how to scale dkn statistics structures */
 
-	/* if not root device, postpone hardware configuration till open */
+	/* root device needs to be configured to work, should others be postponed till used? hotswap? */
 	if ( ... != bdev.bd_major)
 #endif
 
