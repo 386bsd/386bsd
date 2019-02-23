@@ -716,9 +716,9 @@ init386(first) {
 	biosextmem = rtcin(RTC_EXTLO)+ (rtcin(RTC_EXTHI)<<8);
 
 	/* if either bad, just assume base memory */
-	if (biosbasemem == 0xffff || biosextmem == 0xffff) {
+	if (biosbasemem == 0xffff /*|| biosextmem == 0xffff*/) {
 		maxmem = min (maxmem, 640/4);
-	} else if (biosextmem > 0 /* && biosbasemem == 640 */) {
+	} else if (biosextmem > 0  && biosbasemem == 640) {
 		int pagesinbase, pagesinext;
 
 		pagesinbase = biosbasemem/4 - first/NBPG;
@@ -740,12 +740,21 @@ init386(first) {
 		maxmem = biosbasemem/4;
 
 	maxmem -=  1;	/* highest page of usable memory */
-	physmem = maxmem;	/* number of pages of physmem addr space */
 
-	if (maxmem < 2048/4) {
-		printf("Warning: Too little RAM memory, running in degraded mode.\n");
+#define RAM_MB_TOO_SMALL 2	/* smallest megabytes of memory useable */
+#define RAM_MB_TOO_LARGE 24	/* largest megabytes of memory useable - why?? */
+
+	if (maxmem < RAM_MB_TOO_SMALL * 1024/4) {
+		printf("Warning: not enough RAM(%d pages), running in degraded mode.\n", maxmem);
 		DELAY(500*1000);
 	}
+	if (maxmem > RAM_MB_TOO_LARGE * 1024/4) {
+		printf("Warning: Too much RAM memory, only using first %d MB.\n", RAM_MB_TOO_LARGE);
+		maxmem = RAM_MB_TOO_LARGE * 1024/4;
+		DELAY(500*1000);
+	}
+
+	physmem = maxmem;	/* number of pages of physmem addr space */
 
 	vm_set_page_size(NBPG);			/* XXX */
 	/* call pmap initialization to make new kernel address space */

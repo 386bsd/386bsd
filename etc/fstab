@@ -1,6 +1,4 @@
 /dev/wd0a		/		ufs rw 1 1
+/dev/wd0b		none		swap sw -1 -1
 #/dev/wd0b		/tmp		mfs rw,s=2000 0 0
-#phoenix:/usr/src	/mnt		nfs rw,tcp,intr 0 0
-argo:/arch		/arch		nfs rw,tcp,intr 0 0
-argo2:/usr/src		/mnt		nfs rw,intr 0 0
-argo2:/nbsd		/nbsd		nfs rw,intr 0 0
+/dev/wd1a		/volume/ide/primary/slave		ufs noauto,rw 2 1

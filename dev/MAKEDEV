@@ -92,7 +92,7 @@ fd*|wd*|as*|mc*)
 	esac
 	rm -f $name$unit? r$name$unit?
 	case $unit in
-	0|1)
+	0|1|2|3)
 		mknod ${name}${unit}a	b $blk `expr $unit '*' 8 + 0`
 		mknod ${name}${unit}b	b $blk `expr $unit '*' 8 + 1`
 		mknod ${name}${unit}c	b $blk `expr $unit '*' 8 + 2`
