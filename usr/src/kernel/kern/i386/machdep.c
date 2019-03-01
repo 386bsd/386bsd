@@ -98,6 +98,8 @@ extern vm_offset_t avail_end;
 #undef	__NO_INLINES_BUT_EMIT_CODE
 /* #endif */
 
+extern int bootdev, bootsp;	/* XXX */
+
 /*
  * Declare these as initialized data so we can patch them.
  */
@@ -181,10 +183,10 @@ again:
 	 * We allocate 1/2 as many swap buffer headers as file i/o buffers.
 	 */
 	if (bufpages == 0)
-		if (physmem < (2 * 1024 * 1024))
+		if (physmem < ((2 * 1024 * 1024)/NBPG))
 			bufpages = physmem / 10 / CLSIZE;
 		else
-			bufpages = ((2 * 1024 * 1024 + physmem) / 10) / CLSIZE;
+			bufpages = (((2 * 1024 * 1024)/NBPG + 2*physmem) / 10) / CLSIZE;
 
 	if (nbuf == 0) {
 		nbuf = bufpages / 2;
@@ -192,7 +194,6 @@ again:
 			nbuf = 16;
 	}
 	freebufspace = bufpages * NBPG;
-
 	valloc(buf, struct buf, nbuf);
 
 	/*
@@ -204,21 +205,22 @@ again:
 			M_ZERO_IT);
 		if (firstaddr == 0)
 			panic("startup: no room for tables");
-		/* (void) memset((void *)firstaddr, 0, size); /* paranoia, sheer */
+		 /*(void) memset((void *)firstaddr, 0, size); /* paranoia, sheer */
 		goto again;
 	}
 
+printf("physmem %d bufpages %d nbuf %d freebufspace %d\n", physmem, bufpages, nbuf, freebufspace);
 	/*
 	 * End of second pass, addresses have been assigned
 	 */
 	if ((vm_size_t)(v - firstaddr) != size)
 		panic("startup: table size inconsistency");
-
 	/*
 	 * Allocate a submap for physio
 	 */
 #define USRIOSIZE  300	/*XXX*/
 	phys_map = kmem_suballoc(VM_PHYS_SIZE, TRUE);
+	buf_map = kmem_suballoc(freebufspace*2, TRUE); /* maximum buffer space window */
 
 	/*
 	 * Finally, allocate mbuf pool.  Since mclrefcnt is an off-size
@@ -243,7 +245,7 @@ again:
 	bufinit();
 }
 
-extern int bootdev, bootsp;	/* XXX */
+extern int bootdev, bootsp;     /* XXX */
 
 extern struct pcb dumppcb;
 
@@ -713,7 +715,8 @@ init386(first) {
 	 * breaks certain 386 AT relics.
 	 */
 	biosbasemem = rtcin(RTC_BASELO)+ (rtcin(RTC_BASEHI)<<8);
-	biosextmem = rtcin(RTC_EXTLO)+ (rtcin(RTC_EXTHI)<<8);
+#define	RTC_EXTMSB	0x5d
+	biosextmem = rtcin(RTC_EXTLO)+ (rtcin(RTC_EXTHI)<<8) + (rtcin(RTC_EXTMSB)<<16);
 
 	/* if either bad, just assume base memory */
 	if (biosbasemem == 0xffff /*|| biosextmem == 0xffff*/) {
@@ -750,7 +753,7 @@ init386(first) {
 	}
 	if (maxmem > RAM_MB_TOO_LARGE * 1024/4) {
 		printf("Warning: Too much RAM memory, only using first %d MB.\n", RAM_MB_TOO_LARGE);
-		maxmem = RAM_MB_TOO_LARGE * 1024/4;
+		/*maxmem = RAM_MB_TOO_LARGE * 1024/4;*/
 		DELAY(500*1000);
 	}
 

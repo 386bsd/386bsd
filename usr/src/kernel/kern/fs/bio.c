@@ -61,6 +61,7 @@
 #include "specdev.h"
 #include "malloc.h"
 #include "vm.h"
+#include "kmem.h"
 #include "resourcevar.h"
 #ifdef KTRACE
 #include "sys/ktrace.h"
@@ -450,6 +451,7 @@ int allocbufspace;
  * use that. Otherwise, select something from a free list.
  * Preference is to AGE list, then LRU list.
  */
+extern caddr_t bufspace_addr; /* base address of buffer space */
 /*static*/ struct buf *
 getnewbuf(int sz)
 {
@@ -459,16 +461,22 @@ getnewbuf(int sz)
 	x = splbio();
 start:
 	/* can we constitute a new buffer? */
-	if (freebufspace > sz
-		&& bfreelist[BQ_EMPTY].av_forw != (struct buf *)bfreelist+BQ_EMPTY) {
+	if (/*freebufspace > sz
+		&&*/ bfreelist[BQ_EMPTY].av_forw != (struct buf *)bfreelist+BQ_EMPTY) {
 		caddr_t addr;
 
-		if ((addr = malloc (sz, M_TEMP, M_NOWAIT)) == 0)
-			goto tryfree;
-		freebufspace -= sz;
-		allocbufspace += sz;
-
 		bp = bfreelist[BQ_EMPTY].av_forw;
+		if ((sz % NBPG) == 0)
+			addr = kmem_alloc(buf_map, sz, M_NOWAIT);
+		else
+			addr = malloc(sz, M_TEMP, M_NOWAIT);
+
+		if (addr == 0)
+			goto tryfree;
+		/*freebufspace -= sz;
+		allocbufspace += sz;*/
+
+
 		bp->b_flags = B_BUSY | B_INVAL;
 		bremfree(bp);
 		bp->b_un.b_addr = addr;
@@ -487,8 +495,9 @@ tryfree:
 		/* wait for a free buffer of any kind */
 		(bfreelist + BQ_AGE)->b_flags |= B_WANTED;
 		tsleep((caddr_t)bfreelist, PRIBIO, "getnewbuf", 0);
-		splx(x);
-		return (0);
+		/*splx(x);
+		return (0);*/
+		goto start;
 	}
 
 	/* if we are a delayed write, convert to an async write! */
@@ -622,17 +631,24 @@ allocbuf(register struct buf *bp, int size)
 	caddr_t newcontents;
 
 	/* get new memory buffer */
-	newcontents = (caddr_t) malloc (size, M_TEMP, M_WAITOK);
+	if (size % NBPG != 0)
+		newcontents = (caddr_t) malloc (size, M_TEMP, M_WAITOK);
+	else
+		newcontents = kmem_alloc(buf_map, size, 0);
 
-	/* copy the old into the new, up to the maximum that will fit */
-	(void) memcpy (newcontents, bp->b_un.b_addr, min(bp->b_bufsize, size));
+	if (bp->b_un.b_addr != newcontents)
+		/* copy the old into the new, up to the maximum that will fit */
+		(void) memcpy (newcontents, bp->b_un.b_addr, min(bp->b_bufsize, size));
 
 	/* return old contents to free heap */
-	free (bp->b_un.b_addr, M_TEMP);
+	if (bp->b_bufsize % NBPG != 0)
+		free (bp->b_un.b_addr, M_TEMP);
+	else
+		kmem_free(buf_map, bp->b_un.b_addr, bp->b_bufsize);
 
 	/* adjust buffer cache's idea of memory allocated to buffer contents */
-	freebufspace -= size - bp->b_bufsize;
-	allocbufspace += size - bp->b_bufsize;
+	/*freebufspace -= size - bp->b_bufsize;
+	allocbufspace += size - bp->b_bufsize;*/
 
 	/* update buffer header */
 	bp->b_un.b_addr = newcontents;

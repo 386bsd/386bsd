@@ -64,7 +64,7 @@
 #include "prototypes.h"
 
 static int kmem_needed;
-vm_map_t kernel_map, kmem_map, mb_map, pager_map, phys_map;
+vm_map_t kernel_map, kmem_map, mb_map, buf_map, pager_map, phys_map;
 
 /*
  * Bootstrap the virtual memory system by constructing the
@@ -138,7 +138,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 		offset = 0;
 		object = NULL;
 	} else {
-		if (map == kmem_map || map == mb_map) {
+		if (map == kmem_map || map == mb_map || map == buf_map) {
 			object = kmem_object;
 			offset = addr - vm_map_min(kmem_map);
 		} else {
@@ -184,7 +184,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 
 		/* manually wire and map pages if part of kmem */
 		m->busy = FALSE;
-		if (map == kmem_map || map == mb_map) {
+		if (map == kmem_map || map == mb_map ||  map == buf_map) {
 			vm_page_wire(m);
 			pmap_enter(map->pmap, addr + i, VM_PAGE_TO_PHYS(m),
 			    VM_PROT_DEFAULT, TRUE, AM_NONE);
@@ -192,7 +192,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 	}
 
 	/* wire map entry and unlock map */
-	if (map == kmem_map || map == mb_map)
+	if (map == kmem_map || map == mb_map || map == buf_map)
 		me->wired_count++;
 	else
 		(void) vmspace_notpageable(&kernspace, (caddr_t)addr, size);

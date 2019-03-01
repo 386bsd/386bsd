@@ -74,4 +74,4 @@ vm_offset_t kmem_phys(vm_offset_t kva);
 
 extern vm_map_t kernel_map;	/* kernel's main map */
 
-extern vm_map_t mb_map, kmem_map, phys_map, pager_map; /* kernel's submaps */
+extern vm_map_t mb_map, kmem_map, phys_map, buf_map, pager_map; /* kernel's submaps */
