@@ -74,7 +74,7 @@
 #include "vm.h"
 #include "kmem.h"
 
-extern vm_offset_t avail_end;
+extern vm_offset_t avail_end, virtual_end;
 
 #include "machine/cpu.h"
 #include "machine/reg.h"
@@ -133,6 +133,7 @@ cpu_startup(void)
 	int maxbufs, base, residual;
 	vm_size_t size;
 	int firstaddr;
+	int kernel_virtual_pages_remaining = atop(virtual_end);
 
 	/*
 	 * Initialize error message buffer (at end of core).
@@ -193,7 +194,7 @@ again:
 		if (nbuf < 16)
 			nbuf = 16;
 	}
-	freebufspace = bufpages * NBPG;
+	freebufspace = ptoa(bufpages);
 	valloc(buf, struct buf, nbuf);
 
 	/*
@@ -208,8 +209,8 @@ again:
 		 /*(void) memset((void *)firstaddr, 0, size); /* paranoia, sheer */
 		goto again;
 	}
+	kernel_virtual_pages_remaining -= atop(firstaddr+round_page(size));
 
-printf("physmem %d bufpages %d nbuf %d freebufspace %d\n", physmem, bufpages, nbuf, freebufspace);
 	/*
 	 * End of second pass, addresses have been assigned
 	 */
@@ -220,7 +221,14 @@ printf("physmem %d bufpages %d nbuf %d freebufspace %d\n", physmem, bufpages, nb
 	 */
 #define USRIOSIZE  300	/*XXX*/
 	phys_map = kmem_suballoc(VM_PHYS_SIZE, TRUE);
-	buf_map = kmem_suballoc(freebufspace*2, TRUE); /* maximum buffer space window */
+	kernel_virtual_pages_remaining -= atop(VM_PHYS_SIZE);
+
+	/* maximum buffer space window */
+	if (atop(freebufspace) > kernel_virtual_pages_remaining)
+		buf_map = kmem_suballoc(kernel_virtual_pages_remaining, TRUE);
+	else
+		buf_map = kmem_suballoc(freebufspace, TRUE);
+printf("kva %d physmem %d bufpages %d nbuf %d\n", kernel_virtual_pages_remaining, physmem, bufpages, nbuf);
 
 	/*
 	 * Finally, allocate mbuf pool.  Since mclrefcnt is an off-size
@@ -638,7 +646,8 @@ dbl() {
 }
 
 
-init386(first) {
+/* initialize processor, pass first physical page past kernel */
+init386(firstphys) {
 	int x;
 	unsigned biosbasemem, biosextmem;
 	struct gate_descriptor *gdp;
@@ -724,7 +733,7 @@ init386(first) {
 	} else if (biosextmem > 0  && biosbasemem == 640) {
 		int pagesinbase, pagesinext;
 
-		pagesinbase = biosbasemem/4 - first/NBPG;
+		pagesinbase = biosbasemem/4 - firstphys/NBPG;
 		pagesinext = biosextmem/4;
 
 		/*
@@ -736,8 +745,8 @@ init386(first) {
 			maxmem = 640/4;
 		else {
 			maxmem = pagesinext + 0x100000/NBPG;
-			if (first < 0x100000)
-				first = 0x100000; /* skip hole */
+			if (firstphys < 0x100000)
+				firstphys = 0x100000; /* skip hole */
 		}
 	} else
 		maxmem = biosbasemem/4;
@@ -745,7 +754,7 @@ init386(first) {
 	maxmem -=  1;	/* highest page of usable memory */
 
 #define RAM_MB_TOO_SMALL 2	/* smallest megabytes of memory useable */
-#define RAM_MB_TOO_LARGE 24	/* largest megabytes of memory useable - why?? */
+#define RAM_MB_TOO_LARGE 64	/* largest megabytes of memory useable - why?? */
 
 	if (maxmem < RAM_MB_TOO_SMALL * 1024/4) {
 		printf("Warning: not enough RAM(%d pages), running in degraded mode.\n", maxmem);
@@ -753,7 +762,7 @@ init386(first) {
 	}
 	if (maxmem > RAM_MB_TOO_LARGE * 1024/4) {
 		printf("Warning: Too much RAM memory, only using first %d MB.\n", RAM_MB_TOO_LARGE);
-		/*maxmem = RAM_MB_TOO_LARGE * 1024/4;*/
+		maxmem = RAM_MB_TOO_LARGE * 1024/4;
 		DELAY(500*1000);
 	}
 
@@ -761,7 +770,7 @@ init386(first) {
 
 	vm_set_page_size(NBPG);			/* XXX */
 	/* call pmap initialization to make new kernel address space */
-	pmap_bootstrap (first, 0);
+	pmap_bootstrap (firstphys, 0);
 
 	/* make a initial tss so microp can get interrupt stack on syscall! */
 	memset(&proc0.p_addr->u_pcb, 0, sizeof(struct pcb));
