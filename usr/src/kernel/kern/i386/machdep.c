@@ -758,13 +758,12 @@ init386(firstphys) {
 
 	if (maxmem < RAM_MB_TOO_SMALL * 1024/4) {
 		printf("Warning: not enough RAM(%d pages), running in degraded mode.\n", maxmem);
-		DELAY(500*1000);
 	}
 	if (maxmem > RAM_MB_TOO_LARGE * 1024/4) {
-		printf("Warning: Too much RAM memory, only using first %d MB.\n", RAM_MB_TOO_LARGE);
+		printf("Warning: Too much RAM memory, only using %d MB - not using remaining %d pages.\n", RAM_MB_TOO_LARGE, maxmem - (RAM_MB_TOO_LARGE * 1024/4));
 		maxmem = RAM_MB_TOO_LARGE * 1024/4;
-		DELAY(500*1000);
 	}
+	DELAY(500*1000);
 
 	physmem = maxmem;	/* number of pages of physmem addr space */
 
