@@ -226,8 +226,12 @@ again:
 	/* maximum buffer space window */
 	if (atop(freebufspace) > kernel_virtual_pages_remaining)
 		buf_map = kmem_suballoc(kernel_virtual_pages_remaining, TRUE);
-	else
-		buf_map = kmem_suballoc(freebufspace, TRUE);
+	else {
+		if (nbuf < 50) /* need more virtual when less physical dunno why XXX */
+			buf_map = kmem_suballoc(2*freebufspace, TRUE);
+		else
+			buf_map = kmem_suballoc(freebufspace, TRUE);
+	}
 printf("kva %d physmem %d bufpages %d nbuf %d\n", kernel_virtual_pages_remaining, physmem, bufpages, nbuf);
 
 	/*

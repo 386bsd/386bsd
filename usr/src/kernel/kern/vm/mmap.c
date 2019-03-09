@@ -77,7 +77,6 @@ munmapfd(struct proc *p, int fd)
 
 	/*
 	 * XXX -- should vmspace_delete any regions mapped to this file
-missing the data structure to translate fd into ([addr,size),))
 	 */
 	p->p_fd->fd_ofileflags[fd] &= ~UF_MAPPED;
 }
@@ -187,6 +186,19 @@ vmspace_mmap(struct vmspace *vs, vm_offset_t *addr, vm_size_t size, vm_prot_t pr
 				vm_object_deallocate(object); */
 			goto out;
 		}
+		/*
+		 * Don't cache anonymous objects.
+		 * Loses the reference gained by vm_pager_allocate.
+		 */
+#ifdef nope
+		if (object) (void) pager_cache(object, FALSE);
+else {
+	object = vm_object_lookup(pager);
+	if (object == 0)
+pg("vmmmap: zero");
+if (object) (void) pager_cache(object, FALSE);
+}
+#endif
 #ifdef DEBUG
 		if (mmapdebug & MDB_MAPIT)
 			printf("vm_mmap(%d): ANON *addr %x size %x pager %x\n",
@@ -525,7 +537,7 @@ vm_allocate_with_pager(vm_map_t map, vm_offset_t *addr, vm_size_t size,
 	else if (pager != NULL && internal)
 		vm_object_enter(object);
 
-	/* lose persistance if internal (lose reference gained)*/
+	/* lose persistance if internal (have refernece)*/
 	if (internal)
 		(void) pager_cache(object, FALSE);
 	return (result);

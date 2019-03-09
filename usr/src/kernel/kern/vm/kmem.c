@@ -63,7 +63,6 @@
 #define	__NO_INLINES
 #include "prototypes.h"
 
-static int kmem_needed;
 vm_map_t kernel_map, kmem_map, mb_map, buf_map, pager_map, phys_map;
 
 /*
@@ -116,8 +115,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 	if (flags & M_NOWAIT) {
 		if (lock_try_write(&map->lock) == FALSE)
 			return(0);
-		if (/* kmem_needed || */
-		    vm_map_find(map, &addr, size) != KERN_SUCCESS) {
+		if (vm_map_find(map, &addr, size) != KERN_SUCCESS) {
 			vm_map_unlock(map);
 			splx(pl);
 			return (0);
@@ -126,14 +124,12 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 		vm_map_lock(map);
 		while (vm_map_find(map, &addr, size) != KERN_SUCCESS) {
 			vm_map_unlock(map);
-			kmem_needed += size;
 			(void) tsleep((caddr_t)map, PVM, "kmemspc", 0);
-			kmem_needed -= size;
 			vm_map_lock(map);
 		}
 	}
 
-	/* allocate kernel address space with appropriate object/offset */
+	/* just reserve kernel address space or address space with appropriate object/offset allocation  */
 	if (flags & M_SPACE_ONLY) {
 		offset = 0;
 		object = NULL;
@@ -143,8 +139,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 			offset = addr - vm_map_min(kmem_map);
 		} else {
 			object = kernel_object;
-			offset = addr - VM_MIN_KERNEL_ADDRESS;
-			/* notyet: offset = addr - vm_map_min(kernel_map); */
+			offset = addr - vm_map_min(kernel_map);
 		}
 		vm_object_reference(object);
 	}
@@ -174,6 +169,7 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 		/* insufficient memory for request, free all and return */
 		if (m == NULL) {
 			vmspace_delete(&kernspace, (caddr_t)addr, size);
+			wakeup((caddr_t)map);
 			splx(pl);
 			return(0);
 		}
@@ -246,8 +242,7 @@ kmem_free(vm_map_t map, vm_offset_t addr, vm_size_t size)
 	(void) vm_map_delete(map, trunc_page(addr), round_page(addr + size - 1));
 
 	/* if any address space needed, wakeup any waiters for kernel space */
-	if (kmem_needed)
-		wakeup((caddr_t)map);
+	wakeup((caddr_t)map);
 
 	/* simplify map after deletion */
 	vm_map_unlock(map);
