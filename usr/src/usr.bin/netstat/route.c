@@ -41,6 +41,7 @@ static char sccsid[] = "@(#)route.c	5.20 (Berkeley) 11/29/90";
 
 #include <net/if.h>
 #define  KERNEL
+#define  _ROUTE_PROTOTYPES
 #include <net/route.h>
 #undef KERNEL
 #include <netinet/in.h>
