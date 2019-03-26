@@ -18,7 +18,11 @@ SRCS=	ccl.c dfa.c ecs.c gen.c main.c misc.c nfa.c parse.c sym.c tblcmp.c \
 	yylex.c 
 OBJS+=	scan.o skel.o
 SUBDIR=	lib
-CLEANFILES+=parse.c parse.h scan.c y.tab.h
+CLEANFILES+=skel.c parse.c parse.h scan.c y.tab.h
+
+skel.c:
+	sh ${.CURDIR}/mkskel.sh < ${.CURDIR}/flex.skl > skel.c
+
 
 parse.h parse.c:
 	${YACC} -d ${.IMPSRC}

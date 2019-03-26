@@ -222,7 +222,7 @@ count_int checkpoint = CHECK_GAP;
 #define	CLEAR	256	/* table clear output code */
 
 int force = 0;
-char ofname [100];
+char ofname [PATH_MAX];
 #ifdef DEBUG
 int debug, verbose;
 #endif
@@ -366,11 +366,7 @@ main(argc, argv)
 		maxbits = BITS;
 	maxmaxcode = 1 << maxbits;
 
-	/* Build useless input file list. */
-	filelist = fileptr = (char **)(malloc(argc * sizeof(*argv)));
-	while (*argv)
-		*fileptr++ = *argv++;
-	*fileptr = NULL;
+	filelist = fileptr = argv;
 
     if (*filelist != NULL) {
 	for (fileptr = filelist; *fileptr; fileptr++) {

@@ -43,5 +43,5 @@ static char sccsid[] = "@(#)false.c	5.2 (Berkeley) 6/1/90";
 
 main()
 {
-	return(1);
+	exit(1);
 }

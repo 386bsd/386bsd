@@ -100,7 +100,7 @@ struct	entry {
 struct nlist nl[] = {
 	{ "_boottime" },
 #define X_BOOTTIME	0
-#if defined(hp300) || defined(i386)
+#if defined(hp300) 
 	{ "_cn_tty" },
 #define X_CNTTY		1
 #endif
@@ -181,7 +181,7 @@ main(argc, argv)
 		bcopy(&utmp, &(ep->utmp), sizeof (struct utmp));
 		stp = ttystat(ep->utmp.ut_line);
 		ep->tdev = stp->st_rdev;
-#if defined(hp300) || defined(i386)
+#if defined(hp300)
 		/*
 		 * XXX  If this is the console device, attempt to ascertain
 		 * the true console device dev_t.

@@ -171,6 +171,8 @@ odoffset(argc, argvp)
 	 * We assumes it's a file if the offset is bad.
 	 */
 	p = **argvp;
+	if (!p)
+		return;
 	if (*p != '+' && (argc < 2 ||
 	    (!isdigit(p[0]) && (p[0] != 'x' || !ishexdigit(p[1])))))
 		return;

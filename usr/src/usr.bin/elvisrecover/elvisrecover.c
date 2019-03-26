@@ -11,12 +11,16 @@
 
 
 #include <stdio.h>
+#include <unistd.h>
 #include "config.h"
 #include "vi.h"
 
-void recover(basename, outname)
-	char	*basename;	/* the name of the file to recover */
-	char	*outname;	/* the name of the file to write to */
+void recover(char *basename, char *outname);
+
+
+void recover(char *basename, char *outname)
+	/* char	*basename;	/* the name of the file to recover */
+	/* char	*outname;	/* the name of the file to write to */
 {
 	char	pathname[500];	/* full pathname of the file to recover */
 	char	line[600];	/* a line from the /usr/preserve/Index file */
@@ -38,7 +42,7 @@ void recover(basename, outname)
 		if (basename[0] != SLASH)
 # endif
 		{
-			ptr = getcwd(pathname, sizeof pathname);
+			ptr = getcwd(pathname, sizeof (pathname));
 			if (ptr != pathname)
 			{
 				strcpy(pathname, ptr);
@@ -164,6 +168,7 @@ void recover(basename, outname)
 #endif
 }
 
+void
 main(argc, argv)
 	int	argc;
 	char	**argv;
@@ -172,7 +177,7 @@ main(argc, argv)
 	if (argc > 3)
 	{
 		fprintf(stderr, "usage: %s [preserved_file [recovery_file]]\n", argv[0]);
-		exit(1);
+		exit(2);
 	}
 
 	/* recover the requested file, or list recoverable files */
