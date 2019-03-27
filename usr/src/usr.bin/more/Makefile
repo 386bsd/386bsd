@@ -4,7 +4,7 @@ PROG=	more
 DPADD=	${LIBTERM}
 LDADD=	-ltermcap
 MLINKS=	more.1 page.1
-LINKS=	${BINDIR}/more ${BINDIR}/page ${BINDIR}/more ${BINDIR}/type
+LINKS=	${BINDIR}/more ${BINDIR}/page
 
 beforeinstall:
 	install -c -o ${BINOWN} -g ${BINGRP} -m 444 ${.CURDIR}/more.help \

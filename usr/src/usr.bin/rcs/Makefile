@@ -29,5 +29,7 @@ all clean cleandir depend install lint tags:
 		(cd $$i; make ${MFLAGS} DESTDIR=${DESTDIR} $@); \
 	done
 
+obj:
+
 FRC:
 

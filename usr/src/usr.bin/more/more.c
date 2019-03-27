@@ -71,7 +71,9 @@ static char sccsid[] = "@(#)more.c	5.26 (Berkeley) 4/18/91";
 #define Ungetc(c,f)	(--file_pos, ungetc(c,f))
 
 #define MBIT	CBREAK
+#ifndef stty
 #define stty(fd,argp)	ioctl(fd,TIOCSETN,argp)
+#endif
 
 #define TBUFSIZ	1024
 #define LINSIZ	256
@@ -128,6 +130,7 @@ int		soglitch;	/* terminal has standout mode glitch */
 int		ulglitch;	/* terminal has underline mode glitch */
 int		pstate = 0;	/* current UL state */
 char		*getenv();
+regexp		*previous;	/* previous regular expression */
 struct {
     long chrctr, line;
 } context, screen_start;
@@ -407,13 +410,7 @@ magic(f, fs)
 	struct exec ex;
 
 	if (fread(&ex, sizeof(ex), 1, f) == 1)
-		switch(ex.a_magic) {
-		case OMAGIC:
-		case NMAGIC:
-		case ZMAGIC:
-		case 0405:
-		case 0411:
-		case 0177545:
+		if(!N_BADMAG(ex)) {
 			prtf("\n******** %s: Not a text file ********\n\n", fs);
 			(void)fclose(f);
 			return(1);
@@ -1328,16 +1325,14 @@ register int n;
     register int lncount;
     int saveln, rv; 
     regexp *s; 
-    static lastbuf[80];
 
     context.line = saveln = Currline;
     context.chrctr = startline;
     lncount = 0;
-
-    if (buf && buf[0])
-	strcpy(lastbuf, buf);
-    s = regcomp (lastbuf);
-
+    if (buf)
+	previous = s = regcomp (buf);
+    else
+	s = previous;
     while (!feof (file)) {
 	line3 = line2;
 	line2 = line1;
@@ -1583,6 +1578,7 @@ retry:
 	    if (Home == 0 || *Home == '\0')
 	    {
 		if ((cursorm = tgetstr("cm", &clearptr)) != NULL) {
+		    char *tgoto();
 		    strcpy(cursorhome, tgoto(cursorm, 0, 0));
 		    Home = cursorhome;
 	       }

@@ -265,6 +265,7 @@ makefiles.pc:	tools/mkmake
 
 tools/mkmake:
 	(cd tools; make mkmake)
+obj:
 
 .DEFAULT:
 	sccs get $<
