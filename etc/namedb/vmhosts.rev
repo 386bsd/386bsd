@@ -1,0 +1,15 @@
+@                 IN        SOA      odysseus.vm.  root.odysseus.vm.  (
+                                     1.1     ;serial
+                                     3600    ;refresh
+                                     600     ;retry
+                                     3600000;expire
+                                     86400   ;minimum
+                                     )
+;name server for vm
+                  IN        NS       odysseus.vm.
+
+odysseus              IN        A        192.168.100.14
+
+1	IN	PTR	boson.vm.
+14	IN	PTR	odysseus.vm.
+

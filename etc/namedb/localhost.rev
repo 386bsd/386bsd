@@ -1,0 +1,10 @@
+@                IN     SOA     odysseus.vm. 	root.odysseus.vm. 
+                                (
+                                1.1   ;serial
+                                3600   ;refresh
+                                600   ;retry
+                                3600000;expire
+                                86400   ;minimum
+                                )
+                 IN     NS      odysseus.vm.
+1                IN     PTR     localhost.
