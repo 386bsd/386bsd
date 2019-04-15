@@ -6,7 +6,7 @@ NONSTDINC+= ${INCFS} ${INCDEV}	# for disklabel.c
 NONSTDINC+= ${INCOLDBSD} # for getttyent.c
 
 SRCS+=	alarm.c assert.c clock.c closedir.c crypt.c ctermid.c ctime.c ctype_.c \
-	difftime.c disklabel.c err.c errlst.c exec.c fnmatch.c frexp.c fstab.c \
+	difftime.c disklabel.c err.c errlst.c exec.c fnmatch.c fstab.c \
 	fts.c getcap.c getcwd.c getgrent.c getlogin.c getmntinfo.c getpass.c \
 	getpwent.c getsubopt.c getttyent.c getusershell.c glob.c initgroups.c \
 	insque.c isatty.c isctype.c isinf.c mktemp.c nice.c nlist.c opendir.c \
@@ -29,7 +29,8 @@ SRCS+=	adddf3.s addsf3.s ashlsi3.s ashrsi3.s cmpdf2.s cmpsf2.s divdf3.s \
 	negdf2.s negsf2.s saveregs.c subdf3.s subsf3.s truncdfsf2.s udivsi3.s \
 	umodsi3.s umulsi3.s
 .elif (${MACHINE} == "i386")
-SRCS+=	_setjmp.s alloca.s fabs.s ldexp.s modf.s setjmp.s __main.o
+SRCS+=_setjmp.s __main.o alloca.s divsi3.s fabs.s fixdfsi.s fixunsdfsi.s frexp.c \
+infinity.c ldexp.s modf.s setjmp.s udivdi3.s udivmoddi4.s  udivsi3.s umodddi3.s
 .elif (${MACHINE} == "tahoe")
 CFLAGS+=-I/sys
 SRCS+=	_setjmp.s alloca.s fabs.s ldexp.s modf.s setjmp.s

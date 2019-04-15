@@ -3,63 +3,373 @@
 # Machine-genererated from src/cmd/file/magdir/*; edit there only!
 # Format is described in magic(files), where:
 # files is 4 on V7 and BSD, 4 on SV, and ?? in the SVID.
-#	Add any locally-observed files here.  Remember:
-#	text if readable, executable if runnable binary, data if unreadable.
-22	short	023000		core dump data
+# Localstuff,v 1.1 1993/06/10 00:57:30 jtc Exp
+# Add any locally-observed files here.  Remember:
+# text if readable, executable if runnable binary, data if unreadable.
+#
+# Alliant FX series a.out files:
+# If the FX series is the one that had a processor with a 68K-derived
+# instruction set, the "short" should probably become "beshort" and the
+# "long" should probably become "belong".
+# If it's the i860-based one, they should probably become either the
+# big-endian or little-endian versions, depending on the mode they ran
+# the 860 in....
+#
+0	short		0420		0420 Alliant virtual executable
+>2	short		&0x0020		common library
+>16	long		>0		not stripped
+0	short		0421		0421 Alliant compact executable
+>2	short		&0x0020		common library
+>16	long		>0		not stripped
+#
+# magic.apl:
+#
+0	long		0100554		APL workspace (Ken's original?)
+#
+# "ar", for all kinds of archives.
+#
+# XXX - why are there multiple <ar> thingies?  Note that 0x213c6172 is
+# "!<ar", so, for new-style (4.xBSD/SVR2andup) archives, we have:
+#
+# 0	string		!<arch>		current ar archive
+# 0	long		0x213c6172	archive file
+#
+# and for SVR3.1 archives, we have:
+#
+# 0	string		\<ar>		System V Release 1 ar archive
+# 0	string		=<ar>		archive
+# 0	string		=<ar>		archive
+#
+# XXX - did Aegis really store shared libraries, breakpointed modules,
+# and absolute code program modules in the same format as new-style
+# "ar" archives?
+#
+0	string		!<arch>		current ar archive
+>8	string		__.SYMDEF	random library
+>0	belong		=65538		- pre SR9.5
+>0	belong		=65539		- post SR9.5
+>0	beshort		2		- object archive
+>0	beshort		3		- shared library module
+>0	beshort		4		- debug break-pointed module
+>0	beshort		5		- absolute code program module
+0	string		\<ar>		System V Release 1 ar archive
+0	string		=<ar>		archive
+#
+# XXX - from "vax", which appears to collect a bunch of byte-swapped
+# thingies, to help you recognize VAX files on big-endian machines;
+# with "leshort", "lelong", and "string", that's no longer necessary....
+#
+# 0	long		0x3c61723e	VAX 5.0 archive
+#
+0	long		0x213c6172	archive file
+0	lelong		0177555		very old VAX archive
+0	leshort		0177555		very old PDP-11 archive
+#
+# XXX - "pdp" claims that 0177545 can have an __.SYMDEF member and thus
+# be a random library (it said 0xff65 rather than 0177545).
+#
+0	lelong		0177545		old VAX archive
+>8	string		__.SYMDEF	random library
+0	leshort		0177545		old PDP-11 archive
+>8	string		__.SYMDEF	random library
+#
+0	string		=<ar>		archive
+#
+# From "pdp":
+#
+0	lelong		0x39bed		PDP-11 old archive
+0	lelong		0x39bee		PDP-11 4.0 archive
+#
+0	string		-h-		Software Tools format archive text
+# "arc" archiver
 0	byte		26		'arc' archive
 >1	byte		0		(empty)
 >1	byte		1		(old format)
-0	short		070707		cpio archive
-0	string		070707		ASCII cpio archive
-0	long		0177555		very old archive
-0	short		0177555		very old PDP-11 archive
-0	long		0177545		old archive
-0	short		0177545		old PDP-11 archive
-0	long		0100554		apl workspace
-0	string		=<ar>		archive
-0	string		!<arch>		archive
->8	string		__.SYMDEF	random library
-0	string		-h-		archive (Software Tools format) text
+# Rahul Dhesi's zoo archive format, from keith@cerberus.uchicago.edu.
+20	long		0xdca7c4fd	Rahul Dhesi's "zoo" archive
+# ZIP archiver
+0	string		PK		zip archive file 
+>2	byte		>0		- version [%d
+>3	byte		>0		%d]
+#
+# AT&T 3B machines
+#
+# The `versions' should be un-commented if they work for you.
+# (Was the problem just one of endianness?)
+#
+# 3B20
+#
+0	beshort		0550		3b20 COFF executable
+>12	belong		>0		not stripped
+#>22	beshort		>0		- version %ld
+0	beshort		0551		3b20 COFF executable (TV)
+>12	belong		>0		not stripped
+#>22	beshort		>0		- version %ld
+#
+# WE32K
+#
+0	beshort		0560		WE32000 COFF
+>18	beshort		^00000020	object
+>18	beshort		&00000020	executable
+>12	belong		>0		not stripped
+>18	beshort		^00010000	N/A on 3b2/300 w/paging
+>18	beshort		&00020000	32100 required
+>18	beshort		&00040000	and mau hardware required
+>20	beshort		0407		(impure)
+>20	beshort		0410		(pure)
+>20	beshort		0413		(demand paged)
+>20	beshort		0443		(target shared library)
+>22	beshort		>0		- version %ld
+0	beshort		0561		WE32000 COFF executable (TV)
+>12	belong		>0		not stripped
+#>18	beshort		&00020000	- 32100 required
+#>18	beshort		&00040000	and mau hardware required
+#>22	beshort		>0		- version %ld
+#
+# Sound formats, from Jan Nicolai Langfeldt <janl@ifi.uio.no>,
+#
+
+# Sun/NeXT audio data
+0	string		.snd		audio data:
+>12	belong		1		8-bit u-law,
+>12	belong		2		8-bit linear PCM,
+>12	belong		3		16-bit linear PCM,
+>12	belong		4		24-bit linear PCM,
+>12	belong		5		32-bit linear PCM,
+>12	belong		6		32-bit floating point,
+>12	belong		7		64-bit floating point,
+>12	belong		23		compressed (G.721 ADPCM),
+>20	belong		1		mono,
+>20	belong		2		stereo,
+>20	belong		4		quad,
+>16	belong		x		%d Hz
+# DEC systems (e.g. DECstation 5000) use a variant of the Sun/NeXT format
+# that uses little-endian encoding and has a different magic number
+# (0x0064732E in little-endian encoding).
+0	lelong		0x0064732E	DEC audio data:
+>12	lelong		1		8-bit u-law,
+>12	lelong		2		8-bit linear PCM,
+>12	lelong		3		16-bit linear PCM,
+>12	lelong		4		24-bit linear PCM,
+>12	lelong		5		32-bit linear PCM,
+>12	lelong		6		32-bit floating point,
+>12	lelong		7		64-bit floating point,
+>12	lelong		23		compressed (G.721 ADPCM),
+>20	lelong		1		mono,
+>20	lelong		2		stereo,
+>20	lelong		4		quad,
+>16	lelong		x		%d Hz
+# Bytes 0-3 of AIFF, AIFF-C, & 8SVX audio files are "FORM"
+8	string		AIFF		AIFF audio data
+8	string		AIFC		AIFF-C audio data
+8	string		8SVX		IFF/8SVX audio data
+# Bytes 0-3 of Waveform (*.wav) audio files are "RIFF"
+8	string		WAVE		Waveform audio data
+0	string		Creative\ Voice\ File	Soundblaster audio data
+0	long		0x4e54524b	MultiTrack sound data file
+>4	long		x		- version %ld
+# 68K Blit stuff as seen from 680x0 machine
+# Note that this 0407 conflicts with several other a.out formats...
+#
+# XXX - should this be redone with "be" and "le", so that it works on
+# little-endian machines as well?  If so, what's the deal with
+# "VAX-order" and "VAX-order2"?
+#
+#0	long		0407		68K Blit (standalone) executable
+#0	short		0407		VAX-order2 68K Blit (standalone) executable
+0	short		03401		VAX-order 68K Blit (standalone) executable
+0	long		0406		68k Blit mpx/mux executable
+0	short		0406		VAX-order2 68k Blit mpx/mux executable
+0	short		03001		VAX-order 68k Blit mpx/mux executable
+# Need more values for WE32 DMD executables.
+# Note that 0520 is the same as COFF
+#0	short		0520		tty630 layers executable
+# BSDI BSD/386
+0	long	0314	demand paged (first page unmapped) pure executable
+>16	long	>0	not stripped
 #	this first will upset you if you're a PL/1 shop...
 #	in which case rm it; ascmagic will catch real C programs
 0	string		/*		c program text
-#	check for various C program generators...
-#	offsets derived empirically, your offsets may vary!
-#	(this obviously belongs in ascmagic.c/names.h!).
-53	string		yyprevious	c program text (from lex)
-0	string		#!\ /bin/sh	commands text
-0	string		#!/bin/sh	commands text
-0	string		#!\ /bin/csh	C shell commands text
-0	string		#!/bin/csh	C shell commands text
-0	string		#!\ /bin/awk	awk commands text
-0	string		#!/bin/awk	awk commands text
-0	string		#!\ /		some kinda commands text
-0	string		#!/		some kinda commands text
-0	string		#!\ 		commands text
->3	string		>\0		 for %s
-#	An "antique" kernel is either unmodified early V7,
-#	without DMR's 1979 mod for #!, or any kernel
-#	derived from a pre-v7 kernel (i.e., System V)
-0	string		:\ 		shell archive or commands for antique kernel text
-0	short		017037		packed data
-# CPL 	- added pack to /etc/magic
-0	short		017436		packed data
-0	short		0145405		huf output
+#
+# Intergraph, formerly Fairchild, Clipper.
+#
+# XXX - what byte order does the Clipper use?
+#
+# XXX - what's the "!" stuff:
+#
+# >18	short		!074000,000000	C1 R1 
+# >18	short		!074000,004000	C2 R1
+# >18	short		!074000,010000	C3 R1
+# >18	short		!074000,074000	TEST
+#
+# I shall assume it's ANDing the field with the first value and
+# comparing it with the second, and rewrite it as:
+#
+# >18	short&074000	000000		C1 R1 
+# >18	short&074000	004000		C2 R1
+# >18	short&074000	010000		C3 R1
+# >18	short&074000	074000		TEST
+#
+# as SVR3.1's "file" doesn't support anything of the "!074000,000000"
+# sort, nor does SunOS 4.x, so either it's something Intergraph added
+# in CLIX, or something AT&T added in SVR3.2 or later, or something
+# somebody else thought was a good idea; it's not documented in the
+# man page for this version of "magic", nor does it appear to be
+# implemented (at least not after I blew off the bogus code to turn
+# old-style "&"s into new-style "&"s, which just didn't work at all).
+#
+0	short		0575		CLIPPER COFF executable (VAX #)
+>20	short		0407		(impure)
+>20	short		0410		(5.2 compatible)
+>20	short		0411		(pure)
+>20	short		0413		(demand paged)
+>20	short		0443		(target shared library)
+>12	long		>0		not stripped
+>22	short		>0		- version %ld
+0	short		0577		CLIPPER COFF executable
+>18	short&074000	000000		C1 R1 
+>18	short&074000	004000		C2 R1
+>18	short&074000	010000		C3 R1
+>18	short&074000	074000		TEST
+>20	short		0407		(impure)
+>20	short		0410		(pure)
+>20	short		0411		(separate I&D)
+>20	short		0413		(paged)
+>20	short		0443		(target shared library)
+>12	long		>0		not stripped
+>22	short		>0		- version %ld
+>48	long&01		01		alignment trap enabled
+>52	byte		1		-Ctnc
+>52	byte		2		-Ctsw
+>52	byte		3		-Ctpw
+>52	byte		4		-Ctcb
+>53	byte		1		-Cdnc
+>53	byte		2		-Cdsw
+>53	byte		3		-Cdpw
+>53	byte		4		-Cdcb
+>54	byte		1		-Csnc
+>54	byte		2		-Cssw
+>54	byte		3		-Cspw
+>54	byte		4		-Cscb
+4	string		pipe		CLIPPER instruction trace
+4	string		prof		CLIPPER instruction profile
+#
+# "Commands": stuff for various shells and interpreters.
+#
+0	string		:\ shell archive or commands for antique kernel text
+0	string		#!/bin/sh		Bourne Shell script text
+0	string		#!\ /bin/sh		Bourne Shell script text
+0	string		#!/bin/csh		C Shell script text
+0	string		#!\ /bin/csh		C Shell script text
+# korn shell magic, sent by George Wu, gwu@clyde.att.com
+0	string		#!/bin/ksh		Korn Shell script text
+0	string		#!\ /bin/ksh		Korn Shell script text
+0	string	 	#!/bin/tcsh		Tenex C Shell script text
+0	string	 	#!\ /bin/tcsh		Tenex C Shell script text
+0	string		#!/usr/local/tcsh	Tenex C Shell script text
+0	string	 	#!\ /usr/local/tcsh	Tenex C Shell script text
+0	string		#!/usr/local/bin/tcsh	Tenex C Shell script text
+0	string		#!\ /usr/local/bin/tcsh	Tenex C Shell script text
+0	string		#!/bin/awk		Awk Commands text
+0	string		#!\ /bin/awk		Awk Commands text
+0	string		#!\ /			a
+>3	string		>\0			%s script
+0	string		#!/			a
+>2	string		>\0			%s script
+0	string		#!\ 			commands text
+>3	string		>\0			for %s
 
-0	string		\037\235	compressed data
-# non block compressed
->2	byte		12		- with 12 bits
->2	byte		13		- with 13 bits
->2	byte		14		- with 14 bits
->2	byte		15		- with 15 bits
->2	byte		16		- with 16 bits
-# block compressed
->2	byte		140		- with 12 bits
->2	byte		141		- with 13 bits
->2	byte		142		- with 14 bits
->2	byte		143		- with 15 bits
->2	byte		144		- with 16 bits
+# For Larry Wall's perl language.  The ``eval'' line recognizes an
+# outrageously clever hack for USG systems.
+#				Keith Waclena <keith@cerberus.uchicago.edu>
+0	string		#!/bin/perl	perl commands text
+0	string		#!\ /bin/perl	perl commands text
+0	string		eval\ "exec\ /bin/perl	perl commands text
+#
+# Formats for various forms of compressed data
+# Formats for "compress" proper have been moved into "compress.c",
+# because it tries to uncompress it to figure out what's inside.
+#
+# XXX - the two "packed data" versions are byte-swapped versions of
+# one another; is that because the 2-byte magic number is written
+# out in native byte order, with "unpack" figuring out the byte order
+# from the magic number (in which case both can be left as is, or
+# changed to specify a byte order *and* to indicate the byte order of
+# the packing machine), or because the old "file" didn't have any way of
+# having "magic"-file entries that specified a particular byte order?
+#
+0	short		017436		packed data
+0	short		017037		packed data
+
+#
+# This magic number is byte-order-independent.
+#
+0	short		017437		old packed data
+
+#
+0	string		\377\037	compacted data
+0	short		0145405		huf output
+#
+# Squeeze and Crunch, from Keith Waclena <keith@cerberus.uchicago.edu>
+# These numbers were gleaned from the Unix versions of the programs to
+# handle these formats.  Note that I can only uncrunch, not crunch, and
+# I didn't have a crunched file handy, so the crunch number is untested.
+0	short		0x76FF		squeezed data (CP/M, DOS)
+0	short		0x76FE		crunched data (CP/M, DOS)
+# Freeze
+0	short		0x1f9f		Frozen file 2.1
+0	short		0x1f9e		Frozen file 1.0
+#
+# GNU gzip compressor, from christos@deshaw.com (Christos Zoulas)
+#
+0       string          \037\213        gzip compressed file method:
+>2      byte            <8              reserved,
+>2      byte            8               deflate,
+>3	byte		&0x1f		flags: 
+>3	byte		&0x01		ascii-text,
+>3	byte		&0x02		multi-part,
+>3	byte		&0x04		name-present,
+>3	byte		&0x08		comment-present,
+>3	byte		&0x10		encrypted,
+>4	ledate		x		last modified: %s,
+>8	byte		x		extra-flags: %x,
+>9	byte		=0x00		os: MS/DOS
+>9	byte		=0x01		os: Amiga
+>9	byte		=0x02		os: VMS
+>9	byte		=0x03		os: Unix
+>9	byte		=0x05		os: Atari
+>9	byte		=0x06		os: OS/2
+>9	byte		=0x07		os: MacOS
+>9	byte		=0x0A		os: Tops/20
+>9	byte		=0x0B		os: Win/32
+#
+# XXX - what byte order does a Convex use?
+#
 0	long		0513		Convex executable
+#
+# Yes, the two "cpio archive" formats *are* supposed to just be "short".
+# The idea is to indicate archives produced on machines with the same
+# byte order as the machine running "file" with "cpio archive", and
+# to indicate archives produced on machines with the opposite byte order
+# from the machine running "file" with "byte-swapped cpio archive".
+#
+# The SVR4 "cpio(4)" hints that there are additional formats, but they
+# are defined as "short"s; I think all the new formats are
+# character-header formats, and thus are strings not numbers.
+#
+0	short		070707		cpio archive
+0	short		0143561		byte-swapped cpio archive
+0	string		070707		ASCII cpio archive (pre-SVR4 or odc)
+0	string		070701		ASCII cpio archive (SVR4 with no CRC)
+0	string		070702		ASCII cpio archive (SVR4 with CRC)
+#
+# ... diamond is a multi-media mail and electronic conferencing system....
+#
+# XXX - I think it was either renamed Slate, or replaced by Slate....
+#
+#	The full deal is too long...
+#0	string	<list>\n<protocol\ bbn-multimedia-format>	Diamond Multimedia Document
+0	string	=<list>\n<protocol\ bbn-m	Diamond Multimedia Document
 #
 # magic file lines for output from "diff"...
 0	string		diff\ 	'diff' output text
@@ -70,13 +380,339 @@
 0	string		x\ T\ cat	titroff output for the C/A/T text
 0	string		x\ T\ ps	titroff output for PostScript
 0	string		x\ T 		titroff output text
+#
+# magic.dump, dump file format. For new and old dump filesystems
+#
+# No, these shouldn't specify a specific byte order, because the byte
+# order is dependent on the machine that produced the dump.
+#
+24	long	60012		new-fs dump file,
+>4	date	x		Previous dump %s,
+>8	date	x		This dump %s,
+>12	long	>0		Volume %ld,
+>692	long	0		Level zero, type:
+>692	long	>0		Level %d, type:
+>0	long	1		tape header,
+>0	long	2		beginning of file record,
+>0	long	3		map of inodes on tape,
+>0	long	4		continuation of file record,
+>0	long	5		end of volume,
+>0	long	6		map of inodes deleted,
+>0	long	7		end of medium (for floppy),
+>676	string	>\0		Label %s,
+>696	string	>\0		Filesystem %s,
+>760	string	>\0		Device %s,
+>824	string	>\0		Host %s,
+>888	long	>0		Flags %x
+
+24	long	60011		old-fs dump file,
+#>4	date	x		Previous dump %s,
+#>8	date	x		This dump %s,
+>12	long	>0		Volume %ld,
+>692	long	0		Level zero, type:
+>692	long	>0		Level %d, type:
+>0	long	1		tape header,
+>0	long	2		beginning of file record,
+>0	long	3		map of inodes on tape,
+>0	long	4		continuation of file record,
+>0	long	5		end of volume,
+>0	long	6		map of inodes deleted,
+>0	long	7		end of medium (for floppy),
+>676	string	>\0		Label %s,
+>696	string	>\0		Filesystem %s,
+>760	string	>\0		Device %s,
+>824	string	>\0		Host %s,
+>888	long	>0		Flags %x
+#
+# ELF
+# Missing MIPS image type and flags
+#
+# Question marks on processor types flag "should not happen because the
+# byte order is wrong".  We have to check the byte order flag to see what
+# byte order all the other stuff in the header is in.
+#
+0	string		\177ELF		ELF
+>4	byte		0		invalid class
+>4	byte		1		32-bit
+>4	byte		2		64-bit
+>5	byte		0		invalid byte order
+>5	byte		1		LSB
+>>16	leshort		0		unknown type
+>>16	leshort		1		relocatable
+>>16	leshort		2		executable
+>>16	leshort		3		dynamic lib
+>>16	leshort		4		core file
+>>18	leshort		0		unknown machine
+>>18	leshort		1		WE32100 and up
+>>18	leshort		2		SPARC?
+>>18	leshort		3		i386 (386 and up)
+>>18	leshort		4		M68000?
+>>18	leshort		5		M88000?
+>>18	leshort		7		i860
+>>20	lelong		1		Version 1
+>>36	lelong		1		MathCoPro/FPU/MAU Required
+>5	byte		2		MSB
+>>16	beshort		0		unknown type
+>>16	beshort		1		relocatable
+>>16	beshort		2		executable
+>>16	beshort		3		dynamic lib
+>>16	beshort		4		core file
+>>18	beshort		0		unknown machine
+>>18	beshort		1		WE32100 and up
+>>18	beshort		2		SPARC
+>>18	beshort		3		i386 (386 and up)?
+>>18	beshort		4		M68000
+>>18	beshort		5		M88000
+>>18	beshort		7		i860
+>>20	belong		1		Version 1
+>>36	belong		1		MathCoPro/FPU/MAU Required
+
+#
+# magic.encore: Recognize encore machines
+#
+# XXX - needs to have the byte order specified (NS32K was little-endian,
+# dunno whether they run the 88K in little-endian mode or not).
+#
+0	short		0x154		Encore
+>20	short		0x107		executable
+>20	short		0x108		pure executable
+>20	short		0x10b		demand-paged executable
+>20	short		0x10f		unsupported executable
+>12	long		>0		not stripped
+>22	short		>0		- version %ld
+>22	short		0		-
+#>4	date		x		stamp %s
+0	short		0x155		Encore unsupported executable
+>12	long		>0		not stripped
+>22	short		>0		- version %ld
+>22	short		0		-
+#>4	date		x		stamp %s
+0	string	\366\366\366\366	Formatted floppy w/ no filesystem data
 0	string	FONT	ASCII vfont text
 0	short	0436	Berkeley vfont data
 0	short	017001	byte-swapped Berkeley vfont data
+#
 # Magic number for FrameMaker files
-# Thanks to Berry Kercheval
+# This stuff came on a FrameMaker demo tape, most of which is
+# copyright, but this file is "published" as witness the following:
 #
 0	string		\<MakerFile	FrameMaker document
+>11	string		3.0		 (3.0
+>11	string		2.0		 (2.0
+>11	string		1.0		 (1.0
+>14	byte		x		  %c)
+0	string		\<MIFFile	FrameMaker MIF file
+>9	string		3.0		 (3.0)
+>9	string		2.0		 (2.0)
+>9	string		1.0		 (1.x)
+0	string		\<MakerDictionary	FraneMaker Dictionary text
+>17	string		3.0		 (3.0)
+>17	string		2.0		 (2.0)
+>17	string		1.0		 (1.x)
+0	string		\<MakerScreenFon	FrameMaker Font file
+>17	string		1.01		 (%s)
+0	string		\<MML		FrameMaker MML file
+0	string		\<Book		FrameMaker Book file
+>10	string		3.0		 (3.0
+>10	string		2.0		 (2.0
+>10	string		1.0		 (1.0
+>13	byte		x		  %c)
+0	string		\<Maker Intermediate Print File	FrameMaker IPL file
+0	string		\<MakerDictionary	FraneMaker Dictionary text
+#
+# magic.hp: Hewlett Packard Magic
+#
+# XXX - somebody should figure out whether any byte order needs to be
+# applied to the "TML" stuff; I'm assuming the Apollo stuff is
+# big-endian as it was mostly 68K-based.
+#
+# HP-PA is big-endian, so it (and "800", which is *also* HP-PA-based; I
+# assume "HPPA-RISC1.1" really means "HP-PA Version 1.1", which first
+# showed up in the 700 series, although later 800 series machines are,
+# I think, based on the PA7100 which implements HP-PA 1.1) are flagged
+# as big-endian.
+#
+# I think the 500 series was the old stack-based machines, running a
+# UNIX environment atop the "SUN kernel"; dunno whether it was
+# big-endian or little-endian.
+#
+# I'm guessing that the 200 series was 68K-based; the 300 and 400 series
+# are.
+#
+# The "misc" stuff needs a byte order; the archives look suspiciously
+# like the old 177545 archives (0xff65 = 0177545).
+#
+#### Old Apollo stuff
+0	beshort		0627		Apollo m68k COFF executable
+>18	beshort		^040000		not stripped 
+>22	beshort		>0		- version %ld
+0	beshort		0624		apollo a88k COFF executable
+>18	beshort		^040000		not stripped 
+>22	beshort		>0		- version %ld
+0       long            01203604016     TML 0123 byte-order format
+0       long            01702407010     TML 1032 byte-order format
+0       long            01003405017     TML 2301 byte-order format
+0       long            01602007412     TML 3210 byte-order format
+#### HPPA
+0	belong 		0x02100106	HPPA-RISC1.1 relocatable object
+0	belong 		0x02100107	HPPA-RISC1.1 executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x02100108	HPPA-RISC1.1 shared executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x0210010b	HPPA-RISC1.1 demand-load executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x0210010e	HPPA-RISC1.1 shared library
+>96	belong		>0		-not stripped
+
+0	belong 		0x0210010d	HPPA-RISC1.1 dynamic load library
+>96	belong		>0		-not stripped
+
+#### 800
+0	belong 		0x020b0106	HP s800 relocatable object
+
+0	belong 		0x020b0107	HP s800 executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x020b0108	HP s800 shared executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x020b010b	HP s800 demand-load executable
+>(144)	belong		0x054ef630	dynamically linked
+>96	belong		>0		-not stripped
+
+0	belong 		0x020b010e	HP s800 shared library
+>96	belong		>0		-not stripped
+
+0	belong 		0x020b010d	HP s800 dynamic load library
+>96	belong		>0		-not stripped
+
+0	belong		0x213c6172	archive file
+>68	belong 		0x020b0619	-HP s800 relocatable library
+
+#### 500
+0	long		0x02080106	HP s500 relocatable executable
+>16	long		>0		-version %ld
+
+0	long		0x02080107	HP s500 executable
+>16	long		>0		-version %ld
+
+0	long		0x02080108	HP s500 pure executable
+>16	long		>0		-version %ld
+
+#### 200
+0	belong 		0x020c0108	HP s200 pure executable
+>4	beshort		>0		-version %ld
+>8	belong		&0x80000000	save fp regs
+>8	belong		&0x40000000	dynamically linked
+>8	belong		&0x20000000	debuggable
+>36	belong		>0		not stripped
+
+0	belong		0x020c0107	HP s200 executable
+>4	beshort		>0		-version %ld
+>8	belong		&0x80000000	save fp regs
+>8	belong		&0x40000000	dynamically linked
+>8	belong		&0x20000000	debuggable
+>36	belong		>0		not stripped
+
+0	belong		0x020c010b	HP s200 demand-load executable
+>4	beshort		>0		-version %ld
+>8	belong		&0x80000000	save fp regs
+>8	belong		&0x40000000	dynamically linked
+>8	belong		&0x20000000	debuggable
+>36	belong		>0		not stripped
+
+0	belong		0x020c0106	HP s200 relocatable executable
+>4	beshort		>0		-version %ld
+>6	beshort		>0		-highwater %d
+>8	belong		&0x80000000	save fp regs
+>8	belong		&0x20000000	debuggable
+>8	belong		&0x10000000	PIC
+
+0	belong 		0x020a0108	HP s200 (2.x release) pure executable
+>4	beshort		>0		-version %ld
+>36	belong		>0		not stripped
+
+0	belong		0x020a0107	HP s200 (2.x release) executable
+>4	beshort		>0		-version %ld
+>36	belong		>0		not stripped
+
+0	belong		0x020c010e	HP s200 shared library
+>4	beshort		>0		-version %ld
+>6	beshort		>0		-highwater %d
+>36	belong		>0		not stripped
+
+0	belong		0x020c010d	HP s200 dynamic load library
+>4	beshort		>0		-version %ld
+>6	beshort		>0		-highwater %d
+>36	belong		>0		not stripped
+
+#### MISC
+0	long		0x0000ff65	HP old archive
+0	long		0x020aff65	HP s200 old archive
+0	long		0x020cff65	HP s200 old archive
+0	long		0x0208ff65	HP s500 old archive
+
+0	long		0x015821a6	HP core file
+
+0	long		0x4da7eee8	HP-WINDOWS font
+>8	byte		>0		-version %ld
+0	string		Bitmapfile	HP Bitmapfile
+
+0	string		IMGfile	CIS 	compimg HP Bitmapfile
+0	short		0x8000		lif file
+0	long		0x020c010c	compiled Lisp
+
+0	string		msgcat01	HP NLS message catalog,
+>8	long		>0		%d messages
+#
+# IBM 370 and compatibles.
+#
+# "ibm370" said that 0x15d == 0535 was "ibm 370 pure executable".
+# What the heck *is* "USS/370"?
+#
+0       beshort		0531		SVR2 executable (Amdahl-UTS)
+>12	belong		>0		not stripped
+>24     belong		>0		- version %ld
+0	beshort		0534		SVR2 pure executable (Amdahl-UTS)
+>12	belong		>0		not stripped
+>24	belong		>0		- version %ld
+0	beshort		0530		SVR2 pure executable (USS/370)
+>12	belong		>0		not stripped
+>24	belong		>0		- version %ld
+0	beshort		0535		SVR2 executable (USS/370)
+>12	belong		>0		not stripped
+>24	belong		>0		- version %ld
+
+#
+# magic.rs6000:
+#
+# RS/6000 and the RT PC.
+#
+0	beshort		0x01df		executable (RISC System/6000 V3.1) or obj module
+>12	belong		>0		not stripped
+# Breaks sun4 statically linked execs.
+#0      beshort		0x0103		executable (RT Version 2) or obj module
+#>2	byte		0x50		pure
+#>28	belong		>0		not stripped
+#>6	beshort		>0		- version %ld
+0	beshort		0x0104		shared library
+0	beshort		0x0105		ctab data
+0	beshort		0xfe04		structured file
+0	string		0xabcdef	message catalog
+#0	string		<aiaff>		archive
+# image file format
+# From Robert Potter, potter@cs.rochester.edu
+0	string		Imagefile\ version-	iff image data
+# this adds the whole header (inc. version number), informative but longish
+>10	string		>\0		%s
 # Tell file about magic for IMAGEN printer-ready files:
 0	string	@document(		Imagen printer
 # this only works if "language xxx" is first item in Imagen header.
@@ -91,27 +727,199 @@
 # Now magic for IMAGEN font files...
 0	string		Rast		RST-format raster font data
 >45	string		>0		face %
-# various intel-CPU magic numbers
-0	short		01006		80286 executable (STL)
->31	byte		<0x040		small model
->31	byte		=0x048		large model	
->31	byte		=0x049		huge model 
->16	long		>0		not stripped
-0	string		MZ		DOS executable (EXE)
-0	string		LZ		DOS executable (built-in)
-0	byte		0xe9		DOS executable (COM)
-0	byte		0xeb		DOS executable (COM)
-0	short		=0512		80286 executable small model (COFF)
->12	long		>0		not stripped
->22	short		>0		- version %ld
-0	short		=0522		80286 executable large model (COFF)
->12	long		>0		not stripped
->22	short		>0		- version %ld
-0	short		=0514		80386 executable
->12	long		>0		not stripped
->22	short		>0		- version %ld
+# image formats, originally from jef@helios.ee.lbl.gov (Jef Poskanzer),
+# additions by janl@ifi.uio.no as well as others. Jan also suggested
+# merging several one- and two-line files into here.
+#
+# XXX - byte order for GIF and TIFF fields?
+#
 
-0	string		#magic		magic text file for file(1) cmd
+0	string		xbtoa			btoa'd file
+
+# PBMPLUS
+0	string		P1			PBM file
+0	string		P2			PGM file
+0	string		P3			PPM file
+0	string		P4			PBM "rawbits" file
+0	string		P5			PGM "rawbits" file
+0	string		P6			PPM "rawbits" file
+
+# TIFF and friends
+0	string		\115\115		TIFF file, big-endian
+>2      short           >0              	version %d
+0	string		\111\111		TIFF file, little-endian
+>2      short           >0              	version %d
+#
+# NIFF (Navy Interchange File Format, a modification of TIFF)
+0	string		IIN1			NIFF raster data
+
+# GIF
+0	string		GIF		GIF picture
+>3	string		87a		- version 87a
+>3	string		89a		- version 89a
+>6	leshort		x		%d x
+>8	leshort		x		%d,
+>10	byte		&0x40		interlaced,
+>10	byte&0x07	=0x00		2 colors
+>10	byte&0x07	=0x01		4 colors
+>10	byte&0x07	=0x02		8 colors
+>10	byte&0x07	=0x03		16 colors
+>10	byte&0x07	=0x04		32 colors
+>10	byte&0x07	=0x05		64 colors
+>10	byte&0x07	=0x06		128 colors
+>10	byte&0x07	=0x07		256 colors
+
+# Miscellany
+0	long		1123028772		Artisan image file
+>4	long		1	rectangular 24-bit image
+>4	long		2	rectangular 8-bit image with colormap
+>4      long            3	rectangular 32-bit image (24-bit with matte)
+0	string		\361\0\100\273		CMU window manager bitmap
+0	string		#FIG			FIG graphics savefile text
+>6      string          2.1             	Version 2.1
+>6      string          2.0             	Version 2.0
+0	string		GKSM			GKS Metafile
+8	string		ILBM			IFF ILBM file
+0	string		yz			MGR bitmap
+6	string		JFIF			JPEG picture
+0       string          ARF_BEGARF      	PHIGS clear text archive
+#
+# Various flavors of x86 UNIX executable/object (other than Xenix, which
+# is in "microsoft").  DOS is in "ms-dos"; the ambitious soul can do
+# Windows as well.
+#
+# Windows NT belongs elsewhere, as you need x86 and MIPS and Alpha and
+# whatever comes next (HP-PA Hummingbird?).  OS/2 may also go elsewhere
+# as well, if, as, and when IBM makes it portable.
+#
+# The `versions' should be un-commented if they work for you.
+# (Was the problem just one of endianness?)
+#
+0	leshort		0502		basic-16 executable
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+0	leshort		0503		basic-16 executable (TV)
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+0	leshort		0510		x86 executable
+>12	lelong		>0		not stripped
+0	leshort		0511		x86 executable (TV)
+>12	lelong		>0		not stripped
+0	leshort		=0512		iAPX 286 executable small model (COFF)
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+0	leshort		=0522		iAPX 286 executable large model (COFF)
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+0	leshort		=0514		80386 COFF executable
+>12	lelong		>0		not stripped
+>22	leshort		>0		- version %ld
+#
+# magic for InterLeaf TPS:
+0	string		=\210OPS	Interleaf saved data
+0	string		=<!OPS		Interleaf document text
+>5	string		,\ Version\ 	(version
+>>14	string		>\0		%s)
+
+#
+# magic.iris: Magic for mips from an iris4d
+#
+# Dunno what byte-order munging is needed; all of SGI's *current*
+# machines and OSes run in big-endian mode on the MIPS machines,
+# as far as I know, but they do have the MIPSEB and MIPSEL stuff
+# here....
+#
+0	short		0x0160		mipseb
+>20	short		0407		executable
+>20	short		0410		pure
+>20	short		0413		demand paged
+>8	long		>0		not stripped
+>8	long		0		stripped
+>22	byte		>0		- version %ld.
+>23	byte		>0		%ld
+0	short		0x0162		mipsel
+>20	short		0407		executable
+>20	short		0410		pure
+>20	short		0413		demand paged
+>8	long		>0		not stripped
+>8	long		0		stripped
+>23	byte		>0		- version %ld.
+>22	byte		>0		%ld
+0	short		0x6001		swapped mipseb
+>20	short		03401		executable
+>20	short		04001		pure
+>20	short		05401		demand paged
+>8	long		>0		not stripped
+>8	long		0		stripped
+>22	byte		>0		- version %ld.
+>23	byte		>0		%ld
+0	short		0x6201		swapped mipsel
+>20	short		03401		executable
+>20	short		04001		pure
+>20	short		05401		demand paged
+>8	long		>0		not stripped
+>8	long		0		stripped
+>22	byte		>0		- version %ld.
+>23	byte		>0		%ld
+0	short		0x180		mipseb ucode
+0	short		0x182		mipsel ucode
+#
+# IRIX core format version 1 (from /usr/include/core.out.h)
+0	long		0xdeadadb0	IRIX core dump
+>4	long		1		of
+>16	string		>\0		'%s'
+#
+# Archives - This handles archive subtypes
+#
+0	string		!<arch>\n__________E	MIPS archive
+>20	string		U			with mipsucode members
+>21	string		L			with mipsel members
+>21	string		B			with mipseb members
+>19	string		L			and a EL hash table
+>19	string		B			and a EB hash table
+>22	string		X			-- out of date
+#
+# magic.ispell
+#
+# XXX - byte order?
+#
+0	short	0xffff9601	ispell hash file
+>2	short	0x00	- 8-bit, no capitalization, 26 flags
+>2	short	0x01	- 7-bit, no capitalization, 26 flags 
+>2	short	0x02	- 8-bit, capitalization, 26 flags
+>2	short	0x03	- 7-bit, capitalization, 26 flags 
+>2	short	0x04	- 8-bit, no capitalization, 52 flags
+>2	short	0x05	- 7-bit, no capitalization, 52 flags 
+>2	short	0x06	- 8-bit, capitalization, 52 flags
+>2	short	0x07	- 7-bit, capitalization, 52 flags 
+>2	short	0x08	- 8-bit, no capitalization, 128 flags
+>2	short	0x09	- 7-bit, no capitalization, 128 flags 
+>2	short	0x0A	- 8-bit, capitalization, 128 flags
+>2	short	0x0B	- 7-bit, capitalization, 128 flags 
+>2	short	0x0C	- 8-bit, no capitalization, 256 flags
+>2	short	0x0D	- 7-bit, no capitalization, 256 flags 
+>2	short	0x0E	- 8-bit, capitalization, 256 flags
+>2	short	0x0F	- 7-bit, capitalization, 256 flags 
+>4	short	>0	and %d string characters
+#	derived empirically, your offsets may vary!
+53	string		yyprevious	c program text (from lex)
+>3	string		>\0		 for %s
+#
+# magic.lif:
+#
+# XXX - byte order?
+#
+0	short		0x8000		lif file
+# Values for Linux/i386 binaries, From: Rik Faith <faith@cs.unc.edu>
+2       short           100             Linux/i386
+>0      short           0407            executable
+>0      short           0410            pure executable
+>0      short           0413            demand paged executable
+>16     long            >0              not stripped
+>0      string          Jump            jump
+# core dump file
+216     long            0421            core file (Linux)
+0	string		#\ Magic	magic text file for file(1) cmd
 # Unfortunately, saved netnews also has From line added in some news software.
 #0	string		From 		mail text
 # There are tests to ascmagic.c to cope with mail and news.
@@ -125,46 +933,283 @@
 0	string		Xref:		news text
 0	string		From:		news or mail text
 0	string		Article 	saved news text
-0	long	31415		Mirage Assembler m.out executable
-0	string		begin 		uuencoded mail text
-#	derived empirically, your offsets may vary!
-53	string		yyprevious	c program text (from lex)
-0	long		0407		executable
->16	long		>0		not stripped
-#>2	short		>0		- version %ld
-0	short		0407		PDP-11 executable
->8	short		>0		not stripped
-0	short		0401		unix-rt ldp
-0	short		0405		old overlay
-0	long		0410		pure executable
->16	long		>0		not stripped
-#>2	short		>0		- version %ld
-0	short		0410		PDP-11 pure executable
->8	short		>0		not stripped
-#>2	short		>0		- version %ld
-0	short		0411		PDP-11 separate I&D executable
->8	short		>0		not stripped
-#>2	short		>0		- version %ld
-0	long		0413		demand paged pure executable
->16	long		>0		not stripped
-#>2	short		>0		- version %ld
-0	long		0420		demand paged (first page unmapped) pure executable
->16	long		>0		not stripped
-#>2	short		>0		- version %ld
-0	short		0437		pdp11 kernel overlay
 #
-# Let us not forget PostScript
-0	string	%!			PostScript text
+# Microsoft (Xenix, not DOS)
+#
+# "Middle model" stuff, and "Xenix 8086 relocatable or 80286 small
+# model" lifted from "magic.xenix", with comment "derived empirically;
+# treat as folklore until proven"
+#
+# "small model", "large model", "huge model" stuff lifted from XXX
+#
+# XXX - "x.out" collides with PDP-11 archives....
+#
+0	string		core		core file (Xenix)
+0	byte		0x80		8086 relocatable (Microsoft)
+0	leshort		0xff65		x.out
+>2	string		__.SYMDEF	 randomized
+>0	byte		x		archive
+0	leshort		0x206		Microsoft a.out
+>8	leshort		1		Middle model
+>0x1e	leshort		&0x10		overlay
+>0x1e	leshort		&0x2		separate
+>0x1e	leshort		&0x4		pure
+>0x1e	leshort		&0x800		segmented
+>0x1e	leshort		&0x400		standalone
+>0x1e	leshort		&0x8		fixed-stack
+>0x1c	byte		&0x80		byte-swapped
+>0x1c	byte		&0x40		word-swapped
+>0x10	lelong		>0		not-stripped
+>0x1e	leshort		^0xc000		pre-SysV
+>0x1c	byte		&0x4		86
+>0x1c	byte		&0x9		286
+>0x1c	byte		&0xa		386
+>0x1f	byte		<0x040		small model
+>0x1f	byte		=0x048		large model	
+>0x1f	byte		=0x049		huge model 
+>0x1e	leshort		&0x1		executable
+>0x1e	leshort		^0x1		object file
+>0x1e	leshort		&0x40		Large Text
+>0x1e	leshort		&0x20		Large Data
+>0x1e	leshort		&0x120		Huge Objects Enabled
+>0x10	lelong		>0		not stripped
+
+0	leshort		0x140		old Microsoft 8086 x.out
+>0x3	byte		&0x4		separate
+>0x3	byte		&0x2		pure
+>0	byte		&0x1		executable
+>0	byte		^0x1		relocatable
+>0x14	lelong		>0		not stripped
+
+0	lelong		0x206		b.out
+>0x1e	leshort		&0x10		overlay
+>0x1e	leshort		&0x2		separate
+>0x1e	leshort		&0x4		pure
+>0x1e	leshort		&0x800		segmented
+>0x1e	leshort		&0x400		standalone
+>0x1e	leshort		&0x1		executable
+>0x1e	leshort		^0x1		object file
+>0x1e	leshort		&0x4000		V2.3
+>0x1e	leshort		&0x8000		V3.0
+>0x1c	byte		&0x4		86
+>0x1c	byte		&0xb		186
+>0x1c	byte		&0x9		286
+>0x1c	byte		&0x29		286
+>0x1c	byte		&0xa		386
+>0x1e	leshort		&0x4		Large Text
+>0x1e	leshort		&0x2		Large Data
+>0x1e	leshort		&0x102		Huge Objects Enabled
+
+0	leshort		0x580		XENIX 8086 relocatable or 80286 small model
+#
+# RISC MIPS decstation
+# Should this be "leshort", given that DEC ran the DECstations in
+# little-endian mode?
+#
+# Where is the non-SGI, non-DEC MIPS stuff?
+#
+0	short		0x6201		MIPS executable
+#
+# XXX - byte order?
+#
+0	long	31415		Mirage Assembler m.out executable
+#
+# ID is the binary tags database produced by mkid(1).
+#
+# XXX - byte order?
+#
+0	string		\311\304	ID tags data
+>2	short		>0		version %d
+0	long		0x1010101	MMDF mailbox
+#
+# Motorola
+#
+# 68K
+#
+0	beshort		0520		mc68k COFF
+>18	beshort		^00000020	object
+>18	beshort		&00000020	executable
+>12	belong		>0		not stripped
+>168	string		.lowmem		Apple toolbox
+>20	beshort		0407		(impure)
+>20	beshort		0410		(pure)
+>20	beshort		0413		(demand paged)
+>20	beshort		0421		(standalone)
+0	beshort		0521		mc68k executable (shared)
+>12	belong		>0		not stripped
+0	beshort		0522		mc68k executable (shared demand paged)
+>12	belong		>0		not stripped
+#
+# Motorola/UniSoft 68K Binary Compatibility Standard (BCS)
+#
+0	beshort		0554		68K BCS executable
+#
+# 88K
+#
+# Motorola/88Open BCS
+#
+0	beshort		0555		88K BCS executable
+#
+# Various MS-DOS magic numbers
+#
+0	string		MZ		DOS executable (EXE)
+0	string		LZ		DOS executable (built-in)
+0	byte		0xe9		DOS executable (COM)
+0	byte		0xeb		DOS executable (COM)
+0	byte		0xf0		MS-DOS program library
+#
+# magic.tower:
+#
+# NCR Tower objects, contributed by
+# Michael R. Wayne  ***  TMC & Associates  ***  INTERNET: wayne@ford-vax.arpa
+# uucp: {philabs | pyramid} !fmsrl7!wayne   OR   wayne@fmsrl7.UUCP
+#
+0	beshort		000610	Tower/XP rel 2 object
+>12	   belong		>0	not stripped
+>20	   beshort		0407	executable
+>20	   beshort		0410	pure executable
+>22	   beshort		>0	- version %ld
+0	beshort		000615	Tower/XP rel 2 object
+>12	   belong		>0	not stripped
+>20	   beshort		0407	executable
+>20	   beshort		0410	pure executable
+>22	   beshort		>0	- version %ld
+0	beshort		000620	Tower/XP rel 3 object
+>12	   belong		>0	not stripped
+>20	   beshort		0407	executable
+>20	   beshort		0410	pure executable
+>22	   beshort		>0	- version %ld
+0	beshort		000625	Tower/XP rel 3 object
+>12	   belong		>0	not stripped
+>20	   beshort		0407	executable
+>20	   beshort		0410	pure executable
+>22	   beshort		>0	- version %ld
+0	beshort		000630	Tower32/600/400 68020 object
+>12	   belong		>0	not stripped
+>20	   beshort		0407	executable
+>20	   beshort		0410	pure executable
+>22	   beshort		>0	- version %ld
+0	beshort		000640	Tower32/800 68020
+>18	   beshort		&020000	w/68881 object
+>18	   beshort		&040000	compatible object
+>18	   beshort		&~060000	object
+>20	   beshort		0407	executable
+>20	   beshort		0413	pure executable
+>12	   belong		>0	not stripped
+>22	   beshort		>0	- version %ld
+0	beshort		000645	Tower32/800 68010
+>18	   beshort		&040000	compatible object
+>18	   beshort		&~060000 object
+>20	   beshort		0407	executable
+>20	   beshort		0413	pure executable
+>12	   belong		>0	not stripped
+>22	   beshort		>0	- version %ld
+#
+# All new-style magic numbers are in network byte order.
+#
+0	belong&077777777	041400413	netbsd/i386 demand paged
+>0	byte			&0x80
+>>20	long			<4096		shared library
+>>20	long			=4096		dynamically linked executable
+>>20	long			>4096		dynamically linked executable
+>0	byte			^0x80		executable
+>16	long			>0		not stripped
+0	belong&077777777	041400410	netbsd/i386 pure
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	long			>0		not stripped
+0	belong&077777777	041400407	netbsd/i386
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	long			>0		not stripped
+# NeWS, not "news" as in "netnews"
+0	string		StartFontMetrics	ASCII font metrics
+0	string		StartFont	ASCII font bits
+0	long		0x137A2944	NeWS bitmap font
+0	long		0x137A2947	NeWS font family
+#
+# XXX - byte order?
+#
+0	short	0x2a17	"compact bitmap" format (Poskanzer)
+#
+# magic.pdp: PDP-11 executable/object and APL workspace
+#
+0	lelong		0101555		PDP-11 single precision APL workspace
+0	lelong		0101554		PDP-11 double precision APL workspace
+
+#
+# PDP-11 a.out
+#
+0	leshort		0407		PDP-11 executable
+>8	leshort		>0		not stripped
+
+0	leshort		0401		PDP-11 UNIX/RT ldp
+0	leshort		0405		PDP-11 old overlay
+
+0	leshort		0410		PDP-11 pure executable
+>8	leshort		>0		not stripped
+
+0	leshort		0411		PDP-11 separate I&D executable
+>8	leshort		>0		not stripped
+
+0	leshort		0437		PDP-11 kernel overlay
+#
+# pgp (pretty good protection)
+0       short           0x9900                  pgp key public ring
+0       short           0x9501                  pgp key security ring
+0       string          -----BEGIN\040PGP       pgp armored data
+>15     string          PUBLIC\040KEY\040BLOCK- public key blocK
+>15     string          MESSAGE-                message
+>15     string          SIGNED\040MESSAGE-      signed message
+>15     string          PGP\040SIGNATURE-       signature
+#
+# SysV R4 PKG Datastreams:
+#
+0       string          #\ PaCkAgE\ DaTaStReAm  pkg Datastream (SVR4)
+#
+#/etc/magic entries for Plus Five's UNIX MUMPS
+#
+# XXX - byte order?  Paging Hokey....
+#
+0	short		0x259		mumps avl global
+>2	byte		>0		(V%d)
+>6	byte		>0		with %d byte name
+>7	byte		>0		and %d byte data cells
+0	short		0x25a		mumps blt global
+>2	byte		>0		(V%d)
+>8	short		>0		- %d byte blocks
+>15	byte		0x00		- P/D format
+>15	byte		0x01		- P/K/D format
+>15	byte		0x02		- K/D format
+>15	byte		>0x02		- Bad Flags
+#
+# magic.postscript: Magic for postscript files
+#
+# XXX - should we match only versions 1.0 and 2.0, or should we wildcard
+# it?
+#
+0	string		%!		PostScript text
 >2	string	PS-Adobe-		conforming
->11	string	1.0			at level %s
-# Sun rasterfiles
-0	string	\x59\xa6\x6a\x95	rasterfile
->4	long	>0		%d
->8	long	>0		x %d
->12	long	>0		x %d
->20	long	0		old format
->20	long	2		compressed
->24	long	1		with color map
+>>11	string	1.0			at level %s
+>>11	string	2.0			at level %s
+#
+# magic.ps: psdatabase magic
+#
+0	byte	0126	ps database
+>1	string	>\0	- version %s
+>4	string	>\0	from kernel %s
+#
+# magic.pyramid: Magic for pyramids
+#
+# XXX - byte order?
+#
+0	long		0x50900107	Pyramid 90x family executable
+0	long		0x50900108	Pyramid 90x family pure executable
+>16	long		>0		not stripped
+0	long		0x5090010b	Pyramid 90x family demand paged pure executable
+>16	long		>0		not stripped
+# for SC
+38	string		Spreadsheet	sc file
 # SCCS archive structure:
 # \001h01207
 # \001s 00276/00000/00000
@@ -182,132 +1227,302 @@
 # and we don't have regular expression matching yet. 
 # Hence the following official kludge:
 8	string		\001s\ 			SCCS archive.
+#
+# magic.sendmail:
+#
+# XXX - byte order?
+#
+0	byte	046	  Sendmail frozen configuration 
+>16	string	>\0	  - version %s
+0	short	0x271c	  Sendmail frozen configuration
+>16	string	>\0	  - version %s
+# Sequent information updated by Don Dwiggins <atsun!dwiggins>.
 # For Sequent's multiprocessor systems (incomplete).
-0	long	000352		BALANCE NS32000 .o
-0	long	010352		BALANCE NS32000 executable (0 @ 0)
->16	long	>0		not stripped
-0	long	020352		BALANCE NS32000 executable (invalid @ 0)
->16	long	>0		not stripped
-0	long	030352		BALANCE NS32000 standalone executable
->16	long	>0		not stripped
+0       leshort   0x00ea        BALANCE NS32000 .o
+0       leshort   0x10ea        BALANCE NS32000 executable (0 @ 0)
+>16     lelong    >0            not stripped
+0       leshort   0x20ea        BALANCE NS32000 executable (invalid @ 0)
+>16     lelong    >0            not stripped
+0       leshort   0x30ea        BALANCE NS32000 standalone executable
+>16     lelong    >0            not stripped
 # Also need info on Sequent "Symmetry" series...
-# SoftQuad troff magic numbers
-# SoftQuad @(#)magic	1.2 86/09/15
+# sgml,v 1.1 1993/06/10 00:59:29 jtc Exp
+# SGML goop, mostly from rph@sq.
+0	string		\<!DOCTYPE	Exported SGML document
+0	string		\<!doctype	Exported SGML document
+0	string		\<!SUBDOC	Exported SGML subdocument
+0	string		\<!subdoc	Exported SGML subdocument
+# SoftQuad Publishing Software magic numbers
+# softquad,v 1.2 1993/06/10 00:59:31 jtc Exp
+# Author/Editor and RulesBuilder
+#
+# XXX - byte order?
+#
+0	string		\<!SQ\ DTD>	Compiled SGML rules file
+>9	string		>\0		 Type %s
+0	string		\<!SQ\ A/E>	A/E SGML Document binary
+>9	string		>\0		 Type %s
+0	string		\<!SQ\ STS>	A/E SGML binary styles file
+>9	string		>\0		 Type %s
+0	short		0xc0de		Compiled PSI (v1) data
+0	short		0xc0da		Compiled PSI (v2) data
+>3	string		>\0		(%s)
+# Binary sqtroff font/desc files...
 0	short		0125252		SoftQuad DESC or font file binary
 >2	short		>0		- version %d
-# Values for Sun MC680x0 binaries
-0	short		2		mc68020
->2	short		0407		executable
->2	short		0410		pure executable
->2	short		0413		demand paged executable
->16	long		>0		not stripped
-0	short		1		mc68010
->2	short		0407		executable
->2	short		0410		pure executable
->2	short		0413		demand paged executable
->16	long		>0		not stripped
-0	short		0		old sun-2
->2	short		0407		executable
->2	short		0410		pure executable
->2	short		0413		demand paged executable
->16	long		>0		not stripped
-0	long		0x080456	core file
->128	string		>0		from '%s'
+# Bitmaps...
+0	string		SQ\ BITMAP1	SoftQuad Raster Format text
+#0	string		SQ\ BITMAP2	SoftQuad Raster Format data
+# sqtroff intermediate language (replacement for ditroff int. lang.)
+0	string		X\ 		SoftQuad troff Context intermediate
+>2	string		495		for AT&T 495 laser printer
+>2	string		hp		for Hewlett-Packard LaserJet
+>2	string		impr		for IMAGEN imPRESS
+>2	string		ps		for PostScript
 #
-0	short		05401		byte-swapped demand paged executable
-0	short		010001		byte-swapped demand paged executable
-# NCR Tower objects, contributed by
-# Michael R. Wayne  ***  TMC & Associates  ***  INTERNET: wayne@ford-vax.arpa
-# uucp: {philabs | pyramid} !fmsrl7!wayne   OR   wayne@fmsrl7.UUCP
+# Values for big-endian Sun (MC680x0, SPARC) binaries on pre-5.x
+# releases.
+# (5.x uses ELF.)
 #
-0	short		000610	Tower/XP rel 2 object
->12	   long			>0	not stripped
->20	   short		0407	executable
->20	   short		0410	pure executable
->22	   short		>0	-version %ld
-0	short		000615	Tower/XP rel 2 object
->12	   long			>0	not stripped
->20	   short		0407	executable
->20	   short		0410	pure executable
->22	   short		>0	-version %ld
-0	short		000620	Tower/XP rel 3 object
->12	   long			>0	not stripped
->20	   short		0407	executable
->20	   short		0410	pure executable
->22	   short		>0	-version %ld
-0	short		000625	Tower/XP rel 3 object
->12	   long			>0	not stripped
->20	   short		0407	executable
->20	   short		0410	pure executable
->22	   short		>0	-version %ld
-0	short		000630	Tower32/600/400 68020 object
->12	   long			>0	not stripped
->20	   short		0407	executable
->20	   short		0410	pure executable
->22	   short		>0	-version %ld
-0	short		000640	Tower32/800 68020
->18	   short		&020000	w/68881 object
->18	   short		&040000	compatible object
->18	   short		&~060000	object
->20	   short		0407	executable
->20	   short		0413	pure executable
->12	   long			>0	not stripped
->22	   short		>0	-version %ld
-0	short		000645	Tower32/800 68010
->18	   short		&040000	compatible object
->18	   short		&~060000 object
->20	   short		0407	executable
->20	   short		0413	pure executable
->12	   long			>0	not stripped
->22	   short		>0	-version %ld
+0	belong&077777777	0600413		sparc demand paged
+>0	byte			&0x80
+>>20	belong			<4096		shared library
+>>20	belong			=4096		dynamically linked executable
+>>20	belong			>4096		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+0	belong&077777777	0600410		sparc pure
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+0	belong&077777777	0600407		sparc
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+
+0	belong&077777777	0400413		mc68020 demand paged
+>0	byte			&0x80
+>>20	belong			<4096		shared library
+>>20	belong			=4096		dynamically linked executable
+>>20	belong			>4096		dynamically linked executable
+>16	belong			>0		not stripped
+0	belong&077777777	0400410		mc68020 pure
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+0	belong&077777777	0400407		mc68020
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+
+0	belong&077777777	0200413		mc68010 demand paged
+>0	byte			&0x80
+>>20	belong			<4096		shared library
+>>20	belong			=4096		dynamically linked executable
+>>20	belong			>4096		dynamically linked executable
+>16	belong			>0		not stripped
+0	belong&077777777	0200410		mc68010 pure
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+0	belong&077777777	0200407		mc68010
+>0	byte			&0x80		dynamically linked executable
+>0	byte			^0x80		executable
+>16	belong			>0		not stripped
+
+# reworked these to avoid anything beginning with zero becoming "old sun-2"
+0	belong			0407		old sun-2 executable
+>16	belong			>0		not stripped
+0	belong			0410		old sun-2 pure executable
+>16	belong			>0		not stripped
+0	belong			0413		old sun-2 demand paged executable
+>16	belong			>0		not stripped
+
+#
+# Core files.  "SPARC 4.x BCP" means "core file from a SunOS 4.x SPARC
+# binary executed in compatibility mode under SunOS 5.x".
+#
+0	belong		0x080456	SunOS core file
+>4	belong		432		(SPARC)
+>>132	string		>\0		from '%s'
+>4	belong		826		(68K)
+>>128	string		>\0		from '%s'
+>4	belong		456		(SPARC 4.x BCP)
+>>152	string		>\0		from '%s'
+#
+# Sun rasterfiles
+#
+0	string	\x59\xa6\x6a\x95	rasterfile
+>4	belong	x		%ld x
+>8	belong	x		%ld x
+>12	belong	x		%ld
+>20	belong	0		old format image
+>20	belong	1		standard format image
+>20	belong	2		run-length byte encoded image
+>20	belong	0xffff		experimental format image
+>24	belong	1		with color map
+#
+# Terminfo
+#
+# XXX - byte order for screen images?
+#
+0	string		\032\001	Compiled terminfo entry
+0	short		0433		Curses screen image
+0	short		0434		Curses screen image
+#
+# magic.tex: 
+#
+
+# Although we may know the offset of certain text fields in TeX DVI and
+# font files, we cannot use them reliably because they may not be zero
+# terminated.
+
+0	string		\367\002	TeX DVI file
+0	string		\367\203	TeX generic font data
+0	string		\367\131	TeX packed font data
+0	string		\367\312	TeX virtual font data
+0	string		This\ is\ TeX,	TeX transcript text	
+0	string		This\ is\ METAFONT,	METAFONT transcript text
+
+# Unfortunately, there is no way to detect TeX Font Metric (*.tfm) files
+# without breaking them apart and reading the data.  The following patterns
+# match most *.tfm files generated by METAFONT or afm2tfm.
+2	string		\000\021	TeX font metric data
+2	string		\000\022	TeX font metric data
+#
+# magic.troff:
+#
+0	string		\100\357	very old (C/A/T) troff output data
+0	string		'		[nt]roff, tbl, or eqn input text
+
 # other typesetting magic
 0	string		\100\357	very old (C/A/T) troff output data
 0	string		Interpress/Xerox	Xerox InterPress data
-#	Herewith many of the object file formats used by USG systems.
-#	The `versions' should be un-commented if they work for you.
-0	short		0570		SysV executable
->12	long		>0		not stripped
-#>22	short		>0		- version %ld
-0	short		0575		SysV pure executable
->12	long		>0		not stripped
-#>22	short		>0		- version %ld
-0	short		0502		basic-16 executable
->12	long		>0		not stripped
-0	short		0503		basic-16 executable (TV)
->12	long		>0		not stripped
-0	short		0510		x86 executable
->12	long		>0		not stripped
-0	short		0511		x86 executable (TV)
->12	long		>0		not stripped
-0	short		0550		3b20 executable
->12	long		>0		not stripped
-0	short		0551		3b20 executable (TV)
->12	long		>0		not stripped
-0	short		0560		WE32000 executable
->12	long		>0		not stripped
-0	short		0561		WE32000 executable (TV)
->12	long		>0		not stripped
-0	short		0610		Perkin-Elmer executable
-
-# Byte-swapped VAXen
-# From: dupuy@amsterdam.columbia.edu (Alexander Dupuy)
-# 
-# Here are a few lines you can add to /etc/magic on your sun workstations in
-# order to recognize VAX executables and objects.... you could do something
-# similar (in reverse) for your vaxen, but since 4.3+NFS' file(1) doesn't look
-# for /etc/magic, I've never bothered.  It really should be built in to file(1)
-# so you would see the state of setuid/setgid/sticky bits.  Or actually, there
-# should be support for checking that sort of thing in /etc/magic.
+>16	string		/			(version
+>>17	string		>\0			%s)
 #
-0	long		00700200000	VAX executable
->16	long		&0x7fffffff	not stripped
-0	long		01000200000	VAX pure executable
->16	long		&0x7fffffff	not stripped
-0	long		01300200000	VAX demand-paged pure executable
->16	long		&0x7fffffff	not stripped
-0	long		01100200000	PDP-11 executable
-# XENIX executable formats: derived empirically; treat as folklore until proven0	short	01006		XENIX (x.out) executable
->8	short	1		Middle model
->16	short	>0		not stripped
-0	short	02600		XENIX 8086 relocatable or 80286 small model
+# magic.unknown: Unknown machine magic
+#
+# XXX - this probably should be pruned, as it'll match PDP-11 and
+# VAX image formats.
+#
+# 0x107 is 0407; 0x108 is 0410; both are PDP-11 (executable and pure,
+# respectively).
+#
+# 0x109 is 0411; that's PDP-11 split I&D, but the PDP-11 version doesn't
+# have the "version %ld", which may be a bogus COFFism (I don't think
+# there ever was COFF for the PDP-11).
+#
+# 0x10B is 0413; that's VAX demand-paged, but this is a short, not a
+# long, as it would be on a VAX.
+#
+# 0x10C is 0414, 0x10D is 0415, and 0x10E is 416; those *are* unknown.
+#
+0	short		0x107		unknown machine executable
+>8	short		>0		not stripped
+>15	byte		>0		- version %ld
+0	short		0x108		unknown pure executable
+>8	short		>0		not stripped
+>15	byte		>0		- version %ld
+0	short		0x109		PDP-11 separate I&D
+>8	short		>0		not stripped
+>15	byte		>0		- version %ld
+0	short		0x10b		unknown pure executable
+>8	short		>0		not stripped
+>15	byte		>0		- version %ld
+0	long		0x10c		unknown demand paged pure executable
+>16	long		>0		not stripped
+0	long		0x10d		unknown demand paged pure executable
+>16	long		>0		not stripped
+0	long		0x10e		unknown readable demand paged pure executable
+0	string		begin 		uuencoded mail text
+# Btoa(1) is an alternative to uuencode that requires less space.
+0	string		xbtoa\ Begin	btoa'd text
+#	Herewith many of the object file formats used by USG systems.
+#	Most have been moved to files for a particular processor,
+#	and deleted if they duplicate other entries.
+#
+0	short		0610		Perkin-Elmer executable
+#
+# magic.pdp: VAX executable/object and APL workspace
+#
+0	lelong		0101557		VAX single precision APL workspace
+0	lelong		0101556		VAX double precision APL workspace
+
+#
+# VAX a.out (32V, BSD)
+#
+0	lelong		0407		VAX executable
+>16	lelong		>0		not stripped
+
+0	lelong		0410		VAX pure executable
+>16	lelong		>0		not stripped
+
+0	lelong		0413		VAX demand paged pure executable
+>16	lelong		>0		not stripped
+
+0	lelong		0420		VAX demand paged (first page unmapped) pure executable
+>16	lelong		>0		not stripped
+
+#
+# VAX COFF
+#
+# The `versions' should be un-commented if they work for you.
+# (Was the problem just one of endianness?)
+#
+0	leshort		0570		VAX COFF executable
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+0	leshort		0575		VAX COFF pure executable
+>12	lelong		>0		not stripped
+#>22	leshort		>0		- version %ld
+#
+# magic.visx: Visx format file
+#
+0	short		0x5555		VISX image file
+>2	byte		0		(zero)
+>2	byte		1		(unsigned char)
+>2	byte		2		(short integer)
+>2	byte		3		(float 32)
+>2	byte		4		(float 64)
+>2	byte		5		(signed char)
+>2	byte		6		(bit-plane)
+>2	byte		7		(classes)
+>2	byte		8		(statistics)
+>2	byte		10		(ascii text)
+>2	byte		15		(image segments)
+>2	byte		100		(image set)
+>2	byte		101		(unsigned char vector)
+>2	byte		102		(short integer vector)
+>2	byte		103		(float 32 vector)
+>2	byte		104		(float 64 vector)
+>2	byte		105		(signed char vector)
+>2	byte		106		(bit plane vector)
+>2	byte		121		(feature vector)
+>2	byte		122		(feature vector library)
+>2	byte		124		(chain code)
+>2	byte		126		(bit vector)
+>2	byte		130		(graph)
+>2	byte		131		(adjacency graph)
+>2	byte		132		(adjacency graph library)
+>2	string		.VISIX		(ascii text)
+#
+# magic.x11
+#
+# I think this is byte-order-dependent; if so, it should become:
+#
+# 0	belong	00000004	X11 big-endian snf font
+# 0	lelong	00000004	X11 little-endian snf font
+#
+0	long	00000004	X11 snf font
+#
+# Zilog Z8000.
+#
+# Was it big-endian or little-endian?  My Product Specification doesn't
+# say.
+#
+0	long		0xe807		object file (z8000 a.out)
+0	long		0xe808		pure object file (z8000 a.out)
+0	long		0xe809		separate object file (z8000 a.out)
+0	long		0xe805		overlay object file (z8000 a.out)
 
