@@ -99,8 +99,22 @@ __END_DECLS
 
 #else
 
-extern struct timeval time, boottime;
+extern struct timeval boottime;
 extern struct timezone tz;
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct timeval, time,)
+
+/* functions used in modules */
+__ISYM__(void, microtime, (struct timeval *))	/* */
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif /* KERNEL */
 
 #endif /* !_SYS_TIME_H_ */

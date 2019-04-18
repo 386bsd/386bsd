@@ -45,8 +45,7 @@ static char sccsid[] = "@(#)inet_addr.c	5.10 (Berkeley) 2/24/91";
  * The value returned is in network order.
  */
 u_long
-inet_addr(cp)
-	register const char *cp;
+inet_addr(const char *cp)
 {
 	struct in_addr val;
 
@@ -63,9 +62,7 @@ inet_addr(cp)
  * cannot distinguish between failure and a local broadcast address.
  */
 
-inet_aton(cp, addr)
-	register char *cp;
-	struct in_addr *addr;
+inet_aton(const char *cp, struct in_addr *addr)
 {
 	register u_long val, base, n;
 	register char c;

@@ -11,15 +11,7 @@ SRCS+=	gethostnamadr.c getnetbyaddr.c getnetbyname.c getnetent.c \
 	res_debug.c res_init.c res_mkquery.c res_query.c res_send.c \
 	send.c sethostent.c
 
-.if   (${MACHINE} == "hp300")
-SRCS+=	htonl.s htons.s ntohl.s ntohs.s
-.elif (${MACHINE} == "i386")
-SRCS+=	htonl.s htons.s ntohl.s ntohs.s
-.elif (${MACHINE} == "tahoe")
-SRCS+=	htonl.s htons.s ntohl.s ntohs.s
-.elif (${MACHINE} == "vax")
-SRCS+=	htonl.s htons.s ntohl.s ntohs.s
-.endif
+.include "${.CURDIR}/${MACHINE}/net/Makefile.inc"
 
 MAN3+=	byteorder.0 gethostbyname.0 getnetent.0 getprotoent.0 getservent.0 \
 	inet.0 ns.0 rcmd.0 resolver.0 \

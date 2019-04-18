@@ -30,12 +30,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)tprintf.h	7.2 (Berkeley) 5/4/91
+ *	$Id$
  */
 
 typedef struct session *tpr_t;
 
-tpr_t	tprintf_open __P((struct proc *));
-void	tprintf_close __P((tpr_t));
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
 
-void	tprintf __P((tpr_t, const char *fmt, ...));
+/* functions used in modules */
+__ISYM__(tpr_t, tprintf_open, (struct proc *))
+__ISYM__(void, tprintf_close, (tpr_t))
+__ISYM__(void, tprintf, (tpr_t, const char *fmt, ...))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__

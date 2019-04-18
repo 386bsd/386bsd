@@ -47,7 +47,15 @@ extern int physmem;		/* physical memory */
 extern dev_t dumpdev;		/* dump device */
 extern long dumplo;		/* offset into dumpdev */
 
-extern struct vnode *rootvp;	/* vnode equivalent to above */
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 
 extern struct sysent {		/* system call table */
 	int	sy_narg;	/* number of arguments */

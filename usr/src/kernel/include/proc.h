@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id$
+ *	$Id: proc.h,v 1.1 95/02/25 22:35:09 bill Exp Locker: bill $
  */
 
 #ifndef _PROC_H_
@@ -255,7 +255,7 @@ extern inline void
 leavepidhash(struct proc *p)
 {
 	struct proc **pp;
-	extern void panic(char *);
+	extern void panic(const char *);
 
 	for (pp = &pidhash[PIDHASH(p->p_pid)]; *pp; pp = &(*pp)->p_hash)
 		if (*pp == p) {
@@ -300,34 +300,47 @@ int inferior(struct proc *p);
 void roundrobin(void);
 void schedcpu(void);
 void updatepri(struct proc *p);
-int tsleep(caddr_t chan, int pri, char *wmesg, int timo);
 void unsleep(struct proc *p);
-void wakeup(caddr_t chan);
 void rqinit(void);
 void setrun(struct proc *p);
 void setpri(struct proc *p);
 
 /* process credentials */
-struct pcred *modpcred(struct proc *);
 
 /* process creation/destruction */
 int fork1(struct proc *p1, int isvfork, int *retval);
 void volatile exit(struct proc *p, int rv);
 
-struct	proc *zombproc, *allproc;	/* lists of procs in various states */
+extern struct	proc *zombproc, *allproc;	/* lists of procs in various states */
 extern	struct proc proc0;		/* process slot for swapper */
-struct	proc *initproc, *pageproc;	/* process slots for init, pager */
-extern	struct proc *curproc;		/* current running proc */
+extern struct	proc *initproc;	/* process slots for init, pager */
 extern	int nprocs, maxproc;		/* current and max number of procs */
 
 #define	NQS	32			/* 32 run queues */
 #define	PPQ	((MAXPRI+1) / NQS)	/* priorities per queue */
-struct	prochd {
+extern struct	prochd {
 	struct	proc *ph_link;	/* linked list of running processes */
 	struct	proc *ph_rlink;
 } qs[NQS];
 
-int	whichqs;		/* bit mask summarizing non-empty qs's */
+extern int	whichqs;		/* bit mask summarizing non-empty qs's */
+
+/* interface symbols */
+#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
+#include "isym.h"		/* this header has interface symbols */
+
+/* global variables used in core kernel and other modules */
+__ISYM__(struct proc *, curproc,)
+__ISYM__(struct proc *, pageproc,)
+
+/* functions used in modules */
+__ISYM__(void, wakeup, (caddr_t chan))
+__ISYM__(int, tsleep, (caddr_t chan, int pri, char *wmesg, int timo))
+__ISYM__(struct pcred *, modpcred, (struct proc *))
+
+#undef __ISYM__
+#undef __ISYM_ALIAS__
+#undef __ISYM_VERSION__
 #endif	/* KERNEL */
 
 #endif	/* !_PROC_H_ */

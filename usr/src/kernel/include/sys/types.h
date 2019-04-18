@@ -41,6 +41,14 @@ typedef	unsigned short	u_short;
 typedef	unsigned int	u_int;
 typedef	unsigned long	u_long;
 typedef	unsigned short	ushort;		/* Sys V compatibility */
+typedef __signed char              int8_t;
+typedef unsigned char            u_int8_t;
+typedef short                     int16_t;
+typedef unsigned short          u_int16_t;
+typedef int                       int32_t;
+typedef unsigned int            u_int32_t;
+typedef long long                 int64_t;
+typedef unsigned long long      u_int64_t;
 
 typedef	char *	caddr_t;		/* core address */
 typedef	long	daddr_t;		/* disk address */
@@ -55,6 +63,9 @@ typedef	u_short	gid_t;			/* group id */
 typedef	short	pid_t;			/* process id */
 typedef	u_short	mode_t;			/* permissions */
 typedef u_long	fixpt_t;		/* fixed point number */
+
+
+/*typedef	int ssize_t;		/* XXX count of bytes or error indication */
 
 #ifndef _POSIX_SOURCE
 typedef	struct	_uquad	{ u_long val[2]; } u_quad;
@@ -88,6 +99,11 @@ typedef	_CLOCK_T_	clock_t;
 #ifdef	_SIZE_T_
 typedef	_SIZE_T_	size_t;
 #undef	_SIZE_T_
+#endif
+
+#ifdef	_SSIZE_T_
+typedef	_SSIZE_T_	ssize_t;
+#undef	_SSIZE_T_
 #endif
 
 #ifdef	_TIME_T_

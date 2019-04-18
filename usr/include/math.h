@@ -37,6 +37,7 @@
 #ifndef	_MATH_H_
 #define	_MATH_H_
 
+#ifdef nope
 typedef	union	_h_val {
 	double		d;
 	unsigned long	i[2];
@@ -44,7 +45,9 @@ typedef	union	_h_val {
 
 extern	const	_h_val	__huge_val;
 #define	HUGE_VAL	__huge_val.d	/* IEEE: positive infinity */
-
+#endif
+extern char __infinity[];
+#define HUGE_VAL        (*(double *)(void *)__infinity)
 #if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
 /*
  * HUGE converts to the largest possible type float value.

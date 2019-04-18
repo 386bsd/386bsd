@@ -52,4 +52,5 @@ typedef	u_long	vm_size_t;
 #define	__PACK(s)	s __attribute__((packed))
 /* #endif */
 
+
 #endif	/* _MACHTYPES_H_ */

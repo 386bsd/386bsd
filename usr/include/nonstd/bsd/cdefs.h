@@ -1,5 +1,6 @@
-/*-
- * Copyright (c) 1990 The Regents of the University of California.
+#define __FBSDID(s)	/* s */
+/*
+ * Copyright (c) 1991 The Regents of the University of California.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,29 +31,49 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)ansi.h	7.1 (Berkeley) 3/9/91
+ *	@(#)cdefs.h	7.6 (Berkeley) 5/4/91
  */
 
-#ifndef	_ANSI_H_
-#define	_ANSI_H_
+#ifndef	_CDEFS_H_
+#define	_CDEFS_H_
+
+#if defined(__cplusplus)
+#define	__BEGIN_DECLS	extern "C" {
+#define	__END_DECLS	};
+#else
+#define	__BEGIN_DECLS
+#define	__END_DECLS
+#endif
 
 /*
- * Types which are fundamental to the implementation and may appear in
- * more than one standard header are defined here.  Standard headers
- * then use:
- *	#ifdef	_SIZE_T_
- *	typedef	_SIZE_T_ size_t;
- *	#undef	_SIZE_T_
- *	#endif
- *
- * Thanks, ANSI!
+ * The __CONCAT macro is used to concatenate parts of symbol names, e.g.
+ * with "#define OLD(foo) __CONCAT(old,foo)", OLD(foo) produces oldfoo.
+ * The __CONCAT macro is a bit tricky -- make sure you don't put spaces
+ * in between its arguments.  __CONCAT can also concatenate double-quoted
+ * strings produced by the __STRING macro, but this only works with ANSI C.
  */
-#define	_CLOCK_T_	unsigned long		/* clock() */
-#define	_PTRDIFF_T_	int			/* ptr1 - ptr2 */
-#define	_SIZE_T_	unsigned int		/* sizeof() */
-#define	_SSIZE_T_	int			/* sizeof() (or -errno) */
-#define	_TIME_T_	long			/* time() */
-#define	_VA_LIST_	char *			/* va_list */
-#define	_WCHAR_T_	unsigned short		/* wchar_t */
+#if defined(__STDC__) || defined(__cplusplus)
+#define	__P(protos)	protos		/* full-blown ANSI C */
+#define	__CONCAT(x,y)	x ## y
+#define	__STRING(x)	#x
 
-#endif	/* _ANSI_H_ */
+#else	/* !(__STDC__ || __cplusplus) */
+#define	__P(protos)	()		/* traditional C preprocessor */
+#define	__CONCAT(x,y)	x/**/y
+#define	__STRING(x)	"x"
+
+#ifdef __GNUC__
+#define	const		__const		/* GCC: ANSI C with -traditional */
+#define	inline		__inline
+#define	signed		__signed
+#define	volatile	__volatile
+
+#else	/* !__GNUC__ */
+#define	const				/* delete ANSI C keywords */
+#define	inline
+#define	signed
+#define	volatile
+#endif	/* !__GNUC__ */
+#endif	/* !(__STDC__ || __cplusplus) */
+
+#endif /* !_CDEFS_H_ */

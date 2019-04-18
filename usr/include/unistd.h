@@ -49,8 +49,6 @@
 #define	NULL		0	/* null pointer constant */
 #endif
 
-typedef	int ssize_t;		/* count of bytes or error indication */
-
 __BEGIN_DECLS
 void	 _exit __P((int));
 int	 access __P((const char *, int));

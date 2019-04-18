@@ -124,7 +124,8 @@ link_ntoa(sdl)
 	if (sdl->sdl_nlen) {
 		bcopy(sdl->sdl_data, obuf, sdl->sdl_nlen);
 		out += sdl->sdl_nlen;
-		*out++ = ':';
+		if (sdl->sdl_alen)
+			*out++ = ':';
 	}
 	while (in < inlim) {
 		if (firsttime) firsttime = 0; else *out++ = '.';
