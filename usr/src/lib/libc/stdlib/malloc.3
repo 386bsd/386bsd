@@ -80,3 +80,11 @@ The
 .Fn malloc
 function conforms to
 .St -ansiC .
+.Sh BUGS
+The current implementation of
+.Xr malloc
+does not always fail gracefully when system
+memory limits are approached.
+It may fail to allocate memory when larger free blocks could be broken
+up, or when limits are exceeded because the size is rounded up.
+It is optimized for sizes that are powers of two.

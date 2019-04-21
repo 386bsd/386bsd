@@ -74,7 +74,7 @@ function obtains the current value of the environment variable,
 .Ar name .
 If the variable
 .Ar name
-is not in the current environment ,
+is not in the current environment,
 a null pointer is returned.
 .Pp
 The
@@ -98,8 +98,8 @@ to the given
 .Pp
 The
 .Fn putenv
-function
-performs the equivalent of:
+function takes an argument of the form ``name=value'' and is
+the equivalent of:
 .Bd -literal -offset indent
 setenv(name, value, 1);
 .Ed

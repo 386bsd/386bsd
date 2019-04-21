@@ -50,10 +50,3 @@ calloc(num, size)
 		bzero(p, size);
 	return(p);
 }
-
-void
-cfree(p)
-	void *p;
-{
-	(void)free(p);
-}

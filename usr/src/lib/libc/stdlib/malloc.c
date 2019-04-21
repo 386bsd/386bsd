@@ -294,7 +294,7 @@ free(cp)
  * is extern so the caller can modify it).  If that fails we just copy
  * however many bytes was given to realloc() and hope it's not huge.
  */
-int realloc_srchlen = 4;	/* 4 should be plenty, -1 =>'s whole list */
+int __realloc_srchlen = 4;	/* 4 should be plenty, -1 =>'s whole list */
 
 void *
 realloc(cp, nbytes)
@@ -329,7 +329,7 @@ realloc(cp, nbytes)
 		 * is gibbous.  However, that is very unlikely.
 		 */
 		if ((i = findbucket(op, 1)) < 0 &&
-		    (i = findbucket(op, realloc_srchlen)) < 0)
+		    (i = findbucket(op, __realloc_srchlen)) < 0)
 			i = NBUCKETS;
 	}
 	onb = 1 << (i + 3);

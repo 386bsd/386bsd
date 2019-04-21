@@ -42,6 +42,8 @@ static char sccsid[] = "@(#)atexit.c	5.2 (Berkeley) 11/14/90";
 #include <stdlib.h>
 #include "atexit.h"
 
+struct atexit *__atexit;	/* points to head of LIFO stack */
+
 /*
  * Register a function to be performed at exit.
  */

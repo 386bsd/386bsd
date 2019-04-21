@@ -111,11 +111,11 @@ extern	 char *suboptarg;		/* getsubopt(3) external variable */
 int	 getsubopt __P((char **, char * const *, char **));
 int	 heapsort __P((void *, size_t, size_t,
 	    int (*)(const void *, const void *)));
-char	*initstate __P((unsigned, char *, int));
+char	*initstate __P((unsigned long, char *, long));
 int	 radixsort __P((const u_char **, int, const u_char *, u_char));
 long	 random __P((void));
 char	*setstate __P((char *));
-void	 srandom __P((unsigned));
+void	 srandom __P((unsigned long));
 void	 unsetenv __P((const char *));
 #endif /* neither ANSI nor POSIX */
 
