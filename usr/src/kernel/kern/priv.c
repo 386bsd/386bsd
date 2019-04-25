@@ -120,6 +120,7 @@ use_priv(const struct ucred *cr, cr_priv_t prv, struct proc *p)
 	case PRV_UFS_SETATTR_UID:
 	case PRV_UFS_CHOWN:
 	case PRV_UFS_CHMOD:
+	case PRV_UFS_MAKNODE:
 	case PRV_NICE:
 		minrole = ROLE_LOCALUSR;
 		rv = (cr->cr_uid == 0);
