@@ -116,7 +116,7 @@ bufinit()
 /*
  * Check to see if a block is currently memory resident.
  */
-extern inline struct buf *
+static inline struct buf *
 incore(struct vnode *vp, daddr_t blkno)
 {
 	struct buf *bh = BUFHASH(vp, blkno), *bp;
@@ -467,7 +467,7 @@ start:
 
 		bp = bfreelist[BQ_EMPTY].av_forw;
 		if ((sz % NBPG) == 0)
-			addr = kmem_alloc(buf_map, sz, M_NOWAIT);
+			addr = (caddr_t) kmem_alloc(buf_map, sz, M_NOWAIT);
 		else
 			addr = malloc(sz, M_TEMP, M_NOWAIT);
 
@@ -634,7 +634,7 @@ allocbuf(register struct buf *bp, int size)
 	if (size % NBPG != 0)
 		newcontents = (caddr_t) malloc (size, M_TEMP, M_WAITOK);
 	else
-		newcontents = kmem_alloc(buf_map, size, 0);
+		newcontents = (caddr_t) kmem_alloc(buf_map, size, 0);
 
 	if (bp->b_un.b_addr != newcontents)
 		/* copy the old into the new, up to the maximum that will fit */
@@ -644,7 +644,7 @@ allocbuf(register struct buf *bp, int size)
 	if (bp->b_bufsize % NBPG != 0)
 		free (bp->b_un.b_addr, M_TEMP);
 	else
-		kmem_free(buf_map, bp->b_un.b_addr, bp->b_bufsize);
+		kmem_free(buf_map, (vm_offset_t)bp->b_un.b_addr, bp->b_bufsize);
 
 	/* adjust buffer cache's idea of memory allocated to buffer contents */
 	/*freebufspace -= size - bp->b_bufsize;

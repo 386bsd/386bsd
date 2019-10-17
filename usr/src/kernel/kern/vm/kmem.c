@@ -199,6 +199,113 @@ kmem_alloc(vm_map_t map, vm_size_t size, int flags)
 }
 
 /*
+ * return VA of mapped pages of spec_object:offset:size, with flags options, or 0 because can't
+ * M_FIND - if all pages found and mapped, return VA otherwise 0 if fail, (then read or modify/write, kmem_free)
+ * M_ALLOCATE - insure all pages allocated, return VA otherwise 0 because not enough space, (then do i/o) 
+ */
+vm_offset_t
+buf_alloc(caddr_t *spec_object, vm_offset_t  offset, vm_size_t size, int flags)
+{
+	vm_map_t map = buf_map;
+	vm_offset_t addr, i;
+	vm_page_t m;
+	vm_object_t object;
+	vm_map_entry_t me;
+	int pl;
+
+	pl = splhigh();
+
+	/* is request larger than can ever be satisfied with this map */
+	if (size > map->max_offset - map->min_offset)
+		panic("buf_alloc: map smaller than allocation");
+
+	/* locate a fresh portion of kernel address space for address allocation */
+	size = round_page(size);
+	addr = vm_map_min(map);
+	if (flags & M_NOWAIT) {
+		if (lock_try_write(&map->lock) == FALSE)
+			return(0);
+		if (vm_map_find(map, &addr, size) != KERN_SUCCESS) {
+			vm_map_unlock(map);
+			splx(pl);
+			return (0);
+		}
+	} else {
+		vm_map_lock(map);
+		while (vm_map_find(map, &addr, size) != KERN_SUCCESS) {
+			vm_map_unlock(map);
+			(void) tsleep((caddr_t)map, PVM, "bufspc", 0);
+			vm_map_lock(map);
+		}
+	}
+
+	if (*spec_object == 0)
+		*(vm_object_t *)spec_object = vm_object_allocate(round_page(0xffff0000 /*spec.vattr.va_size*/));
+	object = *(vm_object_t *)spec_object;
+		
+	/* just reserve kernel address space or address space with appropriate object/offset allocation  */
+	if (flags & M_SPACE_ONLY) {
+		offset = 0;
+		object = NULL;
+	} else	vm_object_reference(object);
+
+	/* bind mapped address to object at offset */
+	vm_map_insert(map, object, offset, addr, addr + size);
+	me = map->hint;
+	vm_map_unlock(map);
+
+	/*
+	 * Allocate requested memory resources (if any).
+	 */
+
+	/* just want empty, default-pagable address space */
+	if (flags & M_SPACE_ONLY) {
+		splx(pl);
+		return(addr);
+	}
+
+	/* acquire physical memory pages */
+	for (i = 0; i < size; i += PAGE_SIZE) {
+
+		/* if page isn't present, allocate one */
+		if ((m = vm_page_lookup(object, offset + i)) == NULL) {
+
+			/* allocate a page, either waiting for it or not */
+			if (flags & M_NOWAIT)
+				m = vm_page_alloc(object, offset + i,  flags&M_IO);
+			else
+				while ((m = vm_page_alloc(object, offset+i, flags&M_IO)) == NULL)
+					vm_page_wait("bufpgs", atop(size - i));
+		}
+
+		/* insufficient memory for request, return */
+		if (m == NULL) {
+#ifdef nope
+			vmspace_delete(&kernspace, (caddr_t)addr, size);
+			wakeup((caddr_t)map);
+#endif
+			splx(pl);
+			return(0);
+		}
+
+		/* initialize the memory to zero? */
+		if (flags & M_ZERO_IT)
+			pmap_zero_page(m->phys_addr);
+
+		/* manually wire and map pages if part of kmem */
+		m->busy = FALSE;
+		vm_page_wire(m);
+		pmap_enter(map->pmap, addr + i, VM_PAGE_TO_PHYS(m), VM_PROT_DEFAULT, TRUE, AM_NONE);
+	}
+
+	/* wire map entry and unlock map */
+	me->wired_count++;
+	vm_map_simplify(map, addr);
+	splx(pl);
+	return(addr);
+}
+
+/*
  * Map an (already wired) region of a process into kernel memory. XXX
  */
 vm_offset_t

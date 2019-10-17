@@ -130,7 +130,7 @@ vm_object_init(void)
 
 	/* allocate & initialize an empty object to hold kernel memory allocator pages */
 	kmem_object = &kmem_object_store;
-	_vm_object_allocate(VM_KMEM_SIZE + VM_MBUF_SIZE, kmem_object);
+	_vm_object_allocate(VM_KMEM_SIZE + VM_MBUF_SIZE + /*VM_BUF_SIZE*/ (4*1024*1024), kmem_object);
 	kmem_object->ref_count = 0;
 }
 

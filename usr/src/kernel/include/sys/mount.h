@@ -266,39 +266,26 @@ struct nfs_args {
  * exported vnode operations
  */
 void	vfs_remove __P((struct mount *mp)); /* remove a vfs from mount list */
-
-/* interface symbols */
-#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
-#include "isym.h"		/* this header has interface symbols */
-
-/* global variables used in core kernel and other modules */
-__ISYM__(struct	mount *, rootfs,)	/* ptr to root mount structure */
-
-/* functions used in modules */
-__ISYM__(int, vfs_lock, (struct mount *mp))   /* lock a vfs */
-__ISYM__(void, vfs_unlock, (struct mount *mp)) /* unlock a vfs */
-__ISYM__(int, vfs_busy, (struct mount *mp))   /* busy a vfs */
-__ISYM__(void, vfs_unbusy, (struct mount *mp)) /* unbusy a vfs */
-__ISYM__(struct	mount *, getvfs, (fsid_t *fsid)) /* return vfs given fsid */
-__ISYM__(void, mntflushbuf, (struct mount *mountp, int flags))
-__ISYM__(int, mntinvalbuf, (struct mount *mountp))
-__ISYM__(int, vflush, (struct mount *mp, struct vnode *skipvp, int flags))
-__ISYM__(void, addvfs, (struct vfsops *))	/* insert filesystem into vfslist */
-__ISYM__(void, cache_purgevfs, (struct mount *mp))
-
-#undef __ISYM__
-#undef __ISYM_ALIAS__
-#undef __ISYM_VERSION__
+int	vfs_lock __P((struct mount *mp));   /* lock a vfs */
+void	vfs_unlock __P((struct mount *mp)); /* unlock a vfs */
+int	vfs_busy __P((struct mount *mp));   /* busy a vfs */
+void	vfs_unbusy __P((struct mount *mp)); /* unbusy a vfs */
+struct	mount *getvfs __P((fsid_t *fsid));  /* return vfs given fsid */
+void mntflushbuf(struct mount *mountp, int flags);
+int mntinvalbuf(struct mount *mountp);
+int vflush(struct mount *mp, struct vnode *skipvp, int flags);
 
 /* XXX temp vm interface */
 void vnode_pager_umount(struct mount *mp);
 
+struct	mount *rootfs;		/* ptr to root mount structure */
 /* struct	vfsops *vfssw[];	/* mount filesystem type table */
-extern struct	vfsops *vfs;		/* head of vfs list */
+void addvfs(struct vfsops *);	/* insert filesystem into vfslist */
+struct	vfsops *vfs;		/* head of vfs list */
 struct	vfsops *findvfs(int type);	/* return vfs associated with type */
 /* use another filesystem to complete a different filesystem */
 void incoporatefs(struct vfsops *, struct vfsops *);
-/*int	(*mountroot)();		/* perform mount of root filesystem */
+int	(*mountroot)();		/* perform mount of root filesystem */
 
 #else /* KERNEL */
 

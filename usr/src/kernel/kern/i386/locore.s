@@ -1070,13 +1070,13 @@ common_traps:
 	pushl	$T_ASTFLT ; \
 	pushal ; \
 	NOP ;			/* wait for 8259 recovery */ \
-	movb	$3, %al ; 	/* select ISR ... */ \
+	movb	$0xb, %al ; 	/* select ISR ... */ \
 	outb	%al, $IO_ICU1 ; /* in 8259 unit 1 ...*/ \
 	NOP ;			/* wait for 8259 recovery */ \
 	inb	$IO_ICU1, %al ;	/* grab ISR */ \
 	movb	%al, %dl ;	/* save ISR */ \
 	NOP ;			/* ... ASAP */ \
-	movb	$2, %al ; 	/* reselect IRR ... */ \
+	movb	$0xa, %al ; 	/* reselect IRR ... */ \
 	outb	%al, $IO_ICU1 ; /* ... ...*/ \
 	NOP ;			/* ... ASAP */ \
 	movb	$(0x60 | offst), %al ; 	/* next, as soon as possible send EOI ... */ \
@@ -1107,14 +1107,14 @@ common_traps:
 	pushl	$0 ; \
 	pushl	$T_ASTFLT ; \
 	pushal ; \
-	movb	$3, %al ; 	/* select ISR ... */ \
+	movb	$0xb, %al ; 	/* select ISR ... */ \
 	outb	%al, $IO_ICU1 ; /* in 8259 unit 1 ...*/ \
 	outb	%al, $IO_ICU2 ; /* in 8259 unit 2 ...*/ \
 	inb	$IO_ICU1, %al ;	/* grab ISR unit 1 */ \
 	movb	%al, %dl ;	/* save ISR unit 1 */ \
 	inb	$IO_ICU2, %al ;	/* grab ISR unit 2 */ \
 	movb	%al, %dh ;	/* save ISR unit 2 */ \
-	movb	$2, %al ; 	/* reselect IRR ... */ \
+	movb	$0xa, %al ; 	/* reselect IRR ... */ \
 	outb	%al, $IO_ICU1 ; /* ... ...*/ \
 	outb	%al, $IO_ICU2 ; /* ... ...*/ \
 	movb	$0x62, %al ; 	/* next, as soon as possible send EOI ... */ \

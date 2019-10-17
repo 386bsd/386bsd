@@ -50,7 +50,6 @@
 #define	_CLOCK_T_	unsigned long		/* clock() */
 #define	_PTRDIFF_T_	int			/* ptr1 - ptr2 */
 #define	_SIZE_T_	unsigned int		/* sizeof() */
-#define	_SSIZE_T_	int			/* sizeof() (or -errno) */
 #define	_TIME_T_	long			/* time() */
 #define	_VA_LIST_	char *			/* va_list */
 #define	_WCHAR_T_	unsigned short		/* wchar_t */

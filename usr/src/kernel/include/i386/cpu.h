@@ -70,8 +70,8 @@ int *cpu_ptracereg(struct proc *, int);	/* return address of a register */
 void cpu_startup(void);
 void cpu_reset(void);
 #define	inittodr(s)	/* sorry, no GMT todr, only localtime cmos clock */
-extern int (*cpu_dna)(void *);
-extern int (*cpu_dna_em)(void *);
+int (*cpu_dna)(void *);
+int (*cpu_dna_em)(void *);
 
 /*
  * Arguments to hardclock, softclock and gatherstats
@@ -112,9 +112,9 @@ typedef struct clock_frame clockframe;
  */
 #define	cpu_signotify(p)	(p)->p_md.md_flags |= MDP_AST
 
-extern int	sclkpending;	/* need to do a softclock() on return to basepri */
-extern int	netpending;	/* need to do a netintr() on return to basepri */
-extern volatile int	cpl;	/* current priority level(mask) of interrupt controller */
+int	sclkpending;	/* need to do a softclock() on return to basepri */
+int	netpending;	/* need to do a netintr() on return to basepri */
+volatile int	cpl;	/* current priority level(mask) of interrupt controller */
 
 /* global bit vector of options */
 extern int	cpu_option;
@@ -138,6 +138,6 @@ extern int	cpu_option;
 #define	CPU_PENT_DEFAULT	(CPU_PENT_WBACK)
 
 /* which process context holds the coprocessor(NPX), if any */
-extern struct	proc	*npxproc;
+struct	proc	*npxproc;
 
 #endif

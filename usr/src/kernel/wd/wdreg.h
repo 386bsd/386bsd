@@ -40,15 +40,32 @@
  * Disk Controller register definitions.
  */
 #define	wd_data		0x0		/* data register (R/W - 16 bits) */
+#define ATA_REG_DATA       0x00
 #define wd_error	0x1		/* error register (R) */
+#define ATA_REG_ERROR      0x01
+#define ATA_REG_FEATURES   0x01
 #define	wd_precomp	wd_error	/* write precompensation (W) */
 #define	wd_seccnt	0x2		/* sector count (R/W) */
+#define ATA_REG_SECCOUNT0  0x02
 #define	wd_sector	0x3		/* first sector number (R/W) */
+#define ATA_REG_LBA0       0x03
 #define	wd_cyl_lo	0x4		/* cylinder address, low byte (R/W) */
+#define ATA_REG_LBA1       0x04
 #define	wd_cyl_hi	0x5		/* cylinder address, high byte (R/W)*/
+#define ATA_REG_LBA2       0x05
 #define	wd_sdh		0x6		/* sector size/drive/head (R/W)*/
+#define ATA_REG_HDDEVSEL   0x06
 #define	wd_command	0x7		/* command register (W)	 */
+#define ATA_REG_COMMAND    0x07
+#define ATA_REG_STATUS     0x07
 #define	wd_status wd_command		/* immediate status (R)	 */
+#define ATA_REG_SECCOUNT1  0x08
+#define ATA_REG_LBA3       0x09
+#define ATA_REG_LBA4       0x0A
+#define ATA_REG_LBA5       0x0B
+#define ATA_REG_CONTROL    0x0C
+#define ATA_REG_ALTSTATUS  0x0C
+#define ATA_REG_DEVADDRESS 0x0D
 
 #define	wd_altsts	0x206	 /*alternate fixed disk status(via 1015) (R)*/
 #define	wd_ctlr		0x206	 /*fixed disk controller control(via 1015) (W)*/
@@ -56,7 +73,6 @@
 #define  WDCTL_RST	 0x4	/* reset the controller */
 #define  WDCTL_IDS	 0x2	/* disable controller interrupts */
 #define	wd_digin	0x207	 /* disk controller input(via 1015) (R)*/
-
 /*
  * Status Bits.
  */
@@ -102,28 +118,58 @@
  */
 struct wdparams {
 	/* drive info */
-	short	wdp_config;		/* general configuration */
-	short	wdp_fixedcyl;		/* number of non-removable cylinders */
-	short	wdp_removcyl;		/* number of removable cylinders */
-	short	wdp_heads;		/* number of heads */
-	short	wdp_unfbytespertrk;	/* number of unformatted bytes/track */
-	short	wdp_unfbytes;		/* number of unformatted bytes/sector */
-	short	wdp_sectors;		/* number of sectors */
-	short	wdp_minisg;		/* minimum bytes in inter-sector gap*/
-	short	wdp_minplo;		/* minimum bytes in postamble */
-	short	wdp_vendstat;		/* number of words of vendor status */
+	unsigned short	wdp_config;		/* general configuration */
+	unsigned short	wdp_fixedcyl;		/* number of non-removable cylinders - all ide/ata supported */
+	unsigned short	wdp_removcyl;		/* number of removable cylinders */
+	unsigned short	wdp_heads;		/* number of heads - all ide/ata supported */
+	unsigned short	wdp_unfbytespertrk;	/* number of unformatted bytes/track */
+	unsigned short	wdp_unfbytes;		/* number of unformatted bytes/sector */
+	unsigned short	wdp_sectors;		/* number of sectors - all ide/ata supported */
+	unsigned short	wdp_minisg;		/* minimum bytes in inter-sector gap*/
+	unsigned short	wdp_minplo;		/* minimum bytes in postamble */
+	unsigned short	wdp_vendstat;		/* number of words of vendor status */
 	/* controller info */
 	char	wdp_cnsn[20];		/* controller serial number */
-	short	wdp_cntype;		/* controller type */
+	unsigned short	wdp_cntype;		/* controller type */
 #define	WDTYPE_SINGLEPORTSECTOR	1	 /* single port, single sector buffer */
 #define	WDTYPE_DUALPORTMULTI	2	 /* dual port, multiple sector buffer */
 #define	WDTYPE_DUALPORTMULTICACHE 3	 /* above plus track cache */
-	short	wdp_cnsbsz;		/* sector buffer size, in sectors */
-	short	wdp_necc;		/* ecc bytes appended */
+	unsigned short	wdp_cnsbsz;		/* sector buffer size, in sectors */
+	unsigned short	wdp_necc;		/* ecc bytes appended */
 	char	wdp_rev[8];		/* firmware revision */
 	char	wdp_model[40];		/* model name */
-	short	wdp_nsecperint;		/* sectors per interrupt */
-	short	wdp_usedmovsd;		/* can use double word read/write? */
+	unsigned short	wdp_nsecperint;		/* sectors per interrupt */
+	unsigned short	wdp_usedmovsd;		/* can use double word read/write? */
+};
+
+struct ata_params {
+	/* drive info */
+	unsigned short	atp_gconfig;		/* general configuration */
+	unsigned short	atp_cyl;		/* number of logical cylinders  - obsolete */
+	unsigned short	atp_sconfig;		/* special config */
+#define	ATP_REDO_INCOMPLETE	0x37C8	/* requires redo identify after SET FEATURES "spin up" - data is incomplete */
+#define	ATP_REDO_COMPLETE	0x738C	/* requires redo identify after SET FEATURES "spin up" - data is complete */
+#define	ATP_JUST_INCOMPLETE	0x8C73	/* doesn't require identify after SET FEATURES "spin up" - data is incomplete */
+#define	ATP_JUST_COMPLETE	0xC837	/* doesn't require identify after SET FEATURES "spin up" - data is complete */
+	unsigned short	atp_heads;		/* number of logical heads - obsolete */
+	unsigned short	atp_unfbytespertrkX;	/* number of unformatted bytes/track - not supported */
+	unsigned short	atp_unfbytesX;		/* number of unformatted bytes/sector - not supported */
+	unsigned short	atp_sectors;		/* number of logical sectors - obsolete */
+	unsigned short	atp_minisgX;		/* was minimum bytes in inter-sector gap - not supported, assigned to CF */
+	unsigned short	atp_minploX;		/* was minimum bytes in postamble - not supported, assigned to CF */
+	unsigned short	atp_vendstatX;		/* number of words of vendor status - not supported */
+	/* controller info */
+	char		atp_cnsn[20];		/* controller serial number */
+	unsigned short	atp_cntypeX;		/* controller type - not supported */
+	unsigned short	atp_cnsbszX;		/* sector buffer size, in sectors - not supported */
+	unsigned short	atp_neccX;		/* ecc bytes appended - not supported */
+	char		atp_rev[8];		/* firmware revision */
+	char		atp_model[40];		/* model name */
+	unsigned short	atp_nsecperint;		/* 1-255 sectors per interrupt or DMA request on READ/WRITE MULTIPLE commands */
+#define ATP_NSECPERFLAGS	0x8000	/* top byte */
+	unsigned short	atp_usedmovsd;		/* can use double word read/write? */
+	unsigned short	atp_capabilities;	/* */
+	unsigned short	atp_X;
 };
 
 /*

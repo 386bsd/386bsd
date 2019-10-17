@@ -406,26 +406,73 @@ isa_defaultirq() {
 	for (i = NRSVIDT; i < NIDT; i++)
 		setirq(i, &IDTVEC(intrdefault));
 
+asm("cli");
 	/* clear npx intr latch */
 	outb(0xf1,0);
 
+	/* initialize 8259's */
+	outb(IO_ICU1+1, 0xff);		/* mask interrupts */
+	__outb(IO_ICU1, 0x11);		/* reset; program device, four bytes */
+	__outb(IO_ICU1+1, NRSVIDT);	/* starting at this vector index */
+	__outb(IO_ICU1+1, 1<<2);	/* slave on line 2 */
+	__outb(IO_ICU1+1, 1);		/* 8086 mode, requires EOI */
+	/*__outb(IO_ICU1+1, 0xff);	/* leave interrupts masked */
+	/*__outb(IO_ICU1, ?*0x60+*?8+1);/* default to ISR on read */
+	/*__outb(IO_ICU1, 2);*/
+
+	outb(IO_ICU2+1, 0xff);		/* mask interrupts */
+	__outb(IO_ICU2, 0x11);		/* reset; program device, four bytes */
+	__outb(IO_ICU2+1, NRSVIDT+8);	/* staring at this vector index */
+	__outb(IO_ICU2+1,2);		/* my slave id is 2 */
+	__outb(IO_ICU2+1,1);		/* 8086 mode, requires EOI */
+	/*__outb(IO_ICU2+1, 0xff);	/* leave interrupts masked */
+	/*__outb(IO_ICU2, ?*0x60+*?8+1);/* default to ISR on read */
+	/*__outb(IO_ICU2, 2);*/
+}
+extern struct isa_driver wddriver;
+
+int reset_8259 = 1;
+int restore_8259_cmd = 1;
+init_8259() {
+	if (reset_8259) {
 	/* initialize 8259's */
 	__outb(IO_ICU1, 0x11);		/* reset; program device, four bytes */
 	__outb(IO_ICU1+1, NRSVIDT);	/* starting at this vector index */
 	__outb(IO_ICU1+1, 1<<2);		/* slave on line 2 */
 	__outb(IO_ICU1+1, 1);		/* 8086 mode */
 	__outb(IO_ICU1+1, 0xff);		/* leave interrupts masked */
-	__outb(IO_ICU1, /*0x60+*/8+1);		/* default to ISR on read */
+	}
+	if(restore_8259_cmd) {
+	/*__outb(IO_ICU1, ?*0x60+*?8+1);		/* default to ISR on read */
+	__outb(IO_ICU1, 2);
+	}
 
+	if (reset_8259) {
 	__outb(IO_ICU2, 0x11);		/* reset; program device, four bytes */
 	__outb(IO_ICU2+1, NRSVIDT+8);	/* staring at this vector index */
 	__outb(IO_ICU2+1,2);		/* my slave id is 2 */
 	__outb(IO_ICU2+1,1);		/* 8086 mode */
 	__outb(IO_ICU2+1, 0xff);		/* leave interrupts masked */
-	__outb(IO_ICU2, /*0x60+*/8+1);		/* default to ISR on read */
+	}
+	if(restore_8259_cmd) {
+	/*__outb(IO_ICU2, ?*0x60+*?8+1);		/* default to ISR on read */
+	__outb(IO_ICU2, 2);
+	}
+	wdredo();
 }
 
+static int wdredocnt = 100;
 
+wdredo() {
+	int x;
+
+	if (--wdredocnt <= 0)  {
+		x = splbio();
+		(*wddriver.intr)(0);
+		splx(x);
+		wdredocnt = 100;
+	}
+}
 /*
  * XXX unfinished, missing new channel code and pvc_alloc()
  */
@@ -493,6 +540,7 @@ void isa_dmastart(int flags, caddr_t addr, unsigned nbytes, unsigned chan)
 
 	/* translate to physical */
 	phys = pmap_extract(pmap_kernel(), (vm_offset_t)addr);
+/*printf("dma virt %x phys %x word %x", addr, phys, *(long *) addr);*/
 
 	/* set dma channel mode, and reset address ff */
 	if ((chan & 4) == 0)
@@ -525,7 +573,7 @@ void isa_dmastart(int flags, caddr_t addr, unsigned nbytes, unsigned chan)
 		outb(waport + 1, --nbytes);
 		outb(waport + 1, nbytes>>8);
 	} else {
-		nbytes <<= 1;
+		nbytes >>= 1;
 		outb(waport + 2, --nbytes);
 		outb(waport + 2, nbytes>>8);
 	}
@@ -542,6 +590,7 @@ void isa_dmastart(int flags, caddr_t addr, unsigned nbytes, unsigned chan)
 void isa_dmadone(int flags, caddr_t addr, int nbytes, int chan)
 {
 
+/*printf(" addr %x word %x ", addr, *(long *) addr);*/
 	/* copy bounce buffer on read */
 	/*if ((flags & (B_PHYS|B_READ)) == (B_PHYS|B_READ))*/
 	if (bounced[chan]) {
@@ -631,6 +680,7 @@ isa_nmi(cd) {
  * Caught a stray interrupt, notify
  */
 isa_strayintr(d) {
+
 
 #ifdef notdef
 	/* DON'T BOTHER FOR NOW! */

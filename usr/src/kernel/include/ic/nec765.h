@@ -53,9 +53,13 @@
 
 /* Status register ST2 */
 #define NE7_ST2BITS	"\020\007ctrl_mrk\006bad_crc\005wrong_cyl\004scn_eq\003scn_not_fnd\002bad_cyl\001no_dam"
+#define	NE7_WCYL 0x10	/* wrong cylinder */
 
-/* Status register ST3 */
+/* Status register ST3 - drive status */
 #define NE7_ST3BITS	"\020\010fault\007write_protect\006drdy\005tk0\004two_side\003side_sel\002"
+#define	NE7_TRK0 0x10	/* on track 0 */
+#define	NE7_RDY 0x20	/* drive ready */
+#define	NE7_ESIG 0x80	/* error signal */
 
 /* Commands */
 #define NE7CMD_SPECIFY	3	/*  specify drive parameters - requires unit

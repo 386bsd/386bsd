@@ -36,36 +36,30 @@
 /* Global variables for the kernel. */
 
 /* 1.1 */
-extern char hostname[MAXHOSTNAMELEN];
-extern int hostnamelen;
+long hostid;
+char hostname[MAXHOSTNAMELEN];
+int hostnamelen;
 
 /* 1.2 */
-extern struct timeval boottime;
-extern struct timeval time;
-extern struct timezone tz;			/* XXX */
+struct timeval boottime;
+struct timeval time;
+struct timezone tz;			/* XXX */
 
-/*extern int hz;					/* clock frequency */
-extern int phz;				/* alternate clock's frequency */
-extern int tick;
+int hz;					/* clock frequency */
+int phz;				/* alternate clock's frequency */
+int tick;
+int lbolt;				/* once a second sleep address */
 
-extern fixpt_t	averunnable[3];
+fixpt_t	averunnable[3];
+
+int     sclkpending;    /* need to do a softclock() on return to basepri */
+int     netpending;     /* need to do a netintr() on return to basepri */
+int (*cpu_dna)(void *);
+int (*cpu_dna_em)(void *);
 
 #ifdef GPROF
-extern u_long s_textsize;
-extern int profiling;
-extern u_short *kcount;
-extern char *s_lowpc;
+u_long s_textsize;
+int profiling;
+u_short *kcount;
+char *s_lowpc;
 #endif
-
-/* interface symbols */
-#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
-#include "isym.h"		/* this header has interface symbols */
-
-/* global variables used in core kernel and other modules */
-__ISYM__(int, hz,)		/* clock frequency */
-__ISYM__(int, lbolt,)		/* once a second sleep address */
-__ISYM__(long, hostid,)
-
-#undef __ISYM__
-#undef __ISYM_ALIAS__
-#undef __ISYM_VERSION__

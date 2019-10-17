@@ -79,17 +79,7 @@ int	writev __P((int, const struct iovec *, int));
 __END_DECLS
 #else
 struct iovec *uio_advance(struct uio *uio, struct iovec *iov, int cnt);
-
-/* interface symbols */
-#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
-#include "isym.h"		/* this header has interface symbols */
-
-/* functions used in modules */
-__ISYM__(int, uiomove, (caddr_t c, int len, struct uio *uio))
-
-#undef __ISYM__
-#undef __ISYM_ALIAS__
-#undef __ISYM_VERSION__
+int uio_move(caddr_t c, int len, struct uio *uio);
 
 /*
  * Advance a uio and its iov by cnt bytes, returning next iov.

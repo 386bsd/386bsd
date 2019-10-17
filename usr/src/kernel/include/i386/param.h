@@ -150,18 +150,8 @@
 #ifndef KERNEL
 #define	DELAY(n)	{ volatile int cnt = (n); while (--cnt > 0); }
 #else
-/* interface symbols */
-#define	__ISYM_VERSION__ "1"	/* XXX RCS major revision number of hdr file */
-#include "isym.h"		/* this header has interface symbols */
-
-__ISYM__(int, loops_per_usec,)		/*  */
-
-#undef __ISYM__
-#undef __ISYM_ALIAS__
-#undef __ISYM_VERSION__
-
 #define	DELAY(n) ({					\
-	/* extern int loops_per_usec; */			\
+	extern int loops_per_usec;			\
 	volatile int cnt = loops_per_usec * (n);	\
 							\
 	 while (--cnt > 0)				\

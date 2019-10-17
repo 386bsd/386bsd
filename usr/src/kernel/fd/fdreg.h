@@ -58,3 +58,39 @@
 #define	FDI_DCHG	0x80	/* diskette has been changed */
 
 
+/* drive */
+struct fd_drive {
+	int fd_unit;
+	int fd_flags;
+#define	FD_FLAG_SPINNINGUP	1	/* drive timeout for spin up */
+#define	FD_FLAG_SEEKRETRY	2	/* drive timeout for seek retry */
+#define FD_FLAG_IO_RETRY	4	/* drive timeout for i/o retry */
+	int fd_type;		/* Drive type (HD, DD     */
+	int active;		/* Drive activity boolean */
+	int motor;		/* Motor on flag          */
+	int reset;
+	int fd_cmd[9];		/* last command to this drive */
+	int fd_st3;		/* last drive status */
+};
+
+#define	FDUNIT(s)	((s>>3)&1)
+#define	FDTYPE(u, s)	(((s) & 7) == 0 ? fd_dev_tab[u].fd_type : (s) & 7 - 1)
+
+#define b_cylin b_resid
+#define FDBLK 512
+
+struct fd_type {
+	int	sectrac;		/* sectors per track         */
+	int	secsize;		/* size code for sectors     */
+	int	datalen;		/* data len when secsize = 0 */
+	int	gap;			/* gap len between sectors   */
+	int	tracks;			/* total num of tracks       */
+	int	size;			/* size of disk in sectors   */
+	int	steptrac;		/* steps per cylinder        */
+	int	trans;			/* transfer speed code       */
+};
+
+/*#define FDTEST
+#define FDDEBUG
+#define FDC_DEBUG
+#define FDC_DIAGNOSTICS*/

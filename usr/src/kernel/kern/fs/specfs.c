@@ -169,6 +169,7 @@ loop:
 		nvp->v_hashchain = vpp;
 		nvp->v_specnext = *vpp;
 		nvp->v_specflags = 0;
+		nvp->v_buf_object = (caddr_t)0;
 		*vpp = nvp;
 		if (vp != NULL) {
 			nvp->v_flag |= VALIASED;

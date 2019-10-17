@@ -43,6 +43,7 @@ struct specinfo {
 	struct	vnode *si_specnext;
 	long	si_flags;
 	dev_t	si_rdev;
+	caddr_t si_buf_object; /* hold buffer list */
 };
 /*
  * Exported shorthand
@@ -51,6 +52,7 @@ struct specinfo {
 #define v_hashchain v_specinfo->si_hashchain
 #define v_specnext v_specinfo->si_specnext
 #define v_specflags v_specinfo->si_flags
+#define v_buf_object v_specinfo->si_buf_object
 
 /*
  * Flags for specinfo

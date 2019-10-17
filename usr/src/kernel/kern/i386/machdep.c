@@ -859,6 +859,14 @@ init386(firstphys) {
 #endif
 }
 
+static void
+delay1us()
+{
+    int i = 20;
+    while (--i >= 0)
+        (void)inb(0x84);
+}
+
 /* output a byte, allowing for recovery time */
 void
 __outb(u_short port, u_char val) {
@@ -875,11 +883,8 @@ u_char
 __inb(u_short port) {
 	u_char rv;
 
-	(void) inb_(0x84);
-	(void) inb_(0x84);
 	rv = inb(port);
-	(void) inb_(0x84);
-	(void) inb_(0x84);
+delay1us();
 
 	return (rv);
 }
