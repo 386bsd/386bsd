@@ -378,7 +378,8 @@ wdstart(void)
 	struct disklabel *lp;
 	struct buf *dp;
 	register struct bt_bad *bt_ptr;
-	long	blknum, pagcnt, cylin, head, sector;
+	unsigned long long blknum;
+	long	/*blknum,*/ pagcnt, cylin, head, sector;
 	long	secpertrk, secpercyl, i;
 	int	unit, s, wdc;
 	caddr_t addr;
