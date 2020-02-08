@@ -461,8 +461,7 @@ getnewbuf(int sz)
 	x = splbio();
 start:
 	/* can we constitute a new buffer? */
-	if (/*freebufspace > sz
-		&&*/ bfreelist[BQ_EMPTY].av_forw != (struct buf *)bfreelist+BQ_EMPTY) {
+	if (bfreelist[BQ_EMPTY].av_forw != (struct buf *)bfreelist+BQ_EMPTY) {
 		caddr_t addr;
 
 		bp = bfreelist[BQ_EMPTY].av_forw;
@@ -471,11 +470,9 @@ start:
 		else
 			addr = malloc(sz, M_TEMP, M_NOWAIT);
 
+		/* no, we can't */
 		if (addr == 0)
 			goto tryfree;
-		/*freebufspace -= sz;
-		allocbufspace += sz;*/
-
 
 		bp->b_flags = B_BUSY | B_INVAL;
 		bremfree(bp);
@@ -485,6 +482,7 @@ start:
 	}
 
 tryfree:
+	/* reclaim an existing buffer */
 	if (bfreelist[BQ_AGE].av_forw != (struct buf *)bfreelist+BQ_AGE) {
 		bp = bfreelist[BQ_AGE].av_forw;
 		bremfree(bp);
@@ -492,11 +490,9 @@ tryfree:
 		bp = bfreelist[BQ_LRU].av_forw;
 		bremfree(bp);
 	} else	{
-		/* wait for a free buffer of any kind */
+		/* none to reclaim, wait for a free buffer of any kind */
 		(bfreelist + BQ_AGE)->b_flags |= B_WANTED;
 		tsleep((caddr_t)bfreelist, PRIBIO, "getnewbuf", 0);
-		/*splx(x);
-		return (0);*/
 		goto start;
 	}
 
@@ -527,17 +523,80 @@ fillin:
 	splx(x);
 	bp->b_dev = BLK_NODEV;
 	bp->b_vp = NULL;
+	if (bp->b_bufsize != sz) {
+		bp->b_flags = B_HEAD | B_INVAL;	/* we're just an empty header */
+
+		/* return old contents to free heap */
+		if (bp->b_bufsize % NBPG != 0)
+			free (bp->b_un.b_addr, M_TEMP);
+		else
+			kmem_free(buf_map, (vm_offset_t)bp->b_un.b_addr, bp->b_bufsize);
+
+		binstailfree(bp, bfreelist + BQ_EMPTY);
+		binshash(bp, bfreelist + BQ_EMPTY);
+		goto start;
+	}
 	bp->b_blkno = bp->b_lblkno = 0;
 	bp->b_iodone = 0;
 	bp->b_error = 0;
 	bp->b_wcred = bp->b_rcred = NOCRED;
-	if (bp->b_bufsize != sz)
-		allocbuf(bp, sz);
 	bp->b_bcount = bp->b_bufsize = sz;
 	bp->b_dirtyoff = bp->b_dirtyend = 0;
 	bp->b_blockb = 0;
 	bp->b_blockf = 0;
 	return (bp);
+}
+
+void
+reclaimbp() {
+	struct buf *bp;
+
+	if (bfreelist[BQ_AGE].av_forw != (struct buf *)bfreelist+BQ_AGE) {
+		bp = bfreelist[BQ_AGE].av_forw;
+		bremfree(bp);
+	} else if (bfreelist[BQ_LRU].av_forw != (struct buf *)bfreelist+BQ_LRU) {
+		bp = bfreelist[BQ_LRU].av_forw;
+		bremfree(bp);
+	} else	{
+		/* wait for a free buffer of any kind */
+		(bfreelist + BQ_AGE)->b_flags |= B_WANTED;
+		tsleep((caddr_t)bfreelist, PRIBIO, "getnewbuf", 0);
+		return;
+	}
+
+	/* if we are a delayed write, convert to an async write! */
+	if (bp->b_flags & B_DELWRI) {
+		bp->b_flags |= B_BUSY;
+		bawrite (bp);
+		return;
+	}
+
+#ifdef KTRACE
+	if (curproc && KTRPOINT(curproc, KTR_BIO))
+		ktrbio(curproc->p_tracep, KTBIO_RECYCLE, bp->b_vp,
+			bp->b_lblkno);
+#endif
+
+	if(bp->b_vp)
+		brelvp(bp);
+
+	/* we are not free, nor do we contain interesting data */
+	if (bp->b_rcred != NOCRED)
+		crfree(bp->b_rcred);
+	if (bp->b_wcred != NOCRED)
+		crfree(bp->b_wcred);
+	bp->b_flags = B_HEAD | B_INVAL;	/* we're just an empty header */
+	bremhash(bp);
+	bp->b_dev = BLK_NODEV;
+	bp->b_vp = NULL;
+
+	/* return old contents to free heap */
+	if (bp->b_bufsize % NBPG != 0)
+		free (bp->b_un.b_addr, M_TEMP);
+	else
+		kmem_free(buf_map, (vm_offset_t)bp->b_un.b_addr, bp->b_bufsize);
+	binstailfree(bp, bfreelist + BQ_EMPTY);
+	binshash(bp, bfreelist + BQ_EMPTY);
 }
 
 /*
@@ -631,10 +690,16 @@ allocbuf(register struct buf *bp, int size)
 	caddr_t newcontents;
 
 	/* get new memory buffer */
+retry:
 	if (size % NBPG != 0)
-		newcontents = (caddr_t) malloc (size, M_TEMP, M_WAITOK);
+		newcontents = (caddr_t) malloc (size, M_TEMP, M_NOWAIT);
 	else
-		newcontents = (caddr_t) kmem_alloc(buf_map, size, 0);
+		newcontents = (caddr_t) kmem_alloc(buf_map, size, M_NOWAIT);
+
+	if (newcontents == 0) {
+		reclaimbp();
+		goto retry;
+	}
 
 	if (bp->b_un.b_addr != newcontents)
 		/* copy the old into the new, up to the maximum that will fit */
@@ -645,10 +710,6 @@ allocbuf(register struct buf *bp, int size)
 		free (bp->b_un.b_addr, M_TEMP);
 	else
 		kmem_free(buf_map, (vm_offset_t)bp->b_un.b_addr, bp->b_bufsize);
-
-	/* adjust buffer cache's idea of memory allocated to buffer contents */
-	/*freebufspace -= size - bp->b_bufsize;
-	allocbufspace += size - bp->b_bufsize;*/
 
 	/* update buffer header */
 	bp->b_un.b_addr = newcontents;
