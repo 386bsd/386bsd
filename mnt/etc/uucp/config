@@ -1,7 +1,0 @@
-nodename YOUR_SYSTEM_NAME_HERE
-unknown commands
-#files may be transferred to me in 
-unknown pubdir /var/spool/uucppublic
-#only send from pubdir (the default)
-unknown remote-send ~ !~/rec
-unknown remote-receive ~/rec
