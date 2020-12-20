@@ -1,6 +1,0 @@
-dialer hayes
-chat "" AT\r\c OK \dATDT\D\r\c CONNECT
-chat-fail BUSY
-chat-fail NO\sCARRIER
-complete \d\d+++\d\dATH\r\c
-abort \d\d+++\d\dATH\r\c
