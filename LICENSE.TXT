@@ -15,7 +15,6 @@ modification, are permitted provided that the following conditions are met:
 
 3. All advertising materials mentioning features or use of this software must
    display the following acknowledgement:
-     This software is a component of "386BSD" developed by William F. and Lynne and issued relatives aka Autumn, Benjamin and their siblings. ; or
      This product includes software developed by 386BSD.
 
 4. Neither the name of the copyright holder nor the names of its
